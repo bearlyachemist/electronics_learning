@@ -1,0 +1,299 @@
+import Equation from '../components/Equation.astro';
+import {CapacitorLab,RCLab,FilterLab,RealCapLab,InductorLab,TransformerLab} from '../components/PassiveLabs';
+
+
+
+<div className="chapter-hero" id="overview">
+
+
+
+
+<div className="eyebrow">
+
+<span>CHAPTER 08</span><span className="hairline"/>FOUNDATIONS / ENERGY & SIGNALS
+
+</div>
+
+
+<h1>Integrators<br/><em>Accumulate what came before.</em></h1>
+<p className="dek">Connect charge accumulation to integration, distinguish passive approximations from active integrators, and understand drift and reset.</p>
+
+
+<div className="chapter-meta">
+
+<span>30–40 min + exploration</span><span>Capacitors · RC circuits</span>
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>From low-pass to integral → Compare exact and approximate → Ramps and triangles → An active integrator → Initial conditions and drift.</p>
+
+</div>
+
+
+
+
+
+<section id="derive">
+
+
+
+
+<div className="section-heading">
+
+<span>01</span><h2>From low-pass to integral</h2>
+
+</div>
+
+
+
+A capacitor integrates its current exactly in the ideal constant-C model:
+
+<Equation tex="v_C(t)=v_C(t_0)+\frac{1}{C}\int_{t_0}^{t}i(u)\,du"/>
+
+To integrate an input **voltage**, we need a circuit that converts that voltage to a suitable current. A resistor feeding a capacitor is the simplest attempt, but its current depends on both input and output:
+
+<Equation tex="i=\frac{v_{\mathrm{in}}-v_{\mathrm{out}}}{R},\qquad RC\frac{dv_{\mathrm{out}}}{dt}+v_{\mathrm{out}}=v_{\mathrm{in}}"/>
+
+If the output term is small compared with the relevant input variation, the derivative term dominates:
+
+<Equation tex="\frac{dv_{\mathrm{out}}}{dt}\approx\frac{v_{\mathrm{in}}}{RC}"/>
+<Equation tex="v_{\mathrm{out}}(t)\approx K+\frac{1}{RC}\int v_{\mathrm{in}}(t)\,dt" label="01 / A PASSIVE APPROXIMATION"/>
+
+K records the integration constant. Neglecting it does not make stored charge disappear. For periodic zero-mean steady-state examples we choose the corresponding periodic solution; a startup problem requires its own initial condition.
+
+### Use the frequency condition
+
+The exact RC low-pass transfer function is:
+
+<Equation tex="H(j\omega)=\frac{1}{1+j\omega RC}"/>
+
+When x = ωRC = f/f_c is much greater than one, the constant one in the denominator is small:
+
+<Equation tex="H(j\omega)\approx\frac{1}{j\omega RC}"/>
+
+The **high-frequency region of a low-pass circuit** approximates integration. At those frequencies output is strongly attenuated and approaches a −90° phase shift. This is not an unlimited integrator extending down to DC.
+
+A constant DC input eventually appears at the capacitor unchanged, while an ideal integrator driven by a nonzero constant would ramp indefinitely. Those are fundamentally different long-term behaviors.
+
+
+</section>
+
+
+
+
+
+<section id="explore">
+
+
+
+
+<div className="section-heading">
+
+<span>02</span><h2>Compare exact and approximate</h2>
+
+</div>
+
+
+
+For input A sin(ωt), a zero-mean integral is −A cos(ωt)/ω. Dividing by RC gives the passive approximation’s amplitude A/(ωRC) and phase −90°.
+
+The plot compares that approximation with the exact low-pass response. Changing frequency also changes the time represented by one horizontal period.
+
+<FilterLab client:load kind="lowpass"/>
+
+<p className="caption">Figure 1. Exact sinusoidal steady state and an integral approximation. This plot does not include a startup transient or an arbitrary integration constant.</p>
+
+The relative complex-response error is:
+
+<Equation tex="\frac{H_{\mathrm{approx}}-H}{H}=\frac{1}{jx},\qquad \left|\frac{H_{\mathrm{approx}}-H}{H}\right|=\frac{1}{x}"/>
+
+At f/f_c = 10, the complex error is 10%; at 100, it is 1%. These include phase as well as amplitude. At a ratio of 10, exact phase is −84.29°, not yet −90°.
+
+Better approximation comes with smaller passive output. If the output becomes comparable to offsets, noise, or loading effects, mathematical accuracy of the ideal approximation is not enough.
+
+
+</section>
+
+
+
+
+
+<section id="waveforms">
+
+
+
+
+<div className="section-heading">
+
+<span>03</span><h2>Ramps and triangles</h2>
+
+</div>
+
+
+
+During a short constant-current interval, capacitor voltage is a ramp. For a passive RC circuit driven by a square wave, the current is only approximately constant because output voltage also appears across the resistor.
+
+With an input alternating between +A and −A, and a half-period short compared with RC, the output has nearly constant slopes ±A/(RC). A periodic output centered around zero is approximately triangular.
+
+
+
+<div className="worked-example">
+
+
+<span className="tiny-label">WORKED EXAMPLE / SQUARE TO NEAR-TRIANGLE</span><h3>How large is the triangle?</h3>
+<p>Drive a circuit with RC = 1 ms using a ±1 V square wave at 10 kHz. Its period is 100 µs. Approximate slope magnitude is 1/1 ms = <strong>1,000 V/s</strong>.</p>
+<p>Over the 50 µs positive half-cycle, output rises by about 50 mV. Thus the periodic waveform is approximately <strong>50 mV peak-to-peak</strong>, or 25 mV peak around zero.</p>
+<p>The exact RC waveform has gently curved segments, not perfectly straight lines. Its peak magnitude is A tanh[T/(4RC)], which here is <strong>24.995 mV</strong>.</p>
+
+
+</div>
+
+
+
+
+
+<details className="derivation">
+
+
+<summary>Derive the exact square-wave peak</summary>
+
+
+<div>
+
+<p>In symmetric steady state, the positive half-cycle starts at −Vₚ and ends at +Vₚ. During that half-cycle, the source is +A and the duration is T/2:</p>
+<Equation tex="V_p=A+(-V_p-A)e^{-T/(2RC)}"/>
+<p>Collect the Vₚ terms and solve:</p>
+<Equation tex="V_p=A\frac{1-e^{-T/(2RC)}}{1+e^{-T/(2RC)}}=A\tanh\!\left(\frac{T}{4RC}\right)"/>
+<p>For a small argument, tanh(z) ≈ z, giving Vₚ ≈ AT/(4RC). A unipolar 0-to-A square wave has a DC component and a different midpoint; it must not be silently treated as ±A.</p>
+
+</div>
+
+
+
+
+</details>
+
+
+
+### A pulse represents area
+
+For a current pulse, voltage change depends on total charge, not merely its peak. A 10 µA current lasting 20 µs adds 200 pC. On 1 nF, that changes voltage by **0.2 V**.
+
+This makes integration useful in charge measurement and averaging. It also makes unwanted bias currents and offsets accumulate.
+
+
+</section>
+
+
+
+
+
+<section id="active">
+
+
+
+
+<div className="section-heading">
+
+<span>04</span><h2>An active integrator</h2>
+
+</div>
+
+
+
+An ideal inverting op-amp integrator has an input resistor and a feedback capacitor. With the summing node held approximately at zero by negative feedback, input current is vᵢₙ/R. Applying current continuity at that node gives:
+
+<Equation tex="\frac{dv_{\mathrm{out}}}{dt}=-\frac{v_{\mathrm{in}}}{RC}"/>
+<Equation tex="v_{\mathrm{out}}(t)=v_{\mathrm{out}}(t_0)-\frac{1}{RC}\int_{t_0}^{t}v_{\mathrm{in}}(u)\,du"/>
+
+The amplifier supplies the inversion and holds the input resistor’s far end near a fixed potential. This removes the passive integrator’s dependence on output voltage within the amplifier’s valid operating range.
+
+
+
+<div className="worked-example">
+
+
+<span className="tiny-label">WORKED EXAMPLE / AN OUTPUT RAMP</span><h3>How long before the output runs out of room?</h3>
+<p>With R = 10 kΩ and C = 100 nF, RC = 1 ms. A +0.1 V input makes the ideal output fall at <strong>100 V/s</strong>.</p>
+<p>Starting at 0 V, reaching an assumed −10 V output boundary takes <strong>100 ms</strong>. The integral equation is no longer valid beyond that boundary if the amplifier saturates.</p>
+<p>Even an unwanted equivalent DC input of +1 mV would produce a −1 V/s ramp. “Small” does not mean harmless when its effect accumulates.</p>
+
+
+</div>
+
+
+
+### Give DC a path
+
+A feedback resistor R_f in parallel with the capacitor makes a leaky integrator. For an ideal op-amp:
+
+<Equation tex="H(s)=-\frac{R_f/R}{1+sR_fC}"/>
+
+At DC it has finite gain −R_f/R. Well above 1/(2πR_fC), it approaches −1/(sRC), while the amplifier must still have enough loop gain and bandwidth.
+
+For R_f = 1 MΩ and C = 100 nF, that transition is about 1.59 Hz. This provides a controlled DC behavior, not a perfect integral down to zero frequency.
+
+
+</section>
+
+
+
+
+
+<section id="drift">
+
+
+
+
+<div className="section-heading">
+
+<span>05</span><h2>Initial conditions, drift, and reset</h2>
+
+</div>
+
+
+
+A capacitor’s starting voltage contributes directly to the output. A reset mechanism establishes an initial condition; a switch that resets a real capacitor can inject charge, leak, and require settling time. The mathematical act of setting an integral to zero has a physical implementation cost.
+
+Capacitor leakage, dielectric absorption, input bias current, and amplifier offset produce errors that may grow with time. For example, 10 nA of unwanted current into 100 nF changes voltage at **0.1 V/s**. Over a 200 ms hold, that is 20 mV.
+
+An integrator can suppress high-frequency content, but it does not automatically solve all noise problems. Low-frequency offsets and drift are especially important because of the long accumulation time.
+
+For an active circuit, check output swing, slew rate, input common-mode range, capacitor polarity and voltage, and closed-loop stability. These determine the interval and bandwidth over which the ideal derivation is useful.
+
+<p className="reference-note">Coverage: The Art of Electronics §1.4.4 with an idealized preview of active integrators. The next chapter develops the capacitor effects that make long integration and hold intervals difficult.</p>
+
+
+</section>
+
+
+
+
+
+<div className="chapter-end">
+
+
+
+<div>
+
+<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent practice with hints and fully worked solutions.</p>
+
+</div>
+
+<a className="primary-link" href="/integrators/practice/">Open practice →</a>
+
+</div>
+
+
+

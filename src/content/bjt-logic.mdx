@@ -1,0 +1,184 @@
+import Equation from '../components/Equation.astro';
+import {FeedbackGainLab,LoopStabilityLab,DegenerationLab,SupplyControlLab,TemperatureLab,LogicLab} from '../components/FeedbackLabs';
+import {FeedbackBlock,FeedbackAmpFigure,SupplyFigure,ThermalFigure,LogicFigure} from '../components/FeedbackFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 46</span><span className="hairline"/>TRANSISTORS / FEEDBACK & CONTROL</div>
+
+<h1>Simple BJT & diode logic<br/><em>Digital decisions still obey analog laws.</em></h1>
+
+<p className="dek">Derive diode gates, transistor inversion, RTL NOR and DTL NAND, then check current budgets, noise margins and switching.</p>
+
+<div className="chapter-meta"><span>60–90 min + exploration</span><span>Work through the examples at your own pace</span></div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Diode AND and OR → The transistor restores levels → RTL NOR and DTL NAND → Check truth and current together → Noise margin and fan-out → Speed, memory and practical uses.</p>
+
+</div>
+
+
+<section id="diodes">
+
+## 01 / Diode AND and OR
+
+A digital signal is a voltage interpreted as belonging to a LOW range or a HIGH range. Circuits still carry continuous currents, capacitances still charge, and transistor junctions still follow analog laws. A truth table describes intended decisions; it does not establish voltage margins or speed.
+
+For **positive logic**, a higher voltage represents logical 1. A diode OR gate has one diode from each input to a common output: each input connects to an anode, all cathodes join the output, and a resistor pulls output to ground. Any sufficiently high input can supply current and raise output.
+
+With fixed diode drop Vꜰ and high-impedance load:
+
+<Equation tex="V_{\mathrm{OR}}\approx\max(0,V_A-V_F,V_B-V_F)" />
+
+For 0/5 V inputs and 0.7 V diodes, any HIGH gives about 4.3 V. With both inputs LOW, the pull-down makes output near zero. Diodes stop a HIGH input from directly driving backward into a LOW input.
+
+A diode AND gate reverses the diodes and uses a pull-up resistor: diode anodes join the output, cathodes go to inputs. Any LOW input clamps output near that input plus one forward drop. Only when all inputs are HIGH can the pull-up raise output.
+
+<Equation tex="V_{\mathrm{AND}}\approx\min(V_{\mathrm{supply}},V_A+V_F,V_B+V_F)" />
+
+If a LOW driver sits at 0.2 V, the clamped AND output is about 0.9 V. That may not qualify as LOW for the next circuit. The diode gate performs the intended steering function but does not restore a clean rail-to-rail level.
+
+| A | B | OR | AND |
+| --- | --- | --- | --- |
+| 0 | 0 | 0 | 0 |
+| 0 | 1 | 1 | 0 |
+| 1 | 0 | 1 | 0 |
+| 1 | 1 | 1 | 1 |
+
+**Current example.** A 10 kΩ pull-up from 5 V to the diode-AND node supplies (5 − 0.9)/10 kΩ = 0.41 mA into the LOW input. The input driver must sink it. A diode does not make that current disappear.
+
+Cascading many passive diode gates accumulates voltage errors and loading. They have no power gain and no inversion. The transistor supplies the missing restoration.
+
+</section>
+
+<section id="inverter">
+
+## 02 / The transistor restores levels
+
+An NPN inverter uses an emitter at ground, collector resistor to +5 V, output at collector, and a resistor from input to base. A LOW input leaves it off; the collector pull-up raises output. A HIGH input drives collector current and pulls output LOW.
+
+For a 2.2 kΩ collector resistor and assumed saturated output 0.2 V:
+
+<Equation tex="I_C\approx\frac{5-0.2}{2.2\ \mathrm{k\Omega}}=2.18\ \mathrm{mA}" />
+
+With an assumed base drop of 0.7 V and an 18 kΩ input resistor, a 5 V input provides:
+
+<Equation tex="I_B\approx\frac{5-0.7}{18\ \mathrm{k\Omega}}=0.239\ \mathrm{mA},\qquad \beta_{\mathrm{forced}}=\frac{I_C}{I_B}\approx9.13" />
+
+The phrase **forced β** describes the collector/base current ratio demanded by the external circuit. It is not the transistor's forward-active β parameter. Designing with a lower forced ratio can help obtain a low saturation voltage, but the device's guaranteed test conditions still govern.
+
+When the transistor turns off, output is not an actively driven 5 V source. It is a pull-up resistor to 5 V. A resistive load can form a divider and lower the HIGH level; capacitance slows the rise.
+
+During the transition, the transistor can be forward-active and output can take any intermediate voltage. Restoration means the completed transfer has gain and tends toward useful LOW/HIGH ranges. It does not eliminate analog transition behavior.
+
+</section>
+
+<section id="gates">
+
+## 03 / RTL NOR and DTL NAND
+
+### RTL NOR: either transistor can pull down
+
+Put two NPN collector–emitter paths in parallel and give each base its own input resistor. Either HIGH input turns on a transistor and pulls the common output LOW. Output is HIGH only when both inputs are LOW: this is NOR.
+
+<LogicFigure kind="NOR" />
+
+The worst-case LOW current budget must work when only one transistor is on. Do not count on equal current sharing when both conduct. Each LOW input also needs a source that keeps its transistor reliably off.
+
+Two inverters can turn OR or AND functions into their complements; NAND and NOR are particularly useful because combinations of either can implement any Boolean function.
+
+### DTL NAND: diode steering followed by inversion
+
+Start with the diode-AND node X and use it to control an NPN inverter. Simply wiring a roughly 0.9 V clamped node to a base risks partial conduction. Add level-shifting diodes and a base pull-down so a LOW input reliably removes base drive.
+
+<LogicFigure kind="NAND" />
+
+Here a 10 kΩ resistor pulls X toward 5 V. Two input diodes have anodes at X and cathodes at A and B. Two forward level diodes and a 1 kΩ resistor connect X to the base; a 100 kΩ resistor discharges the base to ground.
+
+If either input is LOW at 0.2 V, X sits near 0.9 V. That is insufficient to sustain the assumed two level-diode drops plus a base–emitter drop. The base pull-down keeps the transistor off and output HIGH.
+
+If both inputs are HIGH, both input diodes are reverse-biased. Current flows through the 10 kΩ pull-up, the level diodes, the 1 kΩ base resistor and the base junction. Using three 0.7 V drops:
+
+<Equation tex="I_{\mathrm{path}}\approx\frac{5-3(0.7)}{10\ \mathrm{k\Omega}+1\ \mathrm{k\Omega}}=0.264\ \mathrm{mA}" />
+
+The base pull-down takes 0.7/100 kΩ = 7 µA, leaving about 0.257 mA base current. The output transistor turns on, giving LOW. That is NAND.
+
+| A | B | NOR output | NAND output |
+| --- | --- | --- | --- |
+| 0 | 0 | 1 | 1 |
+| 0 | 1 | 0 | 1 |
+| 1 | 0 | 0 | 1 |
+| 1 | 1 | 0 | 0 |
+
+The fixed-drop assumptions are for tracing current and first-pass sizing. Diode drops depend on current and temperature; a rigorous noise-margin design uses worst-case input/output transfer characteristics.
+
+</section>
+
+<section id="explore">
+
+## 04 / Check truth and current together
+
+<LogicLab client:load />
+
+Toggle inputs to verify the intended truth tables. Then increase the number of following DTL inputs. When this output is LOW, each downstream diode-AND node sends current into it. That extra current must be sunk along with its own collector-resistor current.
+
+The experiment separates a Boolean result from a verified electrical assumption. When its chosen forced-β budget fails, it stops presenting 0.2 V as an assured output level. The circuit may still work with a particular transistor, but the stated conservative calculation no longer proves it.
+
+These nominal component choices are useful for exposing loading, not optimized logic-family designs. Larger available base current, a weaker collector pull-up or lower downstream loading can improve the budget, with speed and power tradeoffs.
+
+</section>
+
+<section id="margins">
+
+## 05 / Noise margin and fan-out
+
+A compatible driver and receiver need their guaranteed voltage ranges to overlap correctly. Define Vᴏʜ(min) as the lowest guaranteed HIGH output, Vɪʜ(min) as the lowest recognized HIGH input, Vᴏʟ(max) as the highest guaranteed LOW output, and Vɪʟ(max) as the highest recognized LOW input.
+
+<Equation tex="NM_H=V_{OH,\min}-V_{IH,\min},\qquad NM_L=V_{IL,\max}-V_{OL,\max}" />
+
+If a hypothetical driver guarantees HIGH above 4.0 V and LOW below 0.3 V, while its receiver accepts HIGH above 2.8 V and LOW below 1.0 V, the nominal guaranteed margins are 1.2 V and 0.7 V. These are illustrative interface specifications, not claims for every BJT logic gate.
+
+Fan-out must satisfy both HIGH- and LOW-state loading. For the DTL example, each LOW input draws about 0.41 mA. At a forced-β target of ten, 0.257 mA base current supports about 2.57 mA collector current. Its own pull-up already requires 2.18 mA, leaving only about 0.39 mA—slightly less than one additional nominal DTL input.
+
+That result is not a paradox. The selected component values do not demonstrate a guaranteed one-gate fan-out under that particular conservative target. Redesign the current budget rather than hiding the result behind the truth table.
+
+For example, raising the output pull-up to 4.7 kΩ reduces its LOW current to about 1.02 mA. With the same base drive, roughly 1.55 mA remains for downstream inputs, enough for three at 0.41 mA each in the nominal calculation. The cost is a slower HIGH transition and greater HIGH-level sag under load.
+
+Actual HIGH-state loading, leakage, component tolerances, supply variation and temperature must be included before claiming guaranteed margins.
+
+</section>
+
+<section id="timing">
+
+## 06 / Speed, memory and practical uses
+
+When the transistor switches off, the collector pull-up charges output capacitance. A first approximation is:
+
+<Equation tex="v_o(t)=V_{CC}-(V_{CC}-V_{OL})e^{-t/(R_CC_L)}" />
+
+For 4.7 kΩ and 100 pF, τ = 470 ns. Starting from 0.2 V, reaching a 2.8 V HIGH threshold with a 5 V supply takes approximately:
+
+<Equation tex="t=-R_CC_L\ln\!\left(\frac{5-2.8}{5-0.2}\right)\approx367\ \mathrm{ns}" />
+
+This excludes transistor storage time, wiring inductance and input transition time. Driving a BJT deeply into saturation stores charge that must be removed before turn-off. More base current can improve the LOW level while worsening storage delay; fast switching design is not simply “drive harder.”
+
+A speed-up capacitor across a base resistor can briefly increase charging or discharging current, but it also loads the preceding stage and can create voltage excursions. A Schottky clamp can limit collector–base forward bias and reduce deep saturation in suitable circuits. Both require an actual switching analysis.
+
+Two cross-coupled NOR gates form an SR latch: each output feeds one input of the other. With both external inputs inactive, the circuit retains either state through positive feedback. One input sets, the other resets; asserting both creates the NOR latch's forbidden condition, and simultaneous release can be ambiguous. This is intentional positive feedback for memory, unlike the linear negative-feedback amplifiers studied earlier.
+
+Discrete diode/BJT logic remains useful for simple interlocks, signal inversion, level interfaces and “any fault pulls LOW” combining. An open-collector output can share a pull-up with other compatible open-collector outputs, but the resulting function depends on logic convention and every participant's voltage/current limits.
+
+Keep the analog questions beside the Boolean ones: who supplies or sinks current, what voltage counts as a valid state, how long does the transition take, and what happens when one circuit is unpowered? Answering those questions turns a logical diagram into an electrical design.
+
+</section>
+
+
+<div className="practice-home">
+
+<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and complete worked solutions.</p><a className="primary-link" href="/bjt-logic/practice/">Open practice →</a>
+
+</div>
+

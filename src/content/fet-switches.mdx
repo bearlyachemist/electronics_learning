@@ -1,0 +1,121 @@
+import Equation from '../components/Equation.astro';
+import {FetCurves,JfetBiasLab,FetGainLab,VariableFetLab,FetOscillatorLab,AnalogSwitchLab,GateChargeLab,PowerFetLab,ParallelFetLab} from '../components/FetLabs';
+import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 51</span><span className="hairline"/>FIELD-EFFECT TRANSISTORS</div>
+
+<h1>FETs as signal switches<br/><em>A switch is still an analog device.</em></h1>
+
+<p className="dek">Analyze JFET and MOS signal paths, transmission gates, sampling errors and bidirectional blocking. Connect device physics to the limits of an apparently simple on/off function.</p>
+
+<div className="chapter-meta"><span>60–90 min + exploration</span><span>Read, derive, predict, experiment</span></div>
+
+</div>
+
+
+<section id="ideal">
+
+## 01 / What a real switch adds
+
+An ideal closed switch has zero resistance; an open switch has zero leakage and capacitance. A FET approximates those conditions over a restricted range of voltage, frequency and current. Its on-resistance varies with signal voltage, its off-state passes displacement current, and moving its gate can inject charge into the signal path.
+
+If a switch with resistance RON feeds a resistive load RL from a stiff voltage source, the attenuation is:
+
+<Equation tex="\frac{V_o}{V_i}=\frac{R_L}{R_L+R_{ON}}" />
+
+With RON = 100 Ω and RL = 10 kΩ, the ratio is 0.9901, an error of about 0.99%. Into 1 MΩ the static error becomes only 0.01%, but the higher impedance makes leakage and charge injection more significant. There is no universally “negligible” switch resistance without a load and error budget.
+
+A capacitively loaded switch also needs time to settle. Fast digital control does not imply immediate analog accuracy.
+
+</section>
+
+<section id="jfet">
+
+## 02 / Turn off a normally-on JFET
+
+A JFET channel conducts at gate-source voltage near zero. A sufficiently negative gate voltage depletes the channel and turns it off. For a bidirectional signal path, compare the gate voltage with **both** channel terminals: the more negative terminal can become the effective source.
+
+Suppose a channel carries signals between −1 V and +1 V and the device's cutoff magnitude is at most 4 V under the relevant conditions. A −6 V off command gives at least −5 V gate-to-lowest-terminal voltage, providing nominal cutoff margin. A gate held at ground during the on state, however, becomes positive relative to a −1 V signal and can forward-bias a gate junction. That is not a valid symmetric analog switch arrangement.
+
+Possible solutions include constraining signals to a compatible positive range, making the on-state gate track the signal, or using an integrated switch whose internal circuitry is designed for the specified range. The drive network must keep junctions reverse biased in both states and avoid exceeding reverse gate ratings.
+
+A shunt mute is a useful topology: place the JFET channel between a low-amplitude signal node and a reference. On, it attenuates the signal through the upstream resistance; off, it leaves the node mostly undisturbed. With an upstream 10 kΩ resistor and a 100 Ω shunt channel, attenuation is approximately 100/10100 = 0.0099, about −40.1 dB. Loading by the next stage modifies this result. Smoothly changing the gate can reduce abrupt transients, but leakage and control feedthrough remain.
+
+</section>
+
+<section id="mos">
+
+## 03 / Why one MOS pass transistor loses a logic level
+
+An n-channel enhancement MOSFET conducts well when its gate is sufficiently above the lower-potential channel terminal. If its gate is fixed at VDD and it tries to charge an output capacitor toward VDD, its available VGS falls as the output rises. The current becomes weak near VDD − VT, with body effect often worsening the limitation. The final result depends on leakage and loading; “VDD − VT” is a useful strong-conduction boundary rather than an exact universal final voltage.
+
+A p-channel pass device has the complementary weakness near the low rail. Put n and p devices in parallel with complementary gate controls and obtain a **CMOS transmission gate**. The n device conducts best toward the low end of the signal range; the p device helps toward the high end. The body/well connections must be arranged for the intended supply range.
+
+This is why integrated analog switches specify signal range, supply voltages and on-resistance versus signal voltage. A digital-looking enable pin does not authorize input signals beyond the analog rails, particularly when the chip is unpowered.
+
+A single discrete power MOSFET can conduct through its channel in either direction when enhanced, but its intrinsic body diode permits one direction even with the gate off. For bidirectional off-state blocking, two MOSFETs are commonly placed back to back.
+
+<BackToBack />
+
+In the common-source arrangement shown, drive the joined gates relative to the joined sources. With both off, one body diode opposes either external current direction. With both on, channel resistances add. Two 20 mΩ devices give approximately 40 mΩ; at 5 A their combined conduction loss is 1 W before temperature adjustment. Gate ratings still apply during every external voltage condition.
+
+</section>
+
+<section id="sample">
+
+## 04 / Derive a sample-and-hold error budget
+
+During acquisition, a source resistance Rsrc and the switch's on-resistance charge a hold capacitor CH. For a voltage step from zero to V:
+
+<Equation tex="V_H(t)=V\left(1-e^{-t/\tau}\right),\qquad \tau=(R_{\mathrm{src}}+R_{ON})C_H" />
+<Equation tex="t_{\mathrm{settle}}\ge\tau\ln\!\left(\frac1\epsilon\right)" />
+
+With Rsrc = 1 kΩ, RON = 100 Ω and CH = 1 nF, τ = 1.1 μs. Settling to 0.1% requires 6.91τ = 7.60 μs. For a full-scale step and a 12-bit converter's half-LSB criterion, ε = 1/8192, requiring 9.01τ = 9.91 μs in this single-pole approximation. The source amplifier may impose further settling limits.
+
+Opening the switch can place some channel or gate-coupled charge on the capacitor:
+
+<Equation tex="\Delta V_H=\frac{Q_{\mathrm{injected}}}{C_H}" />
+
+An effective 5 pC delivered to 1 nF creates a 5 mV step. The partition of channel charge depends on impedances and timing, so use the relevant datasheet measurement or a suitable model rather than assigning all transistor channel charge to the hold node.
+
+During hold, total leakage from the switch, capacitor, board and buffer changes the voltage:
+
+<Equation tex="\left|\frac{dV_H}{dt}\right|=\frac{|I_{\mathrm{leak}}|}{C_H}" />
+
+At 10 pA and 1 nF, droop magnitude is 10 mV/s, or 100 μV over 10 ms. Increasing the capacitor helps both charge-injection error and droop, while increasing acquisition time. Thermal sampling noise adds an idealized RMS floor of √(kBT/CH), approximately 2.0 μV at 300 K for 1 nF. It is a random error, unlike a repeatable offset step.
+
+</section>
+
+<section id="explore">
+
+## 05 / Trade settling against hold quality
+
+<AnalogSwitchLab client:load />
+
+Try increasing CH by a factor of ten. Predict which two displayed errors decrease tenfold and which time grows tenfold. Next increase source resistance in your paper calculation: an excellent switch cannot fix a source that cannot charge the capacitor quickly enough.
+
+</section>
+
+<section id="applications">
+
+## 06 / Multiplexers, gain selection and logic
+
+A multiplexer connects one of several analog sources to a common node. Break-before-make timing avoids shorting two sources together, but creates a brief unconnected interval. The next channel must settle from the previous channel's voltage; charge sharing can produce a much larger transient than the desired signal change.
+
+A programmable-gain amplifier can switch resistors in a feedback network. Here switch resistance may directly perturb gain, and off-state capacitance can create a frequency-dependent path around a supposedly disconnected resistor. Put the switch in a low-sensitivity part of the network where possible, then derive the gain including RON rather than assuming it vanishes.
+
+CMOS logic uses a p-channel pull-up and n-channel pull-down. At a valid static input, one is off and the other restores the output to a supply rail. Dynamic power is approximately αCLVDD²f, where α counts charging events per clock cycle. During edges, overlap conduction and internal capacitances add loss. This restores voltage levels more effectively than an isolated pass transistor.
+
+For any switch application, follow the signal through all supply states. Off leakage, clamp conduction, diode paths and unpowered inputs are circuit behaviors, not exceptional cases outside the analysis.
+
+</section>
+
+
+<div className="practice-home">
+
+<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems, hints and complete worked solutions.</p><a className="primary-link" href="/fet-switches/practice/">Open practice →</a>
+
+</div>
+

@@ -1,0 +1,168 @@
+import Equation from '../components/Equation.astro';
+import {SwitchLab} from '../components/BjtLabs';
+import {TerminalsFigure} from '../components/Figures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 27</span><span className="hairline"/>FOUNDATIONS / BIPOLAR TRANSISTORS</div>
+
+<h1>The bipolar transistor & the switch<br/><em>A small current steers a large one.</em></h1>
+
+<p className="dek">State the four rules that govern a BJT, use the current-amplifier model to analyze any operating region, and design reliable saturated switches for lamps, LEDs, relays and logic.</p>
+
+<div className="chapter-meta"><span>50–60 min + exploration</span><span>Transistor physics · Diodes · Inductive loads</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">A 5 V logic pin can supply a few milliamps. How can it turn on a 12 V lamp that draws 100 mA?</p></div>
+
+<div>
+
+Chapter 26 showed that the base–emitter junction controls a collector current β times larger than the base current. That makes the transistor a current-controlled valve: a few milliamps into the base can control a hundred milliamps through the collector.
+
+This chapter treats the transistor at its simplest level—the model used by working designers for a first pass through almost every circuit. It is accurate enough for switches and bias calculations, and its shortcomings point directly to the refinements of later chapters.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Symbols and the four rules → The current-amplifier model → The saturated switch → Explore a switch → Switching circuits that work → Ratings, limits and β.</p>
+
+</div>
+
+<section id="rules">
+
+<div className="section-heading"><span>01</span><h2>Symbols and the four rules</h2></div>
+
+<TerminalsFigure/>
+
+For an NPN transistor, and with every polarity reversed for a PNP, the following rules describe normal operation:
+
+1. **Polarity.** The collector must be more positive than the emitter.
+2. **Junctions.** The base–emitter and base–collector circuits behave like diodes. Normally the base–emitter diode conducts and the base–collector diode is reverse-biased. A conducting base–emitter junction sits at V_BE ≈ 0.6–0.7 V; V_B ≈ V_E + 0.65 V is a good working value.
+3. **Ratings.** Every transistor has maximum values of collector current, base current, collector–emitter voltage, reverse emitter–base voltage and power dissipation that must not be exceeded.
+4. **Current gain.** When rules 1–3 are obeyed, the collector current is roughly proportional to the base current:
+
+<Equation tex="I_C=h_{FE}I_B=\beta I_B,\qquad I_E=I_C+I_B=(\beta+1)I_B,\qquad \alpha=\frac{I_C}{I_E}=\frac{\beta}{\beta+1}"/>
+
+Two warnings belong with rule 4. First, β (written h_FE on datasheets) is typically 100 but can be anywhere from about 50 to 500 for transistors of the same type, and it changes with current and temperature. A good circuit works for any β above some minimum. Second, rule 2 means the base–emitter junction must never be forward-biased by a voltage source without something to limit its current: it is a diode, and 0.9 V across it can mean amperes.
+
+Rule 4 also says what the transistor does *not* do. It does not make the collector current flow through a fixed resistance, and it does not create current: it lets the collector circuit draw up to β times the base current, provided the collector circuit can supply it.
+
+</section>
+
+<section id="model">
+
+<div className="section-heading"><span>02</span><h2>The current-amplifier model</h2></div>
+
+Analyze any single-transistor circuit with three questions. Is the base–emitter junction on? If so, what base current flows? Can the collector circuit actually carry β times that current?
+
+Suppose a transistor with β = 150 carries 3 mA of emitter current. Then I_B = 3 mA/151 = 19.9 µA, I_C = 2.98 mA and α = 0.9934. In most calculations I_C ≈ I_E within 1%.
+
+### The three regions in circuit terms
+
+- **Cutoff.** If the base–emitter voltage is below about 0.5 V, essentially no base current flows and no collector current flows. The transistor is an open switch.
+- **Active.** With the base–emitter junction conducting and the collector circuit able to supply βI_B while keeping V_C above V_B, I_C = βI_B. The collector behaves like a current source controlled by the base.
+- **Saturation.** If βI_B is more than the collector circuit can deliver, the collector voltage falls until the base–collector junction also conducts. The collector current is then set by the external circuit, not by β, and V_CE falls to a small value, V_CE(sat), typically 0.05–0.2 V for a small transistor. The transistor is a closed switch.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / WHICH REGION?</span><h3>A collector resistor of 1 kΩ to 10 V</h3>
+
+<p>The most the collector circuit can deliver is about (10 − 0.2)/1 kΩ = 9.8 mA. With β = 100 and I_B = 50 µA, βI_B = 5 mA is less than that, so the transistor is active: V_CE = 10 − 5 = 5 V.</p>
+
+<p>With I_B = 200 µA, βI_B = 20 mA exceeds 9.8 mA. The transistor saturates; I_C ≈ 9.8 mA and V_CE ≈ 0.2 V. The ratio of available βI_B to actual I_C—here about 2—is the <strong>overdrive</strong>. The “forced β” I_C/I_B = 49 is less than the transistor’s β.</p>
+
+</div>
+
+</section>
+
+<section id="switch">
+
+<div className="section-heading"><span>03</span><h2>The saturated switch</h2></div>
+
+In a switch the transistor should be either fully off (cutoff) or fully on (saturation). In between, both the voltage across it and the current through it are significant and it dissipates power.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / THE OPENING QUESTION</span><h3>A 12 V, 100 mA lamp from a 5 V logic output</h3>
+
+<p>The collector current will be 100 mA, set by the lamp. Design for saturation with generous overdrive: aim for a base current of one tenth of the collector current, 10 mA, which works for any transistor with β above 10 (and quickly, see below).</p>
+
+<p>The base resistor drops 5 − 0.7 = 4.3 V at 10 mA: R_B = <strong>430 Ω</strong>. In saturation the transistor dissipates about 0.2 V × 100 mA = <strong>20 mW</strong>, while the lamp receives 1.18 W. Off, a pulled-down base passes only leakage.</p>
+
+</div>
+
+Why overdrive by a factor of five to ten rather than just enough? β has a wide spread and falls at high current and low temperature. A tungsten filament draws several times its rated current when cold, so the switch must stay saturated during that inrush. Extra base charge also turns the transistor on faster. The price is a slower turn-off—the excess stored charge must be removed (Chapter 26)—and wasted base current.
+
+**Turn-off and the base pull-down.** A resistor from base to emitter (a few kilohms to tens of kilohms) gives stored charge and leakage a path out of the base and keeps the transistor off if the driver goes high-impedance. A small capacitor across R_B, a “speed-up capacitor,” delivers a burst of base current at each edge for faster switching.
+
+**Inductive loads.** A relay or solenoid in the collector will produce a large voltage when the switch opens. A flywheel diode across the winding (Chapter 17) is not optional: without it, the collector voltage can exceed V_CEO and destroy the transistor.
+
+</section>
+
+<section id="explore">
+
+<div className="section-heading"><span>04</span><h2>Explore a switch</h2></div>
+
+The lab draws the transistor’s output characteristics in the first model: horizontal lines I_C = βI_B, each ending in a vertical drop at V_CE(sat). The resistor’s current must lie on the **load line**, from V_CC/R_C at V_CE = 0 to zero current at V_CE = V_CC. The operating point is where the transistor curve for the present base current crosses the load line.
+
+<SwitchLab client:load/>
+
+<p className="caption">Figure 1. A saturated switch in the first transistor model. Saturation occurs when the horizontal line for the present base current lies above the load line’s top end.</p>
+
+</section>
+
+<section id="examples">
+
+<div className="section-heading"><span>05</span><h2>Switching circuits that work</h2></div>
+
+### An LED from a logic pin
+
+A 2.0 V LED at 15 mA from 5 V with V_CE(sat) = 0.15 V needs R_C = (5 − 2 − 0.15)/15 mA = 190 Ω; a standard 180 Ω gives 15.8 mA. For a transistor with minimum β of 100 and fivefold overdrive, the base current is 0.75 mA and R_B = (5 − 0.7)/0.75 mA ≈ 5.7 kΩ: a 5.6 kΩ part. The logic pin supplies under a milliamp.
+
+### A relay driver
+
+The relay coil sits in the collector with a diode across it, cathode to the supply. Size the base current for the coil current with overdrive, and add a base–emitter pull-down. If the relay must release quickly, use a diode in series with a zener as the clamp (Chapter 17).
+
+### A transistor inverter
+
+With a 10 kΩ collector resistor to 5 V and a 22 kΩ base resistor, a low input leaves the transistor off and the output high (through 10 kΩ); a high input saturates it and pulls the output to about 0.1 V. Early logic families were built this way. The output is weak when high—it can supply only (5 − V)/10 kΩ—and the stored charge makes it slow to rise.
+
+### Switching the high side with a PNP
+
+To switch a grounded load from a positive supply, put a PNP transistor between the supply and the load, emitter at the supply. It turns on when its base is pulled about 0.7 V below the emitter, and off when the base is pulled up to the emitter. A small NPN with its collector on the PNP’s base does the level translation from logic. A resistor from PNP base to emitter guarantees turn-off. For a 0.5 A load and minimum β of 50 with twofold overdrive, the PNP needs 20 mA of base current, so the base resistor is (12 − 0.8 − 0.1)/20 mA ≈ 560 Ω—and dissipates 0.22 W, a reminder to check resistor power ratings in drive circuits.
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Ratings, limits and β</h2></div>
+
+A datasheet for a small-signal NPN such as the 2N3904 lists maxima that are easy to violate:
+
+- **V_CEO**, the collector–emitter breakdown with the base open (40 V for that part). With a base–emitter resistor the usable voltage is somewhat higher, but inductive spikes ignore such subtleties.
+- **V_EBO**, the reverse emitter–base breakdown, often only about **6 V**. Reverse-biasing the base–emitter junction beyond it causes avalanche current that permanently degrades β even if the transistor survives. It is easy to do by accident, for example when an emitter follower drives a large capacitor and its base is suddenly pulled down (Chapter 28).
+- **I_C** maximum (200 mA) and **power dissipation**, which depends on the package and copper. In a switch that spends time in the active region during each transition, or in a linear stage, compute V_CE × I_C.
+
+Datasheets give h_FE as a range at stated conditions (100–300 at 10 mA for the 2N3904). The small-signal current gain h_fe is the slope dI_C/dI_B, slightly different from the ratio h_FE; for design purposes treat both as “large, uncertain β.”
+
+Finally, a common misconception: a saturated transistor is not a resistor whose value is set by the base current, and an active transistor is not a variable resistor. In the active region it is a current source; in saturation its voltage, not its resistance, is approximately fixed.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Ask three questions: is the base–emitter junction on, how much base current flows, and can the collector circuit take β times that? <em>Design switches with overdrive</em>, so the answer never depends on β.</p></div>
+
+<p className="reference-note">Coverage: The Art of Electronics §§2.1–2.2.2. The first model ignores the Ebers–Moll exponential law and the Early effect; Chapters 30 and 34 restore them.</p>
+
+</section>
+
+<div className="chapter-end">
+
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p></div>
+
+<a className="primary-link" href="/bjt/practice/">Open practice →</a>
+
+</div>

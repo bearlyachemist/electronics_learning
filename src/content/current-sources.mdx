@@ -1,0 +1,142 @@
+import Equation from '../components/Equation.astro';
+import {CurrentSourceLab} from '../components/BjtLabs';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 31</span><span className="hairline"/>FOUNDATIONS / BIPOLAR TRANSISTORS</div>
+
+<h1>Transistor current sources<br/><em>Fix the current, let the voltage float.</em></h1>
+
+<p className="dek">Turn the emitter follower into a current source, find its compliance and output resistance, understand what limits its accuracy, and use it to bias, charge and drive.</p>
+
+<div className="chapter-meta"><span>45–55 min + exploration</span><span>Emitter follower · Small-signal model · Early effect</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">How do you push exactly 1 mA through a load whose resistance you do not know and that keeps changing?</p></div>
+
+<div>
+
+A voltage source holds its voltage whatever current is drawn. Its counterpart, a **current source**, holds its current whatever voltage is needed. Chapter 2 treated ideal current sources as circuit elements; real circuits need a way to build one.
+
+The crude method is a large resistor from a large voltage: 15 V through 10 kΩ gives 1.5 mA into a short but only 1.36 mA into 1 kΩ, a 9% change. A transistor does far better, because its collector current depends on the base–emitter voltage and hardly at all on the collector voltage—the property derived in Chapter 26.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>From follower to current source → Compliance → Explore a current source → What limits accuracy → Setting the base voltage → Uses of current sources.</p>
+
+</div>
+
+<section id="idea">
+
+<div className="section-heading"><span>01</span><h2>From follower to current source</h2></div>
+
+Hold the base of an NPN transistor at a fixed voltage V_B, put a resistor R_E from the emitter to ground, and connect the load between the supply and the collector. The emitter follows the base, so the emitter voltage is fixed at V_B − 0.65 V, and so is the emitter current:
+
+<Equation tex="I_E=\frac{V_B-V_{BE}}{R_E},\qquad I_C=\alpha I_E\approx I_E" label="TRANSISTOR CURRENT SOURCE"/>
+
+Nothing in that expression mentions the load. The collector current is fixed by V_B and R_E, so the collector **sinks** a constant current from whatever is connected to it. With V_B = 1.65 V and R_E = 1 kΩ, the current is 1 mA into a short, into 5 kΩ, or into 10 kΩ.
+
+A PNP version, with emitter resistor to the positive supply and the base held a fixed voltage below it, **sources** current into a grounded load.
+
+</section>
+
+<section id="compliance">
+
+<div className="section-heading"><span>02</span><h2>Compliance</h2></div>
+
+The transistor can only maintain the current while it stays in the active region. As the load resistance grows, the load drops more voltage and the collector falls toward the emitter. When V_CE reaches a few tenths of a volt, the transistor saturates and the current falls. The range of collector voltage over which the source works is its **compliance**:
+
+<Equation tex="V_E+V_{CE(\mathrm{sat})}\ \lesssim\ V_C\ \le\ V_{CC},\qquad R_{L,\max}\approx\frac{V_{CC}-V_E-0.2\ \mathrm V}{I_C}"/>
+
+For a 15 V supply, V_E = 1 V and 1 mA, the source works into loads up to about 13.8 kΩ. A larger V_B gives more current from the same R_E but raises V_E, reducing compliance. Choosing V_E around a volt balances stability (Chapter 29) against compliance.
+
+</section>
+
+<section id="explore">
+
+<div className="section-heading"><span>03</span><h2>Explore a current source</h2></div>
+
+<CurrentSourceLab client:load/>
+
+<p className="caption">Figure 1. Ebers–Moll transistor with an ideal base voltage source. The flat region is the compliance range; the knee is the onset of saturation.</p>
+
+</section>
+
+<section id="accuracy">
+
+<div className="section-heading"><span>04</span><h2>What limits accuracy</h2></div>
+
+Four effects make a real transistor current source less than perfect.
+
+**V_BE depends on temperature.** At −2.1 mV/°C, a source with V_E = 1 V changes current by about +0.21%/°C. A larger V_E reduces the sensitivity; compensating the base voltage with a diode drop (section 05) cancels much of it.
+
+**V_BE depends on current.** It changes by about 60 mV per decade of current (Chapter 34). In this circuit that is the same feedback effect that makes the source stable, and it matters only when V_E is small.
+
+**α depends on β.** The collector current is α times the emitter current. β = 100 gives α = 0.990; β = 300 gives 0.9967: a 0.7% difference between transistors. Base current also loads the base voltage source unless that source is stiff.
+
+**The Early effect.** Collector current rises slowly with V_CE (Chapter 26). In a plain transistor with a grounded emitter, the output resistance is only r_o = V_A/I_C—50 kΩ for V_A = 50 V at 1 mA. The emitter resistor improves it enormously. If the collector current tries to rise, the emitter voltage rises with it, reducing V_BE and correcting the current. The small-signal analysis gives:
+
+<Equation tex="R_{\mathrm{out}}\approx r_o\left[1+g_m\left(R_E\parallel r_\pi\right)\right]\qquad(\text{at most about }\beta r_o)" label="DEGENERATED OUTPUT RESISTANCE"/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / HOW CONSTANT IS CONSTANT?</span><h3>1 mA, R_E = 1 kΩ, V_A = 50 V, β = 100</h3>
+
+<p>r_o = 50 kΩ, g_m = 38.7 mS, r_π = 2.59 kΩ. R_E ∥ r_π = 721 Ω, so the bracket is 1 + 27.9 and R_out ≈ <strong>1.45 MΩ</strong>, nearly thirty times r_o.</p>
+
+<p>The Ebers–Moll model in the lab agrees: changing the load from a short to 10 kΩ (V_CE from 14 V to 4.1 V) changes the current from 0.9936 mA to 0.9880 mA, only 0.56%, equivalent to about 1.7 MΩ over that range. The 10 kΩ resistor-and-15 V “source” would have changed by 50%.</p>
+
+</div>
+
+Even better sources use two transistors so that the collector voltage of the current-setting transistor does not change at all (the cascode, a later topic), or a feedback loop with an op-amp.
+
+</section>
+
+<section id="base">
+
+<div className="section-heading"><span>05</span><h2>Setting the base voltage</h2></div>
+
+The base needs a voltage that is stable and stiff compared with the base current.
+
+- **A resistive divider** is simplest. Make it stiff (R_TH ≪ (β + 1)R_E) and accept that the current follows the supply voltage.
+- **A zener** gives a base voltage independent of the supply. Bias the zener with a current that comfortably exceeds the base current.
+- **A diode plus divider**: put a forward-biased diode in series with the bottom resistor of the divider. Its forward voltage falls with temperature at roughly the same rate as V_BE, so the emitter voltage, and hence the current, becomes nearly temperature-independent.
+- **An LED** is a convenient 1.6–2 V reference with a temperature coefficient similar to V_BE’s.
+- **Another transistor** with the same V_BE: the current mirror, introduced with the Ebers–Moll model in Chapter 34.
+
+</section>
+
+<section id="uses">
+
+<div className="section-heading"><span>06</span><h2>Uses of current sources</h2></div>
+
+**Linear ramps.** A constant current into a capacitor produces a straight-line voltage, dV/dt = I/C (Chapter 5): 1 mA into 1 µF ramps at 1 V/ms. Sawtooth generators and timers use this.
+
+**LED strings.** An LED’s brightness follows its current, and its forward voltage varies with temperature and from part to part. A current source keeps the brightness constant across supply and LED variations—within compliance.
+
+**Biasing other stages.** A current source in the emitter of an amplifier stage, or in place of a collector resistor, sets the operating current while presenting a high impedance to signals. The differential amplifier and high-gain stages of later chapters depend on this.
+
+**Better zener regulators.** Feeding a zener from a current source instead of a resistor removes most of its sensitivity to input ripple, because the zener current no longer follows the input voltage.
+
+**Sensing and transmission.** The 4–20 mA current loop of industrial instrumentation transmits a measurement as a current, so wiring resistance and connection voltage drops do not change the signal—within the source’s compliance.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Fix the emitter voltage and you fix the collector current. The <em>emitter resistor</em> sets the value and multiplies the output resistance; <em>compliance</em> sets how much voltage the load may use.</p></div>
+
+<p className="reference-note">Coverage: The Art of Electronics §2.2.6, with the output-resistance analysis from §2.3. Current mirrors follow in Chapter 34.</p>
+
+</section>
+
+<div className="chapter-end">
+
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p></div>
+
+<a className="primary-link" href="/current-sources/practice/">Open practice →</a>
+
+</div>

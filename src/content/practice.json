@@ -1,0 +1,2716 @@
+{
+ "thevenin": [
+  {
+   "tag": "PORT REDUCTION",
+   "title": "Replace a divider",
+   "prompt": "A 15 V ideal source feeds a 3 kΩ resistor above the output and a 6 kΩ resistor from output to ground. Find the Thévenin equivalent seen by an external load. Then connect an 8 kΩ load and find its voltage and current.",
+   "hint": "Remove only the external load. For resistance, replace the independent ideal voltage source by a short.",
+   "solution": [
+    {
+     "tex": "V_{\\mathrm{th}}=15\\frac{6}{3+6}=10\\ \\mathrm V,\\qquad R_{\\mathrm{th}}=3\\parallel6=2\\ \\mathrm{k\\Omega}"
+    },
+    {
+     "text": "The 6 kΩ resistor is part of the source network, so it stays in the calculation."
+    },
+    {
+     "tex": "I_L=\\frac{10}{2\\,000+8\\,000}=1\\ \\mathrm{mA},\\qquad V_L=8\\ \\mathrm V"
+    },
+    {
+     "text": "Check directly: the lower combination is 6 kΩ ∥ 8 kΩ = 3.4286 kΩ. Dividing 15 V with 3 kΩ above that combination also gives 8 V."
+    }
+   ]
+  },
+  {
+   "tag": "TWO-SOURCE NETWORK",
+   "title": "A negative branch current",
+   "prompt": "Two sources share ground. The output is connected to a 5 V source through 1 kΩ and to a 1 V source through 3 kΩ. Find the equivalent, then the output with a 750 Ω load. Find both source-branch currents, positive toward the output.",
+   "hint": "Use the conductance-weighted average for the open-circuit voltage. A negative branch current means the ideal source absorbs current.",
+   "solution": [
+    {
+     "tex": "V_{\\mathrm{th}}=\\frac{5/1000+1/3000}{1/1000+1/3000}=4\\ \\mathrm V,\\qquad R_{\\mathrm{th}}=750\\ \\Omega"
+    },
+    {
+     "text": "The equal 750 Ω source and load resistances divide 4 V in half, giving <strong>2 V</strong> and <strong>2.667 mA</strong> in the load."
+    },
+    {
+     "text": "The 5 V branch supplies (5 − 2)/1 kΩ = <strong>3 mA</strong>. The 1 V branch contributes (1 − 2)/3 kΩ = <strong>−0.333 mA</strong>. Their sum is the load current. Negative current here is consistent with the ideal source model; a real supply may not support it."
+    }
+   ]
+  },
+  {
+   "tag": "DEPENDENT SOURCE",
+   "title": "Measure the slope with a test source",
+   "prompt": "After independent sources are deactivated, a port has a 1 kΩ resistor to ground and a parallel dependent source injecting 0.6Vₜ/(1 kΩ) upward from ground into the port. Find its resistance using a 2 V test source. Explain why you must not remove the dependent source.",
+   "hint": "The resistor draws current while the dependent source supplies part of it. The test source supplies the difference.",
+   "solution": [
+    {
+     "tex": "I_t=\\frac{2}{1000}-0.6\\frac{2}{1000}=0.8\\ \\mathrm{mA}"
+    },
+    {
+     "tex": "R_{\\mathrm{th}}=\\frac{2}{0.0008}=2.5\\ \\mathrm{k\\Omega}"
+    },
+    {
+     "text": "The dependent source responds to the port voltage and changes the slope of the port relationship. Removing it would change the network and incorrectly produce 1 kΩ. The test current is defined entering the network."
+    }
+   ]
+  },
+  {
+   "tag": "POWER TRANSFER",
+   "title": "Power or voltage accuracy?",
+   "prompt": "An ideal Thévenin model has Vₜₕ = 6 V and Rₜₕ = 200 Ω. Which resistive load receives maximum power, and how much? Compare its output voltage and model efficiency with a 1.8 kΩ load.",
+   "hint": "Maximum power occurs at Rₗ = Rₜₕ for positive real resistances. Model efficiency is load power divided by the ideal source’s delivered power.",
+   "solution": [
+    {
+     "tex": "R_L=200\\ \\Omega,\\qquad P_{\\max}=\\frac{6^2}{4(200)}=45\\ \\mathrm{mW}"
+    },
+    {
+     "text": "At this load, current is 15 mA and output is 3 V. The series resistance also dissipates 45 mW; efficiency is <strong>50%</strong>."
+    },
+    {
+     "text": "With 1.8 kΩ, current is 6/2000 = <strong>3 mA</strong> and output is <strong>5.4 V</strong>. Load power is 16.2 mW and source-resistance loss is 1.8 mW, giving <strong>90%</strong> efficiency for the equivalent model."
+    },
+    {
+     "text": "The larger load receives less absolute power but loses a smaller fraction of source voltage. Internal losses in a more complex original network are not necessarily represented by this efficiency."
+    }
+   ]
+  }
+ ],
+ "small-signal": [
+  {
+   "tag": "RATIO VERSUS SLOPE",
+   "title": "Two answers, two questions",
+   "prompt": "A diode is biased at 0.62 V and 1 mA. Near that point, assume an exponential model with n = 2, Vₜ = 25.85 mV, and negligible Iₛ compared with bias current. Find its DC ratio, differential resistance, and predicted voltage change for a +20 µA current change.",
+   "hint": "The DC ratio uses the full voltage and current. The differential resistance is nVₜ/IQ.",
+   "solution": [
+    {
+     "tex": "R_{\\mathrm{DC}}=\\frac{0.62}{0.001}=620\\ \\Omega,\\qquad r_d=\\frac{2(0.02585)}{0.001}=51.7\\ \\Omega"
+    },
+    {
+     "text": "The linear voltage change is 51.7 Ω × 20 µA = <strong>1.034 mV</strong>. The exponential-model result is 51.7 mV × ln(1.02) = <strong>1.0238 mV</strong>. The values are close because the current changes by only 2%."
+    },
+    {
+     "text": "Using the DC ratio would give 12.4 mV, which answers the wrong local question. The specified forward voltage sets the DC ratio; it need not equal that of the chapter’s particular saturation-current example."
+    }
+   ]
+  },
+  {
+   "tag": "INCREMENTAL CIRCUIT",
+   "title": "A signal across a biased diode",
+   "prompt": "A diode with n = 1 is biased at 0.5 mA at 300 K. A source drives it through 2 kΩ. For a +5 mV source perturbation, estimate the diode’s voltage and current changes using the local model.",
+   "hint": "Find r_d, then use the series combination 2 kΩ + r_d. The signal across the diode is smaller than the source signal.",
+   "solution": [
+    {
+     "tex": "r_d=\\frac{25.85\\ \\mathrm{mV}}{0.5\\ \\mathrm{mA}}=51.7\\ \\Omega"
+    },
+    {
+     "tex": "i=\\frac{5\\ \\mathrm{mV}}{2051.7\\ \\Omega}=2.437\\ \\mathrm{\\mu A}"
+    },
+    {
+     "tex": "v_d=i r_d=0.1260\\ \\mathrm{mV}"
+    },
+    {
+     "text": "The total current is approximately <strong>0.502437 mA</strong>. The diode’s local voltage excursion is only about 0.00487Vₜ, so curvature is small in this example."
+    }
+   ]
+  },
+  {
+   "tag": "LINEARIZATION LIMIT",
+   "title": "Positive and negative are not symmetric",
+   "prompt": "For a 1 mA diode bias with n = 1 and Vₜ = 25.85 mV, compare the linear and exponential current changes for voltage perturbations of +10 mV and −10 mV. Neglect Iₛ relative to bias current.",
+   "hint": "The linear estimate is IQ·v/Vₜ. The exact change is IQ[exp(v/Vₜ) − 1].",
+   "solution": [
+    {
+     "tex": "i_{\\mathrm{linear}}=\\pm 1\\ \\mathrm{mA}\\frac{10}{25.85}=\\pm0.38685\\ \\mathrm{mA}"
+    },
+    {
+     "text": "The exponential changes are <strong>+0.47233 mA</strong> and <strong>−0.32081 mA</strong>. Total currents become 1.47233 mA and 0.67919 mA respectively."
+    },
+    {
+     "text": "The tangent predicts symmetric changes. The curved exponential does not: increasing voltage makes the slope steeper, while decreasing it makes the slope shallower. A negative change does not imply negative total diode current."
+    }
+   ]
+  },
+  {
+   "tag": "GENERAL NONLINEAR DEVICE",
+   "title": "Read a slope without a diode formula",
+   "prompt": "Near VQ = 0.5 V, a device follows I(V) = 0.001 + 0.004(V − 0.5) + 0.02(V − 0.5)², with volts and amperes used consistently. Find its bias current, DC ratio, and small-signal resistance. For a +10 mV change, compare the exact and linear current changes.",
+   "hint": "Differentiate with respect to V and evaluate at 0.5 V. The quadratic term affects a finite change even though its derivative is zero at Q.",
+   "solution": [
+    {
+     "tex": "I_Q=1\\ \\mathrm{mA},\\qquad R_{\\mathrm{DC}}=500\\ \\Omega"
+    },
+    {
+     "tex": "\\left.\\frac{dI}{dV}\\right|_Q=0.004\\ \\mathrm S,\\qquad r_d=250\\ \\Omega"
+    },
+    {
+     "text": "The linear current change is 0.004 × 0.01 = <strong>40 µA</strong>. The quadratic term adds 0.02 × 0.01² = <strong>2 µA</strong>, giving an exact change of <strong>42 µA</strong>."
+    },
+    {
+     "text": "Relative to the exact change, the linear estimate is low by 2/42 = <strong>4.76%</strong>. The coefficients carry the units needed for current: 0.004 A/V and 0.02 A/V²."
+    }
+   ]
+  }
+ ],
+ "power": [
+  {
+   "tag": "WORST-CASE DISSIPATION",
+   "title": "A nominal quarter watt",
+   "prompt": "An exact 9 V is applied across a nominal 330 Ω resistor with ±5% tolerance. Find nominal current and power, then worst-case power. Does a 0.25 W rating provide enough capacity even before temperature derating?",
+   "hint": "With voltage fixed, lower resistance causes higher dissipation.",
+   "solution": [
+    {
+     "tex": "I_{\\mathrm{nom}}=\\frac{9}{330}=27.27\\ \\mathrm{mA},\\qquad P_{\\mathrm{nom}}=\\frac{81}{330}=0.24545\\ \\mathrm W"
+    },
+    {
+     "tex": "R_{\\min}=313.5\\ \\Omega,\\qquad P_{\\max}=\\frac{81}{313.5}=0.25837\\ \\mathrm W"
+    },
+    {
+     "text": "No. The worst-case dissipation exceeds 0.25 W even before mounting conditions and ambient-temperature derating are considered. Nominal arithmetic alone nearly hides the problem."
+    }
+   ]
+  },
+  {
+   "tag": "PULSED POWER",
+   "title": "Average is not the whole story",
+   "prompt": "A 220 Ω resistor carries 100 mA for 2 ms every 20 ms, and no current otherwise. Find peak power, average power, RMS current, and energy per pulse. Is a 0.25 W continuous rating alone enough to approve the part?",
+   "hint": "Duty cycle is 0.1. RMS current is peak current times the square root of duty cycle for these rectangular pulses.",
+   "solution": [
+    {
+     "tex": "P_{\\mathrm{peak}}=(0.1)^2(220)=2.2\\ \\mathrm W"
+    },
+    {
+     "tex": "P_{\\mathrm{avg}}=0.22\\ \\mathrm W,\\qquad I_{\\mathrm{rms}}=31.62\\ \\mathrm{mA}"
+    },
+    {
+     "tex": "E_{\\mathrm{pulse}}=2.2(0.002)=4.4\\ \\mathrm{mJ}"
+    },
+    {
+     "text": "No. Average dissipation is below 0.25 W under nominal conditions, but the resistor also sees 2.2 W and 22 V during each pulse. Check pulse-energy/duration and repetition limits, working voltage, tolerance, and thermal derating for the actual part."
+    }
+   ]
+  },
+  {
+   "tag": "THERMAL TRANSIENT",
+   "title": "A warm-up in two numbers",
+   "prompt": "A one-node thermal model starts at 35 °C ambient. Constant dissipation is 0.4 W, Rθ = 80 °C/W, and Cθ = 3 J/°C. Find its final temperature, time constant, and temperature after one and three time constants.",
+   "hint": "Find the final temperature rise first. Multiply the rise by 1 − exp(−t/τ), then add ambient.",
+   "solution": [
+    {
+     "tex": "\\Delta T_\\infty=0.4(80)=32\\,^\\circ\\mathrm C,\\qquad T_\\infty=67\\,^\\circ\\mathrm C"
+    },
+    {
+     "tex": "\\tau=80(3)=240\\ \\mathrm s"
+    },
+    {
+     "text": "After 240 s: 35 + 32(1 − e⁻¹) = <strong>55.23 °C</strong>. After 720 s: 35 + 32(1 − e⁻³) = <strong>65.41 °C</strong>."
+    },
+    {
+     "text": "Doubling thermal capacitance doubles both times but leaves the final temperature unchanged. This assumes constant power and thermal parameters."
+    }
+   ]
+  },
+  {
+   "tag": "THERMAL DESIGN BUDGET",
+   "title": "A regulator’s missing constraint",
+   "prompt": "A linear regulator converts 9 V to 3.3 V at 150 mA. Ignore quiescent current. Local ambient may reach 60 °C, and the design junction-temperature target is 105 °C. Find the largest allowed effective thermal resistance. If the actual system provides 70 °C/W, find the predicted temperature and maximum current meeting the target.",
+   "hint": "Dissipation is voltage drop times load current. Solve the thermal equation once for resistance and once for current.",
+   "solution": [
+    {
+     "tex": "P=(9-3.3)(0.15)=0.855\\ \\mathrm W"
+    },
+    {
+     "tex": "R_{\\theta,\\max}=\\frac{105-60}{0.855}=52.63\\,^\\circ\\mathrm C/\\mathrm W"
+    },
+    {
+     "text": "At 70 °C/W the predicted junction temperature is 60 + 0.855 × 70 = <strong>119.85 °C</strong>, above the target."
+    },
+    {
+     "tex": "I_{\\max}=\\frac{105-60}{70(9-3.3)}=0.11278\\ \\mathrm A"
+    },
+    {
+     "text": "The simplified model permits about <strong>112.8 mA</strong>. This is a thermal-model result, not a replacement for the regulator’s electrical limits, transient requirements, or validated board thermal behavior."
+    }
+   ]
+  }
+ ],
+ "capacitors": [
+  {
+   "tag": "CHARGE AND ENERGY",
+   "title": "A pulse on a precharged capacitor",
+   "prompt": "A 22 µF ideal capacitor starts at 1 V. A +0.5 mA current enters its positive terminal for 44 ms. Find final voltage, final plate charge, and the increase in stored energy.",
+   "hint": "Find added charge first, then use the difference between final and initial energies.",
+   "solution": [
+    {
+     "tex": "\\Delta Q=0.5\\ \\mathrm{mA}\\times44\\ \\mathrm{ms}=22\\ \\mathrm{\\mu C}"
+    },
+    {
+     "text": "Voltage rises by 22 µC/22 µF = <strong>1 V</strong>, so final voltage is <strong>2 V</strong>. Final signed plate charge is <strong>44 µC</strong>."
+    },
+    {
+     "tex": "\\Delta W=\\tfrac12(22\\ \\mathrm{\\mu F})(2^2-1^2)=33\\ \\mathrm{\\mu J}"
+    },
+    {
+     "text": "Final stored energy is 44 µJ; initial stored energy was 11 µJ. Do not use ½C(ΔV)² for the energy change."
+    }
+   ]
+  },
+  {
+   "tag": "CHARGE SHARING",
+   "title": "Where did the stored energy go?",
+   "prompt": "An isolated 10 µF capacitor at 6 V is connected in parallel with a 20 µF capacitor at 0 V, with matching polarity. Find the final voltage and the decrease in capacitor energy after settling.",
+   "hint": "Total signed charge is conserved. Total capacitance after connection is 30 µF.",
+   "solution": [
+    {
+     "tex": "V_f=\\frac{10(6)+20(0)}{10+20}=2\\ \\mathrm V"
+    },
+    {
+     "text": "Initial energy is <strong>180 µJ</strong>. Final energy in both capacitors is ½ × 30 µF × 2² = <strong>60 µJ</strong>. Thus <strong>120 µJ</strong> leaves capacitor storage."
+    },
+    {
+     "text": "In a real interconnect, transient resistance and other mechanisms account for this energy. An instantaneous zero-impedance ideal connection is not a complete transient model."
+    }
+   ]
+  },
+  {
+   "tag": "SERIES CONNECTION",
+   "title": "Unequal capacitances, unequal voltages",
+   "prompt": "Two initially uncharged ideal capacitors, 4.7 µF and 10 µF, are connected in series across 12 V. Their isolated middle node has zero net charge. Find equivalent capacitance and each final voltage.",
+   "hint": "Series charge magnitudes are equal; voltage is charge divided by capacitance.",
+   "solution": [
+    {
+     "tex": "C_{\\mathrm{eq}}=\\frac{4.7(10)}{4.7+10}=3.1973\\ \\mathrm{\\mu F}"
+    },
+    {
+     "text": "Series charge magnitude is <strong>38.367 µC</strong>. The 4.7 µF capacitor has <strong>8.163 V</strong>; the 10 µF capacitor has <strong>3.837 V</strong>."
+    },
+    {
+     "text": "The voltages add to 12 V. This ideal division assumes the stated initial charge condition; leakage changes a real long-term sharing problem."
+    }
+   ]
+  }
+ ],
+ "rc-circuits": [
+  {
+   "tag": "STEP RESPONSE",
+   "title": "Three facts from one time constant",
+   "prompt": "A 47 kΩ resistor charges 100 nF from 0 V toward 3.3 V. Find the time constant, voltage at one time constant, and time to reach within 1% of the final voltage.",
+   "hint": "The remaining error fraction is exp(−t/τ).",
+   "solution": [
+    {
+     "tex": "\\tau=47\\,000(100\\times10^{-9})=4.7\\ \\mathrm{ms}"
+    },
+    {
+     "tex": "v(\\tau)=3.3(1-e^{-1})=2.086\\ \\mathrm V"
+    },
+    {
+     "text": "One-percent settling takes 4.605τ = <strong>21.64 ms</strong>. This is relative to the initial 3.3 V change."
+    }
+   ]
+  },
+  {
+   "tag": "LOADED INITIAL CONDITION",
+   "title": "The final voltage is not the supply",
+   "prompt": "A 10 V supply feeds a node through 20 kΩ. The node has 30 kΩ to ground and a 1 µF capacitor to ground. The capacitor initially holds 2 V. Find the final voltage, time constant, and voltage after one time constant.",
+   "hint": "Find the Thévenin equivalent seen by the capacitor.",
+   "solution": [
+    {
+     "tex": "V_{\\mathrm{th}}=10\\frac{30}{20+30}=6\\ \\mathrm V,\\quad R_{\\mathrm{th}}=20\\parallel30=12\\ \\mathrm{k\\Omega}"
+    },
+    {
+     "text": "Time constant is <strong>12 ms</strong>."
+    },
+    {
+     "tex": "v(\\tau)=6+(2-6)e^{-1}=4.5285\\ \\mathrm V"
+    },
+    {
+     "text": "Both the load and initial charge matter. Using a 10 V final value or a 20 ms time constant would ignore part of the network."
+    }
+   ]
+  },
+  {
+   "tag": "TIMING DESIGN",
+   "title": "Reach a threshold in time",
+   "prompt": "An ideal 5 V step charges a capacitor through 10 kΩ from zero. What is the largest C that reaches at least 3 V by 5 ms? Does 470 nF meet the nominal requirement? Ignore tolerance.",
+   "hint": "Set the threshold crossing equal to the latest permitted time.",
+   "solution": [
+    {
+     "tex": "3=5(1-e^{-5\\mathrm{ms}/RC})\\quad\\Rightarrow\\quad RC=\\frac{-5\\ \\mathrm{ms}}{\\ln0.4}=5.4568\\ \\mathrm{ms}"
+    },
+    {
+     "text": "Maximum capacitance is <strong>545.7 nF</strong>. With 470 nF, τ = 4.7 ms and crossing time is −4.7 ms ln(0.4) = <strong>4.307 ms</strong>, so it meets the nominal target."
+    },
+    {
+     "text": "Tolerances, threshold uncertainty, leakage, and source variation belong in a final timing budget."
+    }
+   ]
+  }
+ ],
+ "differentiators": [
+  {
+   "tag": "SINUSOIDAL APPROXIMATION",
+   "title": "Check the band before differentiating",
+   "prompt": "A passive high-pass RC circuit has τ = 100 µs. Its input is a 2 V peak sine at 50 Hz. Find approximate and exact output amplitudes, exact phase, and relative complex-response error.",
+   "hint": "Compute x = 2πfτ; use H = jx/(1 + jx).",
+   "solution": [
+    {
+     "tex": "x=2\\pi(50)(100\\ \\mathrm{\\mu s})=0.031416"
+    },
+    {
+     "text": "Approximate output is <strong>62.832 mV peak</strong>. Exact output is 2x/√(1 + x²) ≈ <strong>62.801 mV peak</strong>."
+    },
+    {
+     "text": "Exact phase is 90° − atan(x) ≈ <strong>88.201°</strong>. Relative complex-response error is x = <strong>3.142%</strong>, despite the much smaller amplitude-only error."
+    }
+   ]
+  },
+  {
+   "tag": "PULSE RESPONSE",
+   "title": "The second edge remembers the first",
+   "prompt": "A high-pass RC network has τ = 200 µs and starts uncharged. Its input steps from 0 V to 4 V, stays there for 1 ms, then returns to zero. Find output after 600 µs and immediately after the falling edge.",
+   "hint": "Superpose a +4 V step response and a delayed −4 V step response.",
+   "solution": [
+    {
+     "tex": "v(600\\ \\mathrm{\\mu s})=4e^{-3}=0.1991\\ \\mathrm V"
+    },
+    {
+     "tex": "v(1\\ \\mathrm{ms}^{+})=4e^{-5}-4=-3.9730\\ \\mathrm V"
+    },
+    {
+     "text": "The capacitor voltage remains continuous at the falling edge, so the output jumps negative. The exact value reflects the small residual from the first edge."
+    }
+   ]
+  },
+  {
+   "tag": "FINITE RAMP",
+   "title": "A derivative after startup",
+   "prompt": "A ramp rises at 0.5 V/ms from zero. A high-pass circuit has R = 10 kΩ and C = 20 nF, with zero initial state. Find the eventual ramp-response level and output after one time constant.",
+   "hint": "The exact response during the continuing ramp is sτ(1 − exp(−t/τ)).",
+   "solution": [
+    {
+     "text": "τ = <strong>200 µs</strong> and slope s = 500 V/s. The eventual level during the continuing ramp is sτ = <strong>0.1 V</strong>."
+    },
+    {
+     "tex": "v(\\tau)=0.1(1-e^{-1})=63.21\\ \\mathrm{mV}"
+    },
+    {
+     "text": "The derivative approximation omits the initial exponential. Once the ramp ends, a different segment of the response begins."
+    }
+   ]
+  }
+ ],
+ "integrators": [
+  {
+   "tag": "SINUSOIDAL INTEGRATION",
+   "title": "Quantify the approximation",
+   "prompt": "An unloaded low-pass RC network has τ = 1 ms. A 1 V peak sine at 20 kHz drives it. Find the integral approximation’s output amplitude, exact amplitude, and relative complex-response error.",
+   "hint": "Use x = 2πfτ. The exact gain is 1/√(1 + x²), while the approximation is 1/x.",
+   "solution": [
+    {
+     "tex": "x=2\\pi(20\\,000)(0.001)=125.664"
+    },
+    {
+     "text": "Approximate output is <strong>7.9577 mV peak</strong>; exact output is about <strong>7.9575 mV peak</strong>."
+    },
+    {
+     "text": "Complex-response error is 1/x = <strong>0.7958%</strong>. Exact phase is approximately −89.544°, so amplitude alone would understate the approximation error."
+    }
+   ]
+  },
+  {
+   "tag": "SQUARE TO TRIANGLE",
+   "title": "Find the ripple amplitude",
+   "prompt": "A ±2 V square wave with period 200 µs drives an RC low-pass with τ = 2 ms. Estimate the steady triangular output amplitude and compare it with the exact peak magnitude.",
+   "hint": "Approximate slope is ±A/τ. Each half-cycle lasts 100 µs.",
+   "solution": [
+    {
+     "text": "Approximate slope magnitude is 2/0.002 = <strong>1,000 V/s</strong>. Over a half-cycle output changes by <strong>0.1 V</strong>, giving <strong>50 mV peak</strong> about zero."
+    },
+    {
+     "tex": "V_{p,\\mathrm{exact}}=2\\tanh\\!\\left(\\frac{200\\ \\mathrm{\\mu s}}{4(2\\ \\mathrm{ms})}\\right)=49.990\\ \\mathrm{mV}"
+    },
+    {
+     "text": "The actual segments are exponential, but they are nearly straight over this short interval."
+    }
+   ]
+  },
+  {
+   "tag": "ACTIVE INTEGRATOR",
+   "title": "Account for initial voltage",
+   "prompt": "An ideal inverting integrator has R = 100 kΩ and C = 10 nF. Output starts at +1 V. A +20 mV input is applied. Find output after 50 ms and time to reach an assumed −4 V output limit.",
+   "hint": "The slope is −Vin/(RC); retain the initial +1 V.",
+   "solution": [
+    {
+     "text": "RC = <strong>1 ms</strong>. Output slope is <strong>−20 V/s</strong>."
+    },
+    {
+     "tex": "v_{\\mathrm{out}}(50\\ \\mathrm{ms})=1-20(0.05)=0\\ \\mathrm V"
+    },
+    {
+     "text": "Reaching −4 V requires a −5 V change, so time is <strong>250 ms</strong>. The ideal integration law stops being a valid output prediction once the amplifier reaches its limit."
+    }
+   ]
+  }
+ ],
+ "real-capacitors": [
+  {
+   "tag": "SELF-RESONANCE",
+   "title": "Where the capacitor stops looking capacitive",
+   "prompt": "A series model has C = 100 nF, ESL = 5 nH, and ESR = 0.05 Ω. Find resonance frequency, impedance at resonance, and whether the model is capacitive or inductive at 100 MHz.",
+   "hint": "Set ωL equal to 1/(ωC).",
+   "solution": [
+    {
+     "tex": "f_{\\mathrm{SR}}=\\frac{1}{2\\pi\\sqrt{(5\\ \\mathrm{nH})(100\\ \\mathrm{nF})}}=7.118\\ \\mathrm{MHz}"
+    },
+    {
+     "text": "At resonance, |Z| = <strong>0.05 Ω</strong>. At 100 MHz, inductive reactance is about 3.142 Ω while capacitive reactance magnitude is only 0.0159 Ω, so the model is predominantly <strong>inductive</strong>, with |Z| about 3.13 Ω."
+    }
+   ]
+  },
+  {
+   "tag": "TRANSIENT DROOP",
+   "title": "Use effective capacitance",
+   "prompt": "A nominal 22 µF part may be 20% low and, under a stated multiplicative bias model, retain only 50% of that value at operating voltage. An extra 50 mA load lasts 100 µs. Find capacitive droop, then the ESR drop for 0.1 Ω. Neglect ESL and upstream current response.",
+   "hint": "Find the effective capacitance before applying ΔV = IΔt/C.",
+   "solution": [
+    {
+     "text": "Effective capacitance is 22 × 0.8 × 0.5 = <strong>8.8 µF</strong>. Removed charge is <strong>5 µC</strong>."
+    },
+    {
+     "tex": "\\Delta V_C=\\frac{5\\ \\mathrm{\\mu C}}{8.8\\ \\mathrm{\\mu F}}=0.5682\\ \\mathrm V"
+    },
+    {
+     "text": "ESR contributes another <strong>5 mV</strong> while the extra current flows. Just before the pulse ends, the modeled total droop is about <strong>0.5732 V</strong>. The assumed percentages belong to this problem, not to all capacitors."
+    }
+   ]
+  },
+  {
+   "tag": "LEAKAGE BUDGET",
+   "title": "A small current matters during hold",
+   "prompt": "A 47 nF hold capacitor may droop by at most 5 mV in 20 ms. Assuming approximately constant unwanted discharge current, find its maximum total. If amplifier input current uses 5 nA and switch leakage uses 4 nA, what remains for capacitor and board leakage?",
+   "hint": "Use I = CΔV/Δt and add all current contributions in the unfavorable direction.",
+   "solution": [
+    {
+     "tex": "I_{\\max}=\\frac{47\\ \\mathrm{nF}\\times5\\ \\mathrm{mV}}{20\\ \\mathrm{ms}}=11.75\\ \\mathrm{nA}"
+    },
+    {
+     "text": "Remaining budget is 11.75 − 5 − 4 = <strong>2.75 nA</strong>. This is a worst-direction budget; relying on accidental cancellation is not the same as guaranteeing hold accuracy."
+    }
+   ]
+  }
+ ],
+ "inductors": [
+  {
+   "tag": "RL RESPONSE",
+   "title": "Current takes time",
+   "prompt": "A 3.3 V source drives a 22 mH ideal inductor through 33 Ω. Initial current is zero. Find final current, time constant, current after one time constant, and final stored energy.",
+   "hint": "Use τ = L/R and the RL exponential.",
+   "solution": [
+    {
+     "tex": "I_\\infty=0.1\\ \\mathrm A,\\qquad \\tau=\\frac{0.022}{33}=0.6667\\ \\mathrm{ms}"
+    },
+    {
+     "text": "At one time constant, current is 100 mA(1 − e⁻¹) = <strong>63.21 mA</strong>."
+    },
+    {
+     "tex": "W_\\infty=\\tfrac12(0.022)(0.1)^2=110\\ \\mathrm{\\mu J}"
+    }
+   ]
+  },
+  {
+   "tag": "CLAMPED TURN-OFF",
+   "title": "Energy and release time",
+   "prompt": "An isolated ideal 47 mH inductor starts at 80 mA. A one-way clamp applies a constant 24 V opposing the current until it reaches zero. Find stopping time, initial energy, and initial clamp power.",
+   "hint": "Use di/dt = −Vclamp/L. The clamp absorbs the stored energy in this model.",
+   "solution": [
+    {
+     "tex": "t_{\\mathrm{stop}}=\\frac{0.047(0.08)}{24}=156.7\\ \\mathrm{\\mu s}"
+    },
+    {
+     "tex": "W_0=\\tfrac12(0.047)(0.08)^2=150.4\\ \\mathrm{\\mu J}"
+    },
+    {
+     "text": "Initial clamp power is 24 × 0.08 = <strong>1.92 W</strong>. Power then decreases linearly to zero. The clamp stops conducting at zero current rather than forcing reverse current."
+    }
+   ]
+  },
+  {
+   "tag": "AC AND COPPER LOSS",
+   "title": "Reactive voltage is not heating",
+   "prompt": "A 2 mH inductor has 3 Ω winding resistance. It carries 20 mA RMS at 10 kHz. Find ideal inductive voltage magnitude and winding copper loss. Assume no core or frequency-dependent resistance losses.",
+   "hint": "Use XL = 2πfL for the inductive part, and I²R for the winding loss.",
+   "solution": [
+    {
+     "tex": "X_L=125.66\\ \\Omega,\\qquad V_L=0.02(125.66)=2.513\\ \\mathrm{V\\ RMS}"
+    },
+    {
+     "tex": "P_{\\mathrm{copper}}=(0.02)^2(3)=1.2\\ \\mathrm{mW}"
+    },
+    {
+     "text": "The reactive voltage and current exchange energy with the magnetic field; they do not imply 50 mW of ideal-inductor heating. Including the 3 Ω series resistance gives a total voltage magnitude about 2.514 V RMS."
+    }
+   ]
+  }
+ ],
+ "transformers": [
+  {
+   "tag": "IDEAL TRANSFORMATION",
+   "title": "Keep the power balanced",
+   "prompt": "An ideal transformer has 200 primary turns and 50 secondary turns. The primary winding is held at 24 V RMS and the secondary drives 12 Ω. Find secondary voltage and current, primary load current, reflected resistance, and load power.",
+   "hint": "Turns ratio a = 4; voltage divides by a, current transforms oppositely.",
+   "solution": [
+    {
+     "tex": "V_s=6\\ \\mathrm V,\\quad I_s=0.5\\ \\mathrm A,\\quad I_p=0.125\\ \\mathrm A"
+    },
+    {
+     "tex": "R_{\\mathrm{in}}=4^2(12)=192\\ \\Omega,\\qquad P_L=3\\ \\mathrm W"
+    },
+    {
+     "text": "Input power is 24 × 0.125 = <strong>3 W</strong>, equal to output power in the ideal model. All stated currents and voltages are RMS."
+    }
+   ]
+  },
+  {
+   "tag": "VOLT-SECONDS",
+   "title": "Lower frequency, higher flux",
+   "prompt": "A winding has 80 turns on an illustrative 40 mm² core area. It receives a 10 V RMS sine. Using V ≈ 4.44fNABpeak, find Bpeak at 20 kHz and 5 kHz. What minimum frequency keeps Bpeak at or below an illustrative 0.1 T target?",
+   "hint": "Convert mm² to m². Flux is inversely proportional to frequency at fixed winding voltage.",
+   "solution": [
+    {
+     "tex": "B_p(20\\ \\mathrm{kHz})\\approx0.0352\\ \\mathrm T,\\qquad B_p(5\\ \\mathrm{kHz})\\approx0.141\\ \\mathrm T"
+    },
+    {
+     "tex": "f_{\\min}=\\frac{10}{4.44(80)(40\\times10^{-6})(0.1)}\\approx7.04\\ \\mathrm{kHz}"
+    },
+    {
+     "text": "This is a sinusoidal flux constraint using an illustrative target. It does not establish core loss, insulation, current capacity, or a complete transformer rating."
+    }
+   ]
+  },
+  {
+   "tag": "REFLECTED SOURCE RESISTANCE",
+   "title": "The source is not ideal",
+   "prompt": "A 16 V RMS Thévenin source with 12 Ω series resistance drives the primary of an ideal transformer with a = Np/Ns = 4. The secondary load is 8 Ω. Find loaded secondary voltage, once by reflecting the load and once by reflecting the source.",
+   "hint": "The primary sees a²RL. On the secondary, divide source voltage by a and resistance by a².",
+   "solution": [
+    {
+     "text": "Reflecting the load gives <strong>128 Ω</strong>. Primary winding voltage is 16 × 128/(128 + 12) = 14.629 V RMS; secondary voltage is <strong>3.657 V RMS</strong>."
+    },
+    {
+     "text": "Alternatively, the secondary sees a <strong>4 V RMS</strong> source with <strong>0.75 Ω</strong> series resistance. Dividing into 8 Ω gives 4 × 8/8.75 = <strong>3.657 V RMS</strong>."
+    },
+    {
+     "text": "The ideal winding ratio remains four. Source voltage drop, not a failure of that ratio, explains the reduced output."
+    }
+   ]
+  }
+ ],
+ "semiconductors": [
+  {
+   "tag": "CARRIERS",
+   "title": "Minority does not mean irrelevant",
+   "prompt": "At 300 K take intrinsic density as 10¹⁰ cm⁻³ and donors as 5 × 10¹⁵ cm⁻³. Estimate equilibrium electron and hole concentrations in neutral n-type silicon. Is the bulk negatively charged?",
+   "hint": "Use the equilibrium mass-action relation, then charge neutrality.",
+   "solution": [
+    {
+     "tex": "n\\approx5\\times10^{15}\\ \\mathrm{cm^{-3}},\\qquad p=\\frac{10^{20}}{5\\times10^{15}}=2\\times10^4\\ \\mathrm{cm^{-3}}"
+    },
+    {
+     "text": "The bulk is approximately neutral: mobile electrons balance ionized positive donors. N-type describes the majority carrier, not a net negative macroscopic charge."
+    }
+   ]
+  },
+  {
+   "tag": "DEPLETION",
+   "title": "Which side is wider?",
+   "prompt": "An abrupt junction has Nₐ = 10¹⁶ cm⁻³ and Nᴅ = 4 × 10¹⁶ cm⁻³. Its total depleted width is 0.60 µm. Find the width on each side.",
+   "hint": "Equal total ionic charges need not occupy equal distances.",
+   "solution": [
+    {
+     "tex": "N_Ax_p=N_Dx_n\\Rightarrow x_p=4x_n,\\quad x_n=0.12\\ \\mu\\mathrm m,\\quad x_p=0.48\\ \\mu\\mathrm m"
+    },
+    {
+     "text": "The more lightly doped p side must extend four times farther to expose equal charge per area."
+    }
+   ]
+  },
+  {
+   "tag": "CAPACITANCE",
+   "title": "Reverse bias changes the capacitor",
+   "prompt": "A junction has Vbi = 0.75 V and zero-bias capacitance 8 pF. In the abrupt depletion model, what is its capacitance at 3 V reverse bias? How does width change?",
+   "hint": "Width scales as the square root of the total depletion potential; capacitance scales inversely.",
+   "solution": [
+    {
+     "tex": "\\frac{W(3)}{W(0)}=\\sqrt{\\frac{0.75+3}{0.75}}=\\sqrt5,\\qquad C_j(3)=\\frac{8}{\\sqrt5}=3.58\\ \\mathrm{pF}"
+    },
+    {
+     "text": "Width grows by a factor 2.236. This does not include breakdown or forward-injection charge."
+    }
+   ]
+  },
+  {
+   "tag": "EQUILIBRIUM",
+   "title": "An internal voltage is not a battery",
+   "prompt": "A student measures the built-in potential from a depletion calculation and proposes extracting power continuously from an unconnected PN junction. Explain the error.",
+   "hint": "Distinguish an internal electrostatic potential from terminal electromotive force.",
+   "solution": [
+    {
+     "text": "At thermal equilibrium, drift and diffusion currents cancel. The built-in potential is one internal part of the complete device/contact system; equilibrium contact potentials prevent it acting as an external battery. Sustained power requires a nonequilibrium energy source such as applied bias or absorbed light."
+    }
+   ]
+  }
+ ],
+ "diodes": [
+  {
+   "tag": "EXPONENTIAL LAW",
+   "title": "How much more voltage?",
+   "prompt": "For a diode with ideality factor 1.5 and thermal voltage 25.85 mV, find the voltage change needed to move from 0.2 mA to 2 mA. Assume both currents greatly exceed saturation current.",
+   "hint": "Subtract the logarithmic voltage expressions; saturation current cancels.",
+   "solution": [
+    {
+     "tex": "\\Delta V=1.5(25.85\\ \\mathrm{mV})\\ln(10)=89.28\\ \\mathrm{mV}"
+    },
+    {
+     "text": "A decade of current is a modest voltage change in this model. This does not include series resistance or heating."
+    }
+   ]
+  },
+  {
+   "tag": "LOCAL MODEL",
+   "title": "Three different resistances",
+   "prompt": "At a 0.65 V, 1 mA operating point with n = 1 and Vₜ = 25.85 mV, find DC ratio resistance and differential resistance. If a 1 kΩ series resistor is fed by a 10 mV small input variation, estimate the diode-voltage variation.",
+   "hint": "Use the differential resistance in the incremental divider, not the DC ratio.",
+   "solution": [
+    {
+     "tex": "R_{DC}=650\\ \\Omega,\\qquad r_d\\approx25.85\\ \\Omega"
+    },
+    {
+     "tex": "\\delta v_D=10\\ \\mathrm{mV}\\frac{25.85}{1000+25.85}=0.252\\ \\mathrm{mV}"
+    },
+    {
+     "text": "The diode-voltage variation is small compared with Vₜ, making the local approximation plausible. The 1 kΩ resistor is a separate physical circuit element."
+    }
+   ]
+  },
+  {
+   "tag": "CURRENT LIMIT",
+   "title": "LED corners",
+   "prompt": "A supply varies from 4.5 to 5.5 V and an LED forward drop spans 1.8 to 2.2 V. Choose a resistor no smaller than required to keep current at or below 10 mA. With a 390 Ω choice, estimate current at both corners, ignoring resistor tolerance.",
+   "hint": "Maximum supply and minimum forward drop give the largest current.",
+   "solution": [
+    {
+     "tex": "R\\geq\\frac{5.5-1.8}{0.010}=370\\ \\Omega"
+    },
+    {
+     "tex": "I_{\\max}=\\frac{3.7}{390}=9.49\\ \\mathrm{mA},\\qquad I_{\\min}=\\frac{2.3}{390}=5.90\\ \\mathrm{mA}"
+    },
+    {
+     "text": "Worst nominal resistor dissipation is 3.7²/390 = 35.1 mW. Add resistance tolerance and actual device/temperature limits in a component design."
+    }
+   ]
+  },
+  {
+   "tag": "SWITCHING CHARGE",
+   "title": "Time is not charge",
+   "prompt": "A reverse-recovery current is approximated by a triangle with 0.3 A peak and total duration 80 ns. Estimate recovery charge. Can duration alone give switching energy?",
+   "hint": "Area gives charge; energy needs voltage as well.",
+   "solution": [
+    {
+     "tex": "Q_{rr}\\approx\\tfrac12(0.3)(80\\ \\mathrm{ns})=12\\ \\mathrm{nC}"
+    },
+    {
+     "text": "No. Switching energy is the integral of voltage times current with a consistent sign convention and full waveform. The current peak and voltage overlap matter; a recovery-time number alone is insufficient."
+    }
+   ]
+  }
+ ],
+ "rectifiers": [
+  {
+   "tag": "RIPPLE ESTIMATE",
+   "title": "Choose a reservoir",
+   "prompt": "A full-wave 50 Hz source feeds a 30 mA approximately constant load. What capacitance gives at most 0.5 V p-p ripple in the small-ripple estimate? What ripple would 680 µF predict?",
+   "hint": "The recharge frequency is twice the AC frequency.",
+   "solution": [
+    {
+     "tex": "C\\approx\\frac{0.030}{100(0.5)}=600\\ \\mu\\mathrm F,\\qquad\\Delta V(680\\ \\mu\\mathrm F)\\approx0.441\\ \\mathrm V"
+    },
+    {
+     "text": "This is a first-pass estimate. Effective capacitance, source impedance and actual conduction time must be checked; it does not establish a guaranteed maximum ripple."
+    }
+   ]
+  },
+  {
+   "tag": "VOLTAGE BUDGET",
+   "title": "Will the regulator stay above dropout?",
+   "prompt": "Minimum AC voltage is 6 V RMS. Use a bridge with two 0.8 V drops and a 40 mA load at 50 Hz, with 470 µF reservoir. Ignoring source sag, estimate peak and trough and compare the trough with a 5 V regulator needing 0.5 V dropout.",
+   "hint": "Convert RMS to peak before subtracting diode drops and estimated ripple.",
+   "solution": [
+    {
+     "tex": "V_{\\max}\\approx6\\sqrt2-1.6=6.885\\ \\mathrm V,\\quad\\Delta V\\approx\\frac{0.040}{100(470\\ \\mu\\mathrm F)}=0.851\\ \\mathrm V"
+    },
+    {
+     "tex": "V_{\\min}\\approx6.034\\ \\mathrm V"
+    },
+    {
+     "text": "The approximate trough is 0.534 V above the 5.5 V requirement before source sag and tolerances. That is a provisional budget, not a guarantee."
+    }
+   ]
+  },
+  {
+   "tag": "BLOCKING VOLTAGE",
+   "title": "A charged half-wave supply",
+   "prompt": "An ideal half-wave rectifier charges a reservoir from a sine with 10 V peak. With negligible discharge, what reverse voltage appears across the diode at the negative source peak?",
+   "hint": "The cathode stays near the positive peak while the anode goes negative.",
+   "solution": [
+    {
+     "tex": "V_D=V_A-V_K=-10-10=-20\\ \\mathrm V"
+    },
+    {
+     "text": "The reverse magnitude is 20 V. Ignoring the charged capacitor and choosing a 10 V reverse rating would miss this topology-dependent stress."
+    }
+   ]
+  },
+  {
+   "tag": "CHARGE BALANCE",
+   "title": "Where do the pulses go?",
+   "prompt": "A reservoir feeds 25 mA DC. Recharge happens every 10 ms and is approximated by triangular source-current pulses lasting 2 ms. Find the required pulse peak and average capacitor current in settled operation.",
+   "hint": "One pulse must supply the entire load charge for 10 ms.",
+   "solution": [
+    {
+     "tex": "Q_L=(25\\ \\mathrm{mA})(10\\ \\mathrm{ms})=250\\ \\mu\\mathrm C,\\quad I_{\\mathrm{peak}}=\\frac{2Q_L}{2\\ \\mathrm{ms}}=250\\ \\mathrm{mA}"
+    },
+    {
+     "text": "Average capacitor current is zero in periodic steady state. Its instantaneous current is source current minus load current; it can have substantial RMS current and ESR heating despite zero mean."
+    }
+   ]
+  }
+ ],
+ "regulators": [
+  {
+   "tag": "SHUNT DESIGN",
+   "title": "Find the allowed resistor range",
+   "prompt": "A 5.1 V zener regulator has input 9–15 V and load 0–10 mA. Require at least 2 mA zener current and no more than 40 mA. Find the allowable nominal resistor interval.",
+   "hint": "Use minimum input/maximum load for the upper R bound, and maximum input/no load for the lower bound.",
+   "solution": [
+    {
+     "tex": "R\\leq\\frac{9-5.1}{0.012}=325\\ \\Omega,\\qquad R\\geq\\frac{15-5.1}{0.040}=247.5\\ \\Omega"
+    },
+    {
+     "text": "Thus 247.5–325 Ω is the nominal feasible interval under these assumptions. A 300 Ω resistor gives 3 mA minimum and 33 mA maximum zener current; check tolerance and power separately."
+    }
+   ]
+  },
+  {
+   "tag": "THERMAL DESIGN",
+   "title": "Current rating is not enough",
+   "prompt": "A linear regulator supplies 5 V at 250 mA from 12 V. Use 50 °C/W junction-to-ambient resistance and 40 °C ambient; ignore quiescent current. Estimate junction temperature. If a design target is 110 °C, what maximum current follows from this thermal model?",
+   "hint": "Calculate allowable heat before dividing by the voltage drop.",
+   "solution": [
+    {
+     "tex": "P=(12-5)(0.25)=1.75\\ \\mathrm W,\\quad T_J=40+50(1.75)=127.5\\ ^\\circ\\mathrm C"
+    },
+    {
+     "tex": "I_{\\max}=\\frac{110-40}{50(12-5)}=0.200\\ \\mathrm A"
+    },
+    {
+     "text": "The requested 250 mA exceeds the chosen thermal target even if the regulator has a larger headline current rating. Thermal resistance depends on the real board and enclosure."
+    }
+   ]
+  },
+  {
+   "tag": "RIPPLE REJECTION",
+   "title": "Headroom comes first",
+   "prompt": "A 5 V regulator needs 0.4 V dropout and has 40 dB PSRR at the ripple frequency under regulated conditions. Input is 6 V mean with 0.4 V p-p ripple. Estimate output ripple. Then lower the input mean to 5.3 V: can the same PSRR be assumed?",
+   "hint": "Compare the input trough with 5.4 V.",
+   "solution": [
+    {
+     "tex": "V_{\\mathrm{trough}}=6-0.2=5.8\\ \\mathrm V,\\qquad v_{r,o}=\\frac{0.4}{10^{40/20}}=4\\ \\mathrm{mV_{pp}}"
+    },
+    {
+     "text": "At the lower mean, the input trough is 5.1 V, below the 5.4 V regulation requirement. The same regulated-condition PSRR cannot be assumed; the output enters dropout during part of the cycle."
+    }
+   ]
+  },
+  {
+   "tag": "LOCAL SLOPE",
+   "title": "A zener is not perfectly stiff",
+   "prompt": "A zener has 8 Ω dynamic resistance at its operating point and is fed through 220 Ω. With a high-impedance load, estimate output change for a 0.5 V small input change and for a 2 mA load-current increase at fixed input.",
+   "hint": "Use an incremental divider for line change and a parallel resistance for load change.",
+   "solution": [
+    {
+     "tex": "\\delta v_o=0.5\\frac{8}{220+8}=17.54\\ \\mathrm{mV}"
+    },
+    {
+     "tex": "\\delta v_o=-(220\\parallel8)(2\\ \\mathrm{mA})=-15.44\\ \\mathrm{mV}"
+    },
+    {
+     "text": "Both answers assume the change keeps the zener near the same bias point and out of its knee."
+    }
+   ]
+  }
+ ],
+ "diode-applications": [
+  {
+   "tag": "LIMITING",
+   "title": "Trace both polarities",
+   "prompt": "A high-impedance input is clamped to ground and 3.3 V rails through fixed 0.3 V diodes, with 4.7 kΩ series resistance. Find output and resistor current at input +10 V and −10 V.",
+   "hint": "Define resistor current positive from source toward output.",
+   "solution": [
+    {
+     "tex": "v_o(+10)=3.6\\ \\mathrm V,\\quad i_R=\\frac{6.4}{4700}=1.362\\ \\mathrm{mA}"
+    },
+    {
+     "tex": "v_o(-10)=-0.3\\ \\mathrm V,\\quad i_R=\\frac{-9.7}{4700}=-2.064\\ \\mathrm{mA}"
+    },
+    {
+     "text": "At positive input current enters the 3.3 V rail. At negative input current comes from ground through the lower diode toward the source. The rails must support those paths."
+    }
+   ]
+  },
+  {
+   "tag": "HOLD DROOP",
+   "title": "Budget leakage",
+   "prompt": "A peak detector must droop by no more than 5 mV over 20 ms. Total worst-case leakage is 50 nA. What ideal capacitance is needed?",
+   "hint": "Use charge balance over the hold interval.",
+   "solution": [
+    {
+     "tex": "C\\geq\\frac{50\\ \\mathrm{nA}\\times20\\ \\mathrm{ms}}{5\\ \\mathrm{mV}}=200\\ \\mathrm{nF}"
+    },
+    {
+     "text": "This treats leakage as constant and ignores dielectric absorption and acquisition error. A larger capacitor reduces droop but needs more charge during acquisition."
+    }
+   ]
+  },
+  {
+   "tag": "CLAMPER",
+   "title": "Shift, do not amplify",
+   "prompt": "A ±3 V square wave passes through a series capacitor to an output with a large resistor to ground. A diode from ground anode to output cathode fixes the negative output near −0.6 V. Neglect droop after settling. Find the positive output.",
+   "hint": "The input changes by 6 V on the rising edge; capacitor voltage cannot jump.",
+   "solution": [
+    {
+     "tex": "v_{o,\\mathrm{high}}=-0.6+6=5.4\\ \\mathrm V"
+    },
+    {
+     "text": "Output is still 6 V peak-to-peak. The DC level changed; there is no voltage-gain increase in the waveform swing. Startup and finite RC change the transient behavior."
+    }
+   ]
+  },
+  {
+   "tag": "RAIL INJECTION",
+   "title": "The missing sink",
+   "prompt": "An upper protection diode injects 2 mA into an otherwise unloaded 3.3 V rail with 10 µF capacitance. Its regulator cannot sink current. Ignoring other paths, estimate the rail rise in 1 ms.",
+   "hint": "Treat the rail capacitor as the destination of injected charge.",
+   "solution": [
+    {
+     "tex": "\\Delta V=\\frac{I\\Delta t}{C}=\\frac{2\\ \\mathrm{mA}\\times1\\ \\mathrm{ms}}{10\\ \\mu\\mathrm F}=0.2\\ \\mathrm V"
+    },
+    {
+     "text": "The supposedly fixed rail rises. Consequently the clamp level also rises; an ideal-rail limiter model cannot establish protection for this case."
+    }
+   ]
+  }
+ ],
+ "diode-protection": [
+  {
+   "tag": "DECAY",
+   "title": "A diode or a higher clamp?",
+   "prompt": "A winding has L = 100 mH, R = 120 Ω and initial current 100 mA. Compare decay-to-zero times for 0.7 V and 24 V clamps across the winding. Find nominal switch voltage in a 12 V low-side circuit.",
+   "hint": "Use the exponential winding model, then add supply and clamp voltages.",
+   "solution": [
+    {
+     "tex": "t_0=\\frac{L}{R}\\ln(1+RI_0/V_C)"
+    },
+    {
+     "text": "For 0.7 V, t₀ = 2.415 ms and switch voltage ≈ 12.7 V. For 24 V, t₀ = 0.338 ms and switch voltage ≈ 36 V. Wiring overshoot and clamp tolerance are additional stresses."
+    }
+   ]
+  },
+  {
+   "tag": "RELEASE TARGET",
+   "title": "Solve for clamp voltage",
+   "prompt": "For the same 100 mH, 120 Ω, 100 mA winding, choose a constant opposing clamp voltage that brings current to zero in 0.5 ms. What switch voltage follows with a 12 V supply?",
+   "hint": "Exponentiate the time-to-zero expression and rearrange.",
+   "solution": [
+    {
+     "tex": "V_C=\\frac{RI_0}{e^{Rt_0/L}-1}=\\frac{12}{e^{0.6}-1}=14.60\\ \\mathrm V"
+    },
+    {
+     "text": "Nominal switch voltage is about 26.60 V. A real clamp must be chosen from its voltage at the actual current, tolerance and temperature, with switch margin for overshoot."
+    }
+   ]
+  },
+  {
+   "tag": "PULSE vs AVERAGE",
+   "title": "Count the energy",
+   "prompt": "A clamp across a winding absorbs 0.378 mJ per release, with 100 releases/s. Its initial voltage/current are 24 V and 100 mA. Find average clamp power and initial pulse power. Is average power sufficient for rating?",
+   "hint": "Differentiate energy per event from instantaneous power.",
+   "solution": [
+    {
+     "tex": "P_{\\mathrm{avg}}=0.378\\ \\mathrm{mJ}\\times100\\ \\mathrm{s^{-1}}=37.8\\ \\mathrm{mW},\\quad P_{\\mathrm{initial}}=24(0.1)=2.4\\ \\mathrm W"
+    },
+    {
+     "text": "Average power is not sufficient. Pulse duration, energy capability, peak current, transient thermal response, repetition and temperature must also be within the part specifications."
+    }
+   ]
+  },
+  {
+   "tag": "TOPOLOGY",
+   "title": "Move the clamp, change the energy",
+   "prompt": "A 12 V source feeds an ideal 100 mH inductor initially carrying 100 mA. A 36 V clamp is placed across the low-side switch to ground. Ignore winding resistance. Find decay time, initial stored energy, supply energy delivered during decay and clamp energy.",
+   "hint": "The inductor sees 12 − 36 = −24 V. Current declines linearly; integrate the triangular current waveform.",
+   "solution": [
+    {
+     "tex": "t_0=\\frac{0.1(0.1)}{24}=0.4167\\ \\mathrm{ms},\\quad E_L=\\tfrac12(0.1)(0.1)^2=0.5\\ \\mathrm{mJ}"
+    },
+    {
+     "tex": "Q=\\tfrac12 I_0t_0=20.833\\ \\mu\\mathrm C,\\quad E_S=12Q=0.25\\ \\mathrm{mJ},\\quad E_C=36Q=0.75\\ \\mathrm{mJ}"
+    },
+    {
+     "text": "The clamp absorbs stored magnetic energy plus energy delivered by the source. A rating based only on the initial 0.5 mJ would miss one third of the total clamp energy in this example."
+    }
+   ]
+  }
+ ],
+ "protection-circuits": [
+  {
+   "tag": "LOSS BUDGET",
+   "title": "Schottky or MOSFET on USB power?",
+   "prompt": "A device draws 1.5 A from a nominal 5 V USB supply that may fall to 4.75 V. Its 3.3 V regulator needs at least 4.5 V at its input. Compare a series Schottky diode dropping 0.4 V with a P-channel MOSFET of 35 mΩ on-resistance. Find the regulator input voltage and protection dissipation for each, at both 5 V and 4.75 V.",
+   "hint": "Series diode: subtract Vꜰ and multiply Vꜰ by I. MOSFET: subtract I·R and dissipate I²R.",
+   "solution": [
+    {
+     "tex": "V_{\\mathrm{diode}}=V_{\\mathrm{in}}-0.4,\\qquad V_{\\mathrm{FET}}=V_{\\mathrm{in}}-(1.5)(0.035)=V_{\\mathrm{in}}-0.0525"
+    },
+    {
+     "text": "Schottky: 4.60 V at 5 V input, but only <strong>4.35 V</strong> at 4.75 V, below the regulator’s 4.5 V requirement. It dissipates 0.4 × 1.5 = <strong>0.60 W</strong>."
+    },
+    {
+     "text": "MOSFET: 4.95 V and <strong>4.70 V</strong>, meeting the requirement at the low supply. Dissipation 1.5² × 0.035 = <strong>79 mW</strong>. At 5 V supplies, headroom rather than heat is usually what rules out the diode."
+    }
+   ]
+  },
+  {
+   "tag": "INRUSH ENERGY",
+   "title": "How hot does the thermistor get?",
+   "prompt": "A 24 V supply is switched onto an empty 2200 µF capacitor through a cold NTC thermistor of 2 Ω (treat it as a fixed resistance during charging). Find the initial current, the time constant, the energy dissipated in the thermistor, and the time to reach 95% of the final voltage.",
+   "hint": "Initial current is V/R. The resistor energy during a full charge does not depend on R.",
+   "solution": [
+    {
+     "text": "Initial current 24/2 = <strong>12 A</strong>; τ = 2 Ω × 2200 µF = <strong>4.4 ms</strong>."
+    },
+    {
+     "tex": "E_R=\\tfrac12CV^2=\\tfrac12(2200\\ \\mu\\mathrm F)(24\\ \\mathrm V)^2=0.634\\ \\mathrm J"
+    },
+    {
+     "text": "95% is reached at t = −τ ln(0.05) = 3.0τ = <strong>13.2 ms</strong>. The thermistor absorbs 0.634 J in that time, the same as the capacitor stores; a smaller resistance would deliver the same joules faster and with a higher peak current."
+    }
+   ]
+  },
+  {
+   "tag": "HOT-PLUG",
+   "title": "A cable that doubles the voltage",
+   "prompt": "A 12 V supply is hot-plugged into a board with 10 µF of ceramic input capacitance. The cable and board together contribute 1.5 µH and 30 mΩ. Estimate the characteristic impedance, peak inrush current, ringing frequency, damping ratio and peak voltage. What series resistance would give critical damping?",
+   "hint": "Z₀ = √(L/C), ζ = R/(2Z₀), and the peak of a lightly damped step is V[1 + exp(−πζ/√(1 − ζ²))].",
+   "solution": [
+    {
+     "tex": "Z_0=\\sqrt{\\frac{1.5\\ \\mu\\mathrm H}{10\\ \\mu\\mathrm F}}=0.387\\ \\Omega,\\qquad f_0=\\frac{1}{2\\pi\\sqrt{LC}}=41.1\\ \\mathrm{kHz}"
+    },
+    {
+     "text": "Peak current is close to 12/0.387 ≈ <strong>31 A</strong>. ζ = 0.03/(2 × 0.387) = 0.039, so the overshoot is exp(−π × 0.039) ≈ 0.885 and the peak voltage is about <strong>22.6 V</strong>."
+    },
+    {
+     "text": "Critical damping needs R = 2Z₀ = <strong>0.77 Ω</strong>, too lossy for a power path. A TVS, a bypass diode across the inductance, or a damping electrolytic is a better fix."
+    }
+   ]
+  },
+  {
+   "tag": "STEERING",
+   "title": "Where does the fault current go?",
+   "prompt": "A 3.3 V ADC input is protected by a 4.7 kΩ series resistor and Schottky steering diodes (0.3 V) to the 3.3 V rail and ground. The cable may be shorted to ±48 V. Find the current injected into the rail for +48 V, the resistor dissipation, and the current for −48 V. In sleep the board draws 2 mA from a regulator that cannot sink current: what happens? What resistance limits injection to 1 mA?",
+   "hint": "With the upper diode on, the pin sits at 3.6 V. Compare the injected current with what the rail’s loads consume.",
+   "solution": [
+    {
+     "text": "+48 V: (48 − 3.6)/4.7 kΩ = <strong>9.45 mA</strong> into the rail; the resistor dissipates 44.4²/4.7 kΩ = <strong>0.42 W</strong>. −48 V: (48 − 0.3)/4.7 kΩ = <strong>10.1 mA</strong> drawn out of ground."
+    },
+    {
+     "text": "In sleep only 2 mA is consumed but 9.45 mA is injected. The regulator cannot absorb the difference, so the rail rises until something else conducts—possibly powering parts of the chip through its inputs."
+    },
+    {
+     "text": "For 1 mA, R ≥ 44.4 V/1 mA = <strong>44.4 kΩ</strong>, dissipating 44 mW. Check that the larger resistance with the pin capacitance still passes the signal bandwidth."
+    }
+   ]
+  },
+  {
+   "tag": "BOOST",
+   "title": "Size the on-time for one watt",
+   "prompt": "A discontinuous-mode boost circuit runs from 5 V with a 47 µH inductor at 20 kHz into a 15 V output through a 0.5 V diode. What peak current and on-time deliver 1 W to the output? Confirm the inductor current returns to zero before the next cycle.",
+   "hint": "Output energy per cycle is V_out·I_pk·t_off/2 with t_off = L I_pk/(V_out + Vꜰ − V_in). Combine and solve for I_pk.",
+   "solution": [
+    {
+     "tex": "P_{\\mathrm{out}}=\\frac{V_{\\mathrm{out}}fLI_{\\mathrm{pk}}^2}{2(V_{\\mathrm{out}}+V_F-V_{\\mathrm{in}})}\\Rightarrow I_{\\mathrm{pk}}=\\sqrt{\\frac{2(1)(10.5)}{15(20\\ \\mathrm{kHz})(47\\ \\mu\\mathrm H)}}=1.22\\ \\mathrm A"
+    },
+    {
+     "text": "On-time t_on = L I_pk/V_in = 47 µH × 1.22 A / 5 V = <strong>11.5 µs</strong>. Release time t_off = 47 µH × 1.22 A / 10.5 V = <strong>5.5 µs</strong>."
+    },
+    {
+     "text": "Total 17 µs is well under the 50 µs period, so the discontinuous-mode assumption holds. Each cycle stores ½LI² = 35 µJ."
+    }
+   ]
+  }
+ ],
+ "phasors": [
+  {
+   "tag": "CONVERSION",
+   "title": "Both forms, carefully",
+   "prompt": "Convert (a) −2 + 2j to polar form, (b) 5∠−150° to rectangular form, and (c) 1/(4 − 3j) to both forms.",
+   "hint": "Sketch each arrow first so you know its quadrant. For (c), multiply by the conjugate.",
+   "solution": [
+    {
+     "text": "(a) |z| = √8 = 2.83; the arrow points up and left, so the angle is <strong>135°</strong>, not −45°."
+    },
+    {
+     "text": "(b) 5(cos(−150°) + j sin(−150°)) = <strong>−4.33 − 2.5j</strong>."
+    },
+    {
+     "tex": "\\frac{1}{4-3j}=\\frac{4+3j}{16+9}=0.16+0.12j=0.2\\angle36.87^\\circ"
+    },
+    {
+     "text": "(c) Check in polar form: 1/(5∠−36.87°) = 0.2∠+36.87°."
+    }
+   ]
+  },
+  {
+   "tag": "SUM",
+   "title": "Add two sinusoids",
+   "prompt": "Express 4 cos(ωt + 30°) + 3 cos(ωt − 60°) as a single cosine. Why is the amplitude 5 rather than 7?",
+   "hint": "The two phasors are 90° apart.",
+   "solution": [
+    {
+     "tex": "4\\angle30^\\circ+3\\angle-60^\\circ=(3.464+2j)+(1.5-2.598j)=4.964-0.598j=5\\angle-6.87^\\circ"
+    },
+    {
+     "text": "The sum is <strong>5 cos(ωt − 6.87°)</strong>. The phasors are perpendicular, so their lengths add like the sides of a right triangle: √(4² + 3²) = 5. The individual peaks occur a quarter period apart and never coincide."
+    }
+   ]
+  },
+  {
+   "tag": "MEASUREMENT",
+   "title": "The missing volts",
+   "prompt": "A resistor and capacitor are in series across a 10 V RMS sine source. A meter across the resistor reads 6 V RMS. What does a meter across the capacitor read? Explain why it is not 4 V.",
+   "hint": "The resistor voltage is in phase with the current; the capacitor voltage lags it by 90°.",
+   "solution": [
+    {
+     "text": "The two voltage phasors are perpendicular and sum to the source phasor, so their magnitudes satisfy 6² + V_C² = 10²."
+    },
+    {
+     "text": "V_C = √(100 − 36) = <strong>8 V RMS</strong>. Kirchhoff’s law holds for phasors, not for RMS magnitudes; the arithmetic sum 6 + 8 = 14 V exceeds the source because the peaks occur at different times."
+    }
+   ]
+  },
+  {
+   "tag": "TIME AND PHASE",
+   "title": "From an oscilloscope to a phasor",
+   "prompt": "Two 2.5 kHz sinusoids are displayed together. Signal B crosses zero going upward 40 µs after signal A does. What is B’s phase relative to A, in degrees? Does B lead or lag?",
+   "hint": "The period is 400 µs; convert the delay to a fraction of a cycle.",
+   "solution": [
+    {
+     "text": "The fraction of a cycle is 40/400 = 0.1, i.e. 36°. B happens later, so it <strong>lags A by 36°</strong>: with A as reference, B = |B|∠−36°."
+    },
+    {
+     "text": "A lag of 36° is indistinguishable from a lead of 324°. Choose the smaller angle unless the circuit’s physics tells you otherwise."
+    }
+   ]
+  },
+  {
+   "tag": "ALGEBRA, NOT CALCULUS",
+   "title": "An RL circuit in one line",
+   "prompt": "A 5 V peak sinusoid at ω = 10⁴ rad/s drives R = 100 Ω in series with L = 10 mH. Using phasors, find the steady-state current i(t). Then verify that it satisfies L di/dt + Ri = 5 cos ωt at t = 0.",
+   "hint": "Replace d/dt by jω: (R + jωL)I = V.",
+   "solution": [
+    {
+     "tex": "\\mathbf I=\\frac{5}{100+j(10^4)(0.01)}=\\frac{5}{100+100j}=0.0354\\angle-45^\\circ\\ \\mathrm A"
+    },
+    {
+     "text": "So <strong>i(t) = 35.4 cos(ωt − 45°) mA</strong>. At t = 0: i = 35.4 cos(−45°) = 25 mA, and di/dt = −ω × 35.4 mA × sin(−45°) = 250 A/s."
+    },
+    {
+     "text": "Check: L di/dt + Ri = 0.01 × 250 + 100 × 0.025 = 2.5 + 2.5 = 5 V = 5 cos 0. ✓"
+    }
+   ]
+  }
+ ],
+ "impedance": [
+  {
+   "tag": "REACTANCE",
+   "title": "Where do they meet?",
+   "prompt": "At what frequency does a 22 nF capacitor have 1 kΩ of reactance? At what frequency does a 4.7 mH inductor? At what frequency are their reactances equal, and what is that common value?",
+   "hint": "X_C = 1/(2πfC) and X_L = 2πfL. Setting them equal gives f = 1/(2π√LC).",
+   "solution": [
+    {
+     "text": "Capacitor: f = 1/(2π × 1 kΩ × 22 nF) = <strong>7.23 kHz</strong>. Inductor: f = 1 kΩ/(2π × 4.7 mH) = <strong>33.9 kHz</strong>."
+    },
+    {
+     "tex": "f_0=\\frac{1}{2\\pi\\sqrt{(4.7\\ \\mathrm{mH})(22\\ \\mathrm{nF})}}=15.6\\ \\mathrm{kHz},\\qquad X=\\sqrt{L/C}=462\\ \\Omega"
+    },
+    {
+     "text": "The two reactance lines on a log–log plot cross at the resonant frequency, and the crossing value is the characteristic impedance."
+    }
+   ]
+  },
+  {
+   "tag": "SERIES RL",
+   "title": "Find everything, then check Kirchhoff",
+   "prompt": "A 12 V RMS, 400 Hz source drives 33 Ω in series with 15 mH. Find Z, the current, and the resistor and inductor voltages. Show that the voltages add to 12 V as phasors but not as magnitudes.",
+   "hint": "X_L = 2πfL. The current lags the source by ∠Z.",
+   "solution": [
+    {
+     "text": "X_L = 37.7 Ω, so Z = 33 + 37.7j = <strong>50.1 Ω ∠48.8°</strong> and I = 12/50.1 = <strong>0.240 A ∠−48.8°</strong>."
+    },
+    {
+     "text": "V_R = 33 × 0.240 = <strong>7.90 V</strong> (in phase with I); V_L = 37.7 × 0.240 = <strong>9.03 V</strong> (90° ahead of I)."
+    },
+    {
+     "text": "√(7.90² + 9.03²) = 12.0 V. The magnitudes add arithmetically to 16.9 V, which is not the source voltage."
+    }
+   ]
+  },
+  {
+   "tag": "PARALLEL RC",
+   "title": "Add admittances",
+   "prompt": "Find the impedance of 4.7 kΩ in parallel with 33 nF at 1 kHz, in both forms. Is the result closer to the resistor or the capacitor alone?",
+   "hint": "Y = 1/R + jωC; invert.",
+   "solution": [
+    {
+     "tex": "Y=\\frac{1}{4700}+j(2\\pi)(1000)(33\\ \\mathrm{nF})=(2.128+2.073j)\\times10^{-4}\\ \\mathrm S"
+    },
+    {
+     "text": "Z = 1/Y = <strong>2411 − 2349j Ω = 3366 Ω ∠−44.3°</strong>."
+    },
+    {
+     "text": "At 1 kHz the capacitor’s reactance is 4.82 kΩ, nearly equal to R, so neither dominates: the phase is close to −45° and |Z| is close to R/√2."
+    }
+   ]
+  },
+  {
+   "tag": "EQUIVALENTS",
+   "title": "Series to parallel",
+   "prompt": "A component measures Z = 30 + 40j Ω at 1 kHz. Find an equivalent parallel resistance and inductance at that frequency. Why does the parallel resistance differ from 30 Ω?",
+   "hint": "Q = |X|/R = 4/3. Use R_p = R(1 + Q²) and X_p = X(1 + 1/Q²).",
+   "solution": [
+    {
+     "tex": "R_p=30\\left(1+\\tfrac{16}{9}\\right)=83.3\\ \\Omega,\\qquad X_p=40\\left(1+\\tfrac{9}{16}\\right)=62.5\\ \\Omega"
+    },
+    {
+     "text": "L_p = 62.5/(2π × 1000) = <strong>9.95 mH</strong>. Check: 1/83.3 − j/62.5 = 0.012 − 0.016j S = 1/(30 + 40j)."
+    },
+    {
+     "text": "Conductance is the real part of the admittance, which mixes resistance and reactance. Only for a purely resistive Z is G = 1/R."
+    }
+   ]
+  },
+  {
+   "tag": "SCALING",
+   "title": "Same shape, new values",
+   "prompt": "An RC low-pass uses 2.2 kΩ and 68 nF. (a) Find its corner. (b) Scale it so the resistor is 22 kΩ without changing the response. (c) Then move the response four times higher in frequency, keeping 22 kΩ.",
+   "hint": "Impedance scaling multiplies R by k and divides C by k. Frequency scaling divides C (and L) by the frequency factor.",
+   "solution": [
+    {
+     "text": "(a) f₃dB = 1/(2π × 2.2 kΩ × 68 nF) = <strong>1.06 kHz</strong>."
+    },
+    {
+     "text": "(b) ×10 impedance: C = 68 nF/10 = <strong>6.8 nF</strong>; the corner is unchanged. The network now loads its source ten times less."
+    },
+    {
+     "text": "(c) ×4 frequency: C = 6.8 nF/4 = <strong>1.7 nF</strong>; the corner moves to 4.26 kHz. A standard 1.8 nF would give 4.02 kHz."
+    }
+   ]
+  }
+ ],
+ "reactive-power": [
+  {
+   "tag": "METERS",
+   "title": "Infer the load from three readings",
+   "prompt": "A 230 V RMS, 50 Hz supply feeds a load drawing 4.0 A RMS. A wattmeter reads 690 W. Find the apparent power, power factor, reactive power and phase angle. If the load is inductive, model it as series R and L.",
+   "hint": "S = V·I; PF = P/S; Q = √(S² − P²).",
+   "solution": [
+    {
+     "text": "S = 230 × 4 = <strong>920 VA</strong>; PF = 690/920 = <strong>0.75</strong>; θ = cos⁻¹ 0.75 = 41.4°; Q = 920 sin 41.4° = <strong>609 var</strong>."
+    },
+    {
+     "tex": "|Z|=\\frac{230}{4}=57.5\\ \\Omega,\\quad R=57.5\\cos\\theta=43.1\\ \\Omega,\\quad X=57.5\\sin\\theta=38.0\\ \\Omega"
+    },
+    {
+     "text": "L = 38.0/(2π × 50) = <strong>121 mH</strong>. Check: I²R = 16 × 43.1 = 690 W."
+    }
+   ]
+  },
+  {
+   "tag": "PURE REACTANCE",
+   "title": "Current without power",
+   "prompt": "A 10 µF capacitor is connected across 230 V RMS, 50 Hz. Find the RMS current, the reactive power, the average power, and the peak energy stored. At what frequency does its instantaneous power oscillate?",
+   "hint": "I = VωC. For an ideal capacitor P = 0 and Q = −V·I.",
+   "solution": [
+    {
+     "text": "I = 230 × 2π × 50 × 10 µF = <strong>0.723 A RMS</strong>; Q = −230 × 0.723 = <strong>−166 var</strong>; P = <strong>0</strong>."
+    },
+    {
+     "text": "Peak energy ½C(√2 × 230)² = <strong>0.53 J</strong>, stored and returned twice per cycle: the instantaneous power oscillates at <strong>100 Hz</strong> with amplitude 166 VA. The wiring still carries 0.72 A."
+    }
+   ]
+  },
+  {
+   "tag": "CORRECTION",
+   "title": "Correct a motor to 0.95",
+   "prompt": "A single-phase 400 V RMS, 50 Hz motor takes 5 kW at PF 0.80 lagging. Find the capacitance needed to raise the PF to 0.95 lagging and the line current before and after.",
+   "hint": "Q = P tan θ. The capacitor must supply the difference in Q.",
+   "solution": [
+    {
+     "text": "Q₁ = 5000 tan(cos⁻¹ 0.80) = 3750 var; Q₂ = 5000 tan(cos⁻¹ 0.95) = 1643 var; the capacitor supplies 2107 var."
+    },
+    {
+     "tex": "C=\\frac{\\Delta Q}{\\omega V^2}=\\frac{2107}{2\\pi(50)(400)^2}=41.9\\ \\mu\\mathrm F"
+    },
+    {
+     "text": "Line current falls from 5000/(400 × 0.80) = <strong>15.6 A</strong> to 5000/(400 × 0.95) = <strong>13.2 A</strong>. Line losses fall by (13.2/15.6)² ≈ 0.71."
+    }
+   ]
+  },
+  {
+   "tag": "MATCHING",
+   "title": "Conjugate or resistive?",
+   "prompt": "A 2 V RMS source has internal impedance 75 − 40j Ω. Find the load giving maximum power and that power. Then find the best purely resistive load and its power.",
+   "hint": "Conjugate match gives |V|²/(4R_s). For a resistive load, maximize I²R_L with I = V/|Z_s + R_L|; the optimum is R_L = |Z_s|.",
+   "solution": [
+    {
+     "text": "Conjugate load <strong>75 + 40j Ω</strong> (a resistor in series with an inductor): P = 2²/(4 × 75) = <strong>13.3 mW</strong>."
+    },
+    {
+     "tex": "R_L=|Z_s|=85\\ \\Omega,\\qquad P=\\frac{(2)^2(85)}{(75+85)^2+40^2}=12.5\\ \\mathrm{mW}"
+    },
+    {
+     "text": "The resistive load loses only 6% here. Matching matters most when the source reactance is large compared with its resistance."
+    }
+   ]
+  },
+  {
+   "tag": "CONVENTIONS",
+   "title": "A factor of two hiding in a phasor",
+   "prompt": "A student uses peak phasors, V = 10∠0° V across a 50 Ω resistor, and computes S = V I* = 10 × 0.2 = 2 W. A thermometer suggests the resistor dissipates half that. Who is right, and why?",
+   "hint": "What is the RMS value of a 10 V peak sinusoid?",
+   "solution": [
+    {
+     "text": "With peak phasors the correct expression is S = ½ V I*. The dissipation is ½ × 10 × 0.2 = <strong>1 W</strong>."
+    },
+    {
+     "text": "Equivalently, V_rms = 7.07 V and P = 7.07²/50 = 1 W. Complex power formulas assume RMS phasors unless a factor of ½ is included."
+    }
+   ]
+  }
+ ],
+ "rc-filters": [
+  {
+   "tag": "DESIGN",
+   "title": "A 2 kHz low-pass",
+   "prompt": "Design an RC low-pass with a −3 dB frequency near 2 kHz using R = 4.7 kΩ. Choose a standard capacitor from 10, 15, 22, 33… nF and find the resulting corner, and the gain and phase at 20 kHz.",
+   "hint": "C = 1/(2πRf₃dB).",
+   "solution": [
+    {
+     "text": "Exact C = 1/(2π × 4.7 kΩ × 2 kHz) = 16.9 nF. Choosing <strong>15 nF</strong> gives f₃dB = <strong>2.26 kHz</strong> (choosing 22 nF would give 1.54 kHz)."
+    },
+    {
+     "tex": "H(20\\ \\mathrm{kHz})=\\frac{1}{1+j(20/2.258)}\\Rightarrow |H|=-19.0\\ \\mathrm{dB},\\ \\angle H=-83.6^\\circ"
+    },
+    {
+     "text": "One decade above the corner the single pole gives about −19 dB, close to the −20 dB asymptote."
+    }
+   ]
+  },
+  {
+   "tag": "DECIBELS",
+   "title": "Add, don’t multiply",
+   "prompt": "A signal passes through an amplifier with voltage gain 20, an attenuator of 0.25, and a filter at its −3 dB point. Find the overall gain in dB and as a ratio.",
+   "hint": "Convert each stage to dB with 20 log₁₀, then add.",
+   "solution": [
+    {
+     "text": "Stages: +26.02 dB, −12.04 dB and −3.01 dB. Total <strong>+10.97 dB</strong>."
+    },
+    {
+     "text": "As a ratio: 20 × 0.25 × 0.707 = <strong>3.54</strong>, and 20 log₁₀ 3.54 = 10.97 dB. ✓"
+    }
+   ]
+  },
+  {
+   "tag": "COUPLING",
+   "title": "How much does the coupling capacitor cost?",
+   "prompt": "A 4.7 µF coupling capacitor feeds a 2.2 kΩ input. Find the corner frequency, and the gain (in dB) and phase at 50 Hz and at 15 Hz.",
+   "hint": "It is a high-pass: |H| = x/√(1 + x²), ∠H = 90° − tan⁻¹ x, with x = f/f₃dB.",
+   "solution": [
+    {
+     "text": "f₃dB = 1/(2π × 2.2 kΩ × 4.7 µF) = <strong>15.4 Hz</strong>."
+    },
+    {
+     "text": "At 50 Hz (x = 3.25): |H| = 0.956, <strong>−0.39 dB</strong>, lead <strong>17.1°</strong>. At 15 Hz (x = 0.975): |H| = 0.698, <strong>−3.12 dB</strong>, lead <strong>45.7°</strong>."
+    },
+    {
+     "text": "If the 50 Hz phase shift matters (for example, in a measurement), use a capacitor several times larger or a higher input resistance."
+    }
+   ]
+  },
+  {
+   "tag": "LOADING",
+   "title": "A filter between a source and a load",
+   "prompt": "A 10 kΩ / 22 nF low-pass is driven by a source with 600 Ω output resistance and loaded by 47 kΩ. Find the DC gain and the −3 dB frequency, and compare with the ideal 10 kΩ / 22 nF corner.",
+   "hint": "Add the source resistance to R. Then find the Thévenin resistance seen by the capacitor.",
+   "solution": [
+    {
+     "text": "DC gain = 47/(10.6 + 47) = <strong>0.816 (−1.77 dB)</strong>."
+    },
+    {
+     "tex": "R_{\\mathrm{th}}=10.6\\ \\mathrm{k\\Omega}\\parallel47\\ \\mathrm{k\\Omega}=8.65\\ \\mathrm{k\\Omega},\\qquad f_{3\\mathrm{dB}}=\\frac{1}{2\\pi(8.65\\ \\mathrm k)(22\\ \\mathrm n)}=836\\ \\mathrm{Hz}"
+    },
+    {
+     "text": "The ideal network gives 723 Hz. The source lowers the corner (to 682 Hz alone) while the load raises it; together they shift it by 16% and cost 1.8 dB in the passband."
+    }
+   ]
+  },
+  {
+   "tag": "INTEGRATOR",
+   "title": "Two ways to the same triangle",
+   "prompt": "A ±2 V, 1 kHz square wave drives a 100 kΩ / 100 nF low-pass. Estimate the peak-to-peak triangle at the output using the time domain. Then check your answer with the square wave’s fundamental.",
+   "hint": "The corner is far below 1 kHz, so the output barely moves and the capacitor current is about ±V/R. The fundamental of a square wave of amplitude A is 4A/π; a triangle of amplitude B has fundamental 8B/π².",
+   "solution": [
+    {
+     "text": "RC = 10 ms, f₃dB = 15.9 Hz. The output ramps at 2 V/10 ms = 200 V/s for 0.5 ms each half cycle: <strong>0.10 V peak-to-peak</strong>, i.e. 50 mV amplitude."
+    },
+    {
+     "text": "Fundamental: (4/π)(2 V) = 2.55 V at 1 kHz, attenuated by 15.9/1000 → <strong>40.5 mV</strong>. The triangle’s fundamental is (8/π²)(50 mV) = 40.5 mV. ✓"
+    }
+   ]
+  }
+ ],
+ "poles": [
+  {
+   "tag": "SLOPES",
+   "title": "Count the poles",
+   "prompt": "A low-pass response measures −20 dB at 10 kHz and −56 dB at 40 kHz, both well above its corners. Approximately how many poles does it have?",
+   "hint": "40 kHz is two octaves above 10 kHz.",
+   "solution": [
+    {
+     "text": "The gain falls 36 dB over two octaves, 18 dB per octave. Each pole contributes 6 dB per octave, so there are <strong>three poles</strong> (−60 dB/decade)."
+    }
+   ]
+  },
+  {
+   "tag": "IDENTICAL POLES",
+   "title": "Three buffered sections",
+   "prompt": "Three buffered identical RC low-pass sections each have their corner at 1 kHz. Find the gain and phase at 1 kHz, the overall −3 dB frequency, and the gain at 10 kHz.",
+   "hint": "Gains in dB and phases add. For n identical poles the −3 dB point is f_c√(2^(1/n) − 1).",
+   "solution": [
+    {
+     "text": "At 1 kHz: 3 × (−3.01) = <strong>−9.03 dB</strong> and 3 × (−45°) = <strong>−135°</strong>."
+    },
+    {
+     "tex": "f_{-3\\mathrm{dB}}=1\\ \\mathrm{kHz}\\sqrt{2^{1/3}-1}=510\\ \\mathrm{Hz}"
+    },
+    {
+     "text": "At 10 kHz: 3 × (−20.04) = <strong>−60.1 dB</strong>."
+    }
+   ]
+  },
+  {
+   "tag": "INTERACTION",
+   "title": "Two sections, no buffer",
+   "prompt": "Two identical 10 kΩ / 10 nF low-pass sections are connected directly. Find the two pole frequencies and the gain at 1.59 kHz. How could you reduce the interaction without an amplifier?",
+   "hint": "With x = ωRC the response is 1/(1 − x² + 3jx). Its denominator factors with roots x = (3 ± √5)/2.",
+   "solution": [
+    {
+     "text": "The single-section corner is 1.59 kHz. The poles move to 0.382 × 1.59 = <strong>608 Hz</strong> and 2.618 × 1.59 = <strong>4.17 kHz</strong>."
+    },
+    {
+     "text": "At x = 1 the gain is 1/|3j| = 1/3, <strong>−9.54 dB</strong> (−6.02 dB if buffered). Make the second section 100 kΩ / 1 nF: same time constant, one tenth the loading, gain at x = 1 about −6.4 dB."
+    }
+   ]
+  },
+  {
+   "tag": "BAND-PASS",
+   "title": "100 Hz to 10 kHz",
+   "prompt": "Design a buffered RC band-pass with corners at 100 Hz and 10 kHz, using 10 kΩ in both sections. Find both capacitors, the center frequency, and the gains at the center and at 100 Hz.",
+   "hint": "Each section is designed separately because the buffer isolates them.",
+   "solution": [
+    {
+     "text": "High-pass: C₁ = 1/(2π × 10 kΩ × 100 Hz) = <strong>159 nF</strong>. Low-pass: C₂ = <strong>1.59 nF</strong>. Center √(100 × 10 000) = <strong>1 kHz</strong>."
+    },
+    {
+     "text": "At 1 kHz each section contributes about −0.04 dB: <strong>−0.09 dB</strong> total. At 100 Hz the high-pass gives −3.01 dB and the low-pass almost nothing: <strong>−3.01 dB</strong>. Corners two decades apart barely interact."
+    }
+   ]
+  },
+  {
+   "tag": "NOTCH",
+   "title": "A 50 Hz twin-T",
+   "prompt": "Design a twin-T notch for 50 Hz with C = 47 nF. List all four component values and find the attenuation at 150 Hz and 100 Hz.",
+   "hint": "f₀ = 1/(2πRC). The T’s use R, R, 2C and C, C, R/2. For the ideal twin-T, H = (1 − x²)/(1 − x² + 4jx).",
+   "solution": [
+    {
+     "text": "R = 1/(2π × 50 × 47 nF) = <strong>67.7 kΩ</strong>, R/2 = <strong>33.9 kΩ</strong>, C = <strong>47 nF</strong>, 2C = <strong>94 nF</strong>."
+    },
+    {
+     "text": "At 150 Hz (x = 3): |H| = 8/|−8 + 12j| = 0.555, <strong>−5.1 dB</strong>. At 100 Hz (x = 2): <strong>−9.1 dB</strong>. The notch is deep but broad—its Q is only ¼."
+    }
+   ]
+  }
+ ],
+ "resonance": [
+  {
+   "tag": "SERIES Q",
+   "title": "An RF series resonator",
+   "prompt": "A series circuit has L = 47 µH, C = 220 pF and R = 12 Ω. Find f₀, Z₀, Q and the half-power bandwidth.",
+   "hint": "Z₀ = √(L/C), Q = Z₀/R, B = f₀/Q.",
+   "solution": [
+    {
+     "tex": "f_0=\\frac{1}{2\\pi\\sqrt{(47\\ \\mu\\mathrm H)(220\\ \\mathrm{pF})}}=1.565\\ \\mathrm{MHz},\\qquad Z_0=462\\ \\Omega"
+    },
+    {
+     "text": "Q = 462/12 = <strong>38.5</strong>; bandwidth = 1.565 MHz/38.5 = <strong>40.6 kHz</strong> (equivalently R/(2πL))."
+    }
+   ]
+  },
+  {
+   "tag": "MAGNIFICATION",
+   "title": "How many volts on the capacitor?",
+   "prompt": "The circuit of the previous problem is driven at f₀ by 0.5 V. Find the current and the capacitor voltage. What capacitor voltage rating would you specify?",
+   "hint": "At resonance Z = R, and |V_C| = I Z₀ = Q V.",
+   "solution": [
+    {
+     "text": "I = 0.5/12 = <strong>41.7 mA</strong>. |V_C| = 41.7 mA × 462 Ω = <strong>19.3 V</strong>, 38.5 times the drive."
+    },
+    {
+     "text": "Specify at least 25 V, and more if the drive or Q could be higher. Detuning or added loss reduces the magnification."
+    }
+   ]
+  },
+  {
+   "tag": "TANK",
+   "title": "Loading a tank",
+   "prompt": "A parallel tank uses 330 µH (winding resistance 8 Ω) and 470 pF. Find f₀, Q and the impedance at resonance. A 47 kΩ load is connected across it: find the new effective Q and bandwidth.",
+   "hint": "Unloaded: Z ≈ L/(rC). Loaded: combine in parallel with 47 kΩ, then Q = R_parallel/Z₀.",
+   "solution": [
+    {
+     "text": "f₀ = <strong>404 kHz</strong>, Z₀ = 838 Ω, Q = 838/8 = <strong>105</strong>, and Z(f₀) = L/(rC) = <strong>87.8 kΩ</strong>."
+    },
+    {
+     "text": "With 47 kΩ across it: 87.8 kΩ ∥ 47 kΩ = 30.6 kΩ, Q = 30.6 k/838 = <strong>36.5</strong>, bandwidth 404 kHz/36.5 = <strong>11.1 kHz</strong> (it was 3.9 kHz unloaded)."
+    }
+   ]
+  },
+  {
+   "tag": "LC FILTER",
+   "title": "A Butterworth LC into 8 Ω",
+   "prompt": "Design an LC low-pass with a 2 kHz natural frequency and a flat (Butterworth, Q = 0.707) response into an 8 Ω load, driven from a source with negligible resistance. Find L, C and the attenuation at 20 kHz.",
+   "hint": "With R_s ≈ 0, Q = R_L/Z₀. Then L = Z₀/ω₀ and C = 1/(ω₀Z₀).",
+   "solution": [
+    {
+     "text": "Z₀ = 8/0.707 = 11.3 Ω and ω₀ = 2π × 2000 = 12 566 rad/s."
+    },
+    {
+     "tex": "L=\\frac{Z_0}{\\omega_0}=0.90\\ \\mathrm{mH},\\qquad C=\\frac{1}{\\omega_0Z_0}=7.0\\ \\mu\\mathrm F"
+    },
+    {
+     "text": "At 2 kHz the gain is −3.01 dB; at 20 kHz it is <strong>−40 dB</strong>, two poles’ worth of rolloff over one decade."
+    }
+   ]
+  },
+  {
+   "tag": "RINGING",
+   "title": "From peaking to overshoot",
+   "prompt": "A lightly loaded LC supply filter has Q = 4. Estimate its step-response overshoot. If Z₀ = 2 Ω and the load is very light, what added series resistance would bring Q to 0.707?",
+   "hint": "ζ = 1/(2Q); overshoot = exp(−πζ/√(1 − ζ²)). With a light load, the series Q is Z₀/R.",
+   "solution": [
+    {
+     "text": "ζ = 0.125, so the overshoot is exp(−π × 0.125/0.992) = <strong>67%</strong>: a 5 V step would peak near 8.4 V."
+    },
+    {
+     "text": "Q = Z₀/R = 0.707 needs R = 2/0.707 = <strong>2.8 Ω</strong>, which drops 2.8 V per ampere of load current. A parallel damping branch (R in series with a large C) avoids that DC loss."
+    }
+   ]
+  }
+ ],
+ "ac-thevenin": [
+  {
+   "tag": "THÉVENIN",
+   "title": "A high-pass at one frequency",
+   "prompt": "A 1 V source drives a 10 nF series capacitor and a 10 kΩ resistor to ground (a high-pass). At 1 kHz find V_th and Z_th at the output, then the output with a 10 kΩ load.",
+   "hint": "V_th is the unloaded divider; Z_th = R ∥ Z_C.",
+   "solution": [
+    {
+     "text": "Z_C = −15.9j kΩ. V_th = 10k/(10k − 15.9jk) = <strong>0.532∠57.9°</strong>. Z_th = 10 kΩ ∥ (−15.9j kΩ) = <strong>7.17 − 4.50j kΩ</strong>."
+    },
+    {
+     "tex": "\\mathbf V_{\\mathrm{out}}=\\mathbf V_{\\mathrm{th}}\\frac{10\\ \\mathrm k}{Z_{\\mathrm{th}}+10\\ \\mathrm k}=0.300\\angle72.6^\\circ"
+    },
+    {
+     "text": "Loading reduces the output from 0.532 V to 0.300 V and adds 15° of lead: the effective corner has moved up because R ∥ R_L is smaller."
+    }
+   ]
+  },
+  {
+   "tag": "BYPASS",
+   "title": "How big, and how close?",
+   "prompt": "A chip draws 200 mA bursts lasting 20 ns, and its supply may droop by at most 50 mV. Find the minimum local bypass capacitance. If the capacitor’s mounting adds 1 nH and the current rises in 2 ns, what voltage appears across that inductance?",
+   "hint": "ΔV = IΔt/C and v = L di/dt.",
+   "solution": [
+    {
+     "text": "C ≥ 0.2 A × 20 ns/50 mV = <strong>80 nF</strong>; 100 nF is a natural choice."
+    },
+    {
+     "text": "The mounting inductance gives 1 nH × 0.2 A/2 ns = <strong>0.1 V</strong>, twice the whole budget. Shorter connections, several capacitors in parallel, or a low-inductance package matter more than extra capacitance."
+    }
+   ]
+  },
+  {
+   "tag": "HOLD-UP",
+   "title": "Ride through a dropout",
+   "prompt": "A 3.3 V LDO with 0.3 V dropout is fed from a 5 V rail and draws 300 mA. How much capacitance on the 5 V rail keeps the regulator in regulation for 5 ms after the 5 V source disappears?",
+   "hint": "The LDO keeps regulating until its input falls to 3.6 V. Use C = IΔt/ΔV.",
+   "solution": [
+    {
+     "tex": "C=\\frac{(0.3\\ \\mathrm A)(5\\ \\mathrm{ms})}{5-3.6\\ \\mathrm V}=1.07\\ \\mathrm{mF}"
+    },
+    {
+     "text": "A 1.5 mF capacitor gives margin for tolerance and ESR drop. It must also charge at start-up: an inrush problem (Chapter 18)."
+    }
+   ]
+  },
+  {
+   "tag": "AC GROUND",
+   "title": "A quiet reference, and its cost",
+   "prompt": "Two 47 kΩ resistors make a 2.5 V reference from a 5 V supply that carries 120 Hz ripple. Size a capacitor from the reference to ground so that ripple is attenuated a further 40 dB beyond the divider’s own halving. How long does the reference take to settle within 1% at power-up?",
+   "hint": "The capacitor sees the divider’s Thévenin resistance. 40 dB is a factor of 100, so the corner must be at most 1.2 Hz.",
+   "solution": [
+    {
+     "text": "R_th = 47 k ∥ 47 k = 23.5 kΩ. Corner ≤ 1.2 Hz needs C ≥ 1/(2π × 23.5 kΩ × 1.2 Hz) = <strong>5.6 µF</strong>; use 6.8 µF or 10 µF."
+    },
+    {
+     "text": "With 5.6 µF, τ = 0.13 s and 1% settling takes 4.6τ ≈ <strong>0.61 s</strong>; with 10 µF, about 1.1 s."
+    }
+   ]
+  },
+  {
+   "tag": "RADIO",
+   "title": "Selectivity and loading",
+   "prompt": "An AM tuning tank uses 220 µH. Find the capacitance for 1.2 MHz. What Q gives a 10 kHz bandwidth, and what parallel resistance does that require? If the detector loads the tank with 50 kΩ, what bandwidth results?",
+   "hint": "C = 1/(ω₀²L); Q = f₀/B; R_p = Q·Z₀. A load in parallel lowers R_p and thus Q.",
+   "solution": [
+    {
+     "text": "C = <strong>80 pF</strong>, Z₀ = √(220 µH/80 pF) = 1.66 kΩ. Q = 1.2 MHz/10 kHz = <strong>120</strong>, needing R_p = 120 × 1.66 kΩ = <strong>199 kΩ</strong>."
+    },
+    {
+     "text": "With 50 kΩ in parallel: 199 k ∥ 50 k = 40.0 kΩ, Q = 24.1, bandwidth ≈ <strong>50 kHz</strong>—five stations at once. A buffer or a tap on the coil is needed to keep the selectivity."
+    }
+   ]
+  }
+ ],
+ "transistor-physics": [
+  {
+   "tag": "DIFFUSION LENGTH",
+   "title": "Is the base short?",
+   "prompt": "Electrons in a transistor base have D_n = 25 cm²/s and lifetime τ_n = 0.5 µs. Find the diffusion length. Is a 1 µm base “short,” and what does that imply about the electron profile?",
+   "hint": "L = √(Dτ). Convert cm² to µm² carefully: 1 cm² = 10⁸ µm².",
+   "solution": [
+    {
+     "tex": "L_n=\\sqrt{(25\\ \\mathrm{cm^2/s})(0.5\\ \\mu\\mathrm s)}=\\sqrt{1.25\\times10^{-5}\\ \\mathrm{cm^2}}=35.4\\ \\mu\\mathrm m"
+    },
+    {
+     "text": "A 1 µm base is 35 times shorter than L_n, so recombination barely acts during the crossing. The profile is nearly a straight line, and the transport term W²/(2L_n²) is only 4 × 10⁻⁴."
+    }
+   ]
+  },
+  {
+   "tag": "SATURATION CURRENT",
+   "title": "From geometry to I_S",
+   "prompt": "An NPN has emitter area 500 µm², base doping 5 × 10¹⁶ cm⁻³, neutral base width 1 µm and D_n = 20 cm²/s, with n_i = 10¹⁰ cm⁻³. Estimate I_S and the collector current at V_BE = 0.70 V (V_T = 25.85 mV).",
+   "hint": "I_S = qAD_n n_i²/(N_A W). Work in SI: 500 µm² = 5 × 10⁻¹⁰ m², 5 × 10¹⁶ cm⁻³ = 5 × 10²² m⁻³.",
+   "solution": [
+    {
+     "tex": "I_S=\\frac{(1.6\\times10^{-19})(5\\times10^{-10})(2\\times10^{-3})(10^{32})}{(5\\times10^{22})(10^{-6})}=3.2\\times10^{-16}\\ \\mathrm A"
+    },
+    {
+     "text": "I_C = I_S e<sup>0.70/0.02585</sup> ≈ <strong>0.18 mA</strong>. Doubling the area or halving the base width or doping each doubles I_S, lowering V_BE at a given current by V_T ln 2 = 18 mV."
+    }
+   ]
+  },
+  {
+   "tag": "CURRENT GAIN",
+   "title": "Two loss terms",
+   "prompt": "In a transistor, the back-injection term D_pN_AW/(D_nN_EW_E) is 0.004 and the base transport term W²/(2L_n²) is 0.0015. Find β, γ, α_T and α. Which change would raise β more: halving the first term or halving the second?",
+   "hint": "1/β is the sum of the two terms.",
+   "solution": [
+    {
+     "text": "1/β = 0.0055, so <strong>β ≈ 182</strong>. γ = 1/(1 + 0.004) = 0.9960; α_T = 0.9985; α = 0.9945 (check: β/(β+1) = 0.9945)."
+    },
+    {
+     "text": "Halving the back-injection term gives 1/β = 0.0035, β ≈ 286; halving the transport term gives 0.00475, β ≈ 211. Here emitter efficiency is the bigger loss, so a more heavily doped emitter helps more."
+    }
+   ]
+  },
+  {
+   "tag": "EARLY VOLTAGE",
+   "title": "Estimate V_A from base width",
+   "prompt": "As V_CB rises from 0 to 5 V, a transistor’s neutral base width falls from 0.70 µm to 0.65 µm while V_BE is held fixed. Estimate the change in collector current and the Early voltage.",
+   "hint": "I_C ∝ 1/W at fixed edge density. Extrapolate the straight line I_C(V) back to zero current.",
+   "solution": [
+    {
+     "text": "I_C rises by 0.70/0.65 = 1.077, i.e. 7.7% over 5 V, a slope of 1.54% per volt relative to the 0 V current."
+    },
+    {
+     "text": "Extrapolating backward, the current reaches zero at −1/0.0154 ≈ −65 V, so <strong>V_A ≈ 65 V</strong> and r_o at 1 mA would be about 65 kΩ."
+    }
+   ]
+  },
+  {
+   "tag": "TEMPERATURE",
+   "title": "A warm transistor at fixed V_BE",
+   "prompt": "A transistor carries 1 mA with V_BE = 0.650 V at 25 °C. Estimate V_BE at 85 °C for the same current. If instead V_BE were held at 0.650 V, roughly how much would the current rise per degree, and over the full 60 °C?",
+   "hint": "Use −2.1 mV/°C. At fixed V_BE, a 2.1 mV equivalent change in a 25.85 mV exponential scale is a fractional change.",
+   "solution": [
+    {
+     "text": "At constant current: 0.650 − 0.0021 × 60 = <strong>0.524 V</strong>."
+    },
+    {
+     "text": "At constant V_BE: about 2.1/25.85 ≈ <strong>8% per °C</strong>. Over 60 °C the 126 mV equivalent change multiplies the current by roughly e<sup>126/30.9</sup> ≈ <strong>60</strong> (using V_T at the higher temperature). This is why bias circuits never hold V_BE fixed."
+    }
+   ]
+  }
+ ],
+ "bjt": [
+  {
+   "tag": "TERMINAL CURRENTS",
+   "title": "Split the emitter current",
+   "prompt": "A transistor with β = 150 carries 3.0 mA of emitter current. Find I_B, I_C and α.",
+   "hint": "I_E = (β + 1)I_B.",
+   "solution": [
+    {
+     "text": "I_B = 3.0 mA/151 = <strong>19.9 µA</strong>; I_C = 150 × I_B = <strong>2.98 mA</strong>; α = 150/151 = <strong>0.9934</strong>. Treating I_C = I_E costs only 0.7%."
+    }
+   ]
+  },
+  {
+   "tag": "DESIGN",
+   "title": "A solenoid from a 3.3 V pin",
+   "prompt": "A 24 V, 250 mA solenoid (with a flywheel diode) must be switched by a 3.3 V logic output that can supply at most 8 mA. The NPN has β ≥ 40. Design for a forced β of 10. What base resistor is needed, and is the design feasible? Suggest an alternative.",
+   "hint": "I_B = I_C/10. Compare with the pin’s capability.",
+   "solution": [
+    {
+     "text": "I_B = 25 mA and R_B = (3.3 − 0.75)/25 mA ≈ <strong>100 Ω</strong>. The pin can supply only 8 mA, so the design is <strong>not feasible</strong>."
+    },
+    {
+     "text": "Even at minimum β with no overdrive, 250/40 = 6.3 mA would leave no margin. Use a Darlington pair (overall β in the thousands), a two-transistor driver, or a logic-level MOSFET, whose gate draws no steady current."
+    }
+   ]
+  },
+  {
+   "tag": "LED DRIVER",
+   "title": "Size both resistors",
+   "prompt": "Drive a 2.0 V, 15 mA LED from 5 V with a transistor whose V_CE(sat) is 0.15 V and minimum β is 100. Use fivefold overdrive and a 5 V logic signal. Choose standard values.",
+   "hint": "Collector resistor from the voltage left after the LED and V_CE(sat).",
+   "solution": [
+    {
+     "text": "R_C = (5 − 2 − 0.15)/15 mA = 190 Ω → <strong>180 Ω</strong>, giving 15.8 mA."
+    },
+    {
+     "text": "I_B = 5 × 15.8 mA/100 ≈ 0.8 mA; R_B = (5 − 0.7)/0.8 mA ≈ 5.4 kΩ → <strong>5.1 kΩ or 5.6 kΩ</strong>. The logic pin supplies under 1 mA."
+    }
+   ]
+  },
+  {
+   "tag": "DIAGNOSIS",
+   "title": "Which region?",
+   "prompt": "Measured on a working NPN circuit (all to ground): (a) V_B = 2.00 V, V_E = 1.35 V, V_C = 7.2 V; (b) V_B = 2.00 V, V_E = 1.35 V, V_C = 1.45 V; (c) V_B = 0.30 V, V_E = 0 V, V_C = 12 V. Identify the region in each case.",
+   "hint": "Check whether the base–emitter junction is on, then whether the base–collector junction is forward-biased.",
+   "solution": [
+    {
+     "text": "(a) V_BE = 0.65 V on; V_BC = −5.2 V reverse: <strong>active</strong>."
+    },
+    {
+     "text": "(b) V_BE = 0.65 V; V_BC = +0.55 V forward and V_CE = 0.10 V: <strong>saturated</strong>."
+    },
+    {
+     "text": "(c) V_BE = 0.30 V, too small to conduct significantly; V_C at the supply: <strong>cut off</strong>."
+    }
+   ]
+  },
+  {
+   "tag": "HIGH SIDE",
+   "title": "A PNP switch and its base resistor",
+   "prompt": "A PNP transistor switches a 0.5 A grounded load from 12 V. Its minimum β is 50; use twofold overdrive. A small NPN pulls the PNP’s base toward ground (V_CE(sat) = 0.1 V); take the PNP’s V_EB as 0.8 V at this current. Find the base resistor and its dissipation. Why add a resistor from PNP base to emitter?",
+   "hint": "I_B = 2 × 0.5 A/50.",
+   "solution": [
+    {
+     "text": "I_B = 20 mA. R_B = (12 − 0.8 − 0.1)/20 mA = 555 Ω → <strong>560 Ω</strong>, dissipating 20 mA² × 560 Ω ≈ <strong>0.22 W</strong>: use a ¼ W or larger resistor."
+    },
+    {
+     "text": "The base–emitter resistor (a few kilohms) discharges the PNP’s base when the NPN turns off and holds it off against leakage. Without it, turn-off is slow and the load may stay partly on."
+    }
+   ]
+  }
+ ],
+ "emitter-follower": [
+  {
+   "tag": "IMPEDANCES",
+   "title": "Looking in, looking back",
+   "prompt": "A follower with β = 150 has R_E = 2.2 kΩ and drives a 2.2 kΩ load (AC-coupled). Its base is driven from a 47 kΩ source. Ignoring r_e, find Z_in at the base and Z_out at the emitter. How much does r_e ≈ 26 Ω (at 1 mA) change Z_out?",
+   "hint": "Signal resistance in the emitter is R_E ∥ R_L.",
+   "solution": [
+    {
+     "text": "Z_in = 151 × (2.2 kΩ ∥ 2.2 kΩ) = 151 × 1.1 kΩ = <strong>166 kΩ</strong>."
+    },
+    {
+     "text": "Z_out = 47 kΩ/151 = <strong>311 Ω</strong>. Adding r_e gives about 337 Ω, an 8% change; r_e matters more when the source resistance is small."
+    }
+   ]
+  },
+  {
+   "tag": "CLIPPING",
+   "title": "Can it pull down far enough?",
+   "prompt": "A DC-coupled follower runs from ±12 V with R_E = 3.3 kΩ to −12 V, driving 1 kΩ to ground. What is the most negative output? What R_E allows a swing to −6 V, and what standing current does that imply at 0 V output?",
+   "hint": "With the transistor off, R_E and R_L form a divider from −12 V.",
+   "solution": [
+    {
+     "text": "Floor = −12 × 1/(3.3 + 1) = <strong>−2.79 V</strong>."
+    },
+    {
+     "text": "At −6 V the load draws 6 mA, which R_E must supply from (−6 − (−12)) = 6 V: R_E ≤ <strong>1 kΩ</strong>. At 0 V output, 12 mA then flows through R_E continuously: 0.144 W in R_E and 0.144 W in the transistor."
+    }
+   ]
+  },
+  {
+   "tag": "REGULATOR",
+   "title": "Size the zener resistor",
+   "prompt": "Design a zener-plus-follower regulator for 100 mA from an input that varies from 13 V to 16 V, using a 10 V zener that needs at least 5 mA. Transistor β ≥ 50. Find R, the output voltage, and the transistor’s dissipation at the highest input.",
+   "hint": "The worst case for the resistor is minimum input with maximum base current.",
+   "solution": [
+    {
+     "text": "I_B(max) = 100 mA/51 = 1.96 mA. R ≤ (13 − 10)/(5 + 1.96) mA = 431 Ω → <strong>390 Ω</strong>."
+    },
+    {
+     "text": "Output ≈ 10 − 0.65 = <strong>9.35 V</strong>. At 16 V the transistor dissipates (16 − 9.35) × 0.1 = <strong>0.67 W</strong>; the zener then carries (16 − 10)/390 Ω − I_B ≈ 13 mA, dissipating 0.13 W."
+    }
+   ]
+  },
+  {
+   "tag": "BREAKDOWN",
+   "title": "A follower driving a big capacitor",
+   "prompt": "A follower charges a 10 µF capacitor to +8 V. Its base is then suddenly driven to −5 V. What happens to the base–emitter junction, and how would you protect it?",
+   "hint": "The capacitor holds the emitter voltage while the base moves.",
+   "solution": [
+    {
+     "text": "The emitter stays at +8 V while the base goes to −5 V: the base–emitter junction sees <strong>13 V reverse</strong>, well beyond a typical V_EBO of 6 V. Avalanche current flows and degrades β permanently."
+    },
+    {
+     "text": "Add a diode across the base–emitter junction, cathode to base and anode to emitter, so the capacitor discharges into the base driver instead; limit that current with a base resistor."
+    }
+   ]
+  },
+  {
+   "tag": "IMPEDANCE MATCH",
+   "title": "When a follower is not enough",
+   "prompt": "A 1 V signal with 50 kΩ source resistance must drive 470 Ω. Compare a direct connection with a follower biased at 1 mA, R_E = 1 kΩ (signal resistance R_E ∥ R_L = 320 Ω), β = 100. Include r_e. What limits the follower here?",
+   "hint": "Z_in = (β + 1)(r_e + R_E ∥ R_L). Then two dividers: source into Z_in, and the follower’s internal r_e into 320 Ω.",
+   "solution": [
+    {
+     "text": "Direct: 470/50 470 = <strong>9.3 mV</strong>."
+    },
+    {
+     "text": "Follower: r_e = 25.9 Ω, Z_in = 101 × 345.6 Ω = 34.9 kΩ; the base receives 34.9/(34.9 + 50) = 0.411 V; the emitter delivers 0.411 × 320/(320 + 25.9) = <strong>0.380 V</strong>, forty times better."
+    },
+    {
+     "text": "The limit is that (β + 1) × 320 Ω is still smaller than 50 kΩ. A second follower (a Darlington pair), higher β, or a higher-impedance load would help."
+    }
+   ]
+  }
+ ],
+ "bjt-biasing": [
+  {
+   "tag": "FOLLOWER BIAS",
+   "title": "Bias a 2 mA follower on 12 V",
+   "prompt": "Design the bias for an emitter follower on 12 V with about 2 mA quiescent and the emitter near mid-supply. Minimum β is 80. Use R₁ = 39 kΩ (top) and R₂ = 47 kΩ (bottom); check the stiffness rule and find the actual emitter current and the input impedance.",
+   "hint": "Choose R_E for V_E ≈ 6 V. Then check R_TH ≤ (β + 1)R_E/10.",
+   "solution": [
+    {
+     "text": "R_E = 6 V/2 mA = <strong>3 kΩ</strong>. The rule asks for R_TH ≤ 81 × 3 kΩ/10 = 24.3 kΩ."
+    },
+    {
+     "text": "V_TH = 12 × 47/86 = 6.56 V, R_TH = 21.3 kΩ ✓. I_E = (6.56 − 0.65)/(3 kΩ + 21.3 kΩ/81) = <strong>1.81 mA</strong>; V_E = 5.43 V."
+    },
+    {
+     "text": "Z_in = 21.3 kΩ ∥ (81 × 3 kΩ) = <strong>19.6 kΩ</strong>, dominated by the divider."
+    }
+   ]
+  },
+  {
+   "tag": "β SPREAD",
+   "title": "How much does β matter?",
+   "prompt": "A common-emitter stage on 12 V uses a 56 kΩ / 10 kΩ divider and R_E = 1 kΩ. Find I_C for β = 80 and β = 400.",
+   "hint": "I_C = β(V_TH − V_BE)/(R_TH + (β + 1)R_E).",
+   "solution": [
+    {
+     "text": "V_TH = 12 × 10/66 = 1.818 V, R_TH = 8.48 kΩ."
+    },
+    {
+     "text": "β = 80: I_C = 80 × 1.168/(8.48 + 81) kΩ = <strong>1.044 mA</strong>. β = 400: 400 × 1.168/(8.48 + 401) kΩ = <strong>1.141 mA</strong>. A fivefold change in β moves the current by 9%."
+    }
+   ]
+  },
+  {
+   "tag": "TEMPERATURE",
+   "title": "Why a volt across R_E?",
+   "prompt": "Compare two bias designs with the same current, one with V_E = 0.5 V and one with V_E = 2.0 V. Estimate the fractional current change for a 50 °C temperature rise in each.",
+   "hint": "ΔI/I ≈ 2.1 mV/°C × ΔT/V_E.",
+   "solution": [
+    {
+     "text": "ΔV_BE = −2.1 × 50 = −105 mV. With V_E = 0.5 V: ΔI/I ≈ 105/500 = <strong>+21%</strong>. With V_E = 2.0 V: 105/2000 = <strong>+5.3%</strong>."
+    },
+    {
+     "text": "The larger V_E costs supply headroom (less collector swing) but makes the stage four times less temperature-sensitive."
+    }
+   ]
+  },
+  {
+   "tag": "BAD BIAS",
+   "title": "The single base resistor",
+   "prompt": "A stage on 12 V uses a single 1 MΩ base resistor and R_C = 4.7 kΩ, emitter grounded. Find I_C and V_C for β = 80 and β = 400.",
+   "hint": "I_B = (12 − 0.65)/1 MΩ; check whether V_C goes below about 0.2 V.",
+   "solution": [
+    {
+     "text": "I_B = 11.35 µA. β = 80: I_C = 0.91 mA, V_C = 12 − 4.27 = <strong>7.7 V</strong> (active)."
+    },
+    {
+     "text": "β = 400: βI_B = 4.54 mA would need V_C = −9.3 V, impossible: the transistor <strong>saturates</strong> with I_C ≈ (12 − 0.2)/4.7 kΩ = 2.5 mA and V_C ≈ 0.2 V. The stage is useless as an amplifier."
+    }
+   ]
+  },
+  {
+   "tag": "COUPLING",
+   "title": "Input capacitor for the audio follower",
+   "prompt": "The audio follower of the chapter has Z_in = 63.8 kΩ. What low-frequency corner does a 0.1 µF input capacitor give? What value puts the corner at 2 Hz?",
+   "hint": "f = 1/(2πZ_inC).",
+   "solution": [
+    {
+     "text": "With 0.1 µF: f = 1/(2π × 63.8 kΩ × 0.1 µF) = <strong>25 Hz</strong>, too high for full audio."
+    },
+    {
+     "text": "For 2 Hz: C = 1/(2π × 2 × 63.8 kΩ) = 1.25 µF → <strong>1.5 µF or 2.2 µF</strong> (a film capacitor avoids electrolytic polarity concerns at this value)."
+    }
+   ]
+  }
+ ],
+ "bjt-small-signal": [
+  {
+   "tag": "PARAMETERS",
+   "title": "Four numbers from one current",
+   "prompt": "A transistor runs at I_C = 0.2 mA with β = 150 and V_A = 80 V. Find g_m, r_e, r_π and r_o.",
+   "hint": "All depend on I_C: g_m = I_C/V_T.",
+   "solution": [
+    {
+     "text": "g_m = 0.2 mA/25.85 mV = <strong>7.74 mS</strong>; r_e = <strong>129 Ω</strong>; r_π = 150/g_m = <strong>19.4 kΩ</strong>; r_o = 80 V/0.2 mA = <strong>400 kΩ</strong>."
+    }
+   ]
+  },
+  {
+   "tag": "LOOKING IN",
+   "title": "Into the base with degeneration",
+   "prompt": "At 2 mA, with β = 120 and 470 Ω in the emitter, what impedance looks into the base? What fraction of that is due to r_e?",
+   "hint": "(β + 1)(r_e + R_E).",
+   "solution": [
+    {
+     "text": "r_e = 12.9 Ω. Z = 121 × (470 + 12.9) = <strong>58.4 kΩ</strong>. r_e contributes 121 × 12.9 = 1.6 kΩ, about 2.7%."
+    }
+   ]
+  },
+  {
+   "tag": "LOOKING BACK",
+   "title": "Follower output impedance",
+   "prompt": "A follower biased at 0.5 mA is driven from 4.7 kΩ, β = 100. Find the output impedance looking into the emitter.",
+   "hint": "r_e + R_s/(β + 1).",
+   "solution": [
+    {
+     "text": "r_e = 51.7 Ω; R_s/(β + 1) = 46.5 Ω. Z_out = <strong>98 Ω</strong>. At this low current r_e is as large as the transformed source resistance—raising the bias current is the cheaper improvement."
+    }
+   ]
+  },
+  {
+   "tag": "LINEARITY",
+   "title": "How small is small enough?",
+   "prompt": "For what base–emitter signal amplitude is the small-signal model’s peak current error about 5%?",
+   "hint": "The error relative to the linear term is approximately v/(2V_T).",
+   "solution": [
+    {
+     "text": "v/(2V_T) = 0.05 gives v = 0.1 V_T ≈ <strong>2.6 mV</strong>. Larger base–emitter swings need emitter degeneration to stay linear."
+    }
+   ]
+  },
+  {
+   "tag": "GAIN",
+   "title": "A common-emitter gain by small-signal analysis",
+   "prompt": "A stage runs at 2 mA with R_C = 3.3 kΩ and 220 Ω unbypassed in the emitter. Find the small-signal voltage gain.",
+   "hint": "G = −R_C/(R_E + r_e).",
+   "solution": [
+    {
+     "text": "r_e = 12.9 Ω, so G = −3300/232.9 = <strong>−14.2</strong>. The first model would give −15.0."
+    }
+   ]
+  }
+ ],
+ "current-sources": [
+  {
+   "tag": "DESIGN",
+   "title": "A 2 mA sink",
+   "prompt": "Design a 2 mA current sink on 12 V with the base held at 2.65 V by a stiff divider. Find R_E and the largest load resistance it can drive.",
+   "hint": "V_E = V_B − 0.65; compliance ends near V_CE = 0.2 V.",
+   "solution": [
+    {
+     "text": "V_E = 2.0 V, R_E = 2.0 V/2 mA = <strong>1 kΩ</strong>."
+    },
+    {
+     "text": "The load can drop up to 12 − 2.0 − 0.2 = 9.8 V, so R_L(max) = 9.8 V/2 mA = <strong>4.9 kΩ</strong>."
+    }
+   ]
+  },
+  {
+   "tag": "PNP SOURCE",
+   "title": "Source current into a grounded load",
+   "prompt": "A PNP source has its emitter resistor of 2.2 kΩ to +15 V and its base held 3.3 V below the supply by a zener. Find the output current and the largest grounded load it can drive.",
+   "hint": "The emitter sits one V_BE above the base, i.e. 3.3 − 0.65 V below the supply.",
+   "solution": [
+    {
+     "text": "The resistor carries (3.3 − 0.65)/2.2 kΩ = <strong>1.20 mA</strong>."
+    },
+    {
+     "text": "The collector can rise to about 15 − 2.65 − 0.2 = 12.15 V, so R_L(max) ≈ 12.15 V/1.2 mA = <strong>10.1 kΩ</strong>."
+    }
+   ]
+  },
+  {
+   "tag": "TEMPERATURE",
+   "title": "Drift and its cure",
+   "prompt": "A current source has V_E = 1.0 V. Estimate its current change over a 60 °C rise. How does putting a diode in series with the lower divider resistor help?",
+   "hint": "ΔI/I ≈ 2.1 mV/°C × ΔT/V_E.",
+   "solution": [
+    {
+     "text": "ΔI/I ≈ 0.21%/°C × 60 = <strong>+12.6%</strong>."
+    },
+    {
+     "text": "The diode’s forward voltage also falls ~2 mV/°C, lowering the base voltage by about as much as V_BE falls. The emitter voltage, and hence the current, then stays nearly constant—residual drift comes from mismatch between the two junctions."
+    }
+   ]
+  },
+  {
+   "tag": "OUTPUT RESISTANCE",
+   "title": "How good is the source?",
+   "prompt": "A source runs at 0.5 mA with V_A = 60 V, β = 150 and R_E = 2 kΩ. Estimate its output resistance, and compare with r_o alone and with the βr_o limit.",
+   "hint": "R_out ≈ r_o[1 + g_m(R_E ∥ r_π)].",
+   "solution": [
+    {
+     "text": "r_o = 120 kΩ, g_m = 19.3 mS, r_π = 7.76 kΩ, R_E ∥ r_π = 1.59 kΩ."
+    },
+    {
+     "text": "R_out ≈ 120 kΩ × (1 + 30.7) = <strong>3.8 MΩ</strong>, 32 times r_o and well below the βr_o = 18 MΩ ceiling. A 5 V change across the load changes the current by about 1.3 µA."
+    }
+   ]
+  },
+  {
+   "tag": "RAMP",
+   "title": "A linear sweep",
+   "prompt": "A 0.5 mA current source charges a 0.22 µF capacitor connected from its collector to the supply (so the capacitor voltage grows as the collector falls). Find the ramp rate and the time to sweep 10 V. What sets the end of the linear ramp?",
+   "hint": "dV/dt = I/C.",
+   "solution": [
+    {
+     "text": "Rate = 0.5 mA/0.22 µF = <strong>2.27 V/ms</strong>; 10 V takes <strong>4.4 ms</strong>."
+    },
+    {
+     "text": "The ramp stays linear until the collector reaches the compliance limit, V_E + 0.2 V; then the transistor saturates and the current collapses."
+    }
+   ]
+  }
+ ],
+ "common-emitter": [
+  {
+   "tag": "GAIN",
+   "title": "First model and refinement",
+   "prompt": "A stage has R_C = 10 kΩ, R_E = 1.5 kΩ (unbypassed) and I_C = 0.6 mA. Find the gain from the first model and with r_e.",
+   "hint": "G = −R_C/(R_E + r_e).",
+   "solution": [
+    {
+     "text": "First model: −10/1.5 = <strong>−6.67</strong>. With r_e = 43.1 Ω: −10 000/1543 = <strong>−6.48</strong>, 3% lower."
+    }
+   ]
+  },
+  {
+   "tag": "MAXIMUM GAIN",
+   "title": "The bypassed limit",
+   "prompt": "A bypassed stage has 5 V across its collector resistor. What is its maximum small-signal gain, whatever the current? Why might you not want it?",
+   "hint": "G = −V_RC/V_T.",
+   "solution": [
+    {
+     "text": "G = −5/0.02585 = <strong>−193</strong>."
+    },
+    {
+     "text": "It varies with temperature and bias, it distorts badly for inputs of more than a few millivolts, and the input impedance drops to (β + 1)r_e."
+    }
+   ]
+  },
+  {
+   "tag": "PARTIAL BYPASS",
+   "title": "Design for a gain of −20",
+   "prompt": "A stage at 1 mA has R_C = 4.7 kΩ and a total emitter resistance of 1 kΩ for bias. Split R_E to give a gain of −20 with the remainder bypassed.",
+   "hint": "R_E1 + r_e = R_C/20.",
+   "solution": [
+    {
+     "text": "R_E1 = 4700/20 − 25.9 = 209 Ω → <strong>200 Ω unbypassed, 820 Ω bypassed</strong> (1.02 kΩ total)."
+    },
+    {
+     "text": "Gain = −4700/(200 + 25.9) = <strong>−20.8</strong>."
+    }
+   ]
+  },
+  {
+   "tag": "LOADING",
+   "title": "A load halves the gain",
+   "prompt": "The stage of the previous problem but with 470 Ω unbypassed (gain about −9.5) drives a 4.7 kΩ load. Find the loaded gain and the maximum symmetric output swing set by cutoff at 1 mA.",
+   "hint": "Signals see R_C ∥ R_L; the upward swing is limited to I_CQ(R_C ∥ R_L).",
+   "solution": [
+    {
+     "text": "R_C ∥ R_L = 2.35 kΩ; gain = −2350/(470 + 25.9) = <strong>−4.74</strong>, half the unloaded −9.48."
+    },
+    {
+     "text": "Upward swing limit = 1 mA × 2.35 kΩ = <strong>2.35 V</strong>. More quiescent current or a follower buffer would extend it."
+    }
+   ]
+  },
+  {
+   "tag": "BYPASS CAPACITOR",
+   "title": "How big must C_E be?",
+   "prompt": "In the partially bypassed stage (180 Ω unbypassed, 820 Ω bypassed, 1 mA), find the resistance seen by the bypass capacitor and the capacitance for a 20 Hz corner. Neglect source resistance.",
+   "hint": "C_E sees R_E2 in parallel with (R_E1 + r_e + R_source/(β + 1)).",
+   "solution": [
+    {
+     "text": "R = 820 ∥ (180 + 25.9) = <strong>165 Ω</strong>."
+    },
+    {
+     "text": "C_E ≥ 1/(2π × 20 × 165) = <strong>48 µF</strong>; use 100 µF so this corner lies below the coupling-capacitor corners."
+    }
+   ]
+  }
+ ],
+ "transconductance": [
+  {
+   "tag": "SPLITTER",
+   "title": "Balanced outputs",
+   "prompt": "A phase splitter has R_C = R_E = 3.3 kΩ at 1.5 mA. Find r_e and both gains.",
+   "hint": "G_E = R_E/(R_E + r_e), G_C = −R_C/(R_E + r_e).",
+   "solution": [
+    {
+     "text": "r_e = 17.2 Ω. G_E = 3300/3317 = <strong>+0.9948</strong>; G_C = <strong>−0.9948</strong>."
+    }
+   ]
+  },
+  {
+   "tag": "LOADING",
+   "title": "One load, two outputs",
+   "prompt": "The splitter of the previous problem has a 3.3 kΩ load connected (through a capacitor) to its collector output only. Find the new collector gain. What happens to the emitter gain?",
+   "hint": "The collector current is unchanged; only the resistance it flows into changes.",
+   "solution": [
+    {
+     "text": "R_C ∥ R_L = 1.65 kΩ; G_C = −1650/3317 = <strong>−0.497</strong>. The emitter gain stays +0.995. The outputs are now badly unbalanced."
+    }
+   ]
+  },
+  {
+   "tag": "COMPENSATION",
+   "title": "Balance a known load",
+   "prompt": "A splitter has R_E = 4.7 kΩ, r_e = 28 Ω, and its collector output always drives 10 kΩ. What R_C restores equal gains?",
+   "hint": "Make R_C ∥ 10 kΩ equal to R_E + r_e so that |G_C| = 1 — or to R_E for |G_C| = G_E.",
+   "solution": [
+    {
+     "text": "For |G_C| = G_E = R_E/(R_E + r_e), R_C ∥ 10 kΩ must equal R_E = 4.7 kΩ: R_C = 1/(1/4.7k − 1/10k) = <strong>8.87 kΩ</strong>. (Making it equal R_E + r_e gives 8.97 kΩ and |G_C| exactly 1.) Use 8.87 kΩ or 9.1 kΩ."
+    }
+   ]
+  },
+  {
+   "tag": "TRANSCONDUCTANCE",
+   "title": "What degeneration costs",
+   "prompt": "At 2 mA with 470 Ω of emitter degeneration, find the stage transconductance and compare it with g_m of the bare transistor.",
+   "hint": "G_m = 1/(R_E + r_e).",
+   "solution": [
+    {
+     "text": "r_e = 12.9 Ω; G_m = 1/482.9 Ω = <strong>2.07 mS</strong>, versus g_m = 2 mA/25.85 mV = <strong>77.4 mS</strong>."
+    },
+    {
+     "text": "The ratio is 1 + g_mR_E = 37.4. In exchange, the gain is set by the resistor, the stage is far more linear, and its input impedance is 37 times higher."
+    }
+   ]
+  },
+  {
+   "tag": "PHASE SHIFTER",
+   "title": "Constant amplitude, variable phase",
+   "prompt": "A splitter’s outputs drive R = 10 kΩ (from the collector) and C = 15.9 nF (from the emitter) to a common node. Find the output phase at 100 Hz, 1 kHz and 10 kHz.",
+   "hint": "Phase = 180° − 2 tan⁻¹(ωRC); ωRC = 1 at 1 kHz.",
+   "solution": [
+    {
+     "text": "At 1 kHz: ωRC = 1, phase = <strong>90°</strong>. At 100 Hz: 180° − 2 tan⁻¹ 0.1 = <strong>168.6°</strong>. At 10 kHz: 180° − 2 tan⁻¹ 10 = <strong>11.4°</strong>. The amplitude equals the splitter output at every frequency, provided the node is not loaded."
+    }
+   ]
+  }
+ ],
+ "ebers-moll": [
+  {
+   "tag": "V_BE",
+   "title": "How many millivolts per current?",
+   "prompt": "With I_S = 10⁻¹⁴ A at 300 K, find V_BE at 1 µA, 1 mA and 10 mA.",
+   "hint": "V_BE = V_T ln(I_C/I_S).",
+   "solution": [
+    {
+     "text": "1 µA: <strong>0.476 V</strong>; 1 mA: <strong>0.655 V</strong>; 10 mA: <strong>0.714 V</strong>. Each decade adds 59.5 mV."
+    }
+   ]
+  },
+  {
+   "tag": "THERMAL",
+   "title": "Fixed V_BE, rising temperature",
+   "prompt": "A transistor with a stiffly fixed V_BE (no emitter resistor) warms by 20 °C. Estimate the factor by which its collector current rises.",
+   "hint": "Compound 8% per °C, or treat the 42 mV equivalent change in V_BE as an exponent.",
+   "solution": [
+    {
+     "text": "1.08²⁰ ≈ <strong>4.7</strong>; equivalently e<sup>42 mV/27.4 mV</sup> ≈ 4.6 (V_T at 45 °C). Such a circuit can heat itself into thermal runaway, the reason for emitter degeneration."
+    }
+   ]
+  },
+  {
+   "tag": "MIRROR",
+   "title": "Design and its errors",
+   "prompt": "Design a mirror for 0.5 mA on 12 V. With β = 80, find the output current. If the output transistor sits at V_CE = 8 V and V_A = 75 V, estimate the Early-effect error.",
+   "hint": "I_ref = (V_CC − V_BE)/R; I_out = I_ref/(1 + 2/β).",
+   "solution": [
+    {
+     "text": "R = (12 − 0.65)/0.5 mA = 22.7 kΩ → <strong>22 kΩ</strong> (0.516 mA) or 22.7 kΩ precisely."
+    },
+    {
+     "text": "Base-current error: I_out = 0.5 mA/1.025 = <strong>0.488 mA</strong>. Early error: (8 − 0.65)/75 ≈ <strong>+9.8%</strong>, larger than the base-current error. Emitter resistors in both transistors, or a Wilson mirror, reduce it."
+    }
+   ]
+  },
+  {
+   "tag": "SATURATION",
+   "title": "V_CE(sat) from Ebers–Moll",
+   "prompt": "A transistor has β_F = 200 and β_R = 4. Find its ideal V_CE(sat) when driven to a forced β of 20.",
+   "hint": "α_R = β_R/(1 + β_R) = 0.8. Use the closed-form expression.",
+   "solution": [
+    {
+     "tex": "V_{CE(\\mathrm{sat})}=V_T\\ln\\frac{1/0.8+20/4}{1-20/200}=V_T\\ln\\frac{6.25}{0.9}=0.0259\\times1.938=50.1\\ \\mathrm{mV}"
+    },
+    {
+     "text": "Real devices add collector series resistance, so at tens of milliamps the measured value is higher."
+    }
+   ]
+  },
+  {
+   "tag": "GAIN AND DISTORTION",
+   "title": "A 9 V bypassed stage",
+   "prompt": "A bypassed common-emitter stage on 9 V has 4 V across its collector resistor. What is its maximum gain? For a 2 mV peak base–emitter signal, by how much do the positive and negative current peaks differ from the linear prediction?",
+   "hint": "G = −V_RC/V_T. Peaks scale as e<sup>±v/V_T</sup> − 1 compared with v/V_T.",
+   "solution": [
+    {
+     "text": "G = −4/0.02585 = <strong>−155</strong>."
+    },
+    {
+     "text": "Linear: ±7.74%. Exact: e<sup>2/25.85</sup> − 1 = +8.04%, 1 − e<sup>−2/25.85</sup> = −7.45%. The positive peak is about 4% high and the negative 4% low, about 2% second-harmonic distortion at the output."
+    }
+   ]
+  }
+ ],
+ "current-mirrors": [
+  {
+   "tag": "DESIGN",
+   "title": "A 200 µA mirror on 5 V",
+   "prompt": "Design a basic NPN mirror for 200 µA from a 5 V supply. With β = 80, what is the actual output current, ignoring the Early effect?",
+   "hint": "I_ref = (V_CC − V_BE)/R; I_out = I_ref/(1 + 2/β).",
+   "solution": [
+    {
+     "text": "R = (5 − 0.65)/200 µA = 21.75 kΩ → <strong>21.5 kΩ</strong> (202 µA) or a 1% 21.5 kΩ part."
+    },
+    {
+     "text": "With exactly 200 µA of reference: I_out = 200/(1 + 2/80) = <strong>195 µA</strong>, 2.4% low."
+    }
+   ]
+  },
+  {
+   "tag": "EARLY EFFECT",
+   "title": "How good a current source?",
+   "prompt": "The mirror of the previous problem drives a load whose voltage is 12 V (on a higher supply rail). The transistors have V_A = 60 V. Estimate the Early-effect error and the output resistance.",
+   "hint": "Q₁ sits at V_CE = V_BE; Q₂ at the output voltage.",
+   "solution": [
+    {
+     "text": "Error ≈ (12 − 0.65)/60 = <strong>+19%</strong>—far larger than the base-current error."
+    },
+    {
+     "text": "R_out ≈ r_o = 60 V/0.2 mA = <strong>300 kΩ</strong>. A 1 V change at the output moves the current by about 3.3 µA."
+    }
+   ]
+  },
+  {
+   "tag": "DEGENERATION",
+   "title": "Taming mismatch",
+   "prompt": "Two discrete transistors in a mirror differ by 2 mV in V_BE at equal currents. Compare the current error without emitter resistors and with resistors dropping 0.5 V each.",
+   "hint": "Undegenerated: e<sup>ΔV/V_T</sup>. Degenerated: ΔV/(V_RE + V_T).",
+   "solution": [
+    {
+     "text": "Without resistors: e<sup>2/25.85</sup> − 1 = <strong>8.0%</strong>."
+    },
+    {
+     "text": "With 0.5 V across each resistor: 2/(500 + 25.9) = <strong>0.38%</strong>, twenty times better, at the cost of half a volt of compliance."
+    }
+   ]
+  },
+  {
+   "tag": "WIDLAR",
+   "title": "Five microamps from half a milliamp",
+   "prompt": "Design a Widlar source giving 5 µA from a 0.5 mA reference. Compare the resistor with the one a basic mirror would need from 15 V.",
+   "hint": "R_E = (V_T/I_out) ln(I_ref/I_out).",
+   "solution": [
+    {
+     "tex": "R_E=\\frac{25.85\\ \\mathrm{mV}}{5\\ \\mu\\mathrm A}\\ln\\frac{0.5\\ \\mathrm{mA}}{5\\ \\mu\\mathrm A}=5.17\\ \\mathrm{k\\Omega}\\times4.605=23.8\\ \\mathrm{k\\Omega}"
+    },
+    {
+     "text": "A basic mirror would need (15 − 0.65)/5 µA ≈ <strong>2.9 MΩ</strong> for its reference resistor—120 times larger. The Widlar’s reference resistor is still (15 − 0.65)/0.5 mA = 28.7 kΩ."
+    }
+   ]
+  },
+  {
+   "tag": "WILSON",
+   "title": "When is the Wilson worth it?",
+   "prompt": "With β = 50 and V_A = 100 V at 1 mA, compare the base-current error and output resistance of a basic mirror and a Wilson mirror.",
+   "hint": "Basic: 2/β and r_o. Wilson: 2/(β² + 2β + 2) and βr_o/2.",
+   "solution": [
+    {
+     "text": "Basic: I_out/I_ref = 1/(1 + 0.04) → <strong>−3.8%</strong>; R_out ≈ r_o = <strong>100 kΩ</strong>."
+    },
+    {
+     "text": "Wilson: error 2/2602 = <strong>0.077%</strong>; R_out ≈ 50 × 100 kΩ/2 = <strong>2.5 MΩ</strong>. The price is one transistor and a second V_BE of headroom at the output."
+    }
+   ]
+  }
+ ],
+ "differential-amplifiers": [
+  {
+   "tag": "STEERING",
+   "title": "How far does the current move?",
+   "prompt": "A long-tailed pair has a 2 mA tail. Find both collector currents for a differential input of 20 mV.",
+   "hint": "I_C1 = I_T/(1 + e<sup>−v_d/V_T</sup>).",
+   "solution": [
+    {
+     "tex": "I_{C1}=\\frac{2\\ \\mathrm{mA}}{1+e^{-20/25.85}}=\\frac{2}{1.461}=1.369\\ \\mathrm{mA},\\qquad I_{C2}=0.631\\ \\mathrm{mA}"
+    },
+    {
+     "text": "20 mV already steers 68% of the current to one side—well into the nonlinear region."
+    }
+   ]
+  },
+  {
+   "tag": "GAINS",
+   "title": "Differential, common-mode, CMRR",
+   "prompt": "A pair runs from ±15 V with R_C = 5 kΩ and a 7.15 kΩ tail resistor (2 mA tail). Find the single-ended and differential-output gains, the common-mode gain and the CMRR in dB.",
+   "hint": "Each side carries 1 mA, so r_e = 25.9 Ω. Use the half circuits.",
+   "solution": [
+    {
+     "text": "A_d = 5000/(2 × 25.9) = <strong>96.7</strong> single-ended, 193 between collectors."
+    },
+    {
+     "text": "A_cm = −5000/(2 × 7150 + 25.9) = <strong>−0.349</strong>. CMRR = 96.7/0.349 = 277 = <strong>48.9 dB</strong>. A current-source tail would raise it by about 50 dB."
+    }
+   ]
+  },
+  {
+   "tag": "DEGENERATION",
+   "title": "Trade gain for range",
+   "prompt": "Add 100 Ω emitter resistors to the pair of the previous problem. Find the new single-ended gain. Why would you do this?",
+   "hint": "r_e + R_E replaces r_e.",
+   "solution": [
+    {
+     "text": "A_d = 5000/(2 × 125.9) = <strong>19.9</strong>, five times lower."
+    },
+    {
+     "text": "The linear input range grows roughly in proportion (from about ±17 mV to well over ±50 mV for the same gain error), the gain becomes set by resistors rather than by the bias current, and offset drift from r_e matters less."
+    }
+   ]
+  },
+  {
+   "tag": "ACTIVE LOAD",
+   "title": "Gain from the Early voltage",
+   "prompt": "A pair with a PNP current-mirror load uses transistors with V_A = 80 V (all four). What is the single-ended small-signal gain, independent of the tail current?",
+   "hint": "A_d = g_m(r_o2 ∥ r_o4) with each side at I_T/2.",
+   "solution": [
+    {
+     "tex": "A_d=\\frac{I_T/2}{V_T}\\cdot\\frac{V_A}{I_T}=\\frac{V_A}{2V_T}=\\frac{80}{2(0.02585)}\\approx1550"
+    },
+    {
+     "text": "The bias current cancels. The output node is high-impedance, so a follower or a high-impedance stage must come next, or the gain collapses."
+    }
+   ]
+  },
+  {
+   "tag": "OFFSETS",
+   "title": "Where do the millivolts come from?",
+   "prompt": "The active-loaded stage above (gain 1550) has a 2 mV V_BE mismatch. Its inputs are driven from a 10 kΩ source on one side and directly from a low-impedance source on the other; each base draws 5 µA. Estimate the output offset from each cause and suggest a fix for the second.",
+   "hint": "Bias current × source resistance acts like an input offset voltage.",
+   "solution": [
+    {
+     "text": "V_BE mismatch: 2 mV × 1550 ≈ <strong>3.1 V</strong> at the output—a stage like this must be inside a feedback loop."
+    },
+    {
+     "text": "Bias current: 5 µA × 10 kΩ = 50 mV of input offset, about 78 V of ‘output’—it would saturate. Put a matching 10 kΩ in the other input so the bias currents cancel, leaving only the much smaller offset current."
+    }
+   ]
+  }
+ ],
+ "push-pull": [
+  {
+   "tag": "CLASS A",
+   "title": "The cost of a single follower",
+   "prompt": "A single NPN follower drives ±12 V into 16 Ω from ±15 V supplies, with its emitter resistor to −15 V. What quiescent current is needed, how much supply power does it draw, and what is the efficiency at full output?",
+   "hint": "The emitter resistor must sink the peak load current at the negative peak.",
+   "solution": [
+    {
+     "text": "Peak load current 12/16 = 0.75 A, so I_Q ≥ <strong>0.75 A</strong>. Supply power 2 × 15 × 0.75 = <strong>22.5 W</strong> continuously."
+    },
+    {
+     "text": "Full-output load power 12²/(2 × 16) = 4.5 W: efficiency <strong>20%</strong>, and 22.5 W of heat at idle."
+    }
+   ]
+  },
+  {
+   "tag": "CLASS B",
+   "title": "Efficiency and the hottest amplitude",
+   "prompt": "An ideal class B stage runs from ±20 V into 4 Ω. At 16 V peak output, find load power, supply power, efficiency and transistor dissipation. At what amplitude is dissipation greatest, and how much?",
+   "hint": "P_S = 2V_CC V_p/(πR_L); maximum dissipation at V_p = 2V_CC/π.",
+   "solution": [
+    {
+     "text": "P_L = 16²/8 = <strong>32 W</strong>; P_S = 2 × 20 × 16/(4π) = <strong>50.9 W</strong>; η = <strong>62.8%</strong>; transistors dissipate <strong>18.9 W</strong>."
+    },
+    {
+     "tex": "V_p=\\frac{2(20)}{\\pi}=12.7\\ \\mathrm V,\\qquad P_{D,\\max}=\\frac{2(20)^2}{\\pi^2(4)}=20.3\\ \\mathrm W"
+    }
+   ]
+  },
+  {
+   "tag": "CROSSOVER",
+   "title": "How much of the wave is lost?",
+   "prompt": "A class B stage with a ±0.6 V dead zone is driven by a 2 V peak sine. For what fraction of each cycle is the output essentially zero?",
+   "hint": "Find when |2 sin ωt| < 0.6.",
+   "solution": [
+    {
+     "text": "|sin ωt| < 0.3 for ωt within sin⁻¹(0.3) = 17.5° of each zero crossing: 4 × 17.5° = 70° of 360°, about <strong>19%</strong> of the cycle."
+    },
+    {
+     "text": "At 10 V peak the same dead zone occupies only 4 × 3.4° ≈ 4% of the cycle, which is why crossover distortion is worst for small signals."
+    }
+   ]
+  },
+  {
+   "tag": "BIAS",
+   "title": "A V_BE multiplier for Darlington outputs",
+   "prompt": "An output stage uses Darlington drivers on both sides, so the bias must span four base–emitter drops of about 0.65 V each. Design a V_BE multiplier and find its temperature coefficient.",
+   "hint": "V = V_BE(1 + R₂/R₁).",
+   "solution": [
+    {
+     "text": "Need 2.6 V = 0.65(1 + R₂/R₁), so R₂/R₁ = 3: e.g. <strong>R₁ = 1 kΩ, R₂ = 3 kΩ</strong>, usually with a trimmer for adjustment."
+    },
+    {
+     "text": "Its voltage falls 4 × 2.1 = <strong>8.4 mV/°C</strong>, matching the four junctions it compensates—provided it is mounted where it sees their temperature."
+    }
+   ]
+  },
+  {
+   "tag": "PROTECTION",
+   "title": "Current limit and the short-circuit dilemma",
+   "prompt": "An output stage limits current with a 0.33 Ω emitter resistor and a sensing transistor that turns on at 0.6 V. What is the current limit? With the output shorted, what does the conducting output transistor dissipate on ±15 V supplies?",
+   "hint": "The sensing transistor clamps the drop across the resistor.",
+   "solution": [
+    {
+     "text": "I_limit = 0.6/0.33 = <strong>1.8 A</strong>."
+    },
+    {
+     "text": "Shorted, the transistor has nearly 15 V across it at 1.8 A: about <strong>27 W</strong>, which a small heat sink cannot sustain. Foldback limiting, which reduces the limit as the output voltage falls, or a fuse/thermal shutdown is needed."
+    }
+   ]
+  }
+ ],
+ "darlington": [
+  {
+   "tag": "GAIN",
+   "title": "Composite β",
+   "prompt": "A Darlington uses β₁ = 100 and β₂ = 40. Find the composite current gain and the base current needed for 2 A in the active region.",
+   "hint": "β = β₁β₂ + β₁ + β₂.",
+   "solution": [
+    {
+     "text": "β = 4000 + 140 = <strong>4140</strong>; I_B = 2 A/4140 = <strong>0.48 mA</strong>."
+    }
+   ]
+  },
+  {
+   "tag": "FOLLOWER",
+   "title": "Input impedance",
+   "prompt": "That Darlington is used as an emitter follower driving an 8 Ω load. Ignoring r_e, what impedance does its input present?",
+   "hint": "Multiply the load by the composite (β + 1).",
+   "solution": [
+    {
+     "text": "About 4141 × 8 Ω ≈ <strong>33 kΩ</strong>, so a source of a few kilohms can drive a loudspeaker through it."
+    }
+   ]
+  },
+  {
+   "tag": "DISSIPATION",
+   "title": "The cost of the extra V_BE",
+   "prompt": "A load draws 3 A through a saturated switch. Compare dissipation for a Darlington at V_CE = 0.9 V and a single hard-driven transistor at 0.2 V. What base drive does the single transistor need with β = 30 and twofold overdrive?",
+   "hint": "P = V_CE × I_C.",
+   "solution": [
+    {
+     "text": "Darlington: 0.9 × 3 = <strong>2.7 W</strong> (heat sink needed). Single transistor: 0.2 × 3 = <strong>0.6 W</strong>."
+    },
+    {
+     "text": "Single transistor drive: 2 × 3/30 = <strong>0.2 A</strong> of base current—which itself needs a driver transistor. This is the tradeoff a Darlington package makes for you."
+    }
+   ]
+  },
+  {
+   "tag": "BLEEDER",
+   "title": "Why the resistor across the output base",
+   "prompt": "A Darlington’s driver leaks 1 µA at high temperature, and the output transistor has β = 40. Without a bleeder, how much collector current flows when the pair should be off? What does a 1 kΩ bleeder from Q₂’s base to emitter do?",
+   "hint": "Q₁’s leakage becomes Q₂’s base current.",
+   "solution": [
+    {
+     "text": "Without the bleeder the leakage is amplified: roughly 40 µA, plus Q₁’s own share—small here, but larger at higher temperature and with higher-β devices."
+    },
+    {
+     "text": "The 1 kΩ bleeder carries the leakage with only 1 mV across it, far below Q₂’s turn-on voltage, so Q₂ stays off. It also gives Q₂’s stored base charge a path at turn-off, speeding release."
+    }
+   ]
+  },
+  {
+   "tag": "SZIKLAI",
+   "title": "Thermal stability of the bias",
+   "prompt": "An output stage’s bias network must track the input V_BE of its output devices. Compare the temperature coefficient of the input voltage of a Darlington and of a Sziklai pair.",
+   "hint": "Count how many junctions lie between the input terminal and the output emitter.",
+   "solution": [
+    {
+     "text": "Darlington: two junctions, about <strong>−4.2 mV/°C</strong>, both partly in the hot output device."
+    },
+    {
+     "text": "Sziklai: one junction, the small driver’s, about <strong>−2.1 mV/°C</strong>, and that transistor does not heat itself much. The Sziklai’s bias is easier to stabilize—one reason it is favored in output stages."
+    }
+   ]
+  }
+ ],
+ "bootstrapping": [
+  {
+   "tag": "PRINCIPLE",
+   "title": "How big does it look?",
+   "prompt": "A 100 kΩ resistor is bootstrapped by a follower with gain 0.98. What is its effective value? What if the gain is 0.995?",
+   "hint": "Z/(1 − G).",
+   "solution": [
+    {
+     "text": "G = 0.98: 100 kΩ/0.02 = <strong>5 MΩ</strong>. G = 0.995: <strong>20 MΩ</strong>. The result is very sensitive to how close G is to 1."
+    }
+   ]
+  },
+  {
+   "tag": "GUARD",
+   "title": "A driven shield",
+   "prompt": "A 1 m cable with 100 pF of capacitance connects a 10 MΩ source to an amplifier. Find the low-pass corner. If the shield is driven by a follower with G = 0.995, what is the new corner?",
+   "hint": "C_eff = C(1 − G).",
+   "solution": [
+    {
+     "text": "Unguarded: f = 1/(2π × 10 MΩ × 100 pF) = <strong>159 Hz</strong>."
+    },
+    {
+     "text": "Guarded: C_eff = 0.5 pF, so f = <strong>32 kHz</strong>, 200 times higher."
+    }
+   ]
+  },
+  {
+   "tag": "LIMIT",
+   "title": "What limits the bootstrapped follower?",
+   "prompt": "A bootstrapped follower has β = 200, R_E = 4.7 kΩ and a bias divider whose parallel resistance is 47 kΩ, connected to the emitter through the bootstrap capacitor. Estimate the maximum input impedance, ignoring r_e and assuming the bootstrapped R₃ is huge.",
+   "hint": "The divider now loads the emitter; the base sees (β + 1) times the total emitter load.",
+   "solution": [
+    {
+     "text": "Emitter load: 4.7 kΩ ∥ 47 kΩ = 4.27 kΩ. Z_in ≈ 201 × 4.27 kΩ ≈ <strong>860 kΩ</strong>. A Darlington follower, or a current source instead of R_E, would raise it further."
+    }
+   ]
+  },
+  {
+   "tag": "MILLER LINK",
+   "title": "Negative gain shrinks impedance",
+   "prompt": "A 100 kΩ resistor connects the input and output of an inverting amplifier with gain −9. What resistance does the input see through it? What does this have to do with the Miller effect?",
+   "hint": "Same formula, G = −9.",
+   "solution": [
+    {
+     "text": "Z_eff = 100 kΩ/(1 − (−9)) = <strong>10 kΩ</strong>."
+    },
+    {
+     "text": "A capacitor in the same position looks 10 times larger. That is the Miller effect (Chapter 41): the bootstrapping formula with a negative gain."
+    }
+   ]
+  },
+  {
+   "tag": "COLLECTOR LOAD",
+   "title": "A bootstrapped collector resistor",
+   "prompt": "A common-emitter stage at 1 mA has its collector load split; the 5 kΩ section next to the collector is bootstrapped by a follower with G = 0.98 and input impedance 500 kΩ. The transistor’s r_o is 100 kΩ. Estimate the effective load and the voltage gain.",
+   "hint": "The bootstrapped resistor looks R/(1 − G); combine it in parallel with the follower’s input and r_o.",
+   "solution": [
+    {
+     "text": "Bootstrapped resistor: 5 kΩ/0.02 = 250 kΩ. Effective load: 250 k ∥ 500 k ∥ 100 k = <strong>62.5 kΩ</strong>."
+    },
+    {
+     "text": "Gain ≈ g_m × 62.5 kΩ = 38.7 mS × 62.5 kΩ ≈ <strong>2400</strong>, versus g_m × 10 kΩ ≈ 390 for a plain 10 kΩ load. Now r_o, not the resistor, is the limit."
+    }
+   ]
+  }
+ ],
+ "current-sharing": [
+  {
+   "tag": "MISMATCH",
+   "title": "An exponential split",
+   "prompt": "Two paralleled transistors with no ballast share 3 A. One needs 8 mV less V_BE than the other at equal current. Ignoring heating, how is the current split?",
+   "hint": "I₁/I₂ = e<sup>ΔV/V_T</sup>.",
+   "solution": [
+    {
+     "text": "Ratio e<sup>8/25.85</sup> = 1.363. I₁ = 3 × 1.363/2.363 = <strong>1.73 A</strong>, I₂ = <strong>1.27 A</strong>."
+    }
+   ]
+  },
+  {
+   "tag": "BALLAST",
+   "title": "Size the resistors",
+   "prompt": "For the same pair at 1.5 A each, choose emitter resistors that keep the static imbalance below 5%. What does each resistor dissipate?",
+   "hint": "ΔI/I ≈ ΔV/(I R_E + V_T).",
+   "solution": [
+    {
+     "text": "Need I·R_E + V_T ≥ 8 mV/0.05 = 160 mV, so I·R_E ≥ 134 mV and R_E ≥ 0.089 Ω → <strong>0.1 Ω</strong>."
+    },
+    {
+     "text": "Dissipation 1.5² × 0.1 = <strong>0.23 W</strong> each; use 0.5 W or larger resistors."
+    }
+   ]
+  },
+  {
+   "tag": "LOOP GAIN",
+   "title": "Stable or not?",
+   "prompt": "Each device carries 1 A at V_CE = 20 V on a heat sink giving 3 °C/W per device. Compute the electro-thermal loop gain without ballast and with 0.33 Ω.",
+   "hint": "G = θV_CE I(2.1 mV/°C)/(V_T + I R_E).",
+   "solution": [
+    {
+     "text": "Without ballast: 3 × 20 × 1 × 0.0021/0.0259 = <strong>4.9</strong>: hogging (or runaway) is certain."
+    },
+    {
+     "text": "With 0.33 Ω: 0.126/(0.0259 + 0.33) = <strong>0.35</strong>: stable."
+    }
+   ]
+  },
+  {
+   "tag": "DESIGN",
+   "title": "Minimum ballast for margin",
+   "prompt": "For the conditions of the previous problem, find the smallest emitter resistor that keeps the loop gain at or below 0.5.",
+   "hint": "Solve 0.126/(V_T + R_E) ≤ 0.5 with I = 1 A.",
+   "solution": [
+    {
+     "text": "V_T + R_E ≥ 0.252 Ω, so R_E ≥ 0.226 Ω → <strong>0.27 Ω</strong> (G ≈ 0.43)."
+    },
+    {
+     "text": "If the same pair must also survive 30 V, the loop gain rises by 1.5: recheck, or use a better heat sink."
+    }
+   ]
+  },
+  {
+   "tag": "MOSFETS",
+   "title": "Do MOSFETs need ballast?",
+   "prompt": "Paralleled MOSFETs are often said to share current naturally. When is that true, and when is it not?",
+   "hint": "How does R_DS(on) change with temperature, and what happens in linear operation at low gate drive?",
+   "solution": [
+    {
+     "text": "In switching service, fully enhanced, R_DS(on) <strong>rises</strong> with temperature, so a hotter device carries less current: sharing is self-correcting."
+    },
+    {
+     "text": "In linear operation at low gate drive (below the zero-temperature-coefficient point), drain current <strong>rises</strong> with temperature at fixed V_GS, exactly like a BJT. Linear MOSFET stages, such as electronic loads, still need source resistors or individual control loops."
+    }
+   ]
+  }
+ ],
+ "miller-effect": [
+  {
+   "tag": "f_T",
+   "title": "From f_T to capacitance",
+   "prompt": "A transistor runs at 2 mA with f_T = 300 MHz, C_μ = 3 pF and β = 150. Find C_π and f_β.",
+   "hint": "f_T = g_m/(2π(C_π + C_μ)); f_β = f_T/β.",
+   "solution": [
+    {
+     "text": "g_m = 77.4 mS; C_π + C_μ = 77.4 mS/(2π × 300 MHz) = 41.1 pF, so <strong>C_π ≈ 38 pF</strong>."
+    },
+    {
+     "text": "f_β = 300 MHz/150 = <strong>2 MHz</strong>: the current gain is already falling well below f_T."
+    }
+   ]
+  },
+  {
+   "tag": "MILLER C",
+   "title": "Two picofarads become hundreds",
+   "prompt": "An inverting stage has gain −120 and a 4 pF capacitance from input to output. What capacitance does the input see from it?",
+   "hint": "C(1 + |A|).",
+   "solution": [
+    {
+     "text": "4 pF × 121 = <strong>484 pF</strong>."
+    }
+   ]
+  },
+  {
+   "tag": "BANDWIDTH",
+   "title": "Predict the corner",
+   "prompt": "A common-emitter stage runs at 0.5 mA (β = 100) with R_C = 20 kΩ, driven from 2 kΩ, with C_π = 8 pF and C_μ = 3 pF. Estimate its −3 dB frequency.",
+   "hint": "g_m R_C sets the Miller multiplier; the source sees R_s ∥ r_π.",
+   "solution": [
+    {
+     "text": "g_m = 19.3 mS, g_mR_C = 387, r_π = 5.17 kΩ. C_in = 8 + 3 × 388 = 1172 pF; R_s ∥ r_π = 1.44 kΩ."
+    },
+    {
+     "tex": "f_{3\\mathrm{dB}}\\approx\\frac{1}{2\\pi(1.44\\ \\mathrm{k\\Omega})(1172\\ \\mathrm{pF})}\\approx94\\ \\mathrm{kHz}"
+    }
+   ]
+  },
+  {
+   "tag": "CASCODE",
+   "title": "What the cascode buys",
+   "prompt": "Convert the stage of the previous problem to a cascode. Estimate the new input capacitance and input pole. What new limit appears?",
+   "hint": "Q₁’s collector gain becomes about −1.",
+   "solution": [
+    {
+     "text": "C_in ≈ C_π + 2C_μ = 8 + 6 = 14 pF; input pole ≈ 1/(2π × 1.44 kΩ × 14 pF) ≈ <strong>7.9 MHz</strong>, 84 times higher."
+    },
+    {
+     "text": "Now the output pole, R_C = 20 kΩ with C_μ of Q₂ plus wiring and load capacitance (say 5 pF total), at about 1.6 MHz, sets the bandwidth. The cascode moved the bottleneck from input to output."
+    }
+   ]
+  },
+  {
+   "tag": "SWITCHING",
+   "title": "The Miller plateau",
+   "prompt": "A transistor switch is driven with 0.2 mA of base current and has C_μ = 3 pF. How fast can its collector slew, and how long does a 10 V transition take at that rate?",
+   "hint": "dV/dt ≈ I_B/C_μ during the active-region part of the transition.",
+   "solution": [
+    {
+     "text": "dV/dt ≈ 0.2 mA/3 pF = <strong>67 V/µs</strong>; 10 V takes about <strong>0.15 µs</strong>."
+    },
+    {
+     "text": "Doubling the base drive halves the transition time, but storage time at turn-off grows with overdrive—the two goals conflict."
+    }
+   ]
+  }
+ ]
+}

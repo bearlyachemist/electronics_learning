@@ -1,0 +1,70 @@
+import {useState} from 'react';
+import {polarity,hotPlug,boostCycle} from '../engine/protection.mjs';
+import Plot from './Plot';
+import {Control,Readouts,f} from './LabControls';
+import {Wires,Res,Cap,Ind,Diode,Source,Ground,Dot,Switch,Label,niceTicks,green,orange,gray} from './Parts';
+function Head({title,reset}:{title:string;reset:()=>void}){return <div className="lab-heading"><div><span className="live-dot"/><span className="tiny-label">{title}</span></div><button onClick={reset}>Reset ↺</button></div>}
+const pts=(fn:(x:number)=>number,a:number,b:number,n=200):[number,number][]=>Array.from({length:n+1},(_,k)=>{const x=a+(b-a)*k/n;return [x,fn(x)]});
+
+type Topology='series'|'shunt'|'pmos'|'bridge';
+const names:Record<Topology,string>={series:'Series diode',shunt:'Shunt diode + fuse',pmos:'P-channel MOSFET',bridge:'Bridge'};
+export function PolarityLab(){
+ const [topology,setTopology]=useState<Topology>('series'),[reversed,setReversed]=useState(false),[load,setLoad]=useState(1),[vin,setVin]=useState(12);
+ const d=polarity({topology,vin,load,reversed}),loss=(t:Topology)=>(i:number)=>polarity({topology:t,vin,load:i}).loss;
+ const reset=()=>{setTopology('series');setReversed(false);setLoad(1);setVin(12)};
+ const describe:Record<Topology,string>={series:'Series diode in the positive lead, anode toward the source.',shunt:'Fuse in the positive lead, then a diode across the load with its cathode on the positive rail.',pmos:'P-channel MOSFET in the positive lead with its drain toward the source; gate pulled to the negative rail through a resistor. Its body diode points toward the load.',bridge:'Bridge rectifier between the connector and the load, so either connector polarity gives a positive load voltage.'};
+ return <div className="lab" aria-label="Reverse-polarity protection experiment"><Head title="FOUR WAYS TO SURVIVE A BACKWARDS CONNECTOR" reset={reset}/>
+ <div className="view-buttons" role="group" aria-label="Protection topology">{(Object.keys(names) as Topology[]).map(t=><button key={t} aria-pressed={topology===t} onClick={()=>setTopology(t)}>{names[t]}</button>)}</div>
+ <div className="view-buttons" role="group" aria-label="Source connection"><button aria-pressed={!reversed} onClick={()=>setReversed(false)}>Connected correctly</button><button aria-pressed={reversed} onClick={()=>setReversed(true)}>Connected backwards</button></div>
+ <svg className="wide-circuit" viewBox="0 0 640 260" role="img" aria-label={describe[topology]+(reversed?' The source is connected backwards.':'')}>
+  <Wires d="M90 110 V60 M90 160 V210 H540 V165 M540 105 V60"/><Source x={90} y={135} flip={reversed} label={f(vin,1)+' V'}/><Res x={540} y={135} v/><Ground x={90} y={210}/>
+  {topology==='series'&&<><Wires d="M90 60 H270 M330 60 H540"/><Diode x={300} y={60} color={reversed?gray:green}/><Label x={300} y={36} anchor="middle" kind="value">Vꜰ ≈ 0.45 V Schottky</Label></>}
+  {topology==='shunt'&&<><Wires d="M90 60 H185 M235 60 H540 M370 60 V105 M370 165 V210"/><rect x="185" y="53" width="50" height="14" rx="7" fill="var(--white)" stroke={reversed&&d.fault>0?orange:'var(--ink)'} strokeWidth="1.8"/><path d="M185 60 H235" stroke="var(--ink)" strokeWidth="1"/><Diode x={370} y={135} rotate={-90} color={reversed?orange:gray}/><Dot x={370} y={60}/><Dot x={370} y={210}/><Label x={210} y={36} anchor="middle" kind="value">fuse</Label><Label x={392} y={140} kind="value">shunt diode</Label></>}
+  {topology==='pmos'&&<><Wires d="M90 60 H275 V72 M325 72 V60 H540 M275 60 V25 H280 M320 25 H325 V60 M300 86 V120 M300 180 V210"/><path d="M270 72 H330" stroke={reversed?gray:green} strokeWidth="3.5"/><path d="M280 86 H320" stroke="var(--ink)" strokeWidth="2.2"/><g transform="translate(300 25) scale(.67)"><Diode x={0} y={0} color={gray}/></g><Res x={300} y={150} v/><Label x={342} y={98} kind="value">P-MOSFET · gate low</Label><Label x={300} y={14} anchor="middle" kind="value">body diode</Label><Label x={312} y={156} kind="value">gate R</Label></>}
+  {topology==='bridge'&&<><Wires d="M90 60 H230 M370 60 H540"/><rect x="230" y="40" width="140" height="185" fill="var(--white)" stroke="var(--ink)" strokeWidth="1.8"/><Label x={300} y={125} anchor="middle">Bridge</Label><Label x={300} y={148} anchor="middle" kind="value">two diodes conduct</Label><path d="M230 210 H370" stroke="var(--white)" strokeWidth="5"/></>}
+  <Label x={560} y={128}>load</Label><Label x={560} y={150} kind="value">{f(load,2)} A</Label><Label x={445} y={50} kind="output">Vload = {f(d.out,2)} V</Label>
+ </svg>
+ <div className="horizontal-controls"><Control label="Supply voltage" value={vin} onChange={setVin} min={5} max={24} step={.5} unit="V"/><Control label="Load current" value={load} onChange={setLoad} min={0} max={3} step={.05} unit="A"/></div>
+ <Readouts values={reversed?[['LOAD VOLTAGE',f(d.out,2),'V'],['PROTECTION DISSIPATION',d.fault>0?f(d.loss,0):f(d.loss,2),'W'],['FAULT CURRENT',f(d.fault,0),'A']]:[['LOAD VOLTAGE',f(d.out,2),'V'],['PROTECTION LOSS',f(d.loss,3),'W'],['EFFICIENCY',f(d.efficiency*100,1),'%']]}/>
+ <div className="plot-area"><h4>Normal-operation loss is the price of protection</h4><Plot curves={(Object.keys(names) as Topology[]).map((t,i)=>({name:names[t],color:[green,'var(--ink)',orange,gray][i],dashed:t!==topology,points:pts(loss(t),0,3)}))} xRange={[0,3]} yRange={[0,3]} xLabel="LOAD CURRENT / A" yLabel="PROTECTION LOSS, CORRECT POLARITY / W" point={reversed?undefined:[load,d.loss]} description="Series diode loss rises linearly with current; a bridge doubles that; MOSFET loss rises with current squared but is much smaller here; the shunt diode wastes nothing until a fault."/>
+ <p className="plot-summary">{reversed?(topology==='shunt'?`Backwards, the shunt diode is forward-biased across the source. Only the assumed 50 mΩ source resistance limits current to about ${f(d.fault,0)} A until the fuse opens; the load sees about −0.45 V meanwhile.`:topology==='bridge'?'Backwards, the other diode pair conducts. The load still sees a positive voltage, less two drops.':'Backwards, the protection element blocks and the load sees 0 V. Only leakage flows.'):'Load modeled as constant current. Fixed 0.45 V Schottky drops; 20 mΩ MOSFET channel; 50 mΩ source resistance (shunt fault only).'} Temperature, diode current dependence, MOSFET gate-voltage limits and fuse timing are omitted.</p></div>
+ <div className="lab-prompt"><strong>Explore.</strong> At 3 A, compare the series diode and MOSFET losses. Then reverse the source with the shunt diode selected: the load is protected only because something upstream must fail open.</div></div>;
+}
+
+export function HotPlugLab(){
+ const [uh,setUh]=useState(10),[uf,setUf]=useState(22),[r,setR]=useState(.05),[diode,setDiode]=useState(false);
+ const d=hotPlug({vin:12,l:uh*1e-6,c:uf*1e-6,r,rl:100,diode,steps:3000}),end=d.points.at(-1)!.t*1e6;
+ const reset=()=>{setUh(10);setUf(22);setR(.05);setDiode(false)};
+ return <div className="lab" aria-label="Hot-plug LC overshoot experiment"><Head title="A STEP INTO AN LC FILTER RINGS" reset={reset}/>
+ <svg className="wide-circuit" viewBox="0 0 640 260" role="img" aria-label={'A 12 volt source and switch feed a series inductor and damping resistor into a capacitor with a 100 ohm load. '+(diode?'A bypass diode across the inductor and resistor points from the output back to the input.':'No bypass diode is fitted.')}>
+  <Wires d="M80 115 V70 H110 M170 70 H190 M250 70 H280 M340 70 H540 V105 M430 70 V105 M430 165 V215 M540 165 V215 M80 160 V215 H540"/>
+  <Source x={80} y={137} label="12 V"/><Switch x={140} y={70} closed/><Ind x={220} y={70}/><Res x={310} y={70}/><Cap x={430} y={135} v/><Res x={540} y={135} v/><Ground x={80} y={215}/>
+  <Wires d="M190 70 V25 H230 M290 25 H360 V70" color={diode?'var(--ink)':gray} dashed={!diode}/><Diode x={260} y={25} rotate={180} color={diode?green:gray}/><Dot x={190} y={70}/><Dot x={360} y={70}/><Dot x={430} y={70} color={green}/>
+  <Label x={200} y={100}>{f(uh,0)} µH</Label><Label x={285} y={100}>{f(r,2)} Ω</Label><Label x={455} y={140}>{f(uf,0)} µF</Label><Label x={560} y={140}>100 Ω</Label><Label x={262} y={12} anchor="middle" kind="value">{diode?'bypass diode':'no bypass diode'}</Label><Label x={445} y={58} kind="output">Vout</Label><Label x={140} y={100} anchor="middle" kind="value">t = 0</Label>
+ </svg>
+ <div className="horizontal-controls"><Control label="Series inductance" value={uh} onChange={setUh} min={0} max={2} step={.05} log unit="µH"/><Control label="Capacitance" value={uf} onChange={setUf} min={0} max={2} step={.05} log unit="µF"/><Control label="Series damping resistance" value={r} onChange={setR} min={-2} max={.5} step={.05} log unit="Ω"/><label className="check"><input type="checkbox" checked={diode} onChange={e=>setDiode(e.target.checked)}/> Fit bypass diode</label></div>
+ <Readouts values={[['PEAK OUTPUT',f(d.peakV,2),'V'],['PEAK INDUCTOR CURRENT',f(d.peakI,2),'A'],['CHARACTERISTIC Z₀',f(d.z0,3),'Ω']]}/>
+ <div className="plot-area"><h4>{diode?'The diode returns the excess to the input':'Without a path, the inductor overshoots toward 2 × Vin'}</h4><Plot curves={[{name:'Output voltage',color:green,points:d.points.filter((_,k)=>k%10===0).map(p=>[p.t*1e6,p.v] as [number,number])},{name:'Input 12 V',color:gray,dashed:true,points:[[0,12],[end,12]]},{name:'2 × input',color:orange,dashed:true,points:[[0,24],[end,24]]}]} xRange={[0,end]} xTicks={niceTicks(end)} yRange={[0,28]} xLabel="TIME AFTER CONNECTION / µs" yLabel="OUTPUT VOLTAGE / V" description={'Peak output '+f(d.peakV,2)+' volts. Resonant frequency '+f(d.f0/1000,1)+' kilohertz.'}/>
+ <Plot curves={[{name:'Inductor current',color:orange,points:d.points.filter((_,k)=>k%10===0).map(p=>[p.t*1e6,p.i] as [number,number])},...(diode?[{name:'Diode current',color:green,points:d.points.filter((_,k)=>k%10===0).map(p=>[p.t*1e6,p.id] as [number,number])}]:[])]} xRange={[0,end]} xTicks={niceTicks(end)} yRange={[-d.peakI*1.1,d.peakI*1.1]} xLabel="TIME AFTER CONNECTION / µs" yLabel="CURRENT / A" description={'Inductor current peaks at '+f(d.peakI,2)+' amps, close to Vin divided by Z0 = '+f(d.inrushEstimate,2)+' amps when lightly damped.'}/>
+ <p className="plot-summary">Resonance f₀ = {f(d.f0/1000,2)} kHz; damping ratio ζ ≈ {f(d.zeta,3)}. Ideal 12 V step and switch; the series resistance stands for source, wiring, inductor and capacitor ESR together. Fixed 0.7 V diode drop. Light 100 Ω load. Real connectors bounce and real capacitors lose capacitance with voltage.</p></div>
+ <div className="lab-prompt"><strong>Explore.</strong> With damping near 0.01 Ω, the peak approaches 24 V. Raise resistance until ζ approaches 1 and the overshoot nearly disappears; note how much resistance that needs. Then restore low damping and fit the diode.</div></div>;
+}
+
+export function BoostLab(){
+ const [ton,setTon]=useState(10),[uh,setUh]=useState(100),[vout,setVout]=useState(12);
+ const d=boostCycle({vin:5,vout,l:uh*1e-6,ton:ton*1e-6,hz:20e3,vf:.4}),end=150;
+ const reset=()=>{setTon(10);setUh(100);setVout(12)};
+ return <div className="lab" aria-label="Inductor boost cycle experiment"><Head title="CHARGE AN INDUCTOR, THEN LET IT PUSH" reset={reset}/>
+ <svg className="wide-circuit" viewBox="0 0 640 250" role="img" aria-label="5 volt source feeds an inductor to a switch node. A switch connects the node to ground. A diode from the node feeds an output capacitor held at the chosen output voltage.">
+  <Wires d="M80 112 V60 H160 M220 60 H320 M380 60 H480 V105 M480 165 V210 M280 60 V105 M280 165 V210 M80 162 V210 H480"/>
+  <Source x={80} y={137} label="5 V"/><Ind x={190} y={60}/><Diode x={350} y={60}/><Cap x={480} y={135} v/><g transform="rotate(90 280 135)"><Switch x={280} y={135}/></g><Ground x={80} y={210}/><Dot x={280} y={60} color={green}/>
+  <Label x={170} y={38}>{f(uh,0)} µH</Label><Label x={300} y={140} kind="value">switch, 20 kHz</Label><Label x={505} y={130}>large C</Label><Label x={505} y={152} kind="value">held at {f(vout,1)} V</Label><Label x={255} y={44} kind="output">node</Label>
+ </svg>
+ <div className="horizontal-controls"><Control label="Switch on-time" value={ton} onChange={setTon} min={2} max={20} step={.5} unit="µs"/><Control label="Inductance" value={uh} onChange={setUh} min={1.7} max={2.7} step={.02} log unit="µH"/><Control label="Output voltage" value={vout} onChange={setVout} min={6} max={30} step={.5} unit="V"/></div>
+ <Readouts values={[['PEAK CURRENT',f(d.ipk,3),'A'],['ENERGY PER CYCLE',f(d.stored*1e6,1),'µJ'],['POWER DELIVERED',f(d.pOut,3),'W']]}/>
+ {d.continuous&&<p className="lab-warning">Current would not reach zero before the next on-time ({f((ton*1e-6+d.toff)*1e6,1)} µs needed of 50 µs). This discontinuous-mode model no longer applies; the traces below are not valid for these settings.</p>}
+ <div className="plot-area"><h4>Ramp up at Vin/L, ramp down at (Vout + Vꜰ − Vin)/L</h4><Plot curves={[{name:'Inductor current',color:green,points:pts(t=>d.current(t*1e-6),0,end,600)}]} xRange={[0,end]} yRange={[0,Math.max(.1,d.ipk*1.15)]} xLabel="TIME / µs" yLabel="INDUCTOR CURRENT / A" description={'Triangular current pulses peaking at '+f(d.ipk,3)+' amps; release lasts '+f(d.toff*1e6,2)+' microseconds.'}/>
+ <Plot curves={[{name:'Switch-node voltage',color:orange,points:pts(t=>d.node(t*1e-6),0,end,1200)}]} xRange={[0,end]} yRange={[0,vout+2]} xLabel="TIME / µs" yLabel="SWITCH NODE / V" description={'The node sits at 0 V while the switch is on, jumps to output plus one diode drop while the inductor releases, then returns to the input voltage.'}/>
+ <p className="plot-summary">Release time {f(d.toff*1e6,2)} µs. Each cycle stores ½LI² = {f(d.stored*1e6,1)} µJ, but the output receives {f(d.eOut*1e6,1)} µJ because the source keeps supplying current during release; the diode takes {f(d.eDiode*1e6,2)} µJ. Ideal switch and inductor; output held constant; real nodes ring when current stops.</p></div>
+ <div className="lab-prompt"><strong>Explore.</strong> Double the on-time: peak current doubles and energy per cycle quadruples. Raise the output voltage: the release gets shorter, but the energy stored per cycle does not change.</div></div>;
+}

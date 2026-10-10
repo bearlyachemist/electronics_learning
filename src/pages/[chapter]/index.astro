@@ -1,0 +1,65 @@
+---
+import Book from '../../layouts/Book.astro';
+import {chapters} from '../../curriculum/chapters';
+import Thevenin from '../../content/thevenin.mdx';
+import SmallSignal from '../../content/small-signal.mdx';
+import Power from '../../content/power.mdx';
+import Chapter0 from '../../content/capacitors.mdx';
+import Chapter1 from '../../content/rc-circuits.mdx';
+import Chapter2 from '../../content/differentiators.mdx';
+import Chapter3 from '../../content/integrators.mdx';
+import Chapter4 from '../../content/real-capacitors.mdx';
+import Chapter5 from '../../content/inductors.mdx';
+import Chapter6 from '../../content/transformers.mdx';
+import DiodeChapter0 from '../../content/semiconductors.mdx';
+import DiodeChapter1 from '../../content/diodes.mdx';
+import DiodeChapter2 from '../../content/rectifiers.mdx';
+import DiodeChapter3 from '../../content/regulators.mdx';
+import DiodeChapter4 from '../../content/diode-applications.mdx';
+import DiodeChapter5 from '../../content/diode-protection.mdx';
+import ProtectionCircuits from '../../content/protection-circuits.mdx';
+import Blk35 from '../../content/current-mirrors.mdx';
+import Blk36 from '../../content/differential-amplifiers.mdx';
+import Blk37 from '../../content/push-pull.mdx';
+import Blk38 from '../../content/darlington.mdx';
+import Blk39 from '../../content/bootstrapping.mdx';
+import Blk40 from '../../content/current-sharing.mdx';
+import Blk41 from '../../content/miller-effect.mdx';
+import Bjt26 from '../../content/transistor-physics.mdx';
+import Bjt27 from '../../content/bjt.mdx';
+import Bjt28 from '../../content/emitter-follower.mdx';
+import Bjt29 from '../../content/bjt-biasing.mdx';
+import Bjt30 from '../../content/bjt-small-signal.mdx';
+import Bjt31 from '../../content/current-sources.mdx';
+import Bjt32 from '../../content/common-emitter.mdx';
+import Bjt33 from '../../content/transconductance.mdx';
+import Bjt34 from '../../content/ebers-moll.mdx';
+import Ac19 from '../../content/phasors.mdx';
+import Ac20 from '../../content/impedance.mdx';
+import Ac21 from '../../content/reactive-power.mdx';
+import Ac22 from '../../content/rc-filters.mdx';
+import Ac23 from '../../content/poles.mdx';
+import Ac24 from '../../content/resonance.mdx';
+import Ac25 from '../../content/ac-thevenin.mdx';
+import Feedback42 from '../../content/negative-feedback.mdx';
+import Feedback43 from '../../content/transistor-feedback.mdx';
+import Feedback44 from '../../content/regulated-supplies.mdx';
+import Feedback45 from '../../content/temperature-control.mdx';
+import Feedback46 from '../../content/bjt-logic.mdx';
+import Fet47 from '../../content/fet-physics.mdx';
+import Fet48 from '../../content/jfet-bias.mdx';
+import Fet49 from '../../content/jfet-amplifiers.mdx';
+import Fet50 from '../../content/fet-dynamics.mdx';
+import Fet51 from '../../content/fet-switches.mdx';
+import Fet52 from '../../content/mosfet-physics.mdx';
+import Fet53 from '../../content/mosfet-linear.mdx';
+import Fet54 from '../../content/mosfet-power.mdx';
+import Fet55 from '../../content/power-fet-circuits.mdx';
+import Fet56 from '../../content/parallel-mosfets.mdx';
+export function getStaticPaths(){return chapters.filter(c=>c.id!=='dividers').map(c=>({params:{chapter:c.id}}));}
+const pages={'fet-physics':Fet47,'jfet-bias':Fet48,'jfet-amplifiers':Fet49,'fet-dynamics':Fet50,'fet-switches':Fet51,'mosfet-physics':Fet52,'mosfet-linear':Fet53,'mosfet-power':Fet54,'power-fet-circuits':Fet55,'parallel-mosfets':Fet56,'bjt-logic':Feedback46,'temperature-control':Feedback45,'regulated-supplies':Feedback44,'transistor-feedback':Feedback43,'negative-feedback':Feedback42,'semiconductors':DiodeChapter0,'diodes':DiodeChapter1,'rectifiers':DiodeChapter2,'regulators':DiodeChapter3,'diode-applications':DiodeChapter4,'diode-protection':DiodeChapter5,'protection-circuits':ProtectionCircuits,'current-mirrors':Blk35,'differential-amplifiers':Blk36,'push-pull':Blk37,'darlington':Blk38,'bootstrapping':Blk39,'current-sharing':Blk40,'miller-effect':Blk41,'transistor-physics':Bjt26,'bjt':Bjt27,'emitter-follower':Bjt28,'bjt-biasing':Bjt29,'bjt-small-signal':Bjt30,'current-sources':Bjt31,'common-emitter':Bjt32,'transconductance':Bjt33,'ebers-moll':Bjt34,'phasors':Ac19,'impedance':Ac20,'reactive-power':Ac21,'rc-filters':Ac22,'poles':Ac23,'resonance':Ac24,'ac-thevenin':Ac25,'thevenin':Thevenin,'small-signal':SmallSignal,'power':Power,'capacitors':Chapter0,'rc-circuits':Chapter1,'differentiators':Chapter2,'integrators':Chapter3,'real-capacitors':Chapter4,'inductors':Chapter5,'transformers':Chapter6};
+const chapter=Astro.params.chapter as keyof typeof pages;
+const Content=pages[chapter];
+---
+<Book chapter={chapter}><Content/></Book>
+

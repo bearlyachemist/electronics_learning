@@ -1,0 +1,7 @@
+---
+import katex from 'katex';
+const {tex, label} = Astro.props;
+const html = katex.renderToString(tex,{displayMode:true,throwOnError:true,output:'htmlAndMathml'});
+---
+<div class="equation">{label && <span class="equation-label">{label}</span>}<div set:html={html}/></div>
+

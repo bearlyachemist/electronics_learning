@@ -1,0 +1,281 @@
+import Equation from '../components/Equation.astro';
+import {CapacitorLab,RCLab,FilterLab,RealCapLab,InductorLab,TransformerLab} from '../components/PassiveLabs';
+
+
+
+<div className="chapter-hero" id="overview">
+
+
+
+
+<div className="eyebrow">
+
+<span>CHAPTER 05</span><span className="hairline"/>FOUNDATIONS / ENERGY & SIGNALS
+
+</div>
+
+
+<h1>Capacitors: charge &amp; energy<br/><em>A deep dive into electric storage.</em></h1>
+<p className="dek">Build the capacitor from charge, geometry, and energy. Then discover why current controls the rate of voltage change.</p>
+
+
+<div className="chapter-meta">
+
+<span>30–40 min + exploration</span><span>Voltage · current · energy</span>
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Charge and electric fields → The current–voltage law → Where the energy goes → Charge at a constant rate → Series, parallel, and sharing.</p>
+
+</div>
+
+
+
+
+
+<section id="charge">
+
+
+
+
+<div className="section-heading">
+
+<span>01</span><h2>Charge and electric fields</h2>
+
+</div>
+
+
+
+A capacitor has two conductors separated by an insulating region. Moving charge through the external circuit leaves one conductor with an excess of electrons and the other with a corresponding deficit. The component can remain neutral overall while its two plates carry equal and opposite charges.
+
+Charge does not have to cross the ideal dielectric for current to flow in the external wires. The changing electric field and dielectric polarization accompany charge redistribution on the conductors. Leakage through a real dielectric is a separate effect.
+
+For a linear capacitor, the signed charge on the terminal we call positive is proportional to its voltage relative to the other terminal:
+
+<Equation tex="Q=CV,\qquad C=\frac{Q}{V}" label="01 / CAPACITANCE IS CHARGE PER VOLT"/>
+
+One farad is one coulomb per volt. A 100 µF capacitor at 5 V has 500 µC of charge on its positive plate and −500 µC on the other. It has not created a net 1,000 µC of charge.
+
+### Geometry explains the first model
+
+For large parallel plates separated by a uniform dielectric, neglecting fringing fields:
+
+<Equation tex="C=\frac{\varepsilon A}{d},\qquad E\approx\frac{V}{d}"/>
+
+A is the overlapping area, d the spacing, and ε the dielectric permittivity. More area or greater permittivity increases capacitance; greater separation decreases it. Reducing d also increases electric field for a given voltage, so obtaining more capacitance is not independent of breakdown limits.
+
+The familiar constant C assumes fixed geometry and a sufficiently linear dielectric. If charge is a nonlinear function of voltage, the local capacitance is dQ/dV. That distinction returns in the real-capacitor chapter.
+
+
+</section>
+
+
+
+
+
+<section id="current">
+
+
+
+
+<div className="section-heading">
+
+<span>02</span><h2>The current–voltage law</h2>
+
+</div>
+
+
+
+Current is the rate at which charge enters the chosen terminal. Differentiate Q = CV, keeping C constant:
+
+<Equation tex="i=\frac{dQ}{dt}=C\frac{dv}{dt}" label="02 / CURRENT CONTROLS THE SLOPE OF VOLTAGE"/>
+
+The sign convention matters: positive current enters the terminal used as the positive voltage reference. Positive current makes that voltage rise; negative current makes it fall.
+
+The same relationship can be written as an integral:
+
+<Equation tex="v(t)=v(t_0)+\frac{1}{C}\int_{t_0}^{t}i(u)\,du"/>
+
+The initial voltage is part of the answer. A capacitor remembers accumulated charge; its present voltage is not determined by the present current alone.
+
+
+
+<details className="prerequisite">
+
+
+<summary>A short bridge to derivatives and integrals</summary>
+
+
+<div>
+
+<p>The derivative dv/dt is the voltage change per unit time at a particular instant. On a voltage-versus-time graph, it is the tangent slope.</p><p>The integral of current is the signed area beneath the current-versus-time curve. Its units are amperes × seconds = coulombs. Divide that accumulated charge by farads to obtain a voltage change.</p><p>For constant current, the area is a rectangle and no calculus machinery is needed: ΔV = IΔt/C.</p>
+
+</div>
+
+
+
+
+</details>
+
+
+
+### “Open circuit at DC” needs a condition
+
+At steady constant voltage, dv/dt = 0, so an ideal capacitor draws zero current. That is the origin of the DC open-circuit rule. During startup or while a current source charges it, the voltage is not constant and the rule does not apply.
+
+A finite current cannot cause an instantaneous voltage jump. A mathematical ideal voltage step directly across an ideal capacitor would require an impulse of current. Actual circuits contain resistance and inductance that determine what happens during the edge.
+
+
+
+<div className="worked-example">
+
+
+<span className="tiny-label">WORKED EXAMPLE / A CURRENT PULSE</span><h3>From two volts to three</h3>
+<p>A 10 µF capacitor starts at 2 V. A current of +2 mA enters its positive terminal for 5 ms. Added charge is 2 mA × 5 ms = <strong>10 µC</strong>, so voltage rises by <strong>1 V</strong> to 3 V.</p>
+<p>The result depends on the integral of current. A 4 mA pulse lasting 2.5 ms adds the same charge. A subsequent −2 mA pulse lasting 5 ms returns the ideal capacitor to 2 V.</p>
+
+
+</div>
+
+
+
+
+</section>
+
+
+
+
+
+<section id="energy">
+
+
+
+
+<div className="section-heading">
+
+<span>03</span><h2>Where the energy goes</h2>
+
+</div>
+
+
+
+Adding a little charge dQ to a capacitor at voltage V requires energy dW = V dQ. Because voltage rises as charge accumulates, the energy is not simply the final voltage times the final charge.
+
+<Equation tex="W=\int_0^Q \frac{q}{C}\,dq=\frac{Q^2}{2C}=\frac{1}{2}CV^2" label="03 / ENERGY IN THE ELECTRIC FIELD"/>
+
+Stored energy is nonnegative even when the chosen voltage polarity is negative. Reversing the reference labels changes Q and V signs, not the physical energy.
+
+For the 10 µF example, moving from 2 V to 3 V increases energy by ½ × 10 µF × (3² − 2²) = **25 µJ**. Using ½C(ΔV)² would give 5 µJ and would be wrong: the capacitor already held energy at the initial voltage.
+
+### Why charging through a resistor loses energy
+
+Connect an initially uncharged capacitor to a constant supply Vₛ through a resistor and wait for settling. The source transfers total charge CVₛ while staying at voltage Vₛ, so it supplies CVₛ². Only ½CVₛ² ends up in the capacitor. The other half becomes heat in the series resistance.
+
+For 100 µF charged to 5 V, source energy is **2.5 mJ**, stored energy **1.25 mJ**, and dissipated energy **1.25 mJ**. Changing resistance changes the peak current and charging time, but not these final energies under the stated ideal step-charging assumptions.
+
+This is not a universal 50% limit for every charging method. A varying source or an energy-converting circuit can follow a different energy path.
+
+
+</section>
+
+
+
+
+
+<section id="explore">
+
+
+
+
+<div className="section-heading">
+
+<span>04</span><h2>Charge at a constant rate</h2>
+
+</div>
+
+
+
+An ideal current source is especially revealing: it fixes the charge-transfer rate and lets capacitor voltage respond. Unlike resistor charging from a fixed voltage source, the slope stays constant.
+
+<CapacitorLab client:load/>
+
+<p className="caption">Figure 1. Constant-current charging from zero volts. The source is ideal and imposes no voltage-compliance limit; the plot is a model rather than a component rating.</p>
+
+At the default 1 mA and 100 µF, the slope is 10 V/s. After 100 ms, voltage is 1 V, plate charge is 100 µC, and energy is 50 µJ. Notice that doubling the time doubles charge but quadruples energy: later charge is delivered at a higher voltage.
+
+
+</section>
+
+
+
+
+
+<section id="connections">
+
+
+
+
+<div className="section-heading">
+
+<span>05</span><h2>Series, parallel, and sharing</h2>
+
+</div>
+
+
+
+Capacitors in parallel share the same voltage. Their charges add, so their capacitances add:
+
+<Equation tex="C_{\parallel}=C_1+C_2+\cdots"/>
+
+For ideal series capacitors with no initial net charge on the isolated middle node, equal charge magnitudes appear on each capacitor. Their voltages add:
+
+<Equation tex="\frac{1}{C_{\mathrm{series}}}=\frac{1}{C_1}+\frac{1}{C_2}+\cdots"/>
+
+With 10 µF and 22 µF in series, equivalent capacitance is **6.875 µF**. Across 12 V, equal charge gives 8.25 V on the smaller capacitor and 3.75 V on the larger. Initial charge and real leakage can change the voltage division; series connection does not automatically guarantee equal sharing or a usable sum of voltage ratings.
+
+### Charge sharing is an energy problem too
+
+Connect an isolated 100 µF capacitor at 5 V in parallel, with matching polarity, to another 100 µF capacitor initially at 0 V. Charge conservation gives a final voltage of 2.5 V.
+
+Initial energy is 1.25 mJ; final total energy is 0.625 mJ. The remaining 0.625 mJ leaves the ideal capacitor storage, typically becoming heat during the transient in a real interconnect. Zero resistance and zero inductance would make the instantaneous connection model singular; they do not make energy conservation optional.
+
+### A useful application: short-term supply support
+
+If a load draws an extra 20 mA for 50 µs and allowable ideal capacitive droop is 0.1 V, the minimum capacitance from charge balance is IΔt/ΔV = **10 µF**. This is only the capacitive part of the answer. ESR causes an additional current-dependent drop, ESL matters during the edge, and effective capacitance can differ from its marked value.
+
+<p className="reference-note">Coverage: The Art of Electronics §1.4.1, expanded with charge, field, and energy derivations. The next chapter adds a resistor and derives the resulting time dependence.</p>
+
+
+</section>
+
+
+
+
+
+<div className="chapter-end">
+
+
+
+<div>
+
+<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent practice with hints and fully worked solutions.</p>
+
+</div>
+
+<a className="primary-link" href="/capacitors/practice/">Open practice →</a>
+
+</div>
+
+
+

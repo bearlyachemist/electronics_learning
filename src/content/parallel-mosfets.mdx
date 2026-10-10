@@ -1,0 +1,126 @@
+import Equation from '../components/Equation.astro';
+import {FetCurves,JfetBiasLab,FetGainLab,VariableFetLab,FetOscillatorLab,AnalogSwitchLab,GateChargeLab,PowerFetLab,ParallelFetLab} from '../components/FetLabs';
+import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 56</span><span className="hairline"/>FIELD-EFFECT TRANSISTORS</div>
+
+<h1>Parallel MOSFETs & thermal stability<br/><em>Sharing a gate does not guarantee sharing a load.</em></h1>
+
+<p className="dek">Distinguish fully enhanced current sharing from linear-mode thermal runaway. Derive ballast feedback, thermal equilibrium and mismatch sensitivity, then analyze switching layout and safe operating area.</p>
+
+<div className="chapter-meta"><span>60–90 min + exploration</span><span>Read, derive, predict, experiment</span></div>
+
+</div>
+
+
+<section id="ohmic">
+
+## 01 / Two on-resistances share one voltage
+
+When two fully enhanced MOSFETs connect in parallel, their drain-source voltages are equal. If their on-resistances are R1 and R2 and total load current is IT:
+
+<Equation tex="I_1=\frac{V}{R_1},\quad I_2=\frac{V}{R_2},\quad I_1=I_T\frac{R_2}{R_1+R_2},\quad I_2=I_T\frac{R_1}{R_1+R_2}" />
+
+At IT = 20 A, R1 = 20 mΩ and R2 = 30 mΩ, currents are 12 A and 8 A. Dissipations are 2.88 W and 1.92 W. The lower-resistance device carries more current and dissipates more power in this fixed-total-current parallel circuit.
+
+In a fully enhanced MOSFET, on-resistance commonly rises with temperature. Model it locally as R(T) = R25[1 + α(T − 25°C)]. If device 1 warms by 75°C and α = 0.004/°C, its resistance rises from 20 to 26 mΩ. With the other still at 30 mΩ, currents become 10.71 A and 9.29 A. Current shifts away from the hotter branch.
+
+This is a useful stabilizing tendency. It is not perfect balancing: package temperatures, device tolerances, copper resistance and cooling differ. Nor does it mean heating always reduces power. The electrical constraint matters. At fixed current a resistor's I²R power increases as resistance rises; at fixed voltage V²/R decreases. A coupled circuit must be analyzed with its actual load constraint.
+
+</section>
+
+<section id="explore">
+
+## 02 / See the limits of the reassuring rule
+
+<ParallelFetLab client:load />
+
+Raise the first device's temperature, then introduce a resistance mismatch and add equal ballast. The model holds total current fixed and treats temperatures as independent inputs. It demonstrates static redistribution, not a thermal transient or an SOA prediction.
+
+The cost of ballast is real. A 10 mΩ resistor carrying 10 A dissipates 1 W. If two equal 20 mΩ channels each receive 10 mΩ ballast, their total parallel resistance rises from 10 to 15 mΩ. At 20 A, combined channel-plus-ballast loss rises from 4 to 6 W.
+
+</section>
+
+<section id="linear">
+
+## 03 / Near threshold, the feedback can reverse sign
+
+In linear power service, a MOSFET may sustain a large VDS while its gate is only slightly above threshold. Mobility tends to decrease with temperature, reducing current, while threshold voltage often decreases, increasing overdrive and current. Their competition depends on the operating point.
+
+Using ID = k(T)(VGS − VT(T))²/2 at fixed VGS and VDS:
+
+<Equation tex="\frac1{I_D}\frac{dI_D}{dT}=\frac1k\frac{dk}{dT}-\frac{2}{u}\frac{dV_T}{dT}" />
+
+For illustrative dk/(k dT) = −0.004/°C and dVT/dT = −0.002 V/°C, the fractional current slope is −0.004 + 0.004/u per °C, with u in volts. At u = 0.5 V it is +0.004/°C; at u = 2 V it is −0.002/°C. These are teaching coefficients, not a universal crossover specification.
+
+At small overdrive a warmer region can carry more current. More current at nearly fixed drain voltage generates more heat, which attracts still more current. This can occur between separate transistors or within the cells of a single die. A heatsink that keeps average case temperature low does not necessarily prevent local hot spots.
+
+A lumped thermal model is:
+
+<Equation tex="C_\theta\frac{dT}{dt}=P(T)-\frac{T-T_A}{R_\theta}" />
+
+At an equilibrium, small temperature perturbations decay only if:
+
+<Equation tex="\left.\frac{dP}{dT}\right|_{\mathrm{eq}}<\frac1{R_\theta}" />
+
+If Rθ = 10°C/W, the restoring heat-flow slope is 0.1 W/°C. A modeled electrical power slope of 0.15 W/°C makes that lumped equilibrium unstable. Passing this test does not prove a multicell die is locally stable; it merely checks the simplified thermal mode being modeled.
+
+</section>
+
+<section id="ballast">
+
+## 04 / Derive the action of individual source resistors
+
+Give each MOSFET its own source resistor while driving the gates from a common node. If one branch current rises, its source voltage rises, reducing its own VGS. This is local negative feedback.
+
+Neglect output conductance and consider a threshold mismatch δVT at fixed common gate voltage:
+
+<Equation tex="\delta i=g_m(-\delta V_T-\delta iR_S),\qquad \delta i=-\frac{g_m\,\delta V_T}{1+g_mR_S}" />
+
+With gm = 2 S, a −50 mV threshold shift produces about +100 mA current change without ballast. With RS = 0.5 Ω, the change falls to 50 mA. For large gmRS, mismatch current approaches −δVT/RS. The resistor reduces sensitivity rather than making the devices identical.
+
+At 1 A, a 0.5 Ω source resistor dissipates 0.5 W and consumes 0.5 V headroom. At 10 A the same resistor would waste 50 W. Thus resistor values suitable for a linear current-sharing stage are often unacceptable in a low-loss power switch.
+
+A common resistor below both joined sources senses total current but cannot directly oppose an imbalance where one current rises as the other falls. Individual resistors are essential to obtain that differential balancing feedback. Similarly, an outer control loop that regulates total current does not guarantee equal branch currents.
+
+For precision linear sharing, each branch can have its own sense resistor and control loop. Then compensation, control saturation and fault handling become part of the design. Device selection for linear SOA remains necessary.
+
+</section>
+
+<section id="dynamic">
+
+## 05 / Equal DC resistance does not imply equal switching stress
+
+During switching, current sharing depends on threshold, gate charge, gate resistance, source inductance, drain inductance and timing. A device that turns on first may temporarily carry most of the load while the other is still off. During turn-off, the slower branch may absorb a disproportionate share of switching energy.
+
+Use a separate gate resistor close to each device so one gate's current and ringing do not directly drive the other. Arrange power connections symmetrically, and provide driver returns that do not share avoidable power-current inductance. Symmetry includes electrical path length and mutual coupling, not just visual placement.
+
+If one branch has 5 nH more source inductance and its current changes at 0.5 A/ns, the extra source voltage is 2.5 V. This is large compared with many useful gate-drive margins. Matching nominal on-resistance cannot compensate for that transient difference.
+
+Thermal coupling can help average temperatures between discrete devices, yet mechanical interfaces and airflow can still differ. It also changes the transient thermal system, so a single resistance cannot represent every pulse duration. [Infineon's paralleling guidance](https://www.infineon.com/product-information/parallelingpowermosfets) treats static, dynamic and thermal sharing as separate design concerns.
+
+</section>
+
+<section id="soa">
+
+## 06 / Read the safe operating area as a set of conditions
+
+An SOA plot bounds combinations of current and drain voltage for specified pulse durations and thermal conditions. A current rating, voltage rating and power rating are not three independent permissions that can be simultaneously maximized.
+
+For a 24 V, 1 A capacitor-charging pass stage, startup begins near 24 W and traverses toward low drain voltage over the charging interval. Compare that trajectory with the appropriate pulse curve, accounting for initial temperature and repetition. A persistent short changes the problem from a transient to DC linear stress. Two parallel devices cannot automatically be credited with twice the SOA when sharing is uncertain.
+
+An analyzed design proceeds in a definite order: establish the current and voltage waveforms; calculate static and switching mismatch; estimate each device's individual losses; solve or bound its thermal conditions; check the trajectory against applicable SOA; then evaluate startup and fault cases. Use measured waveforms or a validated detailed model when parasitics dominate.
+
+The practical lesson is conditional: fully enhanced resistance can encourage static sharing, while near-threshold linear operation can encourage thermal concentration. The operating region, drive circuit and thermal path determine which feedback loop wins.
+
+</section>
+
+
+<div className="practice-home">
+
+<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems, hints and complete worked solutions.</p><a className="primary-link" href="/parallel-mosfets/practice/">Open practice →</a>
+
+</div>
+

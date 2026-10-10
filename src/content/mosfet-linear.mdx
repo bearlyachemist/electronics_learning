@@ -1,0 +1,116 @@
+import Equation from '../components/Equation.astro';
+import {FetCurves,JfetBiasLab,FetGainLab,VariableFetLab,FetOscillatorLab,AnalogSwitchLab,GateChargeLab,PowerFetLab,ParallelFetLab} from '../components/FetLabs';
+import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 53</span><span className="hairline"/>FIELD-EFFECT TRANSISTORS</div>
+
+<h1>Linear & depletion MOSFET circuits<br/><em>Control current without hiding the heat.</em></h1>
+
+<p className="dek">Design MOS amplifiers, followers, regulated current sinks and normally-on depletion circuits. Analyze a capacitive-load driver and distinguish small-signal linearity from power-device linear-mode operation.</p>
+
+<div className="chapter-meta"><span>60–90 min + exploration</span><span>Read, derive, predict, experiment</span></div>
+
+</div>
+
+
+<section id="gain">
+
+## 01 / A MOS common-source amplifier, fully biased
+
+“Linear amplifier” means an approximately proportional input-output relationship around a bias point. Its MOSFET usually operates in the device's **saturation region**. “Linear-mode power MOSFET” means a partially conducting device sustaining substantial drain voltage and current. Neither phrase means that the transistor must be in the low-voltage ohmic region.
+
+Take a teaching device with k = 4 mA/V² and VT = 2 V. Target ID = 2 mA from a 12 V supply. The required overdrive is:
+
+<Equation tex="u=\sqrt{\frac{2I_D}{k}}=1\ \mathrm V,\qquad V_{GS}=3\ \mathrm V,\qquad g_m=4\ \mathrm{mS}" />
+
+Choose RS = 500 Ω, giving VS = 1 V, and bias the gate at 4 V. A 200 kΩ upper resistor from 12 V to the gate and 100 kΩ lower resistor to ground produce 4 V if gate leakage is negligible. Their Thévenin resistance is 66.7 kΩ. Choose RD = 2.2 kΩ: VD = 7.6 V and VDS = 6.6 V, well above the 1 V saturation boundary.
+
+<FetCircuit mos />
+
+With a 10 kΩ AC-coupled load, RD parallel RL = 1.803 kΩ. Leaving RS unbypassed gives:
+
+<Equation tex="A_v\approx-\frac{0.004(1803)}{1+0.004(500)}=-2.40" />
+
+If Cgs = 20 pF and Cgd = 4 pF, the simple Miller input estimate is 33.6 pF. The bias divider is in parallel with the external signal source when finding the input pole. A 10 kΩ source yields an effective 8.70 kΩ resistance and a first estimate near 545 kHz. Other poles may lower the actual bandwidth.
+
+Threshold spread changes the bias even though the divider is exact. The source resistor reduces that sensitivity: a small threshold shift causes approximately −gmΔVT/(1 + gmRS) current change when output conductance is neglected. For +0.1 V, that is about −0.133 mA. Large shifts require solving the DC equation again.
+
+</section>
+
+<section id="follower">
+
+## 02 / A follower versus a regulated current sink
+
+A simple source follower sets VS approximately to VG minus the VGS required for its current. Because required VGS varies with device, current and temperature, it is a buffer with an offset, not a precision voltage reference.
+
+For gm = 20 mS and a 1 kΩ source load, ideal follower gain is 20/21 = 0.952, with output resistance near 50 Ω parallel 1 kΩ = 47.6 Ω. A fixed body or a finite drain output resistance lowers the gain further. Output swing is constrained by gate-drive range, drain headroom and the source's ability to supply or sink load current.
+
+To obtain an accurate current sink, let an amplifier compare a reference voltage with the voltage across a source sense resistor and drive the MOS gate. With negative feedback maintaining VS ≈ Vref:
+
+<Equation tex="I_D\approx\frac{V_{\mathrm{ref}}}{R_{\mathrm{sense}}}" />
+
+For Vref = 0.5 V and Rsense = 10 Ω, current is 50 mA; the resistor dissipates 25 mW. If the drain is at 10 V, the MOSFET sees about 9.5 V and dissipates 0.475 W. A 1 mV amplifier offset creates about 0.1 mA current error, before resistor and reference errors.
+
+The amplifier must drive the required gate voltage and remain stable with the MOSFET gate capacitance. A series gate resistor can isolate the capacitive load, but its interaction with the feedback loop must be evaluated. At low drain voltage, the loop runs out of compliance and the current falls despite the correct reference. At high drain voltage, dissipation and SOA become the limits.
+
+</section>
+
+<section id="depletion">
+
+## 03 / A normally-on MOSFET can set its own bias
+
+A depletion n-channel MOSFET with negative VT behaves like a normally-on controlled channel while retaining an insulated gate. For an illustrative k = 2 mA/V² and VT = −2 V, the zero-gate saturation current is 4 mA.
+
+Tie the gate to ground and place RS at the source. To set 1 mA, the required overdrive is 1 V, so VGS = −1 V and RS = 1 kΩ. With the drain at 10 V, VS = 1 V and VDS = 9 V; device power is 9 mW. Approximate compliance occurs at drain voltage VS + u = 2 V. Parameter spread still changes the result: this is a self-biased current source, not a precision reference.
+
+A second application is a **startup feed**. Connect the drain to a positive input, source through a current-setting resistor to a controller's supply capacitor, and gate to the capacitor's lower side of that resistor so source current develops negative VGS. The normally-on device begins charging before the controller has power. After startup, an auxiliary winding or another supply can take over; a control path may then turn the depletion device off to avoid continuous dissipation.
+
+If a 2 mA startup feed charges 10 μF through a 12 V rise with negligible controller load:
+
+<Equation tex="t=\frac{C\Delta V}{I}=60\ \mathrm{ms}" />
+
+Any controller current subtracts from charging current. If it consumes more than the source can deliver near its start threshold, the supply can repeatedly start and collapse. Voltage rating, startup power, control clamp paths and the normally-on failure state all need analysis.
+
+A third application is an active high-resistance load above a common-source amplifier. A depletion device can provide current without a gate voltage above the supply. The high incremental resistance increases gain, but both devices need compliance; the output cannot swing to both rails while both remain saturated.
+
+</section>
+
+<section id="piezo">
+
+## 04 / Driving a piezoelectric or other capacitive load
+
+A capacitive actuator may draw little DC current yet demand substantial transient current. For a sinusoid v = Vpk sin(2πft):
+
+<Equation tex="i=C\frac{dv}{dt},\qquad I_{\mathrm{pk}}=2\pi fCV_{\mathrm{pk}}" />
+
+For C = 100 nF, f = 1 kHz and Vpk = 50 V, peak current is 31.4 mA. At 10 kHz it becomes 314 mA. A stage must both charge and discharge the load; a single source follower with a weak pull-down can follow upward edges and fail badly on downward ones.
+
+A conceptual high-voltage amplifier uses a voltage-gain/error stage driving complementary or otherwise bidirectional output devices, with the load voltage returned through a divider. If the divider fraction is 1/20 and loop gain is adequate, a 2.5 V peak input requests 50 V peak at the load. The feedback derivation remains the same as in chapter 42, but output current and phase margin now depend strongly on the capacitive load.
+
+With ideal ±60 V supplies and a class-B push-pull stage delivering the sinusoidal capacitor current, the net average real power delivered to an ideal capacitor is zero. Yet the rails supply approximately 2VSIPK/π = 1.20 W for the 31.4 mA example; that power is dissipated in the idealized output stage. Reactive load current can therefore heat an amplifier even when the load's average real power is zero.
+
+Real actuators have dielectric loss and resonances. Output isolation resistance and compensation affect stability, dissipation and load-voltage accuracy. This is an analyzed topology and load calculation, not a ready-to-build high-voltage design with a selected device and validated compensation.
+
+</section>
+
+<section id="limits">
+
+## 05 / Check the whole operating trajectory
+
+A MOSFET dissipating 0.5 W at one bias point may face much greater stress during startup, short circuit or capacitor charging. Plot drain current against drain voltage over time and compare the trajectory with the selected device's SOA for the relevant pulse duration and temperature.
+
+For linear operation, a low RDS(on) switch can be a poor choice. Near threshold, hotter regions may carry more current and develop localized hot spots. A package-average junction-temperature calculation alone does not capture that instability. Devices intended and characterized for linear service, source degeneration and appropriate protection address different parts of the problem; none removes the need to check SOA.
+
+This physical distinction is discussed in [Infineon's linear-mode and safe-operating-area application note](https://www.infineon.com/assets/row/public/documents/24/42/infineon-applicationnote-linear-mode-operation-safe-operation-diagram-mosfets-applicationnotes-en.pdf?fileId=db3a30433e30e4bf013e3646e9381200). The final chapter returns to its implications for parallel devices.
+
+</section>
+
+
+<div className="practice-home">
+
+<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems, hints and complete worked solutions.</p><a className="primary-link" href="/mosfet-linear/practice/">Open practice →</a>
+
+</div>
+

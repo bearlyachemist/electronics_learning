@@ -1,0 +1,350 @@
+import CircuitFigure from '../components/CircuitFigure.astro';
+import Equation from '../components/Equation.astro';
+import {TheveninLab} from '../components/FoundationLabs';
+
+
+
+<div className="chapter-hero" id="overview">
+
+
+
+
+<div className="eyebrow">
+
+<span>CHAPTER 02</span><span className="hairline"/>FOUNDATIONS / SOURCES & LOADS
+
+</div>
+
+
+<h1>Thévenin equivalents.<br/><em>See the circuit from outside.</em></h1>
+<p className="dek">A complicated network can look surprisingly simple at two terminals. Learn what we can replace, what we must preserve, and what the replacement cannot tell us.</p>
+
+
+<div className="chapter-meta">
+
+<span>30–40 min + exploration</span><span>Dividers · Ohm’s law · KCL</span>
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+<div className="opening-grid">
+
+
+
+
+<div>
+
+<span className="tiny-label">THE QUESTION</span><p className="opening-question">A source gives 9 V<br/>with nothing connected.<br/>What will a load receive?</p>
+
+</div>
+
+
+
+
+<div>
+
+<p>An unloaded voltage is only one measurement. Two sources can both read 9 V on an ideal voltmeter yet behave very differently when asked to deliver current.</p><p>A Thévenin equivalent adds the missing information: how the terminal voltage changes as current is drawn. It turns a network into a source we can reason about.</p>
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+<section id="port">
+
+
+
+
+<div className="section-heading">
+
+<span>01</span><h2>What does “equivalent” mean?</h2>
+
+</div>
+
+
+
+Choose two accessible terminals and label their voltage V. Define I as the current **leaving the positive terminal** and entering an external load. These two terminals form a port. The load can observe voltage and current at that port; it does not need to know every internal branch.
+
+For a linear resistive source network with a well-defined finite output resistance, the terminal relationship has the form:
+
+<Equation tex="V = V_{\mathrm{th}} - I R_{\mathrm{th}}" label="01 / A LINE IN THE V–I PLANE"/>
+
+At zero delivered current, the voltage is Vₜₕ. Increasing current by ΔI changes voltage by −RₜₕΔI. The minus sign follows our choice that positive current **leaves** the source.
+
+An ideal voltage source Vₜₕ followed by a series resistance Rₜₕ has exactly that terminal relationship. Any external load connected to the same two terminals therefore sees the same voltage and current, provided the original model remains valid.
+
+### The boundary matters
+
+Remove only the load you plan to vary. Everything left inside the boundary belongs to the source network, including resistors connected across its output. In the divider chapter, the lower resistor remained inside the network; the external load was removed.
+
+A different pair of terminals usually gives a different equivalent. Write down the terminal labels, reference polarity, and load boundary before simplifying.
+
+<aside className="margin-note"><strong>Equivalent at the port, not identical inside.</strong> The replacement preserves terminal behavior. It does not preserve individual branch currents, internal dissipation, device temperatures, or the physical location of stored energy.</aside>
+
+### Why should a straight line appear?
+
+Resistor currents are proportional to their voltage differences. Kirchhoff’s laws combine those relationships through linear equations. When internal unknowns are eliminated, one linear relation remains between port voltage and port current. Independent sources supply the constant term; the resistive network supplies the slope.
+
+This reasoning extends to linear dependent sources. It does not mean a transistor circuit is globally linear, nor that an ideal current source with infinite output resistance has a useful finite series-source representation.
+
+
+</section>
+
+
+
+
+
+<section id="derive">
+
+
+
+
+<div className="section-heading">
+
+<span>02</span><h2>Find the equivalent, step by step</h2>
+
+</div>
+
+
+
+**First, find the open-circuit voltage.** Disconnect the external load and calculate the voltage across the port. “Open circuit” means no current leaves the port; internal branches may still carry current. This voltage is Vₜₕ.
+
+**Second, find the output resistance.** For a network containing resistors and independent ideal sources, deactivate the independent sources and look into the port.
+
+
+
+<div className="table-wrap">
+
+
+<table><thead><tr><th>Independent source</th><th>Set its value to zero</th><th>Result</th></tr></thead><tbody><tr><td>Ideal voltage source</td><td>V = 0 for any current</td><td>A short circuit</td></tr><tr><td>Ideal current source</td><td>I = 0 for any voltage</td><td>An open circuit</td></tr></tbody></table>
+
+
+</div>
+
+
+
+Setting a voltage source to zero does not remove the wire. Setting a current source to zero does not replace it with a wire. Keep all actual resistances belonging to a nonideal source model.
+
+**Third, reconnect the load to the equivalent.** With a resistive load, the result is a familiar divider:
+
+<Equation tex="I_L=\frac{V_{\mathrm{th}}}{R_{\mathrm{th}}+R_L},\qquad V_L=\frac{V_{\mathrm{th}}R_L}{R_{\mathrm{th}}+R_L}"/>
+
+
+
+<div className="worked-example">
+
+
+<span className="tiny-label">WORKED EXAMPLE / A DIVIDER, REVISITED</span>
+<h3>What a 4 kΩ load sees</h3>
+<p>A 12 V source feeds a 3 kΩ resistor above the output and a 6 kΩ resistor below it. With the external load removed, Vₜₕ = 12 × 6/(3 + 6) = <strong>8 V</strong>.</p>
+<p>Deactivate the ideal supply. The upper end of the 3 kΩ resistor becomes ground, so both resistors connect from the output to ground. Their parallel combination is <strong>2 kΩ</strong>.</p>
+<p>A 4 kΩ load therefore receives 8 × 4/(2 + 4) = <strong>5.333 V</strong>, drawing <strong>1.333 mA</strong>. The open-circuit voltage was not a promise of the loaded voltage.</p>
+
+
+</div>
+
+
+
+### A second route: open-circuit and short-circuit behavior
+
+If the short-circuit current is finite and nonzero, set terminal voltage to zero in the port equation:
+
+<Equation tex="0=V_{\mathrm{th}}-I_{\mathrm{sc}}R_{\mathrm{th}}\quad\Rightarrow\quad R_{\mathrm{th}}=\frac{V_{\mathrm{oc}}}{I_{\mathrm{sc}}}"/>
+
+This is a calculation technique, not an instruction to short an unknown physical supply. The relation can be unhelpful when both measurements are zero, as often happens in source-free dependent-source models. A test source handles that case.
+
+### Derive a more interesting source
+
+Now connect the output to two different source voltages: V₁ through R₁ and V₂ through R₂. Both sources share the same reference terminal. With load current I leaving the output, KCL gives:
+
+<Equation tex="\frac{V_1-V}{R_1}+\frac{V_2-V}{R_2}=I"/>
+
+Collect the terms in V and divide by the sum of conductances:
+
+<Equation tex="V=\underbrace{\frac{V_1/R_1+V_2/R_2}{1/R_1+1/R_2}}_{V_{\mathrm{th}}}-I\underbrace{\frac{1}{1/R_1+1/R_2}}_{R_{\mathrm{th}}}" label="02 / IDENTIFY THE INTERCEPT AND SLOPE"/>
+
+The open-circuit voltage is a **conductance-weighted average** of the two source voltages. The smaller resistance has greater influence. Setting both ideal voltage sources to zero makes R₁ and R₂ parallel, confirming the resistance found by algebra.
+
+
+</section>
+
+
+
+
+
+<section id="explore">
+
+
+
+
+<div className="section-heading">
+
+<span>03</span><h2>Two sources, one output</h2>
+
+</div>
+
+
+
+At the default settings below, V₁ = 12 V, V₂ = 3 V, R₁ = 3 kΩ, and R₂ = 6 kΩ. The equivalent voltage is 9 V and the output resistance is 2 kΩ. A 4 kΩ load therefore receives 6 V.
+
+The graph uses voltage vertically and delivered current horizontally. The descending source line says what the network can supply. The ascending load line says what that resistor requires. Their intersection satisfies both at once.
+
+<TheveninLab client:load/>
+
+<p className="caption">Figure 1. Switching drawings changes the representation, not the terminal behavior. The sources can both deliver and absorb current in this ideal model.</p>
+
+### Follow the internal currents once
+
+At the default loaded output of 6 V, the 12 V branch supplies (12 − 6)/3 kΩ = **2 mA**. The 3 V branch contributes (3 − 6)/6 kΩ = **−0.5 mA**. That negative sign means 0.5 mA flows into the lower-voltage source. The remaining 1.5 mA goes to the load.
+
+The original resistors dissipate 12 mW + 1.5 mW = **13.5 mW**. The equivalent 2 kΩ resistance dissipates (1.5 mA)² × 2 kΩ = **4.5 mW**. The port behavior agrees; internal heating does not.
+
+A real voltage source may be unable to sink current. If its actual behavior differs from the ideal model, the equivalent derived from that model may no longer describe the hardware.
+
+
+</section>
+
+
+
+
+
+<section id="sources">
+
+
+
+
+<div className="section-heading">
+
+<span>04</span><h2>Keep dependent sources alive</h2>
+
+</div>
+
+
+
+A dependent source represents a response controlled by another voltage or current. Zeroing it would erase part of the circuit’s behavior—the very behavior that may determine output resistance.
+
+Deactivate **independent** sources, leave dependent sources active, and apply a test voltage Vₜ at the port. Define Iₜ as current entering the network from that test source. Then:
+
+<Equation tex="R_{\mathrm{th}}=\frac{V_t}{I_t}" label="03 / CURRENT ENTERS THE NETWORK FOR THIS TEST"/>
+
+The direction is different from the delivered-current convention used earlier. With independent sources deactivated, V = −IRₜₕ for outward current I, or V = IₜRₜₕ for inward current Iₜ.
+
+
+
+<div className="worked-example">
+
+
+<span className="tiny-label">ADVANCED EXAMPLE / FEEDBACK CHANGES RESISTANCE</span>
+<h3>A resistor with an assisting current source</h3>
+
+<CircuitFigure kind="dependent"/>
+
+<p>Connect a 2 kΩ resistor from the port to ground. In parallel, a dependent current source injects current upward from ground into the port. Its value is 0.75 Vₜ / (2 kΩ). This can represent an active circuit powered by supplies omitted from the small model.</p>
+<p>Apply 1 V at the port. The resistor draws 0.5 mA downward; the dependent source supplies 0.375 mA upward. The external test source supplies only their difference, <strong>0.125 mA</strong>.</p>
+<p>The port resistance is therefore 1 V / 0.125 mA = <strong>8 kΩ</strong>. Removing the dependent source would incorrectly give 2 kΩ.</p>
+<Equation tex="I_t=\frac{V_t}{R}-a\frac{V_t}{R},\qquad R_{\mathrm{th}}=\frac{R}{1-a}"/>
+<p>As a approaches one, the idealized port resistance grows. For a greater than one, the model has negative incremental resistance: increasing voltage makes the network deliver more current. That is active behavior, and stability requires further analysis.</p>
+
+
+</div>
+
+
+
+
+</section>
+
+
+
+
+
+<section id="design">
+
+
+
+
+<div className="section-heading">
+
+<span>05</span><h2>Use the model wisely</h2>
+
+</div>
+
+
+
+
+
+### Norton is the same story in another form
+
+For finite nonzero Rₜₕ, a source current Iₙ = Vₜₕ/Rₜₕ in parallel with Rₙ = Rₜₕ gives the same terminal relation. Define the source arrow toward the positive output node:
+
+<Equation tex="I=I_N-\frac{V}{R_N}\quad\Longleftrightarrow\quad V=I_NR_N-IR_N"/>
+
+Choose the representation that makes the next connection simplest. A current source driving parallel branches is often easier in Norton form; a voltage source driving a series load is often easier in Thévenin form.
+
+### Maximum power is not maximum efficiency
+
+For a positive real Rₜₕ and resistive load, load power is:
+
+<Equation tex="P_L=\frac{V_{\mathrm{th}}^2 R_L}{(R_{\mathrm{th}}+R_L)^2}"/>
+<Equation tex="\frac{dP_L}{dR_L}=\frac{V_{\mathrm{th}}^2(R_{\mathrm{th}}-R_L)}{(R_{\mathrm{th}}+R_L)^3}"/>
+
+The derivative changes sign at Rₗ = Rₜₕ. That load receives the greatest possible power from this fixed source model, but half the ideal source’s delivered power is then dissipated in its series resistance. The equivalent circuit’s efficiency is 50%; the original network may have additional internal losses.
+
+For accurate voltage transfer, we usually prefer a load much larger than the output resistance. For power conversion, we usually try to reduce source losses. “Match the resistances” is not a universal design instruction.
+
+### Where the replacement stops
+
+The simple resistor model is DC and linear. For a linear AC circuit we can use a frequency-dependent Thévenin impedance. For a nonlinear device, we generally need a local model about a chosen operating point—the subject of the next chapter.
+
+Current limits, saturation, protection circuits, changing temperature, and time-dependent behavior can all invalidate a single straight terminal line. Always carry the assumptions along with the equivalent.
+
+
+
+<div className="takeaway">
+
+<span className="tiny-label">THE IDEA TO KEEP</span><p>Keep the terminal behavior.<br/>Replace the internal complexity.<br/><em>Remember what you left behind.</em></p>
+
+</div>
+
+
+
+<p className="reference-note">Coverage reference: The Art of Electronics, third edition, §1.2.5, with supporting circuit theory. Original explanations and examples. See the separate power chapter for dissipation and thermal limits.</p>
+
+
+<div className="chapter-end">
+
+
+
+<div>
+
+<span className="tiny-label">CONTINUE EXPLORING</span><h3>Practice the equivalent</h3><p>Four problems: reduction, test sources, and power transfer.</p>
+
+</div>
+
+<a className="primary-link" href="/thevenin/practice/">Open practice →</a>
+
+</div>
+
+
+<p><a href="/small-signal/">Next: small-signal resistance →</a></p>
+
+
+</section>
+
+
+
+
+

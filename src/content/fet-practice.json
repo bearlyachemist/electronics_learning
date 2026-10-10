@@ -1,0 +1,722 @@
+{
+  "fet-physics": [
+    {
+      "tag": "REGIONS",
+      "title": "One gate, three drain voltages",
+      "prompt": "For k = 2 mA/V², VT = 2 V and VGS = 4 V, find drain current at VDS = 0.1, 1 and 3 V.",
+      "hint": "Find overdrive first, then compare VDS with it.",
+      "solution": [
+        {
+          "tex": "u=2\\ \\mathrm V;\\quad I_D=0.39,\\ 3,\\ 4\\ \\mathrm{mA}"
+        },
+        {
+          "text": "The first two points are ohmic: substitute into k(uVDS − VDS²/2). At 3 V the device is saturated because VDS exceeds 2 V. Use ku²/2 there."
+        }
+      ]
+    },
+    {
+      "tag": "DERIVATION",
+      "title": "Check the tangent",
+      "prompt": "At ID = 2 mA and overdrive 1 V, find gm and the incremental current for 5 mV input.",
+      "hint": "Differentiate the square law.",
+      "solution": [
+        {
+          "tex": "g_m=2I_D/u=4\\ \\mathrm{mS},\\qquad \\delta I_D=20\\ \\mu\\mathrm A"
+        },
+        {
+          "text": "This is a tangent estimate. The exact square-law increase includes kδv²/2; with k = 4 mA/V² that extra term is 0.05 μA."
+        }
+      ]
+    },
+    {
+      "tag": "OUTPUT RESISTANCE",
+      "title": "A sloping current source",
+      "prompt": "The unmodulated saturation current is 2 mA and λ = 0.02/V. Find current and ro at VDS = 5 V in the multiplicative model.",
+      "hint": "Differentiate with respect to drain voltage; keep gate voltage fixed.",
+      "solution": [
+        {
+          "tex": "I_D=2(1+0.02\\cdot5)=2.2\\ \\mathrm{mA},\\quad r_o=\\frac1{0.02(0.002)}=25\\ \\mathrm{k\\Omega}"
+        },
+        {
+          "text": "Using 1/(λ times the modulated current) would give 22.7 kΩ, only an approximation. The exact derivative in this model uses the unmodulated current."
+        }
+      ]
+    },
+    {
+      "tag": "PHYSICS",
+      "title": "Pinch-off or cutoff?",
+      "prompt": "At VGS = 3 V, VT = 1 V and VDS = 5 V, is the channel cut off? Explain what happens at its drain end.",
+      "hint": "Compare overdrive with zero and with drain voltage.",
+      "solution": [
+        {
+          "tex": "u=2\\ \\mathrm V>0,\\qquad V_{DS}>u"
+        },
+        {
+          "text": "It is in saturation, not cutoff. The drain end is pinched off, but carriers still travel through the conducting channel and high-field region. Raising the drain voltage is not equivalent to removing gate overdrive."
+        }
+      ]
+    },
+    {
+      "tag": "DESIGN",
+      "title": "A current law is not a circuit",
+      "prompt": "A 12 V supply and 10 kΩ drain resistor feed a source-grounded MOSFET. A saturation-only calculation predicts 2 mA. Is that possible?",
+      "hint": "Apply KVL before accepting the transistor formula.",
+      "solution": [
+        {
+          "tex": "V_D=12-(0.002)(10000)=-8\\ \\mathrm V"
+        },
+        {
+          "text": "The proposed positive-drain operating point is impossible. The current cannot exceed 1.2 mA in this passive load arrangement. Solve the load line with the appropriate channel region instead."
+        }
+      ]
+    }
+  ],
+  "jfet-bias": [
+    {
+      "tag": "TRANSFER",
+      "title": "A quarter of IDSS",
+      "prompt": "For IDSS = 8 mA and VP = −4 V, find VGS and gm at ID = 2 mA.",
+      "hint": "Take the physically valid square root.",
+      "solution": [
+        {
+          "tex": "V_{GS}=V_P(1-\\sqrt{I_D/I_{DSS}})=-2\\ \\mathrm V,\\quad g_m=2\\ \\mathrm{mS}"
+        },
+        {
+          "text": "The positive current square root gives 1 − VGS/VP = 0.5. The other algebraic branch lies outside the normal reverse-biased transfer interval."
+        }
+      ]
+    },
+    {
+      "tag": "SELF BIAS",
+      "title": "Design the source resistor",
+      "prompt": "Use that same JFET for a 2 mA source with gate at ground. Find RS and approximate minimum drain voltage.",
+      "hint": "The source must be above the grounded gate by 2 V.",
+      "solution": [
+        {
+          "tex": "R_S=2\\ \\mathrm V/2\\ \\mathrm{mA}=1\\ \\mathrm{k\\Omega},\\quad V_{D,\\min}\\approx2+2=4\\ \\mathrm V"
+        },
+        {
+          "text": "VS is 2 V and the modeled saturation requirement is VDS ≥ 2 V. Their sum gives the drain compliance relative to ground. Real curves require margin."
+        }
+      ]
+    },
+    {
+      "tag": "COMPLIANCE",
+      "title": "A load that is too large",
+      "prompt": "Use VDD = 12 V, RD = 5 kΩ, RS = 1 kΩ and the same device. Test the proposed 2 mA bias.",
+      "hint": "Add both resistor drops.",
+      "solution": [
+        {
+          "tex": "V_{DS}=12-(0.002)(5000+1000)=0\\ \\mathrm V"
+        },
+        {
+          "text": "The transfer formula requires VDS ≥ 2 V at that current, so the proposed bias is invalid. The actual current is lower and the device is ohmic. Solving the piecewise law is required."
+        }
+      ]
+    },
+    {
+      "tag": "OUTPUT RESISTANCE",
+      "title": "Degeneration helps a current source",
+      "prompt": "With ro = 50 kΩ, gm = 2 mS and RS = 1 kΩ, estimate output resistance.",
+      "hint": "Use the drain test-source derivation.",
+      "solution": [
+        {
+          "tex": "R_{\\mathrm{out}}\\approx r_o+R_S+g_mr_oR_S=151\\ \\mathrm{k\\Omega}"
+        },
+        {
+          "text": "The added 100 kΩ term comes from source feedback. This result assumes the gate is AC grounded and the device remains in saturation."
+        }
+      ]
+    },
+    {
+      "tag": "LEAKAGE",
+      "title": "A tiny current through a large resistor",
+      "prompt": "A signed gate leakage produces +2 mV gate shift. With gm = 2 mS and RS = 1 kΩ, estimate the resulting current change.",
+      "hint": "Source feedback divides the uncorrected change by 1 + gmRS.",
+      "solution": [
+        {
+          "tex": "\\delta I_D=\\frac{0.002(0.002)}{1+2}=1.33\\ \\mu\\mathrm A"
+        },
+        {
+          "text": "Without degeneration the change would be 4 μA. The sign is positive for the stated positive gate shift; actual leakage polarity depends on the device and connections."
+        }
+      ]
+    }
+  ],
+  "jfet-amplifiers": [
+    {
+      "tag": "GAIN",
+      "title": "Include the next stage",
+      "prompt": "gm = 3 mS, RD = 4.7 kΩ, RL = 10 kΩ and RS = 330 Ω. Find gain, ignoring ro.",
+      "hint": "First combine the two drain loads.",
+      "solution": [
+        {
+          "tex": "R_D'=3197.3\\ \\Omega,\\qquad A_v=-\\frac{0.003(3197.3)}{1+0.003(330)}=-4.82"
+        },
+        {
+          "text": "Using RD alone overestimates gain. The unbypassed source resistor then reduces the loaded transconductance by a factor of 1.99."
+        }
+      ]
+    },
+    {
+      "tag": "FOLLOWER",
+      "title": "Almost unity needs a large loop gain",
+      "prompt": "A follower has gm = 4 mS and a 2 kΩ effective source load. Find gain and output resistance for a stiff gate drive.",
+      "hint": "Use gmR/(1 + gmR) and 1/gm parallel R.",
+      "solution": [
+        {
+          "tex": "A_v=8/9=0.889,\\qquad R_o=250\\parallel2000=222\\ \\Omega"
+        },
+        {
+          "text": "High input resistance alone does not guarantee unity gain. These estimates neglect ro and body effect."
+        }
+      ]
+    },
+    {
+      "tag": "DIFFERENTIAL",
+      "title": "State which output you mean",
+      "prompt": "A matched pair has gm = 2 mS per device and RD = 3.3 kΩ. Find one-drain and differential-output gains for differential input.",
+      "hint": "Each gate moves by half the differential input.",
+      "solution": [
+        {
+          "tex": "A_{\\mathrm{single}}=-3.3,\\qquad A_{\\mathrm{diff}}=-6.6"
+        },
+        {
+          "text": "Signs assume output 1 is the drain of the positive-input device and differential output is drain 1 minus drain 2. Reversing the subtraction reverses the sign."
+        }
+      ]
+    },
+    {
+      "tag": "DISTORTION",
+      "title": "The gate sees the residual signal",
+      "prompt": "For square-law overdrive 2 V, estimate second harmonic ratio at 100 mV peak vgs, and at 25 mV peak.",
+      "hint": "Use a/(4u), not the external input when degeneration is present.",
+      "solution": [
+        {
+          "tex": "H_2/H_1\\approx0.1/8=1.25\\%,\\qquad0.025/8=0.3125\\%"
+        },
+        {
+          "text": "These estimates assume saturation throughout and neglect other nonlinearities. Degeneration can reduce gate-source swing and therefore curvature."
+        }
+      ]
+    },
+    {
+      "tag": "VARIABLE RESISTOR",
+      "title": "Cancel the quadratic term",
+      "prompt": "Given I = k[(VC + VDS/2 − VT)VDS − VDS²/2], simplify it and find resistance for k = 1 mA/V² and VC − VT = 2 V.",
+      "hint": "Expand the bracket.",
+      "solution": [
+        {
+          "tex": "I=k(V_C-V_T)V_{DS},\\qquad R=1/[0.001(2)]=500\\ \\Omega"
+        },
+        {
+          "text": "The two half-square terms cancel. Real devices retain distortion from effects omitted in this local model, and gate junction bias still constrains the signal range."
+        }
+      ]
+    }
+  ],
+  "fet-dynamics": [
+    {
+      "tag": "GATE CURRENT",
+      "title": "Zero DC does not mean zero edge current",
+      "prompt": "Estimate current into 20 pF during a 5 V change lasting 10 ns.",
+      "hint": "Use i = C ΔV/Δt.",
+      "solution": [
+        {
+          "tex": "i=20\\cdot10^{-12}\\frac5{10\\cdot10^{-9}}=10\\ \\mathrm{mA}"
+        },
+        {
+          "text": "This is displacement current during the edge. It says nothing about DC leakage and assumes the capacitance is constant over the excursion."
+        }
+      ]
+    },
+    {
+      "tag": "MILLER",
+      "title": "A hidden input load",
+      "prompt": "For Av = −10, Cgs = 10 pF, Cgd = 3 pF and source resistance 100 kΩ, estimate input capacitance and pole.",
+      "hint": "The drain moves opposite to the gate.",
+      "solution": [
+        {
+          "tex": "C_{\\mathrm{in}}=10+3(1+10)=43\\ \\mathrm{pF},\\quad f_p\\approx37.0\\ \\mathrm{kHz}"
+        },
+        {
+          "text": "Compute fp = 1/(2πRC). This isolates the input pole and assumes the stated gain is reasonably constant around it."
+        }
+      ]
+    },
+    {
+      "tag": "OSCILLATION",
+      "title": "Frequency is not enough",
+      "prompt": "For R = 10 kΩ and C = 10 nF in an equal-component Wien bridge, find f0 and loop gain when amplifier gain is 2.9.",
+      "hint": "At zero phase the bridge magnitude is one third.",
+      "solution": [
+        {
+          "tex": "f_0=1591.5\\ \\mathrm{Hz},\\qquad |A\\beta|=2.9/3=0.9667"
+        },
+        {
+          "text": "The candidate frequency exists, but a small oscillation decays because the loop magnitude is below one. A nonlinear amplitude-control system cannot start merely because the network resonates."
+        }
+      ]
+    },
+    {
+      "tag": "AMPLITUDE CONTROL",
+      "title": "Check the feedback sign",
+      "prompt": "A noninverting amplifier has RF = 20 kΩ and lower branch 9.5 kΩ plus a JFET. Compare gains at 100 Ω and 500 Ω channel resistance.",
+      "hint": "Gain is 1 + RF/RG.",
+      "solution": [
+        {
+          "tex": "A_{100}=1+20000/9600=3.0833,\\quad A_{500}=1+20000/10000=3"
+        },
+        {
+          "text": "Increasing channel resistance lowers gain. A detector that makes the JFET more resistive as amplitude rises creates the desired amplitude feedback."
+        }
+      ]
+    },
+    {
+      "tag": "LC",
+      "title": "Account for the divider capacitance",
+      "prompt": "Find the ideal Colpitts tank frequency for L = 100 μH and C1 = C2 = 10 nF.",
+      "hint": "The two capacitors combine in series across the tank.",
+      "solution": [
+        {
+          "tex": "C_{\\mathrm{eq}}=5\\ \\mathrm{nF},\\quad f_0=\\frac1{2\\pi\\sqrt{100\\,\\mu\\mathrm H\\cdot5\\,\\mathrm{nF}}}=225.1\\ \\mathrm{kHz}"
+        },
+        {
+          "text": "This determines an unloaded resonance, not startup. Transistor feedback phase, loop gain, tank loss and parasitic capacitance still need evaluation."
+        }
+      ]
+    }
+  ],
+  "fet-switches": [
+    {
+      "tag": "LOADING",
+      "title": "An on-switch attenuates",
+      "prompt": "Find gain and percentage amplitude error for RON = 100 Ω and RL = 10 kΩ.",
+      "hint": "Treat the switch as the top resistor of a divider.",
+      "solution": [
+        {
+          "tex": "G=10000/10100=0.990099,\\quad \\mathrm{error}=0.9901\\%"
+        },
+        {
+          "text": "This is a DC resistive-load estimate. Signal-dependent on-resistance also causes distortion and is not captured by one resistance value."
+        }
+      ]
+    },
+    {
+      "tag": "SETTLING",
+      "title": "A 12-bit acquisition interval",
+      "prompt": "Rsrc = 1 kΩ, RON = 100 Ω, CH = 1 nF. Find time for a full-scale step to settle within half a 12-bit LSB.",
+      "hint": "Residual fraction must be at most 1/8192.",
+      "solution": [
+        {
+          "tex": "\\tau=1.1\\ \\mu\\mathrm s,\\qquad t\\ge\\tau\\ln8192=9.91\\ \\mu\\mathrm s"
+        },
+        {
+          "text": "The exponential residual starts at a full-scale step. Additional amplifier settling and converter input dynamics can require more time."
+        }
+      ]
+    },
+    {
+      "tag": "HOLD",
+      "title": "Two separate errors",
+      "prompt": "A switch deposits 5 pC on 1 nF; total hold leakage is 10 pA. Find initial voltage step and subsequent change over 10 ms.",
+      "hint": "Use Q/C for the step, It/C for the hold interval.",
+      "solution": [
+        {
+          "tex": "|\\Delta V_Q|=5\\ \\mathrm{mV},\\qquad|\\Delta V_I|=100\\ \\mu\\mathrm V"
+        },
+        {
+          "text": "The directions depend on charge and leakage polarity. The switching step and hold droop have different origins and should be budgeted separately."
+        }
+      ]
+    },
+    {
+      "tag": "BODY DIODE",
+      "title": "Can one off MOSFET isolate both ways?",
+      "prompt": "Explain why a single discrete n-channel power MOSFET may conduct with its gate off, and calculate on loss for two back-to-back 20 mΩ devices at 5 A.",
+      "hint": "Identify the source-to-drain body diode and add both channel resistances.",
+      "solution": [
+        {
+          "tex": "R_{\\mathrm{pair}}=40\\ \\mathrm{m\\Omega},\\qquad P=5^2(0.04)=1\\ \\mathrm W"
+        },
+        {
+          "text": "One body diode allows one current direction. Opposing diodes in a back-to-back pair block both directions when off, subject to ratings and the actual gate drive."
+        }
+      ]
+    },
+    {
+      "tag": "JFET GATE",
+      "title": "A bipolar signal and a grounded gate",
+      "prompt": "An n-JFET switch carries signals down to −1 V while its gate is held at 0 V. Why is zero gate voltage not a valid general on command?",
+      "hint": "All gate voltages are relative to the channel terminals.",
+      "solution": [
+        {
+          "tex": "V_{G}-V_{\\mathrm{terminal}}=0-(-1)=+1\\ \\mathrm V"
+        },
+        {
+          "text": "The gate junction can become forward biased, injecting current and clamping the signal. Use a compatible signal range or a drive arrangement designed to track the signal; ground is not automatically the source reference."
+        }
+      ]
+    }
+  ],
+  "mosfet-physics": [
+    {
+      "tag": "BODY EFFECT",
+      "title": "A source that moves above the body",
+      "prompt": "VT0 = 1 V, γ = 0.5 √V, 2φF = 0.6 V and VSB = 2 V. Find threshold.",
+      "hint": "Use the difference of square roots.",
+      "solution": [
+        {
+          "tex": "V_T=1+0.5(\\sqrt{2.6}-\\sqrt{0.6})=1.419\\ \\mathrm V"
+        },
+        {
+          "text": "The higher source-body reverse bias increases depletion charge and threshold. If body is tied to source, VSB remains zero and this shift does not occur."
+        }
+      ]
+    },
+    {
+      "tag": "THRESHOLD SPREAD",
+      "title": "A fixed gate is not a fixed current",
+      "prompt": "k = 4 mA/V² and VGS = 3 V. Compare saturated currents at VT = 2 V and 2.2 V.",
+      "hint": "Overdrive changes before it is squared.",
+      "solution": [
+        {
+          "tex": "I_1=2\\ \\mathrm{mA},\\qquad I_2=\\tfrac12(4)(0.8)^2=1.28\\ \\mathrm{mA}"
+        },
+        {
+          "text": "The current falls 36%. Ensure drain voltage exceeds the applicable overdrive before using either saturation result."
+        }
+      ]
+    },
+    {
+      "tag": "DATASHEET",
+      "title": "Does a 2 V threshold guarantee 3.3 V switching?",
+      "prompt": "A part has a typical 2 V threshold but only specifies on-resistance at 10 V drive. Can you calculate guaranteed 3.3 V conduction loss from that resistance?",
+      "hint": "Threshold is tested at a small current.",
+      "solution": [
+        {
+          "tex": "P_{\\mathrm{cond}}=I^2R_{DS(on)}D"
+        },
+        {
+          "text": "No: the needed RDS(on) at 3.3 V is not supplied by either number. Use a device with appropriate guaranteed data, a suitable driver, or additional characterization. Substituting the 10 V resistance is unsupported."
+        }
+      ]
+    },
+    {
+      "tag": "SUBTHRESHOLD",
+      "title": "An exponential decade",
+      "prompt": "At room temperature, assume a subthreshold slope of 90 mV per decade. What gate-voltage increase multiplies current by 1000?",
+      "hint": "A factor of 1000 is three decades.",
+      "solution": [
+        {
+          "tex": "\\Delta V_{GS}=3(90\\ \\mathrm{mV})=270\\ \\mathrm{mV}"
+        },
+        {
+          "text": "This applies within the stated subthreshold range. Do not extend the exponential or the strong-inversion square law indiscriminately across all bias levels."
+        }
+      ]
+    },
+    {
+      "tag": "DEVICE FAMILY",
+      "title": "A negative threshold",
+      "prompt": "For a depletion MOSFET with k = 2 mA/V² and VT = −2 V, find saturated current at VGS = 0 V and at −1 V.",
+      "hint": "Zero gate voltage still produces positive overdrive.",
+      "solution": [
+        {
+          "tex": "I_D(0)=4\\ \\mathrm{mA},\\quad I_D(-1)=1\\ \\mathrm{mA}"
+        },
+        {
+          "text": "The respective saturation boundaries are VDS = 2 V and 1 V. The insulated gate distinguishes this device from a JFET despite the normally-on transfer behavior."
+        }
+      ]
+    }
+  ],
+  "mosfet-linear": [
+    {
+      "tag": "BIAS",
+      "title": "Design the gate divider",
+      "prompt": "A 12 V amplifier needs gate voltage 4 V. Choose a 100 kΩ lower divider resistor; find the upper resistor and divider Thévenin resistance.",
+      "hint": "The lower resistor gets one third of the supply.",
+      "solution": [
+        {
+          "tex": "R_{\\mathrm{upper}}=200\\ \\mathrm{k\\Omega},\\quad R_{\\mathrm{th}}=200\\parallel100=66.7\\ \\mathrm{k\\Omega}"
+        },
+        {
+          "text": "This assumes negligible gate leakage and an input coupling arrangement that does not disturb DC bias. The Thévenin resistance matters for both leakage offset and input capacitance."
+        }
+      ]
+    },
+    {
+      "tag": "CURRENT SINK",
+      "title": "Reference accuracy and heat",
+      "prompt": "Vref = 0.5 V, Rsense = 10 Ω and drain voltage = 10 V. Find current, MOSFET dissipation and current error from +1 mV sense-reference error.",
+      "hint": "The loop holds source voltage near the reference.",
+      "solution": [
+        {
+          "tex": "I=50\\ \\mathrm{mA},\\quad P_D=(10-0.5)(0.05)=0.475\\ \\mathrm W,\\quad\\delta I=0.1\\ \\mathrm{mA}"
+        },
+        {
+          "text": "Sense-resistor power is a separate 25 mW. These results require gate-drive headroom, loop stability and sufficient drain compliance."
+        }
+      ]
+    },
+    {
+      "tag": "DEPLETION",
+      "title": "Self-bias a normally-on device",
+      "prompt": "For k = 2 mA/V² and VT = −2 V, design a grounded-gate source resistor for 1 mA. Find source and minimum modeled drain voltages.",
+      "hint": "First solve the square law for overdrive.",
+      "solution": [
+        {
+          "tex": "u=1\\ \\mathrm V,\\quad V_{GS}=-1\\ \\mathrm V,\\quad R_S=1\\ \\mathrm{k\\Omega},\\quad V_{D,\\min}=2\\ \\mathrm V"
+        },
+        {
+          "text": "VS is 1 V, and the channel requires VDS at least 1 V for saturation. Add these to find compliance relative to ground."
+        }
+      ]
+    },
+    {
+      "tag": "CAPACITIVE LOAD",
+      "title": "Current without average load watts",
+      "prompt": "Find peak current for 100 nF driven by a 50 V peak, 1 kHz sine. What happens at 10 kHz?",
+      "hint": "Differentiate the sine wave.",
+      "solution": [
+        {
+          "tex": "I_{\\mathrm{pk}}=2\\pi fCV_{\\mathrm{pk}}=31.4\\ \\mathrm{mA};\\quad I_{\\mathrm{pk},10k}=314\\ \\mathrm{mA}"
+        },
+        {
+          "text": "An ideal capacitor consumes zero net average real power, but the output devices can dissipate substantial heat while sourcing and sinking its current."
+        }
+      ]
+    },
+    {
+      "tag": "STARTUP",
+      "title": "A controller consumes the charging current",
+      "prompt": "A 2 mA startup source charges 10 μF from 0 to 12 V while a controller draws a constant 0.5 mA. Find charging time.",
+      "hint": "Only the difference reaches the capacitor.",
+      "solution": [
+        {
+          "tex": "t=\\frac{10\\,\\mu\\mathrm F(12\\ \\mathrm V)}{1.5\\ \\mathrm{mA}}=80\\ \\mathrm{ms}"
+        },
+        {
+          "text": "Without controller load it would be 60 ms. If the controller demand rises above 2 mA before an auxiliary supply takes over, startup can stall or cycle."
+        }
+      ]
+    }
+  ],
+  "mosfet-power": [
+    {
+      "tag": "GATE DRIVE",
+      "title": "Estimate the plateau interval",
+      "prompt": "Drive = 10 V, plateau = 4 V, total gate-path resistance = 20 Ω and Qgd = 12 nC. Estimate gate current and Miller interval.",
+      "hint": "Use the voltage across the gate-path resistance.",
+      "solution": [
+        {
+          "tex": "I_g=(10-4)/20=0.3\\ \\mathrm A,\\quad t_M=12\\ \\mathrm{nC}/0.3\\ \\mathrm A=40\\ \\mathrm{ns}"
+        },
+        {
+          "text": "Do not divide by the full 10 V because the gate is already near 4 V. Real driver impedance and plateau conditions vary."
+        }
+      ]
+    },
+    {
+      "tag": "LOSS BUDGET",
+      "title": "Separate the channel and driver",
+      "prompt": "24 V, 5 A, 50% duty, hot resistance 24 mΩ, total overlap 50 ns and 100 kHz. Qg = 30 nC at 10 V. Find three power terms.",
+      "hint": "Conduction uses duty; overlap and gate energy occur per cycle.",
+      "solution": [
+        {
+          "tex": "P_{\\mathrm{cond}}=0.30\\ \\mathrm W,\\quad P_{\\mathrm{overlap}}=0.30\\ \\mathrm W,\\quad P_{\\mathrm{gate}}=0.030\\ \\mathrm W"
+        },
+        {
+          "text": "The first two heat the MOSFET in this simplified model. Gate supply energy is distributed in the driver and gate path; it is not automatically all MOSFET junction power."
+        }
+      ]
+    },
+    {
+      "tag": "THERMAL",
+      "title": "Close the temperature loop",
+      "prompt": "Assume TA = 40°C, thermal resistance 50°C/W, fixed switching loss 0.3 W and conduction loss 0.25[1 + 0.004(TJ − 25)] W. Solve TJ self-consistently.",
+      "hint": "Substitute the power expression into TJ = TA + RθP.",
+      "solution": [
+        {
+          "tex": "T_J=40+50[0.3+0.25(1+0.004(T_J-25))],\\quad T_J=69.74^\\circ\\mathrm C"
+        },
+        {
+          "text": "Collecting terms gives 0.95TJ = 66.25. This lumped model omits temperature dependence of switching loss and does not assess local SOA."
+        }
+      ]
+    },
+    {
+      "tag": "INDUCTOR",
+      "title": "A faster clamp",
+      "prompt": "A 10 mH inductor carries 2 A. Find stored energy and ideal decay time with 24 V opposing clamp voltage, neglecting winding resistance.",
+      "hint": "Use LI²/2 and di/dt = −V/L.",
+      "solution": [
+        {
+          "tex": "E=20\\ \\mathrm{mJ},\\qquad t=LI/V=0.833\\ \\mathrm{ms}"
+        },
+        {
+          "text": "In the usual low-side circuit the drain must withstand supply plus the opposing load-clamp voltage, including overshoot. A faster release comes with greater voltage stress."
+        }
+      ]
+    },
+    {
+      "tag": "PARASITICS",
+      "title": "A small inductance makes a large voltage",
+      "prompt": "Find source bounce across 5 nH for di/dt = 1 A/ns. Explain why the driver reference matters.",
+      "hint": "Use v = L di/dt with SI units.",
+      "solution": [
+        {
+          "tex": "V=5\\cdot10^{-9}\\cdot10^9=5\\ \\mathrm V"
+        },
+        {
+          "text": "The device source can move 5 V relative to a remote driver return. This changes actual VGS even if the logic command is ideal; a Kelvin return can reduce shared power-path inductance."
+        }
+      ]
+    }
+  ],
+  "power-fet-circuits": [
+    {
+      "tag": "BOOTSTRAP",
+      "title": "Size for charge demand",
+      "prompt": "A high-side event uses 30 nC gate charge plus 20 nC of other charge. Find ideal minimum bootstrap capacitance for 0.5 V droop.",
+      "hint": "The capacitor supplies total charge.",
+      "solution": [
+        {
+          "tex": "C\\ge Q/\\Delta V=50\\ \\mathrm{nC}/0.5\\ \\mathrm V=100\\ \\mathrm{nF}"
+        },
+        {
+          "text": "Real selection needs tolerance, bias derating, leakage and recharge margin. The calculation does not justify indefinite high-side on time."
+        }
+      ]
+    },
+    {
+      "tag": "BUCK",
+      "title": "Volt-seconds and ripple",
+      "prompt": "An ideal buck converts 24 V to 12 V at 100 kHz using 100 μH. Find duty and inductor ripple.",
+      "hint": "Set average inductor voltage to zero.",
+      "solution": [
+        {
+          "tex": "D=0.5,\\quad\\Delta I=\\frac{(24-12)0.5}{100\\,\\mu\\mathrm H\\cdot100\\,\\mathrm{kHz}}=0.6\\ \\mathrm A"
+        },
+        {
+          "text": "At 5 A average current, minimum current is 4.7 A, consistent with continuous conduction. Losses shift the actual required duty."
+        }
+      ]
+    },
+    {
+      "tag": "INRUSH",
+      "title": "Where the supply energy goes",
+      "prompt": "Charge 1000 μF to 24 V with a 1 A linear limiter and no load. Find time, stored energy and pass-device energy.",
+      "hint": "Integrate capacitor current and pass-device power.",
+      "solution": [
+        {
+          "tex": "t=24\\ \\mathrm{ms},\\quad E_C=\\tfrac12CV^2=0.288\\ \\mathrm J,\\quad E_{\\mathrm{pass}}=0.288\\ \\mathrm J"
+        },
+        {
+          "text": "The supply delivers CV² = 0.576 J in this ideal constant-voltage linear charging process. Initial pass power is 24 W; energy alone is not sufficient for an SOA check."
+        }
+      ]
+    },
+    {
+      "tag": "DEAD TIME",
+      "title": "Count both intervals",
+      "prompt": "For 5 A, diode drop 0.8 V, two 100 ns dead intervals each cycle and 100 kHz, estimate dead-time conduction loss.",
+      "hint": "Multiply diode power by the total fraction of time.",
+      "solution": [
+        {
+          "tex": "P=2(0.8)(5)(100\\ \\mathrm{ns})(100\\ \\mathrm{kHz})=0.08\\ \\mathrm W"
+        },
+        {
+          "text": "This assumes that current magnitude and diode conduction apply during both intervals. Recovery and switching overlap are additional mechanisms."
+        }
+      ]
+    },
+    {
+      "tag": "IGBT",
+      "title": "Convert switching energy to heat",
+      "prompt": "An IGBT has 1.8 V on drop at 10 A, 50% duty and 0.6 mJ total switching energy per cycle. Find total of these losses at 20 kHz.",
+      "hint": "Conduction is voltage times current times duty.",
+      "solution": [
+        {
+          "tex": "P_{\\mathrm{cond}}=9\\ \\mathrm W,\\quad P_{\\mathrm{sw}}=12\\ \\mathrm W,\\quad P=21\\ \\mathrm W"
+        },
+        {
+          "text": "The switching energy must apply at the actual voltage, current, temperature and gate drive. Gate discharge does not instantly eliminate stored minority carriers."
+        }
+      ]
+    }
+  ],
+  "parallel-mosfets": [
+    {
+      "tag": "STATIC SHARING",
+      "title": "Unequal channels",
+      "prompt": "Two fully enhanced MOSFETs of 20 and 30 mΩ share 20 A. Find currents and channel losses.",
+      "hint": "Both branches see the same voltage.",
+      "solution": [
+        {
+          "tex": "I_1=12\\ \\mathrm A,\\ I_2=8\\ \\mathrm A;\\quad P_1=2.88\\ \\mathrm W,\\ P_2=1.92\\ \\mathrm W"
+        },
+        {
+          "text": "The shared voltage is 0.24 V. Check that currents sum to 20 A and powers sum to total current times shared voltage."
+        }
+      ]
+    },
+    {
+      "tag": "TEMPERATURE",
+      "title": "Heat one branch",
+      "prompt": "The 20 mΩ device warms from 25 to 100°C with α = 0.004/°C. The other stays at 30 mΩ. Recalculate sharing at 20 A.",
+      "hint": "Update resistance before dividing current.",
+      "solution": [
+        {
+          "tex": "R_1=26\\ \\mathrm{m\\Omega},\\quad I_1=20(30/56)=10.71\\ \\mathrm A,\\quad I_2=9.29\\ \\mathrm A"
+        },
+        {
+          "text": "Current moves away from the hot fully enhanced branch. This does not establish linear-mode stability or equal switching losses."
+        }
+      ]
+    },
+    {
+      "tag": "BALLAST",
+      "title": "Individual feedback matters",
+      "prompt": "gm = 2 S and threshold shift = −50 mV. Compare small current changes with source resistance 0 and 0.5 Ω at fixed common gate voltage.",
+      "hint": "Divide −gmδVT by 1 + gmRS.",
+      "solution": [
+        {
+          "tex": "\\delta I_{0}=0.100\\ \\mathrm A,\\quad\\delta I_{0.5}=0.050\\ \\mathrm A"
+        },
+        {
+          "text": "The resistor halves the mismatch response. A shared resistor below both branches senses total current and does not provide the same differential balancing."
+        }
+      ]
+    },
+    {
+      "tag": "THERMAL STABILITY",
+      "title": "An equilibrium can be unstable",
+      "prompt": "For a lumped thermal model with Rθ = 10°C/W, evaluate stability when dP/dT is 0.15 W/°C, and when it is 0.04 W/°C.",
+      "hint": "Compare electrical heating slope with 1/Rθ.",
+      "solution": [
+        {
+          "tex": "1/R_\\theta=0.10\\ \\mathrm{W/^\\circ C}"
+        },
+        {
+          "text": "The 0.15 case is unstable because a warm perturbation creates heat faster than extra cooling removes it. The 0.04 case is stable for this lumped mode, but that does not prove freedom from local die hot spots."
+        }
+      ]
+    },
+    {
+      "tag": "LINEAR MODE",
+      "title": "Competing temperature effects",
+      "prompt": "Assume fractional k slope −0.004/°C and threshold slope −0.002 V/°C. Find fractional current slope at overdrives 0.5 and 2 V.",
+      "hint": "Differentiate the square law at fixed gate voltage.",
+      "solution": [
+        {
+          "tex": "\\frac1I\\frac{dI}{dT}=-0.004+\\frac{0.004}{u};\\quad +0.004/^\\circ\\mathrm C,\\ -0.002/^\\circ\\mathrm C"
+        },
+        {
+          "text": "The small-overdrive case attracts more current when hot; the larger-overdrive case loses current in this simplified saturation model. These illustrative coefficients are not a universal device specification."
+        }
+      ]
+    }
+  ]
+}

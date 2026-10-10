@@ -1,0 +1,159 @@
+import Equation from '../components/Equation.astro';
+import {EbersMollLab} from '../components/BjtLabs';
+import {MirrorFigure} from '../components/Figures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 34</span><span className="hairline"/>FOUNDATIONS / BIPOLAR TRANSISTORS</div>
+
+<h1>The Ebers–Moll model<br/><em>The exponential law, and what follows from it.</em></h1>
+
+<p className="dek">State the transistor’s exponential law with the Early effect, extend it to every region, turn it into five design rules, revisit the follower and common-emitter stage, and build a current mirror.</p>
+
+<div className="chapter-meta"><span>60–75 min + exploration</span><span>Transistor physics · Small-signal model · Transconductance</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">Two identical transistors share the same base–emitter voltage. Why do they carry the same current—and why might one of them carry 9% more?</p></div>
+
+<div>
+
+The first model (Chapter 27) said V_BE ≈ 0.65 V and I_C = βI_B. That was enough to bias circuits and design switches. It could not explain r_e, the distortion of a bypassed amplifier, the temperature drift of a bias point, or why a current source is not perfect.
+
+The Ebers–Moll model replaces those approximations with the physics of Chapter 26 in compact form. It is the model behind the small-signal parameters, the source of the designer’s rules of thumb, and the basis of the current mirror, the first circuit in this course that *depends* on the exponential law rather than tolerating it.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The exponential law → Five rules of thumb → Explore the real output curves → Follower and common-emitter revisited → An aside: the perfect transistor → Current mirrors.</p>
+
+</div>
+
+<section id="law">
+
+<div className="section-heading"><span>01</span><h2>The exponential law</h2></div>
+
+In the active region:
+
+<Equation tex="I_C=I_S\left(e^{V_{BE}/V_T}-1\right)\left(1+\frac{V_{CE}}{V_A}\right),\qquad I_B=\frac{I_C}{\beta},\qquad V_T=\frac{kT}{q}\approx25.3\ \mathrm{mV}\ (20\,^\circ\mathrm C)" label="EBERS–MOLL, ACTIVE REGION"/>
+
+I_S is the saturation current (around 10⁻¹⁴ A for a small-signal transistor, strongly temperature-dependent); V_A is the Early voltage. At normal operating currents the −1 is negligible. The collector current is controlled by V_BE; the base current is a fraction of it. That is the transconductance view of Chapter 33, now quantitative.
+
+### All four regions
+
+The full model treats the transistor as two interacting diodes. A forward “transport” current flows from collector to emitter when the base–emitter junction is forward-biased, a reverse one when the base–collector junction is, and each junction draws its own base current:
+
+<Equation tex="I_C=I_S\left(e^{V_{BE}/V_T}-e^{V_{BC}/V_T}\right)-\frac{I_S}{\beta_R}\left(e^{V_{BC}/V_T}-1\right),\qquad I_B=\frac{I_S}{\beta_F}\left(e^{V_{BE}/V_T}-1\right)+\frac{I_S}{\beta_R}\left(e^{V_{BC}/V_T}-1\right)"/>
+
+β_F is the normal current gain; β_R, the gain with emitter and collector interchanged, is small (often 1–10) because the transistor is built asymmetrically (Chapter 26). With the collector junction reverse-biased, the equations reduce to the active-region law. With both junctions forward-biased—saturation—the collector junction injects too, and solving for V_CE at a forced ratio β_forced = I_C/I_B gives
+
+<Equation tex="V_{CE(\mathrm{sat})}=V_T\ln\frac{1/\alpha_R+\beta_{\mathrm{forced}}/\beta_R}{1-\beta_{\mathrm{forced}}/\beta_F},\qquad \alpha_R=\frac{\beta_R}{1+\beta_R}"/>
+
+With β_F = 150, β_R = 2 and a forced β of 10, V_CE(sat) ≈ 50 mV, independent of the collector current in this ideal model. Real transistors add the collector’s ohmic resistance, which is why datasheets quote 0.1–0.3 V at substantial currents.
+
+</section>
+
+<section id="rules">
+
+<div className="section-heading"><span>02</span><h2>Five rules of thumb</h2></div>
+
+<div className="table-wrap">
+
+<table><thead><tr><th>Rule</th><th>Value at room temperature</th><th>Origin</th></tr></thead><tbody><tr><td>V_BE per decade of I_C</td><td>V_T ln 10 ≈ 60 mV</td><td>Exponential law</td></tr><tr><td>Intrinsic emitter resistance</td><td>r_e = V_T/I_C ≈ 25 Ω/mA</td><td>Slope of the exponential</td></tr><tr><td>V_BE temperature coefficient</td><td>≈ −2.1 mV/°C at constant I_C</td><td>I_S ∝ T³e<sup>−E_g/kT</sup></td></tr><tr><td>Early effect</td><td>I_C rises by V_CE/V_A; r_o = V_A/I_C</td><td>Base-width modulation</td></tr><tr><td>β is variable</td><td>Changes with I_C, T and between parts</td><td>Ratio of two loss terms</td></tr></tbody></table>
+
+</div>
+
+They interlock. At constant V_BE, a 1 °C rise is equivalent to raising V_BE by 2.1 mV, so I_C rises by 2.1/25.85 ≈ 8%. A factor of two in current needs 18 mV (V_T ln 2). Two transistors whose V_BEs differ by 1 mV carry currents differing by 4%. With I_S = 10⁻¹⁴ A, 1 mA needs V_BE = 0.655 V and 10 mA needs 0.714 V—so “0.6 to 0.7 V” is a statement about typical currents, not a law.
+
+</section>
+
+<section id="explore">
+
+<div className="section-heading"><span>03</span><h2>Explore the real output curves</h2></div>
+
+Compare these curves with the idealized horizontal lines of Chapter 27. They now bend smoothly into saturation, slope upward with collector voltage, and give a saturation voltage that depends on how hard the base is driven.
+
+<EbersMollLab client:load/>
+
+<p className="caption">Figure 1. Output characteristics from the Ebers–Moll model with the Early effect. The load line runs from 12 V to 12 V/R_C; the operating point is solved, not read off.</p>
+
+</section>
+
+<section id="revisited">
+
+<div className="section-heading"><span>04</span><h2>Follower and common-emitter revisited</h2></div>
+
+### The emitter follower
+
+Because V_BE changes by 60 mV per decade, an emitter follower’s output does not follow its input exactly. Its small-signal output impedance contains r_e, so the gain into a total emitter resistance R is R/(R + r_e). A follower at 1 mA driving 1 kΩ has gain 0.975; at 100 µA it would have 0.80. A follower intended to drive low impedances must run at enough current that r_e is small compared with the load. Its distortion is small for the same reason: the transistor’s varying v_be is only a small part of the output when R ≫ r_e.
+
+### The common-emitter stage
+
+The maximum gain of a bypassed stage is −g_mR_C = −V_RC/V_T (Chapter 32): it depends only on the DC voltage across the collector resistor. A stage running from 15 V with 7.5 V across R_C cannot have a gain above about 290, whatever transistor or current is chosen. Doubling the current while halving R_C keeps the same gain.
+
+The exponential also predicts the distortion. A base–emitter signal of 5 mV peak multiplies the collector current by e<sup>±5/25.85</sup>: up 21.3%, down 17.6%. The output is asymmetric even though the input is a pure sine; the asymmetry is second-harmonic distortion. Emitter degeneration fixes it by making v_be a small fraction of the input. With R_E = 1 kΩ and r_e = 29 Ω, a 100 mV input puts only about 3 mV across the junction itself.
+
+### Bias drift
+
+At a fixed base voltage, V_BE falls 2.1 mV/°C, so a common-emitter stage with V_E = 1 V drifts by 0.21%/°C, as found in Chapter 29. A stage with its emitter grounded and a fixed base voltage would drift by 8%/°C. That is the quantitative reason for emitter resistors in bias circuits.
+
+</section>
+
+<section id="perfect">
+
+<div className="section-heading"><span>05</span><h2>An aside: the perfect transistor</h2></div>
+
+What would an ideal three-terminal amplifying device look like? Ebers–Moll suggests an answer: a perfect transconductance device. Its control terminal would draw no current, its output current would depend only on the control voltage (no Early effect), its characteristic would not depend on temperature, and its transconductance would be as large as possible.
+
+The bipolar transistor comes remarkably close on transconductance: g_m = I_C/V_T is the highest of any device at a given current. Its imperfections are the base current (a finite β), the Early effect, and its strong temperature dependence. The field-effect transistors of the next chapters have essentially no gate current—better in that respect—but much lower transconductance at the same current and larger variation between parts.
+
+Circuit design is largely the art of building near-perfect behavior from imperfect devices: emitter degeneration for predictable gain, stiff dividers for β-independent bias, matched pairs for temperature-independent behavior, and, most powerfully, negative feedback.
+
+</section>
+
+<section id="mirrors">
+
+<div className="section-heading"><span>06</span><h2>Current mirrors</h2></div>
+
+Two transistors made on the same chip, at the same temperature, have the same I_S. If they also have the same V_BE, they carry the same collector current. The current mirror exploits this directly.
+
+<MirrorFigure/>
+
+Q₁ is **diode-connected**: its collector is tied to its base. A reference current I_ref fed into it develops exactly the V_BE that Q₁ needs to carry that current. Q₂ shares the same V_BE, so its collector current copies I_ref. Here I_ref ≈ (V_CC − V_BE)/R; on 15 V, R = 14.3 kΩ gives about 1 mA.
+
+The mirror is useful because the output current is copied without a resistor in the output path: it is a current source whose compliance extends to within a few tenths of a volt of the emitter. It is also programmable: change I_ref and the output follows.
+
+### Its errors
+
+**Base current.** I_ref supplies the collector current of Q₁ plus both base currents. With matched transistors:
+
+<Equation tex="I_{\mathrm{out}}=\frac{I_{\mathrm{ref}}}{1+2/\beta}"/>
+
+With β = 100, I_out = 0.980 I_ref, a 2% error.
+
+**Early effect.** Q₁ always sits at V_CE = V_BE ≈ 0.65 V. If Q₂’s collector is at 10 V, its current is larger by about (10 − 0.65)/V_A. For V_A = 100 V that is **9.3%**—the answer to the opening question—and the output current changes as the load changes the collector voltage.
+
+**Mismatch and temperature.** A 1 mV difference in V_BE between the two transistors (from geometry or a temperature difference of half a degree) means a 4% current difference. Discrete transistors in separate packages are poorly matched; matched pairs in one package, or transistors on one chip, are far better.
+
+### Improvements
+
+Adding equal emitter resistors to both transistors, with a few tenths of a volt across them, degenerates the mirror: V_BE mismatch now has a smaller effect and the output resistance rises, just as in Chapter 31. Three-transistor variants—the Wilson mirror, and a mirror with a follower supplying the bases—reduce both the base-current and Early-effect errors. Mirrors are everywhere inside integrated circuits, where matched transistors are free; they are the active loads and current sources of the differential amplifiers that come next.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>I_C = I_S e<sup>V_BE/V_T</sup>: 60 mV per decade, 25 Ω/mA, −2.1 mV/°C. <em>Design with V_BE controlling I_C</em>, and match transistors when you want two currents to agree.</p></div>
+
+<p className="reference-note">Coverage: The Art of Electronics §§2.3.1–2.3.3, 2.3.6 and 2.3.7. Differential amplifiers (§2.3.8) and the amplifier building blocks of §2.4 come next.</p>
+
+</section>
+
+<div className="chapter-end">
+
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p></div>
+
+<a className="primary-link" href="/ebers-moll/practice/">Open practice →</a>
+
+</div>

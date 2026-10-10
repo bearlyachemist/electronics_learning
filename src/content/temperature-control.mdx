@@ -1,0 +1,184 @@
+import Equation from '../components/Equation.astro';
+import {FeedbackGainLab,LoopStabilityLab,DegenerationLab,SupplyControlLab,TemperatureLab,LogicLab} from '../components/FeedbackLabs';
+import {FeedbackBlock,FeedbackAmpFigure,SupplyFigure,ThermalFigure,LogicFigure} from '../components/FeedbackFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 45</span><span className="hairline"/>TRANSISTORS / FEEDBACK & CONTROL</div>
+
+<h1>Temperature control<br/><em>Feedback through a slow physical world.</em></h1>
+
+<p className="dek">Build a thermal model, derive proportional and integral control, and connect sensor lag, transistor drive and hysteresis.</p>
+
+<div className="chapter-meta"><span>60–90 min + exploration</span><span>Work through the examples at your own pace</span></div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Derive the thermal plant → Turn temperature into a signal → Why proportional control has offset → Integral control and saturation → Explore the closed loop → Hysteresis and the heater driver.</p>
+
+</div>
+
+
+<section id="plant">
+
+## 01 / Derive the thermal plant
+
+A temperature controller is a feedback amplifier whose output power acts on a physical object. That object stores heat, loses heat to its surroundings, and may be measured by a sensor that responds more slowly than the object itself.
+
+Let T be body temperature, Tₐ ambient, Cth thermal capacitance in J/°C, θ thermal resistance in °C/W, and P electrical power actually deposited in the body. Conservation of energy gives:
+
+<Equation tex="C_{\mathrm{th}}\frac{dT}{dt}=P-\frac{T-T_a}{\theta}" />
+
+The left side is the rate of stored-energy change. The right side is heater input minus heat loss. This is analogous to a capacitor charged by current while a resistor leaks charge away.
+
+For constant power from an initially ambient body:
+
+<Equation tex="T(t)=T_a+\theta P\left(1-e^{-t/\tau}\right),\qquad \tau=\theta C_{\mathrm{th}}" />
+
+With θ = 10 °C/W and Cth = 20 J/°C, τ = 200 s. A constant 3 W eventually holds the body 30 °C above ambient. After 200 s it has achieved about 63.2% of that rise.
+
+To hold 50 °C in 20 °C ambient, the required steady power is (50 − 20)/10 = 3 W. A 2 W maximum heater cannot achieve the target regardless of controller sophistication. A 10 W heater can, but needs to reduce its power well before the target if the sensor is slow.
+
+<Equation tex="\frac{\Delta T(s)}{\Delta P(s)}=\frac{\theta}{1+s\theta C_{\mathrm{th}}}" />
+
+This transfer function is for small variations with fixed ambient and a single thermal mass. A real heater, air gap, sensor package and object can create several thermal time constants. That is a physical-model question before it is a controller-tuning question.
+
+</section>
+
+<section id="sensor">
+
+## 02 / Turn temperature into a signal
+
+An NTC thermistor decreases resistance as temperature rises. A common approximate model over a limited range is:
+
+<Equation tex="R(T)=R_0\exp\left[B\left(\frac{1}{T_K}-\frac{1}{T_{0K}}\right)\right]" />
+
+Temperatures inside this equation are **kelvin**. The constant B here is a thermistor parameter, unrelated to transistor β or feedback fraction b.
+
+Put a fixed resistor above the sensing node and an NTC thermistor below it to ground. The sensor voltage is VₛRntc/(Rfixed + Rntc), so it decreases with temperature. If a larger controller output means more heat, the correct error polarity can be “sensor voltage minus the voltage corresponding to target”: when cold, sensor voltage is high, demanding heat.
+
+For a 10 kΩ thermistor at 25 °C with B = 3950 K, resistance at 50 °C is about 3.59 kΩ. With a 10 kΩ upper resistor and 5 V excitation, sensor voltage is about 2.5 V at 25 °C and 1.32 V at 50 °C.
+
+Differentiate to obtain sensitivity:
+
+<Equation tex="\frac{dR}{dT}=-\frac{BR}{T_K^2},\qquad \frac{dV_s}{dT}=V_{\mathrm{exc}}\frac{R_{\mathrm{fixed}}}{(R_{\mathrm{fixed}}+R)^2}\frac{dR}{dT}" />
+
+At 25 °C with equal 10 kΩ resistors, this is about −55.5 mV/°C. A 5 mV sensing offset then represents about 0.09 °C locally. Sensitivity is not constant across the entire temperature range.
+
+Sensor excitation can heat the sensor. At 25 °C this divider puts 2.5 V across 10 kΩ, dissipating 0.625 mW in the thermistor. Its self-heating error depends on thermal coupling and dissipation constant. Lower excitation or intermittent measurement can reduce it, with noise and settling tradeoffs.
+
+A BJT junction at controlled current is another temperature-sensitive element, but its calibration, bias current and device variation must be accounted for. A rule-of-thumb Vᵦₑ slope alone does not make an accurate thermometer.
+
+</section>
+
+<section id="proportional">
+
+## 03 / Why proportional control has offset
+
+Assume the sensor is already calibrated in degrees and has no lag. Let the controller command:
+
+<Equation tex="P=K_p(T_{\mathrm{set}}-T)" />
+
+Kp has units W/°C. At equilibrium, heater power must equal the heat loss:
+
+<Equation tex="K_p(T_{\mathrm{set}}-T)=\frac{T-T_a}{\theta}" />
+
+Solving yields:
+
+<Equation tex="T_{\mathrm{eq}}=\frac{\theta K_pT_{\mathrm{set}}+T_a}{1+\theta K_p},\qquad e_{\mathrm{eq}}=\frac{T_{\mathrm{set}}-T_a}{1+\theta K_p}" />
+
+The remaining error is necessary to command the holding power. With θ = 10 °C/W, Kp = 0.5 W/°C, target 50 °C and ambient 20 °C, θKp = 5. The final temperature is 45 °C, leaving 5 °C error and commanding 2.5 W, exactly the heat loss at 45 °C.
+
+Raising Kp to 2 W/°C reduces error to 30/21 = 1.43 °C. In the ideal no-lag unsaturated model it also reduces the time constant to τ/(1 + θKp). This resembles the amplifier's gain–bandwidth result.
+
+But real sensing delay and actuator limits prevent increasing Kp without limit. Saturating the heater at 10 W makes the early warm-up follow the physical plant rather than an arbitrarily fast linear response.
+
+A known feedforward holding-power estimate can be added to the proportional command, reducing offset at one condition. Changes in ambient or heat loss still create error; an integral term can adapt to them.
+
+</section>
+
+<section id="integral">
+
+## 04 / Integral control and saturation
+
+A PI controller adds accumulated error:
+
+<Equation tex="P=K_pe+K_i\int e\,dt,\qquad e=T_{\mathrm{set}}-T" />
+
+Ki has units W/(°C·s). Even a small persistent error keeps changing the integral until the needed holding power remains when the instantaneous error reaches zero. Thus PI can remove steady error to a constant setpoint, provided the actuator can supply the required power and the closed loop is stable.
+
+For the single-mass plant without sensor lag, the characteristic polynomial is:
+
+<Equation tex="\tau s^2+(1+\theta K_p)s+\theta K_i=0" />
+
+All coefficients are positive for positive gains, so this ideal second-order system is stable. Its damping can still become small as integral gain rises; stability does not mean no overshoot.
+
+Now include sensor lag τs. The characteristic polynomial becomes:
+
+<Equation tex="\tau\tau_s s^3+(\tau+\tau_s)s^2+(1+\theta K_p)s+\theta K_i=0" />
+
+For this restricted model with τs positive, the cubic Routh condition adds:
+
+<Equation tex="(\tau+\tau_s)(1+\theta K_p)>\tau\tau_s\theta K_i" />
+
+That is why a PI loop stable with an instantaneous sensor can become unstable with a slow one. It is a local linear condition; output saturation changes the observed motion into bounded cycling or other nonlinear behavior rather than an unlimited temperature prediction.
+
+### Windup is accumulated impossible demand
+
+During warm-up, the command may exceed the 10 W available. If the integrator keeps accumulating positive error anyway, it stores a large request that remains after the target is reached. The heater stays on too long.
+
+The experiment uses conditional integration: pause accumulation when output is saturated and the error would drive it farther into saturation; allow accumulation when it helps return from saturation. Other implementations use back-calculation. Neither technique compensates for a badly located or badly calibrated sensor.
+
+</section>
+
+<section id="explore">
+
+## 05 / Explore the closed loop
+
+<TemperatureLab client:load />
+
+First compare P and PI with zero sensor lag. P settles below target; PI can retain the holding command with near-zero error. Then add sensor lag. Notice that the body can already be too warm while the sensor still asks for heat.
+
+Keep the axes fixed while comparing cases. The electrical transistor does not directly “set temperature”: it controls heater power, which changes stored thermal energy, which eventually changes sensor voltage.
+
+The heater can only add heat. If the target falls below ambient, zero drive is the strongest available cooling command. Active cooling requires a different actuator and model. The same limitation appears when a regulator can source but not sink current.
+
+</section>
+
+<section id="hardware">
+
+## 06 / Hysteresis and the heater driver
+
+An on/off controller is a different strategy. Turn on below a lower threshold and off above an upper one. Between those thresholds keep the previous state. This hysteresis prevents rapid switching from noise when the measured temperature sits near a single threshold.
+
+A nominal 49–51 °C thermostat is not guaranteed to hold the **body** within that band. Sensor lag lets body temperature continue rising after the upper threshold is crossed, and cooling continues after the lower threshold is crossed. The thresholds apply to the measured signal.
+
+Positive feedback is often used locally in a comparator to create the two thresholds. That does not contradict using negative feedback around the overall heating process: local hysteresis establishes memory, while the heater action still opposes a temperature error over the operating cycle.
+
+### Drive a resistive heater with a BJT
+
+For on/off or PWM control, an NPN low-side switch can put a heater between +12 V and its collector, with emitter at ground. A 120 Ω heater draws approximately 100 mA. Ignoring switch drop, full-on power is 1.2 W; duty fraction D gives roughly D × 1.2 W if electrical switching is fast compared with the thermal time constants.
+
+At a forced β of 10, provide about 10 mA base current. With a 5 V driver and an assumed 0.8 V saturated base voltage, Rbase ≈ (5 − 0.8)/10 mA = 420 Ω. Verify that the driver can supply that current; many logic sources cannot. Include base discharge so turn-off is deliberate.
+
+A 24 Ω heater on 12 V provides about 6 W but needs roughly 500 mA collector current, suggesting 50 mA base drive at the same forced β. A driver stage or another switching technology may be more appropriate. Transistor ratings and power remain part of the control design.
+
+A resistive heater does not require the same flywheel path as a relay coil. If the actuator is a relay, solenoid or inductive load, use the [inductive protection analysis](/diode-protection/) and consider its effect on release timing.
+
+### Linear heater drive is a different power budget
+
+Using a BJT in its active region permits continuous power control but dissipates heat in the pass transistor too. For a 12 V supply, 24 Ω heater and 250 mA, the heater receives 1.5 W while the transistor also dissipates about 1.5 W. If the transistor is thermally attached to the object, some of that heat enters the plant; if it is elsewhere, it does not.
+
+Finally, specify what happens if the sensor opens or shorts. With the NTC divider described above, an open lower thermistor can resemble an extremely cold condition and demand maximum heat. An independent temperature cutoff can address a failure that ordinary feedback cannot recognize. Sensor placement, wiring and fault behavior are physical parts of the design, not tuning parameters.
+
+</section>
+
+
+<div className="practice-home">
+
+<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and complete worked solutions.</p><a className="primary-link" href="/temperature-control/practice/">Open practice →</a>
+
+</div>
+

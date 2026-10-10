@@ -1,0 +1,125 @@
+import Equation from '../components/Equation.astro';
+import {JunctionLab,DiodeLab,RectifierLab,RegulatorLab,LimiterLab,ProtectionLab} from '../components/DiodeLabs';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 16</span><span className="hairline"/>FOUNDATIONS / DIODES & SUPPLIES</div>
+
+<h1>Diode circuit applications<br/><em>Steer, limit, and remember.</em></h1>
+
+<p className="dek">Use diodes in limiters, clamps, peak detectors, signal steering, and reverse-polarity protection.</p>
+
+<div className="chapter-meta"><span>35–45 min + exploration</span><span>Original explanations · Models stated</span></div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Limit voltage by steering current → Explore a two-rail limiter → Peak and envelope detectors → Shift a waveform with charge → Steering, LEDs, and polarity.</p>
+
+</div>
+
+
+<section id="limiting">
+
+## 01 / Limit voltage by steering current
+
+A diode clamp needs a place for current to go. Consider an input connected through R to a high-impedance output. Put a diode from output anode to a 3.3 V rail cathode, and another from ground anode to output cathode.
+
+In the fixed-drop model with Vꜰ = 0.3 V, neither diode conducts while output lies between −0.3 V and 3.6 V. With negligible output load, output follows input. Beyond either limit, the corresponding diode conducts and the resistor absorbs the remaining voltage.
+
+<Equation tex="v_o=\begin{cases}-V_F,&v_i<-V_F\\v_i,&-V_F\leq v_i\leq V_{\mathrm{rail}}+V_F\\V_{\mathrm{rail}}+V_F,&v_i>V_{\mathrm{rail}}+V_F\end{cases}" />
+
+<Equation tex="i_R=\frac{v_i-v_o}{R}" />
+
+At +8 V through 2.2 kΩ, the upper diode conducts (8 − 3.6)/2.2 kΩ = 2 mA into the rail. At −8 V, the lower diode conducts from ground through the node toward the source with magnitude (8 − 0.3)/2.2 kΩ = 3.5 mA.
+
+The asymmetric currents arise because the two clip levels are asymmetric around zero. Reversing the current direction does not reverse resistor dissipation: instantaneous resistor power is always i²R.
+
+### Why a nominal rail is not enough
+
+Many regulators can source current but cannot sink it. A clamp may charge the supply capacitor and raise the rail, especially if the protected system is unpowered or lightly loaded. The ideal clip level then moves. Check injection-current limits, rail discharge paths and allowed pin voltage from the actual input specification.
+
+A 3.3 V input is not automatically safe at 3.6 V. The external diode drop, protected device's internal structures and relative turn-on voltages all matter. The lab is a circuit-law experiment, not a universal input-protection design.
+
+</section>
+
+<section id="explore">
+
+## 02 / Explore a two-rail limiter
+
+<LimiterLab client:load />
+
+Increase resistance at fixed input amplitude. Ideal output clip levels stay unchanged, while diode and resistor current decrease. Real diodes have current-dependent forward voltage, so actual clip levels also change somewhat.
+
+A resistor load would create a divider even before clipping. If source resistance is already present, include it in the current budget rather than adding it twice. At high frequency, clamp capacitance and source resistance create another filter.
+
+For a bipolar limiter centered on zero, use two oppositely directed diode paths to ground. With ordinary forward diodes that clips near ±Vꜰ. Back-to-back zeners in a series branch can give a larger symmetric limit: one device avalanches while the other conducts forward, so the magnitude is approximately Vz + Vꜰ.
+
+</section>
+
+<section id="detectors">
+
+## 03 / Peak and envelope detectors
+
+Connect input to a diode anode, diode cathode to the output, and a capacitor from output to ground. Add a resistor from output to ground as a deliberate discharge path.
+
+While input exceeds capacitor voltage plus the forward drop, the diode conducts and charges the capacitor. When input falls, the diode blocks and the capacitor discharges through the resistor. A positive peak detector therefore holds approximately Vpeak − Vꜰ, with droop between refreshes.
+
+With a constant leakage/load current, droop is approximately:
+
+<Equation tex="\Delta V\approx\frac{I_{\mathrm{leak}}\Delta t}{C}" />
+
+For 100 nA total leakage, 100 nF and 10 ms hold time, droop is 10 mV. Total leakage includes diode reverse current, capacitor leakage and the following amplifier's bias current, all at the relevant temperature. Increasing C reduces droop but demands more charging current and can increase acquisition time.
+
+For a resistor discharge, the stored voltage decays as exp(−t/RC). At 1 kHz repetition and RC = 0.1 s, a one-period hold loses about 1 − exp(−0.001/0.1) = 0.995% of its initial voltage, before diode errors.
+
+### Envelope detection has competing time scales
+
+For an amplitude-modulated high-frequency carrier, choose RC long compared with the carrier period to reduce carrier ripple but short enough to follow changes in the envelope. If discharge is too slow, the output can remain above a falling envelope and the diode cannot pull it down: diagonal clipping results.
+
+A 100 kHz carrier with a 100 Hz envelope leaves a broad separation of periods, 10 µs versus 10 ms. An RC near a fraction of a millisecond may be a useful starting point, but allowable ripple and envelope slope determine the actual choice. “RC much larger than the carrier period” alone is insufficient.
+
+An op-amp precision rectifier places diode error inside a feedback loop and can detect much smaller signals. Amplifier bandwidth, slew rate and recovery from saturation become important; an ideal precision rectifier is not infinitely fast.
+
+</section>
+
+<section id="clampers">
+
+## 04 / Shift a waveform with charge
+
+A **clamper** often means a different circuit from the two-rail limiter: place a capacitor in series with the input, a large discharge resistor from output to ground, and a diode from ground anode to output cathode.
+
+On a sufficiently negative input excursion, the diode conducts and keeps output near −Vꜰ. The capacitor charges to a value that shifts the next part of the waveform upward. When the diode blocks, capacitor voltage changes slowly if the load time constant is long.
+
+For a ±2 V input square wave and a 0.7 V diode, the negative output level approaches −0.7 V after settling. The input rises by 4 V on the next edge; capacitor voltage cannot jump, so output rises by the same amount to about +3.3 V. The waveform shifts; it is not amplified.
+
+Startup depends on initial capacitor charge. Finite load causes tilt and changes the clamp level between refreshes. A clamper is therefore a charge-storage circuit with memory, while the preceding fixed-drop limiter was modeled as instantaneous.
+
+</section>
+
+<section id="steering">
+
+## 05 / Steering, LEDs, and polarity
+
+Two supplies can feed a common load through separate diodes, each anode at its supply and cathode at the shared output. The higher available source generally supplies the load while the other diode blocks backflow. Drops, source impedance and mismatched voltages determine sharing; it is not automatically equal.
+
+**Example.** A 5.0 V source behind a 0.3 V diode offers roughly 4.7 V, while a 4.5 V source behind the same drop offers 4.2 V. With the first source holding the output near 4.7 V, the second diode is off. Under enough first-source sag, the second path can start conducting.
+
+A series diode also offers simple reverse-polarity protection: normal current flows through it, while a reversed source is blocked. The tradeoff is forward loss. At 1 A and 0.45 V, that is 0.45 W and 0.45 V less supply headroom. MOSFET “ideal diode” circuits reduce loss but require their own polarity and gate-control analysis.
+
+An LED needs current control. A resistor estimate uses the *remaining* voltage after the LED drop, then checks maximum source voltage and minimum LED drop. Putting an LED directly across a stiff voltage supply does not establish a controlled current.
+
+A diode placed directly across a supply in reverse orientation is a different protection topology: reverse connection creates a large current path and needs coordinated upstream current interruption. It cannot be substituted for the series diode without redesigning the fault path.
+
+Coverage: AoE §1.6.6. For a manufacturer comparison of reverse-polarity topologies, see [Nexperia's reverse-battery application note](https://www.nexperia.com/applications/interactive-app-notes/IAN50001_automotive-reverse-battery-protection).
+
+</section>
+
+
+<div className="practice-home">
+
+<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p><a className="primary-link" href="/diode-applications/practice/">Open practice →</a>
+
+</div>
+

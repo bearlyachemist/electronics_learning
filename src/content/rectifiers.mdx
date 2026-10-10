@@ -1,0 +1,130 @@
+import Equation from '../components/Equation.astro';
+import {BridgePaths,JunctionLab,DiodeLab,RectifierLab,RegulatorLab,LimiterLab,ProtectionLab} from '../components/DiodeLabs';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 14</span><span className="hairline"/>FOUNDATIONS / DIODES & SUPPLIES</div>
+
+<h1>Rectification & filtering<br/><em>Pulses become a supply.</em></h1>
+
+<p className="dek">Follow current through rectifiers, derive reservoir ripple, and distinguish load current from recharge current.</p>
+
+<div className="chapter-meta"><span>35–45 min + exploration</span><span>Original explanations · Models stated</span></div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Half-wave and full-wave paths → What the reservoir really does → See the recharge pulses → Design the current and voltage budget → Configurations and limits.</p>
+
+</div>
+
+
+<section id="paths">
+
+## 01 / Half-wave and full-wave paths
+
+A rectifier steers alternating current so that current through a load keeps one direction. It does not by itself produce constant voltage.
+
+For a half-wave circuit, put a diode in series between an isolated sinusoidal source and a resistor load. During the positive half-cycle the anode is above the cathode and current flows. During the negative half-cycle the diode blocks. With peak source voltage Vₚ and a fixed forward drop:
+
+<Equation tex="v_o(t)=\max\!\left(0,V_p\sin(\omega t)-V_F\right)" />
+
+A full-wave bridge uses four diodes. Label the AC terminals A and B and the DC terminals + and −. Connect diodes A→+, B→+, −→A, and −→B, where each arrow means anode to cathode. When A is higher, current follows A→diode→load→diode→B. When B is higher, the other pair conducts and the load current keeps the same direction.
+
+<Equation tex="v_o(t)=\max\!\left(0,|V_p\sin(\omega t)|-2V_F\right)" />
+
+<BridgePaths client:load />
+
+The bridge costs two forward drops and produces two pulses per input cycle. With ideal diodes and no reservoir capacitor, averaging the positive sine gives Vₚ/π for half-wave and 2Vₚ/π for full-wave. Neither is the peak value.
+
+**Worked example.** A 9 V RMS sine has peak √2 × 9 = 12.73 V. An unloaded reservoir behind a bridge with 0.7 V drops can approach 11.33 V. Calling the output “9 V DC” confuses RMS source voltage with capacitor peak charging.
+
+</section>
+
+<section id="reservoir">
+
+## 02 / What the reservoir really does
+
+Connect a capacitor across the load. The diodes conduct only when the instantaneous source, after diode drops and source losses, can drive current into the capacitor/load node. Between recharge intervals the source path is blocked and the capacitor supplies the load.
+
+For a resistive load while the rectifier is off, KCL gives C dv/dt = −v/Rᴸ. The voltage therefore decays exponentially:
+
+<Equation tex="v(t)=v(t_0)e^{-(t-t_0)/(R_LC)}" />
+
+If ripple is small, current changes little during discharge. Treating it as approximately constant gives ΔQ ≈ IᴸΔt and ΔV = ΔQ/C. For pulses repeating at fᵣ:
+
+<Equation tex="\Delta V_{\mathrm{pp}}\approx\frac{I_L}{f_rC},\qquad f_r=f_{\mathrm{line}}\ \text{(half-wave)},\quad f_r=2f_{\mathrm{line}}\ \text{(full-wave)}" />
+
+This approximates discharge time by the full pulse spacing. Actual charging takes finite time, and its start/end depend on source impedance and load. The approximation becomes poor when ripple is large or source voltage sags strongly.
+
+For 20 mA, 100 Hz recharge, and 470 µF, the estimate is 0.426 V p-p. A half-wave circuit at the same 50 Hz input gives about 0.851 V p-p. Double capacitance and the approximate ripple halves; the source must still deliver the same average charge.
+
+### During recharge
+
+Include total source resistance Rₛ instead of imagining an unlimited current source at every peak. If u(t) is the available rectified voltage after fixed diode drops, conducting-state KCL is:
+
+<Equation tex="C\frac{dv}{dt}=\frac{u(t)-v}{R_s}-\frac{v}{R_L}" />
+
+The off state requires u ≤ v and source current zero. The on state requires nonnegative source current (u − v)/Rₛ. These conditions couple the diode state to the capacitor state; you cannot select conduction purely from the sign of the original sine.
+
+</section>
+
+<section id="explore">
+
+## 03 / See the recharge pulses
+
+<RectifierLab client:load />
+
+The upper plot compares the voltage available from the rectifier with the capacitor voltage. The lower plot shows source-current magnitude. During discharge, reservoir voltage can remain above the available source voltage precisely because the diodes block reverse current.
+
+Increase capacitance and inspect both plots. A smoother output does not imply a smoother source current. Change to half-wave and observe the longer discharge gap. The graph shows settled operation; an initially empty capacitor produces a different startup transient.
+
+The model integrates the on/off KCL equations with a finite source resistance. It does not simply snap the capacitor to every ideal source peak. Even so, real transformer leakage inductance, winding resistance variation, diode behavior and capacitor ESR require more detailed models for component stress.
+
+</section>
+
+<section id="design">
+
+## 04 / Design the current and voltage budget
+
+Start from the downstream circuit's minimum allowed input. For a 5 V regulator requiring 0.5 V headroom, the **trough**, not the mean, must remain above 5.5 V with any additional margin.
+
+A first budget subtracts diode drops, source sag and ripple from the lowest available peak. At 7 V RMS minimum, two 0.8 V drops leave 8.30 V before source sag. A 50 mA load and 470 µF at 100 Hz give about 1.064 V ripple, leaving a rough 7.24 V trough before allowing for source resistance. This is a first estimate, not a guaranteed minimum.
+
+Check the opposite corner too. A high source voltage with a light load may charge the capacitor close to the peak and maximize regulator heating when load subsequently increases. Capacitor voltage rating must cover the highest credible voltage, not just the nominal output.
+
+### Current ratings require waveforms
+
+The average source charge per cycle equals the load charge once settled, but source current arrives in pulses. A source winding and bridge therefore carry RMS and peak currents larger than one would infer by treating load DC current as a continuous sine or DC current.
+
+Capacitor current is i꜀ = iₛ − iᴸ. Its mean is zero in periodic steady state, but its RMS value heats ESR. The load current is not the capacitor ripple-current rating. Likewise, a diode's nonrepetitive surge rating is not permission to repeat that surge every half-cycle.
+
+At startup, a rough upper estimate with an empty capacitor is (Vₚ − total diode drop)/Rₛ. In the lab's bridge this is about 1.13 A at a source peak, well above its settled average load current. Source phase, transformer impedance and any inrush limiter determine the real waveform.
+
+</section>
+
+<section id="limits">
+
+## 05 / Configurations and limits
+
+A center-tapped full-wave rectifier uses two diodes and alternate half-windings. Each conducting path loses one diode drop, but the nonconducting diode may see approximately twice the peak of a half-winding. The required transformer winding and reverse rating differ from a bridge.
+
+In a half-wave capacitor-input supply, a charged capacitor near +Vₚ and a source near −Vₚ can place nearly 2Vₚ across the blocking diode. In a bridge, ideal peak reverse stress per diode is about the full secondary peak. Add margin for actual transients and specified conditions; these are topology estimates, not selected ratings.
+
+Voltage doublers use diode-steered capacitor charging to stack stored voltages. Their no-load voltage is attractive, but output resistance, ripple and diode/capacitor stress matter as load rises. They are not a free doubling of available power.
+
+All examples use an isolated low-voltage source. Rectification itself does not create isolation. A transformer symbol alone also does not establish a physical isolation rating.
+
+Coverage: AoE §§1.6.2–1.6.4. Continue to regulators to separate “small ripple” from “controlled output voltage.”
+
+</section>
+
+
+<div className="practice-home">
+
+<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p><a className="primary-link" href="/rectifiers/practice/">Open practice →</a>
+
+</div>
+
+

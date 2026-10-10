@@ -1,0 +1,137 @@
+import Equation from '../components/Equation.astro';
+import {SharingLab} from '../components/StageLabs';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 40</span><span className="hairline"/>FOUNDATIONS / AMPLIFIER BUILDING BLOCKS</div>
+
+<h1>Current sharing in paralleled transistors<br/><em>Two devices, one current, a fight over heat.</em></h1>
+
+<p className="dek">See why paralleled bipolar transistors split current unevenly, derive the electro-thermal loop gain that decides whether one device hogs the current, and size emitter ballast resistors to prevent it.</p>
+
+<div className="chapter-meta"><span>40–50 min + exploration</span><span>Ebers–Moll · Power and heat · Push–pull stages</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">One transistor can safely carry 1.5 A. You need 2 A, so you wire two in parallel. Why might the first one still fail?</p></div>
+
+<div>
+
+Paralleling power devices is the natural way to handle more current or more dissipation than one package allows. Resistors in parallel share current according to their resistances. Bipolar transistors in parallel share according to their V_BEs, through an exponential law, and their V_BEs depend on their temperatures, which depend on their currents.
+
+The result can be a stable, nearly even split, or a runaway in which one transistor takes almost everything. This chapter quantifies both effects and shows the standard fix: a small resistor in each emitter.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Why parallel transistors → Mismatch and the exponential → The electro-thermal loop → Explore sharing → Designing ballast resistors → Hot spots, SOA and MOSFETs.</p>
+
+</div>
+
+<section id="why">
+
+<div className="section-heading"><span>01</span><h2>Why parallel transistors</h2></div>
+
+A single power transistor is limited by its maximum collector current, by its junction temperature (set by dissipation and thermal resistance), and by its safe operating area. Two transistors in parallel, each on its own share of heat sink, double the possible current and halve each device’s dissipation—*if* they share equally.
+
+Tie the bases together, the collectors together and the emitters together: the two transistors see identical V_BE and V_CE. They share equally only if their I_S values are identical and they are at the same temperature. Neither is ever exactly true.
+
+</section>
+
+<section id="mismatch">
+
+<div className="section-heading"><span>02</span><h2>Mismatch and the exponential</h2></div>
+
+Two transistors of the same type may need V_BEs differing by several millivolts, sometimes tens of millivolts, at the same current. Ebers–Moll converts a voltage difference into a current ratio:
+
+<Equation tex="\frac{I_1}{I_2}=e^{\Delta V_{BE}/V_T}"/>
+
+A 1 mV difference gives a 4% imbalance; 5 mV, 21%; 10 mV, 47%; 25 mV, a factor of 2.6. In the lab, a 5 mV mismatch with no ballast and a generous heat sink (0.5 °C/W) splits 2 A as **1.16 A and 0.84 A**: one transistor carries 38% more than the other, and the electrical mismatch has been amplified somewhat by the thermal effect described next.
+
+</section>
+
+<section id="thermal">
+
+<div className="section-heading"><span>03</span><h2>The electro-thermal loop</h2></div>
+
+Suppose one transistor carries slightly more current. It dissipates more, V_CE × I, and runs hotter by θ × V_CE × I, where θ is its junction-to-ambient thermal resistance. A hotter junction needs about 2.1 mV less V_BE per °C for the same current; at a fixed shared V_BE, its current therefore rises further. This is **positive feedback**.
+
+Quantify one trip around the loop. A small current increase ΔI raises the temperature by θV_CEΔI. At fixed base voltage that is equivalent to raising V_BE by 2.1 mV/°C × θV_CEΔI. With an emitter resistor R_E, the transistor’s current responds to a V_BE change through r_e + R_E, where r_e = V_T/I:
+
+<Equation tex="G_{\mathrm{loop}}=\frac{\Delta I_{\text{returned}}}{\Delta I}=\frac{\theta\,V_{CE}\,I\times2.1\ \mathrm{mV/^\circ C}}{V_T+I R_E}" label="ELECTRO-THERMAL LOOP GAIN"/>
+
+If G_loop is below 1, a disturbance dies out and the pair settles at a slightly uneven split. If it exceeds 1, any imbalance grows. With a fixed total current, as here, the outcome is **current hogging**: one transistor takes almost everything. With a fixed voltage drive, the outcome is **thermal runaway**: the current of the whole stage rises until something fails.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / THE OPENING QUESTION</span><h3>2 A shared at V_CE = 10 V, 2 °C/W per device</h3>
+
+<p>Without ballast, at 1 A each: G_loop = 2 × 10 × 1 × 0.0021/0.0259 ≈ <strong>1.6</strong>. The equal split is unstable. The lab settles with <strong>1.92 A and 0.08 A</strong>: the first transistor carries nearly all of the 2 A—more than its 1.5 A rating—and runs at 63 °C while its partner idles near 27 °C.</p>
+
+<p>With 0.1 Ω in each emitter: G_loop = 0.042/(0.026 + 0.1) ≈ <strong>0.33</strong>. The split becomes 1.03 A and 0.97 A with the same 5 mV mismatch.</p>
+
+</div>
+
+The loop gain grows with θ, with V_CE and with current. High-voltage, high-current linear operation on a small heat sink is the dangerous corner—exactly where linear amplifiers and regulators operate.
+
+</section>
+
+<section id="explore">
+
+<div className="section-heading"><span>04</span><h2>Explore sharing</h2></div>
+
+<SharingLab client:load/>
+
+<p className="caption">Figure 1. Steady-state electro-thermal solution for two paralleled transistors carrying 2 A in total, each on its own heat sink. Q₂ needs a slightly larger V_BE for the same current; temperatures and currents are solved together.</p>
+
+</section>
+
+<section id="ballast">
+
+<div className="section-heading"><span>05</span><h2>Designing ballast resistors</h2></div>
+
+An emitter resistor converts a current difference into a voltage that opposes it. Without temperature effects, the current imbalance from a V_BE mismatch becomes
+
+<Equation tex="\frac{\Delta I}{I}\approx\frac{\Delta V_{BE}}{I R_E+V_T}"/>
+
+The quantity I·R_E—the voltage dropped across each ballast resistor at its share of the current—is what matters. With 5 mV mismatch and I·R_E = 0.1 V, the imbalance is about 4%; with 0.5 V, about 1%. The same I·R_E term appears in the denominator of the loop gain, so the same resistor also defeats the thermal feedback.
+
+A practical recipe:
+
+1. Estimate the worst V_BE mismatch for the devices (tens of millivolts for unselected parts unless matched).
+2. Choose I·R_E of 0.1–0.5 V at each device’s nominal current, making the static imbalance acceptable.
+3. Check G_loop at the worst combination of V_CE, current and thermal resistance, and keep it well below 1 (0.5 or less).
+4. Account for the cost: each resistor dissipates I²R_E (0.1 W at 1 A and 0.1 Ω) and costs I·R_E of headroom.
+
+Typical values in audio output stages are 0.1–0.47 Ω per device (Chapter 37), which also stabilizes the quiescent current. Mounting all devices on one heat sink, close together, adds thermal coupling that pulls their temperatures together and helps further.
+
+</section>
+
+<section id="soa">
+
+<div className="section-heading"><span>06</span><h2>Hot spots, SOA and MOSFETs</h2></div>
+
+**The same problem inside one transistor.** A large power transistor is effectively many small transistors in parallel across its chip. If one region runs hotter, it draws more current and heats further, concentrating current into a hot spot. This **second breakdown** can destroy a transistor at a power well below its nominal rating when both voltage and current are high. It is why datasheets give a **safe operating area (SOA)** graph that falls off more steeply at high V_CE than a simple constant-power limit would. Manufacturers fight it with distributed emitter ballast resistance on the chip.
+
+**MOSFETs share differently.** At high gate drive, a MOSFET’s on-resistance rises with temperature, so a hotter device carries *less* current: paralleled MOSFETs in switching service share naturally. At low gate drive, in linear operation below a crossover current, their temperature coefficient reverses and they can hog current just as BJTs do. Linear MOSFET stages still need source resistors or individual control.
+
+**Active sharing.** When precision matters, each device can have its own sense resistor and control loop, forcing equal currents regardless of mismatch—at the cost of more parts.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Paralleled BJTs split current exponentially by V_BE, and heating closes a <em>positive feedback loop</em>. A ballast resistor with a few tenths of a volt across it fixes both.</p></div>
+
+<p className="reference-note">Coverage: The Art of Electronics §2.4.4, with an electro-thermal loop-gain analysis. The lab solves steady state only; real devices also have thermal time constants and SOA limits.</p>
+
+</section>
+
+<div className="chapter-end">
+
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p></div>
+
+<a className="primary-link" href="/current-sharing/practice/">Open practice →</a>
+
+</div>

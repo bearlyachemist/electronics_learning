@@ -1,0 +1,210 @@
+import Equation from '../components/Equation.astro';
+import {PoleLab} from '../components/AcLabs';
+import {DecibelFigure} from '../components/Figures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 23</span><span className="hairline"/>FOUNDATIONS / IMPEDANCE & FILTERS</div>
+
+<h1>Poles, slopes & band filters<br/><em>Build a response from corners.</em></h1>
+
+<p className="dek">Understand what a pole is, stack sections for steeper slopes, combine high-pass and low-pass into a band-pass, carve out a notch, and sketch any response from its corners.</p>
+
+<div className="chapter-meta"><span>55–70 min + exploration</span><span>RC filters · Decibels · Complex numbers</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">One RC section only falls 20 dB per decade. What if you need to remove interference that is just three times higher than your signal?</p></div>
+
+<div>
+
+A single RC filter at the signal’s edge attenuates a component three times higher by only about 10 dB. More rejection requires more sections, and the way sections combine is not as simple as it first looks: connected directly, they interfere with each other.
+
+This chapter introduces the vocabulary of **poles**, **zeros**, octaves and decades, which turns filter design into adding straight lines. It then builds band-pass and band-stop filters from the pieces of Chapter 22 and shows the limits of what resistors and capacitors alone can do.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Octaves, decades and what a pole is → Cascade sections → Explore poles, band-pass and notch → Band-pass from two corners → Band-stop and the twin-T → Sketch any response from its corners.</p>
+
+</div>
+
+<section id="octaves">
+
+<div className="section-heading"><span>01</span><h2>Octaves, decades and what a pole is</h2></div>
+
+An **octave** is a factor of 2 in frequency; a **decade** is a factor of 10. A single RC section well beyond its corner has |H| ∝ 1/f, so doubling frequency halves the output:
+
+<Equation tex="20\log_{10}\tfrac12=-6.02\ \mathrm{dB\ per\ octave}\qquad\Longleftrightarrow\qquad 20\log_{10}\tfrac1{10}=-20\ \mathrm{dB\ per\ decade}"/>
+
+These two descriptions are the same slope. Engineers usually say “6 dB per octave” and “20 dB per decade” interchangeably, and often call this a **single-pole** rolloff.
+
+### Why “pole”?
+
+Write the low-pass transfer function with the variable s in place of jω:
+
+<Equation tex="H(s)=\frac{1}{1+sRC},\qquad s=j\omega\ \text{for steady sinusoids}"/>
+
+As an algebraic function of a complex variable s, H becomes infinite at s = −1/RC. That point is the **pole**. Real frequencies lie along the imaginary axis, s = jω, so we never sit on the pole, but its location governs the response:
+
+<Equation tex="|H(j\omega)|=\frac{1/RC}{\left|\,j\omega-(-1/RC)\,\right|},\qquad \angle H=-\angle\left(j\omega+1/RC\right)"/>
+
+Picture a pole on the negative real axis at distance 1/RC from the origin. The magnitude response is inversely proportional to the *distance from the pole to the point jω*. At low frequency that distance is about 1/RC and the gain is 1. At ω = 1/RC the distance is √2 times larger: −3 dB. Far up the axis the distance grows in proportion to ω: −20 dB/decade. The phase is minus the angle of the line from the pole to jω: 0° at DC, 45° at the corner, approaching 90°.
+
+A factor in the numerator that goes to zero is a **zero**. The high-pass has a zero at s = 0, which is why its gain rises from nothing at DC. Every first-order RC response is built from one pole and possibly one zero; higher-order responses are products of such factors.
+
+The general s-variable (the Laplace transform) also describes transients, which is why the pole is at −1/RC: the step response contains e^(−t/RC). The same number appears as a decay rate in time and as a corner in frequency. Later chapters develop that connection; here the pole is a compact name for a corner frequency.
+
+</section>
+
+<section id="cascade">
+
+<div className="section-heading"><span>02</span><h2>Cascade sections</h2></div>
+
+### Buffered: responses multiply
+
+If each RC section drives the next through a unity-gain **buffer**—an amplifier with high input impedance and low output impedance—no section loads the previous one. The overall response is the product of the individual responses, so gains in dB add and phases add:
+
+<Equation tex="H=\prod_{k=1}^{n}\frac{1}{1+jf/f_k},\qquad \text{ultimate slope}=-20n\ \mathrm{dB/decade}=-6n\ \mathrm{dB/octave}"/>
+
+For n identical poles at f_c, the gain at f_c is −3n dB, and the overall −3 dB frequency moves down to f_c√(2^(1/n) − 1): 0.644f_c for two poles, 0.435f_c for four. The phase approaches −90n°.
+
+<DecibelFigure/>
+
+### Unbuffered: sections interact
+
+Connect two identical RC low-pass sections directly (R, C, R, C). The second section’s input impedance loads the first section’s output, and nodal analysis gives, with x = ωRC:
+
+<Equation tex="H=\frac{1}{1-x^2+3jx}\qquad\text{instead of}\qquad\frac{1}{(1+jx)^2}=\frac{1}{1-x^2+2jx}"/>
+
+The term 3jx instead of 2jx means extra loss near the corners: at x = 1 the gain is 1/3 (−9.54 dB) rather than 1/2 (−6.02 dB). The denominator factors as (1 + jx/0.382)(1 + jx/2.618): the two poles have **split apart**, one moving down by a factor of 2.6 and one up by the same factor. The ultimate slope is still −40 dB/decade, but the knee is softer.
+
+A remedy without amplifiers is **impedance scaling** (Chapter 20): make the second section’s R ten times larger and its C ten times smaller. Its time constant is unchanged but it barely loads the first section. The gain at x = 1 becomes 1/2.1 (−6.44 dB), close to the buffered −6.02 dB.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / THE OPENING QUESTION</span><h3>Reject 3 kHz while passing 1 kHz</h3>
+
+<p>One RC pole at 1 kHz passes the signal at −3.01 dB and attenuates 3 kHz to 1/√10, only −10 dB. Moving the corner up to 1.5 kHz improves the signal to −1.6 dB but leaves 3 kHz at just −7 dB.</p>
+
+<p>Four buffered poles at 2 kHz: the signal sees 4 × 10 log₁₀(1 + 0.25) = −3.9 dB, while 3 kHz sees 4 × 10 log₁₀(1 + 2.25) = −20.5 dB. Better, but the passband now droops noticeably. Sharp separation between nearby frequencies needs filters whose poles are not all on the real axis—resonant LC filters (Chapter 24) or active filters designed for flat passbands—not simply more identical RC sections.</p>
+
+</div>
+
+</section>
+
+<section id="explore">
+
+<div className="section-heading"><span>03</span><h2>Explore poles, band-pass and notch</h2></div>
+
+<PoleLab client:load/>
+
+<p className="caption">Figure 1. Three passive responses built from the same parts. The cascade uses ideal unity-gain buffers; the band-pass can be buffered or connected directly with equal resistors; the twin-T is ideal and unloaded.</p>
+
+</section>
+
+<section id="bandpass">
+
+<div className="section-heading"><span>04</span><h2>Band-pass from two corners</h2></div>
+
+Cascade a high-pass with corner f_L and a low-pass with corner f_H above it. Below f_L the high-pass removes the signal; above f_H the low-pass does; between them both pass. With a buffer between the sections:
+
+<Equation tex="H=\frac{jf/f_L}{1+jf/f_L}\cdot\frac{1}{1+jf/f_H}"/>
+
+The response peaks at the geometric center f₀ = √(f_L f_H), with +20 dB/decade below and −20 dB/decade above. When the corners are far apart, the passband gain approaches 0 dB and each edge behaves like its own single-pole filter.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A TELEPHONE VOICE BAND</span><h3>300 Hz to 3.4 kHz</h3>
+
+<p>The center is √(300 × 3400) = <strong>1.01 kHz</strong>. With a buffer, the gain there is −0.73 dB: each corner contributes a little loss at the center because they are only a decade apart. Connected directly with equal resistors, the second section loads the first and the center gain falls to −1.41 dB.</p>
+
+<p>Each edge has only a 20 dB/decade slope, so 100 Hz is attenuated by about 10 dB and 10 kHz by about 9.9 dB. Real telephone-band filters use many more poles.</p>
+
+</div>
+
+### Narrow bands need resonance
+
+Move the corners together and the passband narrows, but the peak gain falls with it. With equal corners and a buffer, the peak is −6.02 dB; directly connected with equal resistors, −9.54 dB. A useful measure of narrowness is the **quality factor**, Q = f₀/(bandwidth between −3 dB points). A passive RC network can only have poles on the negative real axis, which limits its band-pass Q to at most ½. Narrow, selective filters need either inductors with capacitors (resonance) or amplifiers with feedback.
+
+</section>
+
+<section id="notch">
+
+<div className="section-heading"><span>05</span><h2>Band-stop and the twin-T</h2></div>
+
+A **band-stop** filter rejects a range of frequencies and passes those on either side. A narrow band-stop is a **notch**. (Band-stop is sometimes loosely called a band gap; that term belongs to semiconductor physics, Chapter 12.)
+
+One approach adds the outputs of a low-pass and a high-pass whose corners are far apart: frequencies in the gap between them are attenuated. For a deep null at one frequency, use a network in which two signal paths cancel.
+
+### The twin-T
+
+The twin-T places two T-networks in parallel between input and output. One is a high-pass T (two capacitors C in series, with R/2 to ground at their junction); the other is a low-pass T (two resistors R in series, with 2C to ground at their junction). At low frequency the resistor path passes the signal; at high frequency the capacitor path does. At
+
+<Equation tex="f_0=\frac{1}{2\pi RC}"/>
+
+the two paths deliver equal amplitudes with opposite phase and cancel exactly. The unloaded transfer function is:
+
+<Equation tex="H=\frac{1-x^2}{1-x^2+4jx},\qquad x=\frac{f}{f_0}"/>
+
+The numerator is zero at x = 1: a perfect null in theory. The 4jx term makes it broad: the effective Q is only ¼. At 2f₀ and at f₀/2 the attenuation is still 9.1 dB; at 3f₀ it is 5.1 dB.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A HUM FILTER</span><h3>Remove 60 Hz from a sensor signal</h3>
+
+<p>Choose C = 100 nF, so 2C = 200 nF. Then R = 1/(2π × 60 × 100 nF) = <strong>26.5 kΩ</strong> and R/2 = 13.3 kΩ.</p>
+
+<p>The null is only as deep as the component matching. With 1% parts the depth is typically limited to a few tens of dB, and the broad shoulders attenuate 120 Hz by 9 dB too—a problem if the wanted signal lives nearby. Feeding back part of the output with an amplifier (a later topic) sharpens the notch. The twin-T must be driven from a low impedance and see a high-impedance load; otherwise the cancellation is spoiled.</p>
+
+</div>
+
+</section>
+
+<section id="sketch">
+
+<div className="section-heading"><span>06</span><h2>Sketch any response from its corners</h2></div>
+
+Bode’s method turns many transfer functions into a sum of straight lines:
+
+1. Factor H into a constant times terms of the form (1 + jf/f_k), either in the numerator (zeros) or denominator (poles), plus any pure jf factors.
+2. Start at low frequency with the constant’s gain in dB.
+3. At each pole frequency, the slope decreases by 20 dB/decade; at each zero, it increases by 20 dB/decade.
+4. Each pole adds −90° of phase spread over the two decades centered on it; each zero adds +90°.
+
+### A pole and a zero: the shelf
+
+A series resistor R₁ followed by a shunt branch of R₂ in series with C gives:
+
+<Equation tex="H=\frac{R_2+1/(j\omega C)}{R_1+R_2+1/(j\omega C)}=\frac{1+j\omega R_2C}{1+j\omega(R_1+R_2)C}"/>
+
+There is a pole at 1/(2π(R₁ + R₂)C) and a higher zero at 1/(2πR₂C). Between them the response falls at 20 dB/decade; above the zero, the slopes cancel and the gain levels off at R₂/(R₁ + R₂). This **shelf** or **lag network** is used to shape loop responses and tone controls.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A −20 dB SHELF</span><h3>R₁ = 9 kΩ, R₂ = 1 kΩ, C = 100 nF</h3>
+
+<p>Pole at 1/(2π × 10 kΩ × 100 nF) = <strong>159 Hz</strong>, zero at 1/(2π × 1 kΩ × 100 nF) = <strong>1.59 kHz</strong>. Straight-line sketch: 0 dB to 159 Hz, falling 20 dB over the decade to 1.59 kHz, then flat at −20 dB, matching R₂/(R₁ + R₂) = 0.1.</p>
+
+<p>The phase dips and recovers: the greatest lag is at the geometric mean, 503 Hz, where it is −54.9° and the gain is −10 dB. A pure single pole would have kept on lagging toward −90°.</p>
+
+</div>
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Each pole bends the magnitude down 20 dB/decade and takes 90° of phase; each zero does the reverse. <em>Corners add</em>—if the sections do not load each other.</p></div>
+
+<p className="reference-note">Coverage: The Art of Electronics §1.7.13, with band-pass and notch networks from §§1.7.8–1.7.9 extended. Resonant filters, which escape the RC limit on Q, follow in Chapter 24.</p>
+
+</section>
+
+<div className="chapter-end">
+
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p></div>
+
+<a className="primary-link" href="/poles/practice/">Open practice →</a>
+
+</div>

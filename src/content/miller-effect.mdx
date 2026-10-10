@@ -1,0 +1,164 @@
+import Equation from '../components/Equation.astro';
+import {MillerLab} from '../components/StageLabs';
+import {MillerFigure,HighFreqModelFigure} from '../components/Figures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 41</span><span className="hairline"/>FOUNDATIONS / AMPLIFIER BUILDING BLOCKS</div>
+
+<h1>Capacitance & the Miller effect<br/><em>Why high gain is slow.</em></h1>
+
+<p className="dek">Add the transistor’s capacitances to the small-signal model, derive f_T and the Miller theorem, predict a common-emitter stage’s bandwidth, and remove the penalty with the cascode.</p>
+
+<div className="chapter-meta"><span>55–70 min + exploration</span><span>Small-signal model · Common-emitter amplifier · RC filters · Bootstrapping</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">A transistor with f_T = 400 MHz, used in a common-emitter stage with a gain of 280, has a bandwidth under 300 kHz. Where did a factor of a thousand go?</p></div>
+
+<div>
+
+Every transistor has capacitance between its terminals, a few picofarads in a small-signal device. Small as that sounds, the capacitance between base and collector sits across a stage whose output swings hundreds of times more than its input. The current it draws—and hence the capacitance the source “sees”—is multiplied by the gain.
+
+This is the **Miller effect**. It explains why common-emitter stages with high gain are slow, why the source impedance driving them matters so much, and why circuit configurations like the cascode exist. It is also the inverse of bootstrapping (Chapter 39), with the same 1/(1 − G) algebra and a negative G.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The transistor’s capacitances and f_T → The Miller theorem → Bandwidth of a common-emitter stage → Explore the Miller effect → Cures: low source impedance and the cascode → Capacitance in switching.</p>
+
+</div>
+
+<section id="capacitances">
+
+<div className="section-heading"><span>01</span><h2>The transistor’s capacitances and f_T</h2></div>
+
+<HighFreqModelFigure/>
+
+Two capacitances matter most:
+
+- **C_π**, between base and emitter. It is mostly the *diffusion capacitance* from the stored base charge of Chapter 26, g_mτ_F, plus the base–emitter depletion capacitance. Because it grows with g_m, it grows in proportion to the collector current.
+- **C_μ** (often C_cb or C_ob on datasheets), between base and collector. It is the reverse-biased collector junction’s depletion capacitance: a few picofarads, falling slowly as V_CB rises.
+
+### The transition frequency
+
+Drive the base with a current and short the collector to AC ground. The base current divides between r_π and the capacitances; only the part through r_π produces collector current. The current gain falls with frequency:
+
+<Equation tex="\beta(f)=\frac{\beta_0}{1+jf/f_\beta},\qquad f_\beta=\frac{1}{2\pi r_\pi(C_\pi+C_\mu)},\qquad f_T=\beta_0f_\beta=\frac{g_m}{2\pi(C_\pi+C_\mu)}" label="TRANSITION FREQUENCY"/>
+
+f_T is where the current gain has fallen to 1. Datasheets quote it, because from it the total capacitance follows. A transistor at 1 mA (g_m = 38.7 mS) with f_T = 400 MHz has C_π + C_μ = 38.7 mS/(2π × 400 MHz) = 15.4 pF; with C_μ = 2 pF, C_π ≈ 13.4 pF. With β = 100, the current gain begins to fall at f_β = 4 MHz.
+
+f_T measures the transistor alone, with no voltage gain. A stage with voltage gain is much slower, for the reason that follows.
+
+</section>
+
+<section id="theorem">
+
+<div className="section-heading"><span>02</span><h2>The Miller theorem</h2></div>
+
+Consider an impedance Z connected between the input and output of an amplifier with voltage gain A (so v_out = A v_in). The current through Z is (v_in − Av_in)/Z. Seen from the input node, Z behaves like an impedance to ground of
+
+<Equation tex="Z_{\mathrm{in}}=\frac{Z}{1-A}\qquad\Rightarrow\qquad C_{\mathrm{in}}=C\,(1-A)=C\,(1+|A|)\ \ \text{for an inverting gain }A=-|A|" label="MILLER THEOREM"/>
+
+<MillerFigure/>
+
+This is exactly the bootstrapping formula of Chapter 39. There, A was just below +1 and the impedance grew; here A is large and negative and the capacitance grows. From the output side the capacitor looks like C(1 − 1/A) ≈ C, essentially unchanged.
+
+The theorem is exact at a single frequency if A is the actual gain with the capacitor connected. Using the midband gain is an approximation that works well when the input pole is the dominant one, as in the typical common-emitter stage.
+
+</section>
+
+<section id="bandwidth">
+
+<div className="section-heading"><span>03</span><h2>Bandwidth of a common-emitter stage</h2></div>
+
+In a common-emitter stage with collector load R_C, the voltage gain from base to collector is −g_mR_C. C_μ bridges base and collector, so the input node sees
+
+<Equation tex="C_{\mathrm{in}}=C_\pi+C_\mu\left(1+g_mR_C\right)"/>
+
+The source resistance R_s, in parallel with r_π, charges that capacitance. The result is a low-pass corner at
+
+<Equation tex="f_{3\mathrm{dB}}\approx\frac{1}{2\pi\left(R_s\parallel r_\pi\right)\left[C_\pi+C_\mu(1+g_mR_C)\right]}" label="MILLER POLE"/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / THE OPENING QUESTION</span><h3>1 mA, R_C = 10 kΩ, R_s = 1 kΩ, C_π = 13.4 pF, C_μ = 2 pF</h3>
+
+<p>g_mR_C = 387, so C_in = 13.4 + 2 × 388 = <strong>789 pF</strong>: the 2 pF C_μ contributes 776 pF, dwarfing C_π. R_s ∥ r_π = 1 kΩ ∥ 2.59 kΩ = 721 Ω.</p>
+
+<p>f₃dB ≈ 1/(2π × 721 Ω × 789 pF) = <strong>280 kHz</strong>. The exact nodal solution in the lab gives 269 kHz, with a midband gain of 279 (the divider of R_s and r_π takes some of g_mR_C).</p>
+
+<p>Double R_C to 20 kΩ: the gain doubles to 558 and the bandwidth halves to 136 kHz. Their product, about 75 MHz, barely changes. In a Miller-dominated stage, gain is traded directly for bandwidth.</p>
+
+</div>
+
+The output node has its own pole, set by R_C and the capacitance there (C_μ, wiring and the next stage’s input). It is usually at a much higher frequency, but in high-gain stages with large R_C it can come close to the Miller pole, and the two together can cause trouble inside feedback loops.
+
+</section>
+
+<section id="explore">
+
+<div className="section-heading"><span>04</span><h2>Explore the Miller effect</h2></div>
+
+<MillerLab client:load/>
+
+<p className="caption">Figure 1. Small-signal frequency response of a common-emitter stage and a cascode, solved by complex nodal analysis of the hybrid-π model. C_π is chosen to keep f_T ≈ 400 MHz as the current changes.</p>
+
+</section>
+
+<section id="cures">
+
+<div className="section-heading"><span>05</span><h2>Cures: low source impedance and the cascode</h2></div>
+
+### Drive it from a low impedance
+
+The Miller capacitance does no harm if the source can charge it quickly. Drive the stage from an emitter follower, whose output impedance is a few tens of ohms, and the Miller pole moves up by the ratio of source resistances. In the lab, reducing R_s from 1 kΩ toward 50 Ω raises the bandwidth roughly tenfold, until other poles take over.
+
+### Reduce the gain seen by C_μ: the cascode
+
+The Miller multiplication depends on the voltage swing at the collector of the transistor whose C_μ is involved. In a **cascode**, the common-emitter transistor Q₁ drives the emitter of a second transistor Q₂ whose base is held at a fixed DC voltage (AC ground). Q₂ is a common-base stage: it passes Q₁’s collector current through to the load almost unchanged, and its emitter is a low-impedance node, about 1/g_m.
+
+Q₁’s collector therefore sees a load of only 1/g_m₂ ≈ r_e, and its voltage gain is about −g_m₁/g_m₂ ≈ −1. Its C_μ is multiplied only by 2. The full voltage swing appears at Q₂’s collector, but Q₂’s base is grounded, so its C_μ sits from output to ground, not across a gain. The overall gain is unchanged, −g_mR_C, while the input capacitance falls from 789 pF to about 17 pF:
+
+<Equation tex="C_{\mathrm{in,cascode}}\approx C_\pi+2C_\mu"/>
+
+In the lab the bandwidth rises from 269 kHz to about **6.2 MHz**, with the same gain. The cascode also isolates the output from the input (better reverse isolation) and raises the output resistance, because Q₂’s emitter degeneration by Q₁’s high collector impedance is very effective (Chapter 31). It costs one transistor and about a volt of headroom. Cascodes are standard in wideband amplifiers, radio-frequency stages, and op-amp input stages.
+
+### Other remedies
+
+A common-collector/common-base pair (a follower driving a common-base stage) avoids the Miller effect altogether. A differential pair driven at one input and loaded at the other behaves similarly. Lowering R_C, or putting the gain inside a feedback loop, trades gain for speed in a controlled way.
+
+</section>
+
+<section id="switching">
+
+<div className="section-heading"><span>06</span><h2>Capacitance in switching</h2></div>
+
+The same capacitance limits transistor switches. While a switching transistor is in its active region, its collector voltage changes rapidly while its base voltage stays near 0.65 V. All of the base drive current is then spent charging C_μ, which holds the base–collector voltage change to
+
+<Equation tex="\frac{dV_C}{dt}\approx\frac{I_B}{C_\mu}"/>
+
+With 1 mA of base drive and C_μ = 5 pF, the collector can slew at most 200 V/µs; with 50 µA, at 10 V/µs. On an oscilloscope this appears as a flat step in the base voltage during switching—the **Miller plateau**, also prominent in MOSFET gate waveforms. Faster switching needs more base drive, a lower-impedance driver, or a cascode, in addition to the charge-storage remedies of Chapters 26 and 27.
+
+### Followers escape the multiplication
+
+In an emitter follower the base and emitter move together, so C_π is bootstrapped and nearly vanishes from the input, while C_μ goes from base to the collector, which is at AC ground, and is not multiplied. A follower’s input capacitance is roughly C_μ + C_π(1 − G): a few picofarads. This is one more reason followers are placed in front of high-gain stages.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A capacitance across an inverting gain looks <em>(1 + |A|) times larger</em> from the input. In a common-emitter stage that makes C_μ dominate the bandwidth; lowering the source impedance or adding a cascode gives the speed back.</p></div>
+
+<p className="reference-note">Coverage: The Art of Electronics §2.4.5, with the Miller theorem, f_T and the cascode derived and checked against a nodal solution.</p>
+
+</section>
+
+<div className="chapter-end">
+
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p></div>
+
+<a className="primary-link" href="/miller-effect/practice/">Open practice →</a>
+
+</div>

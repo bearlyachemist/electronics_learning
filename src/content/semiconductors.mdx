@@ -1,0 +1,129 @@
+import Equation from '../components/Equation.astro';
+import {JunctionLab,DiodeLab,RectifierLab,RegulatorLab,LimiterLab,ProtectionLab} from '../components/DiodeLabs';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 12</span><span className="hairline"/>FOUNDATIONS / DIODES & SUPPLIES</div>
+
+<h1>Semiconductor physics<br/><em>From carriers to a junction.</em></h1>
+
+<p className="dek">Understand electrons, holes, doping, and the electric field that makes a diode possible.</p>
+
+<div className="chapter-meta"><span>35–45 min + exploration</span><span>Original explanations · Models stated</span></div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Electrons, holes, and doping → Build a PN junction → Derive the depletion region → Bias and junction capacitance → From barrier to current.</p>
+
+</div>
+
+
+<section id="carriers">
+
+## 01 / Electrons, holes, and doping
+
+A metal already has many available mobile carriers. Silicon is different: its bonding creates an almost full valence band and an almost empty conduction band, separated by an energy gap. Thermal energy can promote an electron into the conduction band, leaving an unoccupied valence-band state.
+
+That vacancy is a **hole**. Neighboring electrons can move into it, making the vacancy appear to move the other way. Treating a hole as a mobile positive charge is a useful description of many-electron behavior, not a claim that a new positive particle has been created. Conventional current points with hole motion and opposite electron motion.
+
+Pure, equilibrium silicon has equal electron and hole concentrations: n = p = nᵢ. Doping adds a small concentration of atoms whose electronic structure favors one carrier type. Ionized donors supply electrons, producing n-type material; ionized acceptors favor holes, producing p-type material. Bulk doped material remains approximately electrically neutral: mobile charge balances fixed ion charge. “N-type” does not mean a negatively charged chunk of silicon.
+
+Under thermal equilibrium, nondegenerate statistics give:
+
+<Equation tex="np=n_i^2,\qquad n\approx N_D\ \text{(n-type)},\qquad p\approx N_A\ \text{(p-type)}" />
+
+For illustrative silicon with nᵢ = 10¹⁰ cm⁻³ and donors Nᴅ = 10¹⁶ cm⁻³, electrons are approximately 10¹⁶ cm⁻³ but holes are only 10⁴ cm⁻³. The holes are minority carriers. There are few of them at equilibrium, but injected minority carriers are central to diode operation.
+
+### Two mechanisms of motion
+
+An electric field produces **drift**; a concentration gradient produces **diffusion**. Random thermal motion alone produces no net current in a uniform population. A concentration gradient creates a net flow because more carriers cross from the crowded side than the sparse side.
+
+For a one-dimensional coordinate x, conventional electron and hole current densities are:
+
+<Equation tex="J_n=q\mu_n nE+qD_n\frac{dn}{dx},\qquad J_p=q\mu_p pE-qD_p\frac{dp}{dx}" />
+
+The diffusion signs differ because electrons and holes carry opposite charge. Mobility μ connects drift velocity to field; diffusion coefficient D connects particle flow to a concentration gradient. In this model D/μ = kT/q = Vₜ.
+
+</section>
+
+<section id="junction">
+
+## 02 / Build a PN junction
+
+Imagine adjacent p and n regions within one crystal. Near their boundary, electrons diffuse from the n side to the p side and holes diffuse the other way. Recombination removes mobile electron–hole pairs. It leaves negatively charged acceptor ions on the p side and positively charged donor ions on the n side.
+
+Those ions are fixed in the lattice. Their electric field points from n toward p and opposes further majority-carrier diffusion. At equilibrium the drift and diffusion contributions cancel; net current is zero even though microscopic motion continues.
+
+The depleted region contains relatively few mobile carriers, **not no charge**. Its exposed ions are exactly what create its field. Farther away, the material is approximately neutral.
+
+An equilibrium carrier concentration varies exponentially with electrostatic potential under Boltzmann statistics. Combining that relationship with the two equilibrium carrier concentrations gives the built-in potential:
+
+<Equation tex="V_{\mathrm{bi}}=V_T\ln\!\left(\frac{N_A N_D}{n_i^2}\right),\qquad V_T=\frac{kT}{q}" />
+
+At 300 K, Vₜ ≈ 25.85 mV. With both dopant concentrations 10¹⁶ cm⁻³ and nᵢ = 10¹⁰ cm⁻³, Vbi ≈ 0.714 V. This is an internal equilibrium potential, not a battery you can extract power from and not a universal forward-drop specification. Contact potentials elsewhere in a complete equilibrium measurement prevent that interpretation.
+
+</section>
+
+<section id="depletion">
+
+## 03 / Derive the depletion region
+
+Use an abrupt junction: uniform acceptors on the left, uniform donors on the right, with a sharp boundary. In the depletion approximation, ignore mobile charge inside the region and take the neutral-region electric field as zero.
+
+Let xₚ and xₙ be the depleted distances into the p and n sides. Equal and opposite exposed charges require:
+
+<Equation tex="N_Ax_p=N_Dx_n,\qquad W=x_p+x_n" />
+
+Poisson's equation dE/dx = ρ/ε then gives a linear field on each side, making the field-magnitude profile triangular. Its area is the potential drop; its peak is qNₐxₚ/ε. For applied forward voltage Vₐ, the depletion potential is approximately Vbi − Vₐ. Combining charge balance and triangle area yields:
+
+<Equation tex="W=\sqrt{\frac{2\varepsilon}{q}\left(\frac{1}{N_A}+\frac{1}{N_D}\right)(V_{\mathrm{bi}}-V_a)}" />
+
+<Equation tex="x_p=W\frac{N_D}{N_A+N_D},\qquad x_n=W\frac{N_A}{N_A+N_D}" />
+
+The lightly doped side must extend farther to supply the same total charge. If Nᴅ = 10Nₐ, about 10/11 of the depletion width lies in the p region. Reverse bias makes Vₐ negative, increasing the potential drop and width.
+
+For the symmetric example above, using ε = 11.7ε₀ gives W ≈ 0.430 µm at zero bias and 1.215 µm at 5 V reverse bias. This approximation does not describe strong forward injection or reverse breakdown.
+
+</section>
+
+<section id="explore">
+
+## 04 / Bias and junction capacitance
+
+Changing reverse voltage changes how much fixed charge is exposed. That means the junction stores incremental charge even while it blocks DC current. Differentiating depletion charge with respect to reverse voltage gives:
+
+<Equation tex="C_j=\frac{d|Q|}{dV_R}=\frac{\varepsilon A}{W}" />
+
+For area 0.01 mm², the symmetric example has about 2.41 pF at zero bias and 0.853 pF at 5 V reverse bias. More reverse bias means wider depletion and lower capacitance. A varactor deliberately uses this relationship.
+
+<JunctionLab client:load />
+
+Change the doping ratio before changing bias. Explain both the total-width curve and which side occupies most of the depleted region. The sketch is a spatial illustration, not an energy-band diagram; volts, electric field, and electron energy have different signs and units.
+
+</section>
+
+<section id="injection">
+
+## 05 / From barrier to current
+
+Forward bias lowers the junction barrier and injects majority carriers into the opposite material, where they become minority carriers. For example, an electron crossing into p-type material becomes an excess minority electron. It then diffuses and eventually recombines; the external source keeps supplying charge.
+
+The junction-edge minority concentration grows approximately as exp(V/Vₜ). Solving its diffusion and recombination in the neutral regions gives the ideal diffusion diode law developed in the next chapter. Reverse bias suppresses injection, leaving a small current associated with minority carriers and generation mechanisms until breakdown becomes important.
+
+This explains three circuit facts before we draw a diode symbol: forward current changes very rapidly with voltage; reverse current is small but not necessarily zero; and moving/storing charge prevents perfectly instantaneous switching.
+
+**Check your understanding.** A reverse-biased junction has a larger depletion region but usually a smaller capacitance. That is consistent with the capacitor analogy C = εA/d. It does not mean there is less total exposed ionic charge: capacitance measures the *change* of charge per added volt.
+
+This chapter adds supporting physics to AoE §1.6.1. For a deeper electrostatics treatment, see [MIT's PN-junction lecture](https://ocw.mit.edu/courses/6-012-microelectronic-devices-and-circuits-fall-2005/resources/lec5/). The assumptions here are uniform, fully ionized, nondegenerate silicon at fixed temperature; actual fabrication profiles and materials need more detailed models.
+
+</section>
+
+
+<div className="practice-home">
+
+<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p><a className="primary-link" href="/semiconductors/practice/">Open practice →</a>
+
+</div>
+

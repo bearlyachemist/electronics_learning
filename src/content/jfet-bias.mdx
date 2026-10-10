@@ -1,0 +1,123 @@
+import Equation from '../components/Equation.astro';
+import {FetCurves,JfetBiasLab,FetGainLab,VariableFetLab,FetOscillatorLab,AnalogSwitchLab,GateChargeLab,PowerFetLab,ParallelFetLab} from '../components/FetLabs';
+import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 48</span><span className="hairline"/>FIELD-EFFECT TRANSISTORS</div>
+
+<h1>JFET characteristics & bias<br/><em>Let the source set the current.</em></h1>
+
+<p className="dek">Derive the transfer law, solve self-bias without guessing, and turn a normally-on device into a useful current source while respecting compliance and manufacturing spread.</p>
+
+<div className="chapter-meta"><span>60–90 min + exploration</span><span>Read, derive, predict, experiment</span></div>
+
+</div>
+
+
+<section id="junction">
+
+## 01 / The channel is already there
+
+An n-channel JFET conducts at VGS = 0. Reverse bias on its gate junction removes mobile charge from the channel edges. The depletion width of an abrupt junction grows approximately with the square root of built-in voltage plus applied reverse bias. Exact geometry matters: a flat channel, a cylindrical channel and a short channel do not share a universal physical coefficient.
+
+The drain is positive relative to the source, so the gate-to-channel reverse bias is stronger near the drain. The channel therefore narrows toward the drain. At sufficiently large drain voltage it pinches off at that end, producing an approximately constant current. Making the gate more negative moves the whole device toward cutoff.
+
+A JFET is a majority-carrier device. That helps distinguish its operation from a bipolar transistor's injection and minority-carrier transport, but does not make every JFET fast: capacitance and the impedances driving it still matter.
+
+</section>
+
+<section id="transfer">
+
+## 02 / A useful square-law approximation
+
+Let VP denote the negative gate-source cutoff voltage of an n-channel device, and IDSS the saturation drain current at zero gate-source voltage. The common Shockley approximation is:
+
+<Equation tex="I_D=I_{DSS}\left(1-\frac{V_{GS}}{V_P}\right)^2,\qquad V_P\le V_{GS}\le0" />
+
+This formula describes the saturation region, not every drain voltage. It is a practical approximate characteristic; unlike the MOS inversion-charge derivation, it should not be taken as an exact result for every JFET channel geometry. In the matched piecewise teaching model, set k = 2IDSS/VP² and u = VGS − VP, giving saturation when VDS ≥ u.
+
+Differentiate carefully. VP is negative:
+
+<Equation tex="g_m=-\frac{2I_{DSS}}{V_P}\left(1-\frac{V_{GS}}{V_P}\right)=\frac{2\sqrt{I_{DSS}I_D}}{|V_P|}" />
+<Equation tex="g_{m0}=\frac{2I_{DSS}}{|V_P|},\qquad \frac{g_m}{g_{m0}}=\sqrt{\frac{I_D}{I_{DSS}}}" />
+
+For IDSS = 8 mA and VP = −4 V, gm0 = 4 mS. At VGS = −2 V the current is 2 mA and gm = 2 mS. Biasing at one quarter of IDSS cuts gm in half, not to one quarter. At a fixed ID, a device with a smaller cutoff-voltage magnitude can offer larger gm, but capacitance, leakage and noise must also be considered.
+
+In the ohmic region the teaching model gives gm = kVDS. Thus gm drops toward zero as drain voltage approaches zero, even with the gate unchanged. A saturated-region gm quoted on a datasheet cannot be carried into a near-zero-drain-voltage resistor circuit.
+
+</section>
+
+<section id="bias">
+
+## 03 / Solve the source-resistor feedback loop
+
+Connect the gate to ground through a large resistor, the source to ground through RS, and the drain to the positive supply through RD. Neglect gate current initially. Source current equals drain current, so VS = IDRS and VGS = −IDRS. If current rises, the source rises and gate-source voltage becomes more negative. That reduces current: local negative feedback.
+
+<FetCircuit />
+
+Substitution gives an implicit equation:
+
+<Equation tex="I_D=I_{DSS}\left(1-\frac{I_D R_S}{|V_P|}\right)^2" />
+
+A convenient method avoids choosing the wrong root. Let x = √(ID/IDSS), constrained to 0 ≤ x ≤ 1, and a = IDSSRS/|VP|. Then:
+
+<Equation tex="ax^2+x-1=0,\qquad x=\frac{2}{1+\sqrt{1+4a}},\qquad I_D=I_{DSS}x^2" />
+
+For IDSS = 8 mA, VP = −4 V and RS = 500 Ω, a = 1, x = 0.618, ID = 3.056 mA and VS = 1.528 V. With VDD = 12 V and RD = 1 kΩ, VD = 8.944 V and VDS = 7.416 V. The saturation boundary is VGS − VP = 2.472 V, comfortably below the available VDS.
+
+The second quadratic root from an incautious direct expansion can imply a gate voltage outside the valid transfer range. Always impose the physical domain, then check the drain voltage independently.
+
+</section>
+
+<section id="explore">
+
+## 04 / Let the load steal headroom
+
+<JfetBiasLab client:load />
+
+Raise RD while keeping the gate network unchanged. Eventually the supply cannot support both resistor drops and the required VDS. The lab solves the piecewise device law together with the resistor circuit, so it follows the current reduction into the ohmic region instead of pretending the saturation formula remains true.
+
+For a saturated self-biased source, the minimum drain voltage relative to ground is approximately VS + (VGS − VP). With VG = 0, these source-voltage terms cancel, leaving about |VP|. This is a model-specific simplification, not a universal guaranteed compliance voltage for real JFETs.
+
+</section>
+
+<section id="sources">
+
+## 05 / Three current-source circuits
+
+**Gate tied to source.** Set VGS = 0 and use the drain-source pair as a two-terminal current regulator. Above the knee, current is approximately IDSS. The circuit has minimal parts but inherits the wide spread of IDSS. Its power is IDVDS, which grows with voltage even though current is “constant.”
+
+**Gate referenced to ground with source degeneration.** This is the preceding circuit with the load between the supply and drain. To design 2 mA using the illustrative 8 mA, −4 V device, first find VGS = −2 V, then choose RS = 2 V/2 mA = 1 kΩ. At a drain voltage of 8 V, VS = 2 V and VDS = 6 V, leaving margin above the 2 V knee.
+
+**Cascoded current source.** Place another suitable FET above the current-setting device and bias its gate so that the lower device sees nearly constant drain voltage. This reduces drain-voltage-induced current error. It costs voltage headroom and requires a bias arrangement that works during startup. The upper device does not magically remove the lower device's IDSS and VP tolerance.
+
+For finite output resistance ro, a source resistor increases current-source output resistance approximately to:
+
+<Equation tex="R_{\mathrm{out}}\approx r_o+R_S+g_mr_oR_S" />
+
+Derive it by holding the gate at AC ground, applying a test drain voltage and noting vs = idRS. Substitute vgs = −idRS and vds = vd − idRS into id = gmvgs + vds/ro. The improvement comes from the same local loop that stabilizes bias. It is valid only while the device remains in its current-source region.
+
+</section>
+
+<section id="spread">
+
+## 06 / Design for a family of devices
+
+A nominal transfer curve is not a purchasing specification. IDSS and cutoff voltage can vary substantially, and their correlations cannot be invented by independently selecting convenient typical values. For production, analyze guaranteed limits or characterize the chosen part, then provide adjustment or stronger feedback when current accuracy matters.
+
+At a given gate bias, temperature changes both carrier mobility and junction-related parameters. Some operating points can have reduced temperature sensitivity, but there is no universal temperature-stable JFET current valid for every device. Gate leakage also rises with temperature and flows through the bias resistor, shifting the gate voltage.
+
+For example, 100 pA through 10 MΩ shifts the gate by 1 mV. With gm = 2 mS, the uncorrected current perturbation is 2 μA. Source degeneration reduces that perturbation by approximately 1 + gmRS. Surface contamination or humidity can dominate the intrinsic gate leakage in very high-impedance circuits.
+
+Read the parameter conditions as carefully as the numbers: gate leakage, capacitance and gm are specified at particular voltages, currents and temperatures. The [TI JFE150 datasheet](https://www.ti.com/lit/ds/symlink/jfe150.pdf) is a useful example of a modern JFET with separate characterization for these quantities; its parameters are not the illustrative values used here.
+
+</section>
+
+
+<div className="practice-home">
+
+<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems, hints and complete worked solutions.</p><a className="primary-link" href="/jfet-bias/practice/">Open practice →</a>
+
+</div>
+

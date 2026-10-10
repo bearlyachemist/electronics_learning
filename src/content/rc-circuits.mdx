@@ -1,0 +1,284 @@
+import Equation from '../components/Equation.astro';
+import {CapacitorLab,RCLab,FilterLab,RealCapLab,InductorLab,TransformerLab} from '../components/PassiveLabs';
+
+
+
+<div className="chapter-hero" id="overview">
+
+
+
+
+<div className="eyebrow">
+
+<span>CHAPTER 06</span><span className="hairline"/>FOUNDATIONS / ENERGY & SIGNALS
+
+</div>
+
+
+<h1>RC circuits<br/><em>Time enters the circuit.</em></h1>
+<p className="dek">Derive charging and discharging from one node equation, connect the time constant to frequency response, and account for loading.</p>
+
+
+<div className="chapter-meta">
+
+<span>35–45 min + exploration</span><span>Capacitors · Thévenin equivalents</span>
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Derive the step response → Charge and discharge → Timing and settling → The same circuit in frequency → Find the resistance it sees.</p>
+
+</div>
+
+
+
+
+
+<section id="equation">
+
+
+
+
+<div className="section-heading">
+
+<span>01</span><h2>Derive the step response</h2>
+
+</div>
+
+
+
+Connect a voltage source Vₛ through a resistor R to a capacitor C whose other terminal is the reference node. Let v be the capacitor voltage. Current through R is (Vₛ − v)/R; current entering C is C dv/dt. There is no external output load, so those currents are equal:
+
+<Equation tex="\frac{V_s-v}{R}=C\frac{dv}{dt},\qquad RC\frac{dv}{dt}+v=V_s"/>
+
+After the source has switched to a constant value, define the difference from the eventual voltage as u = v − Vₛ. Its equation becomes:
+
+<Equation tex="\frac{du}{dt}=-\frac{u}{RC}"/>
+
+The rate of change is proportional to the difference still remaining. A large initial difference produces a large current and a fast change. As the difference shrinks, so does the current.
+
+Separate variables, integrate, and apply the initial voltage V₀:
+
+<Equation tex="\frac{du}{u}=-\frac{dt}{RC}\quad\Rightarrow\quad u(t)=u(0)e^{-t/(RC)}"/>
+<Equation tex="v(t)=V_s+(V_0-V_s)e^{-t/\tau},\qquad \tau=RC" label="01 / FINAL VALUE + DECAYING INITIAL ERROR"/>
+
+This form covers charging, discharging, and a capacitor that starts above the final supply. It does not assume the initial voltage is zero.
+
+The current follows immediately:
+
+<Equation tex="i(t)=\frac{V_s-V_0}{R}e^{-t/\tau}"/>
+
+At the switching instant, capacitor voltage remains V₀, while current can change abruptly. As time tends to infinity, voltage tends to Vₛ and current tends to zero.
+
+### Check the units
+
+Ohms times farads give seconds: (V/A)(A·s/V) = s. For R = 10 kΩ and C = 10 µF, τ = **0.1 s**, or 100 ms. A time constant is a property of this circuit configuration, not a generic property of the capacitor alone.
+
+
+</section>
+
+
+
+
+
+<section id="explore">
+
+
+
+
+<div className="section-heading">
+
+<span>02</span><h2>Charge and discharge</h2>
+
+</div>
+
+
+
+The two modes below change the initial and final voltages. Charging starts at 0 V and approaches 5 V. Discharging starts at 5 V and connects the resistor to a 0 V ideal source, which is equivalent to connecting it to the reference node.
+
+<RCLab client:load/>
+
+<p className="caption">Figure 1. Exact first-order response for a linear RC network. A negative current in discharge means charge leaves the capacitor’s positive terminal.</p>
+
+At one time constant, the remaining error is e⁻¹ ≈ 36.8% of the initial error. A 0-to-5 V charge therefore reaches about **3.161 V**. Discharging from 5 V reaches **1.839 V**. These are complementary examples of the same exponential, not separate rules.
+
+
+
+<div className="table-wrap">
+
+<table><thead><tr><th>Elapsed time</th><th>Initial error remaining</th><th>0 → 5 V charge</th></tr></thead><tbody><tr><td>1τ</td><td>36.79%</td><td>3.161 V</td></tr><tr><td>3τ</td><td>4.979%</td><td>4.751 V</td></tr><tr><td>5τ</td><td>0.674%</td><td>4.966 V</td></tr></tbody></table>
+
+</div>
+
+
+
+An ideal exponential never reaches its limit exactly in finite time. “Fully charged” must mean sufficiently close for a stated purpose.
+
+
+</section>
+
+
+
+
+
+<section id="design">
+
+
+
+
+<div className="section-heading">
+
+<span>03</span><h2>Timing and settling</h2>
+
+</div>
+
+
+
+If the remaining error must be no more than a fraction ε of the initial error:
+
+<Equation tex="e^{-t/\tau}\leq\epsilon\quad\Rightarrow\quad t\geq-\tau\ln\epsilon"/>
+
+One percent settling requires **4.605τ**, not exactly 5τ. The 10%–90% rise time is τ ln(9) ≈ **2.197τ**.
+
+
+
+<div className="worked-example">
+
+
+<span className="tiny-label">WORKED EXAMPLE / A THRESHOLD TIMER</span><h3>When does the node reach 3.3 V?</h3>
+<p>A 10 kΩ resistor and 10 µF capacitor charge from 0 V toward 5 V. Set 3.3 = 5(1 − e⁻ᵗᐟᵗᵃᵘ), rearrange, and solve:</p>
+<Equation tex="t=-100\ \mathrm{ms}\,\ln\!\left(1-\frac{3.3}{5}\right)=107.88\ \mathrm{ms}"/>
+<p>This is an ideal threshold-crossing time. Resistor and capacitor tolerances, threshold variation, leakage, and supply changes all affect a real timer.</p>
+
+
+</div>
+
+
+
+### Design backward from a requirement
+
+To settle within 1% in 20 ms, require τ ≤ 20 ms/4.605 = **4.343 ms**. With R = 10 kΩ, nominal C must be at most 434.3 nF.
+
+A 390 nF choice gives a nominal settling time of 17.96 ms. If R can be 1% high and C 10% high, maximum τ becomes 10 kΩ × 1.01 × 390 nF × 1.10 = 4.3329 ms, giving about **19.95 ms**. That barely meets this particular tolerance budget; it does not leave room for other unmodeled effects.
+
+<aside className="margin-note"><strong>Use the relevant error definition.</strong> Settling here is relative to the initial-to-final voltage difference. A fixed absolute error, a percentage of final output, and a comparator threshold are different specifications.</aside>
+
+
+</section>
+
+
+
+
+
+<section id="frequency">
+
+
+
+
+<div className="section-heading">
+
+<span>04</span><h2>The same circuit in frequency</h2>
+
+</div>
+
+
+
+For a steady sinusoid, differentiating is equivalent to multiplying its phasor by jω. Here j² = −1 and ω = 2πf; the complex number keeps track of both amplitude and phase. The capacitor relationship becomes I = jωCV, so its impedance is 1/(jωC).
+
+Use the impedance divider with output across C:
+
+<Equation tex="H(j\omega)=\frac{V_{\mathrm{out}}}{V_{\mathrm{in}}}=\frac{1}{1+j\omega RC}"/>
+<Equation tex="|H|=\frac{1}{\sqrt{1+(\omega RC)^2}},\qquad \phi=-\tan^{-1}(\omega RC)"/>
+
+At low frequency the capacitor voltage has time to follow the source. At high frequency, the required charging current creates a substantial drop across R, and the output becomes smaller and delayed.
+
+The cutoff frequency is:
+
+<Equation tex="f_c=\frac{1}{2\pi RC}"/>
+
+At cutoff, gain is 1/√2, about −3.01 dB, and phase is −45°. The time constant and cutoff describe the same energy-storage mechanism in different domains. For τ = 100 ms, f_c ≈ **1.592 Hz**.
+
+No abrupt boundary exists at cutoff. It is a useful reference point on a smooth response.
+
+
+</section>
+
+
+
+
+
+<section id="loading">
+
+
+
+
+<div className="section-heading">
+
+<span>05</span><h2>Find the resistance the capacitor sees</h2>
+
+</div>
+
+
+
+A capacitor connected to a linear resistive network responds according to that network’s Thévenin equivalent at the capacitor terminals. Find the open-circuit voltage and resistance with the capacitor removed, then restore it with its actual initial voltage:
+
+<Equation tex="v(t)=V_{\mathrm{th}}+(V_0-V_{\mathrm{th}})e^{-t/(R_{\mathrm{th}}C)}"/>
+
+Deactivate independent sources when finding resistance, keeping dependent sources active and using a test source if necessary. Include source resistance and any external load.
+
+
+
+<div className="worked-example">
+
+
+<span className="tiny-label">WORKED EXAMPLE / A LOAD CHANGES TWO THINGS</span><h3>A 10 kΩ input attached to the node</h3>
+<p>A 5 V source feeds the capacitor through 10 kΩ, and a 10 kΩ load also connects from the capacitor node to ground. The final voltage is now <strong>2.5 V</strong>, not 5 V.</p>
+<p>The capacitor sees 10 kΩ ∥ 10 kΩ = <strong>5 kΩ</strong>. With 10 µF, its time constant is <strong>50 ms</strong>, not 100 ms.</p>
+<p>The load both lowers the final voltage and speeds the exponential approach to that new voltage. A faster response does not imply the circuit is delivering the desired signal.</p>
+
+
+</div>
+
+
+
+### More than one capacitor
+
+Several independent energy-storage states can create several time constants. Replacing every capacitor by an isolated “R times C” estimate does not generally solve a coupled network. The one-exponential result here relies on a first-order linear model.
+
+At switching events, retain the capacitor voltage as an initial condition and analyze the new network. At high frequencies or very fast edges, capacitor ESR/ESL and wiring can introduce behavior beyond this model.
+
+<p className="reference-note">Coverage: The Art of Electronics §1.4.2, connected to its later frequency-domain treatment. Differentiators and integrators use specific operating regions of these first-order networks.</p>
+
+
+</section>
+
+
+
+
+
+<div className="chapter-end">
+
+
+
+<div>
+
+<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent practice with hints and fully worked solutions.</p>
+
+</div>
+
+<a className="primary-link" href="/rc-circuits/practice/">Open practice →</a>
+
+</div>
+
+
+

@@ -1,0 +1,259 @@
+import Equation from '../components/Equation.astro';
+import {CapacitorLab,RCLab,FilterLab,RealCapLab,InductorLab,TransformerLab} from '../components/PassiveLabs';
+
+
+
+<div className="chapter-hero" id="overview">
+
+
+
+
+<div className="eyebrow">
+
+<span>CHAPTER 09</span><span className="hairline"/>FOUNDATIONS / ENERGY & SIGNALS
+
+</div>
+
+
+<h1>Ideal &amp; real capacitors<br/><em>A value is only the beginning.</em></h1>
+<p className="dek">Add leakage, resistance, inductance, and dielectric behavior to the ideal capacitor—and learn which model a design actually needs.</p>
+
+
+<div className="chapter-meta">
+
+<span>30–40 min + exploration</span><span>Capacitors · impedance · power</span>
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Build a useful equivalent → Sweep through resonance → Capacitance is not constant → Choose for the job → Measure the right behavior.</p>
+
+</div>
+
+
+
+
+
+<section id="model">
+
+
+
+
+<div className="section-heading">
+
+<span>01</span><h2>Build a useful equivalent</h2>
+
+</div>
+
+
+
+The ideal capacitor obeys i = C dv/dt, stores ½CV², and dissipates no energy. A real component adds several different physical effects. One replacement model cannot capture all of them equally well.
+
+A common first AC model puts equivalent series resistance, ESR, and equivalent series inductance, ESL, in series with an ideal capacitance:
+
+<Equation tex="Z(j\omega)=R_{\mathrm{ESR}}+j\omega L_{\mathrm{ESL}}+\frac{1}{j\omega C}"/>
+<Equation tex="|Z|=\sqrt{R_{\mathrm{ESR}}^2+\left(\omega L_{\mathrm{ESL}}-\frac{1}{\omega C}\right)^2}"/>
+
+ESR represents loss in a selected operating region. ESL includes inductive behavior from leads, electrodes, and connections. Actual ESR and capacitance can themselves depend on frequency, temperature, and bias.
+
+Leakage is often represented by a large resistance in parallel with the capacitive element. At DC it matters even though the ideal capacitive branch draws no current. Dielectric absorption needs additional time-dependent branches if we want to model voltage recovery rather than merely state that it occurs.
+
+### Why series resonance appears
+
+The capacitive reactance is negative and the inductive reactance positive. They cancel when ωL = 1/(ωC):
+
+<Equation tex="f_{\mathrm{SR}}=\frac{1}{2\pi\sqrt{L_{\mathrm{ESL}}C}}"/>
+
+Below this frequency the simple model is predominantly capacitive; above it, predominantly inductive. At exact series resonance, impedance is ESR. The impedance does not continue falling indefinitely just because the package is labeled “capacitor.”
+
+
+</section>
+
+
+
+
+
+<section id="explore">
+
+
+
+
+<div className="section-heading">
+
+<span>02</span><h2>Sweep through resonance</h2>
+
+</div>
+
+
+
+This figure isolates the series C–ESR–ESL model. The orange curve shows what the ideal capacitance alone would predict. Probe frequency changes the selected point; other controls reshape the network itself.
+
+<RealCapLab client:load/>
+
+<p className="caption">Figure 1. Both axes are logarithmic. The parameters are illustrative constants, not a manufacturer model. At very high frequencies a lumped model can cease to describe the physical interconnect.</p>
+
+At 1 µF and 10 nH, series resonance is about **1.592 MHz**. With ESR = 0.1 Ω, that is also where this model’s impedance reaches 0.1 Ω.
+
+Increasing capacitance moves resonance down, while above resonance the inductance increasingly controls impedance. Placement and loop geometry can therefore matter as much as adding more nominal microfarads.
+
+
+</section>
+
+
+
+
+
+<section id="dielectric">
+
+
+
+
+<div className="section-heading">
+
+<span>03</span><h2>Capacitance is not always constant</h2>
+
+</div>
+
+
+
+The marked value is measured under specified conditions. A design may need the capacitance at its actual DC voltage, AC amplitude, temperature, frequency, and age.
+
+High-permittivity ceramic capacitors can lose a substantial fraction of their nominal capacitance under DC bias. C0G-type ceramics generally behave much more nearly as constant capacitors under bias. Neither a dielectric label nor a voltage rating alone tells you a specific part’s effective capacitance; use that part’s characterization curves.
+
+
+
+<div className="worked-example">
+
+
+<span className="tiny-label">WORKED EXAMPLE / EFFECTIVE CAPACITANCE</span><h3>Ten microfarads on the label</h3>
+<p>Suppose a particular 10 µF part can be 20% low from initial tolerance, and its characterized capacitance at the operating bias is 60% of its zero-bias value. Under these explicitly multiplicative assumptions, minimum effective capacitance is 10 × 0.8 × 0.6 = <strong>4.8 µF</strong>.</p>
+<p>A 20 mA transient lasting 50 µs then produces an ideal capacitive droop of 1 µC / 4.8 µF = <strong>0.208 V</strong>, rather than the 0.1 V predicted from the label.</p>
+<p>The percentages are hypothetical. Do not apply them as a universal rule or double-count effects already combined in a manufacturer’s curve.</p>
+
+
+</div>
+
+
+
+### Leakage creates drift
+
+At an approximately fixed voltage, a parallel leakage model draws V/R_leak. In an isolated capacitor, that leakage slowly changes its stored charge. If leakage is approximately a constant current over a short interval, dv/dt ≈ −I_leak/C.
+
+A 10 nA leak discharges 100 nF at approximately **0.1 V/s** over that local interval. An amplifier’s input current, board contamination, and switching elements can add comparable paths. Very large resistance values in a precision circuit can make tiny leakage currents important.
+
+### Dielectric absorption creates memory
+
+After charging and then briefly discharging a real capacitor, some terminal voltage can recover. A useful model adds slower RC branches that did not reach the same state during the brief discharge. The terminal voltage returning is a redistribution of stored energy, not newly created energy.
+
+This matters in sample-and-hold circuits and precision integration. A single leakage resistance and a single capacitance cannot reproduce every recovery timescale.
+
+
+</section>
+
+
+
+
+
+<section id="selection">
+
+
+
+
+<div className="section-heading">
+
+<span>04</span><h2>Choose for the job</h2>
+
+</div>
+
+
+
+
+
+<div className="table-wrap">
+
+<table><thead><tr><th>Application</th><th>Effects to examine first</th></tr></thead><tbody><tr><td>Precision timing or integration</td><td>Effective C, temperature drift, leakage, absorption</td></tr><tr><td>Supply decoupling</td><td>Impedance versus frequency, mounting inductance, bias loss</td></tr><tr><td>Ripple filtering</td><td>ESR, RMS current, temperature rise, lifetime conditions</td></tr><tr><td>Signal coupling</td><td>Low-frequency cutoff, leakage, bias, distortion and polarity</td></tr><tr><td>Pulse energy transfer</td><td>Peak current, voltage, dV/dt and pulse limits</td></tr></tbody></table>
+
+</div>
+
+
+
+Different technologies favor different compromises. C0G ceramics and suitable film capacitors are often useful when stability and linearity matter; high-permittivity ceramics offer compact capacitance; electrolytic technologies offer substantial bulk capacitance with their own leakage, ESR, polarity, and life constraints. These are starting points for examining parts, not interchangeable guarantees.
+
+
+
+<div className="worked-example">
+
+
+<span className="tiny-label">WORKED EXAMPLE / THREE TIMESCALES OF DROOP</span><h3>A fast 100 mA load increase</h3>
+<p>With C = 10 µF and ESR = 0.2 Ω, the new load current causes an ESR contribution of <strong>20 mV</strong>. Over the next 10 µs, ideal capacitive discharge contributes another <strong>100 mV</strong> if the upstream source supplies none of the extra current.</p>
+<p>If ESL = 10 nH and current rises by 100 mA in 50 ns, the inductive voltage scale during that rise is LΔI/Δt = <strong>20 mV</strong>.</p>
+<p>These contributions describe different parts of the waveform. Do not add all quoted maxima as though they necessarily occur at the same instant. The complete circuit determines current sharing and ringing.</p>
+
+
+</div>
+
+
+
+Ripple heating is another calculation: at 0.5 A RMS and an applicable ESR of 0.1 Ω, loss is I²R = **25 mW**. A real ripple waveform may span frequencies with different ESR, and a thermal rating applies under stated conditions.
+
+
+</section>
+
+
+
+
+
+<section id="measurement">
+
+
+
+
+<div className="section-heading">
+
+<span>05</span><h2>Measure the right behavior</h2>
+
+</div>
+
+
+
+A handheld capacitance reading can be useful while missing the operating behavior that matters. Record test frequency, signal amplitude, and DC bias. An impedance measurement also includes the fixture unless its contribution is removed appropriately.
+
+For a hold circuit, measure droop and recovery under the intended timing sequence. For decoupling, examine the relevant impedance band and the connection path. For a pulse application, inspect transient voltage and heating as well as nominal C.
+
+Connecting different capacitors in parallel can introduce more than one resonance and an antiresonant impedance peak. “Add a small capacitor next to a big one” is not a substitute for understanding the combined network and layout.
+
+<p className="reference-note">Coverage: The Art of Electronics §1.4.5. Manufacturer context: <a href="https://www.murata.com/support/faqs/capacitor/ceramiccapacitor/char/0005">Murata on ceramic capacitor DC-bias characteristics</a> and <a href="https://www.murata.com/products/capacitor/selectionguide">its capacitor selection guide</a>. Numerical examples here use stated hypothetical parameters.</p>
+
+
+</section>
+
+
+
+
+
+<div className="chapter-end">
+
+
+
+<div>
+
+<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent practice with hints and fully worked solutions.</p>
+
+</div>
+
+<a className="primary-link" href="/real-capacitors/practice/">Open practice →</a>
+
+</div>
+
+
+

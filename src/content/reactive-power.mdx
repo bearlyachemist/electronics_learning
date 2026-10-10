@@ -1,0 +1,204 @@
+import Equation from '../components/Equation.astro';
+import {PowerLab,CorrectionLab} from '../components/AcLabs';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 21</span><span className="hairline"/>FOUNDATIONS / IMPEDANCE & FILTERS</div>
+
+<h1>Power in reactive circuits<br/><em>Current that does no work still costs.</em></h1>
+
+<p className="dek">Average instantaneous power, define real, reactive and apparent power with one complex product, and correct a poor power factor.</p>
+
+<div className="chapter-meta"><span>45–55 min + exploration</span><span>Impedance · Power dissipation · RMS</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">A meter shows 10 V RMS across a load and 70.7 mA RMS through it. Is the load dissipating 0.707 W?</p></div>
+
+<div>
+
+For a resistor, yes: P = V·I. For a load containing reactance, no. Part of the current flows back and forth to store and return energy without converting it to heat. That current still heats the wiring, still loads the source, and still has to be supplied by every transformer and generator along the way.
+
+This chapter separates the two parts cleanly. One complex multiplication gives the power that is actually consumed, the power that merely sloshes back and forth, and the ratio between them.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Instantaneous power in a reactive load → Complex power: P, Q and S → Watch v × i → Why reactive current costs → Power-factor correction → Beyond sinusoids, and maximum power transfer.</p>
+
+</div>
+
+<section id="instantaneous">
+
+<div className="section-heading"><span>01</span><h2>Instantaneous power in a reactive load</h2></div>
+
+Power is always voltage times current at each instant (Chapter 4). Let the voltage be v = V_p cos ωt and the current lag it by an angle θ, as it does in an inductive load:
+
+<Equation tex="p(t)=v\,i=V_pI_p\cos\omega t\,\cos(\omega t-\theta)"/>
+
+The product-to-sum identity cos A cos B = ½[cos(A − B) + cos(A + B)] splits this into a constant and an oscillation at twice the frequency:
+
+<Equation tex="p(t)=\underbrace{\frac{V_pI_p}{2}\cos\theta}_{\text{average}}+\underbrace{\frac{V_pI_p}{2}\cos(2\omega t-\theta)}_{\text{oscillates at }2\omega}"/>
+
+Only the first term survives averaging over a cycle. With V_p/√2 = V_rms and I_p/√2 = I_rms:
+
+<Equation tex="P=\overline{p(t)}=V_{\mathrm{rms}}I_{\mathrm{rms}}\cos\theta" label="AVERAGE (REAL) POWER"/>
+
+Three cases make the result concrete:
+
+- **Resistor, θ = 0.** p(t) = P(1 + cos 2ωt) never goes negative. Energy flows only into the resistor.
+- **Ideal capacitor or inductor, θ = ±90°.** cos θ = 0, so P = 0. The instantaneous power is a pure double-frequency oscillation: energy flows in for a quarter cycle and back to the source for the next.
+- **Anything between.** p(t) is negative for part of each cycle—energy returns to the source—but its average is positive.
+
+### The energy picture
+
+For a capacitor, stored energy is ½Cv² = ½CV_p² cos² ωt, which rises and falls twice per cycle between zero and its peak. Its derivative is the capacitor’s instantaneous power, and its average change over a cycle is zero. Reactive elements store and return energy; they do not consume it. Only resistance converts electrical energy to heat (or, for a motor, to mechanical work, modeled electrically as resistance).
+
+</section>
+
+<section id="complex">
+
+<div className="section-heading"><span>02</span><h2>Complex power: P, Q and S</h2></div>
+
+Phasors make the bookkeeping automatic. With RMS phasors **V** = V_rms∠0 and **I** = I_rms∠−θ, define the **complex power** as voltage times the conjugate of current:
+
+<Equation tex="S=\mathbf V\,\mathbf I^{*}=V_{\mathrm{rms}}I_{\mathrm{rms}}\angle\theta=\underbrace{V_{\mathrm{rms}}I_{\mathrm{rms}}\cos\theta}_{P}+j\underbrace{V_{\mathrm{rms}}I_{\mathrm{rms}}\sin\theta}_{Q}" label="COMPLEX POWER"/>
+
+The conjugate removes the current’s own angle so that only the angle *between* voltage and current remains. The parts have names and units that prevent confusion:
+
+<div className="table-wrap">
+
+<table><thead><tr><th>Quantity</th><th>Symbol</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Real power</td><td>P = Re S</td><td>watt, W</td><td>Average power converted to heat or work</td></tr><tr><td>Reactive power</td><td>Q = Im S</td><td>volt-ampere reactive, var</td><td>Amplitude of energy exchanged with reactances</td></tr><tr><td>Apparent power</td><td>|S| = V_rms I_rms</td><td>volt-ampere, VA</td><td>What the source and wiring must carry</td></tr><tr><td>Power factor</td><td>PF = P/|S|</td><td>—</td><td>cos θ for sinusoids</td></tr></tbody></table>
+
+</div>
+
+With **V** = **I**Z, the complex power becomes |I|² Z. Its real and imaginary parts separate by element type:
+
+<Equation tex="S=|\mathbf I|^2Z=|\mathbf I|^2R+j|\mathbf I|^2X,\qquad P=I_{\mathrm{rms}}^2R,\quad Q=I_{\mathrm{rms}}^2X"/>
+
+Real power belongs to resistance and reactive power to reactance. Inductive loads (X > 0) have positive Q and a **lagging** power factor; capacitive loads have negative Q and a **leading** power factor.
+
+The reactive power also has an energy meaning. Averaged over a cycle an inductor stores ½LI²_rms, so Q_L = ωLI²_rms = 2ω times its average stored energy. In general Q = 2ω(W̄_L − W̄_C). When the average stored energies balance, Q = 0: that is resonance, seen from the power side.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / THE OPENING QUESTION</span><h3>10 V RMS across 100 + j100 Ω</h3>
+
+<p>|Z| = 141.4 Ω at 45°, so I = 10/141.4 = <strong>70.7 mA RMS</strong> lagging by 45°.</p>
+
+<p>S = V I* = 10 × 0.0707∠45° = 0.707 VA ∠45°. So <strong>P = 0.5 W</strong> and <strong>Q = 0.5 var</strong>, power factor 0.707 lagging. Check with element formulas: I²R = 0.0707² × 100 = 0.5 W and I²X = 0.5 var.</p>
+
+<p>The meter product 0.707 VA is the apparent power, not the dissipation.</p>
+
+</div>
+
+<aside className="margin-note"><strong>Peak phasors need a factor of ½.</strong> If phasors carry peak amplitudes, S = ½ V_p I_p*. Mixing a peak voltage with an RMS current gives an answer off by √2. Decide once per calculation.</aside>
+
+</section>
+
+<section id="explore">
+
+<div className="section-heading"><span>03</span><h2>Watch v × i</h2></div>
+
+The lab multiplies the instantaneous voltage and current and averages the result. The power triangle on the left draws S as an arrow with horizontal part P and vertical part Q.
+
+<PowerLab client:load/>
+
+<p className="caption">Figure 1. A 10 V RMS, 50 Hz source driving R in series with a signed ideal reactance. The lower right plot shows p(t) swinging by ±|S| around P at twice the line frequency.</p>
+
+Notice that the oscillating part of p(t) always has amplitude |S|, not |Q|. Even for a resistor, power pulses at 2ω between zero and 2P. What distinguishes a reactive load is that the pulse dips below zero.
+
+</section>
+
+<section id="cost">
+
+<div className="section-heading"><span>04</span><h2>Why reactive current costs</h2></div>
+
+If reactive power averages to zero, why care? Because current flows in the wiring whether or not it does useful work, and wiring has resistance.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A MOTOR ON A LONG CABLE</span><h3>2 kW at 230 V</h3>
+
+<p>At unity power factor the line current is 2000/230 = <strong>8.70 A</strong>. At PF = 0.7 lagging, the same real power needs I = P/(V × PF) = <strong>12.4 A</strong>.</p>
+
+<p>Cable loss is I²R_line, so the poorer power factor multiplies it by (1/0.7)² = <strong>2.04</strong>. The fuse, the cable cross-section, the supply transformer and the generator all have to be rated for 12.4 A. That is why equipment is rated in VA and why utilities charge large customers for poor power factor.</p>
+
+</div>
+
+### Complex power is conserved
+
+In any network, the complex power delivered by the sources equals the sum of the complex powers absorbed by all the elements. Real and reactive power balance separately: watts are accounted for by resistances, vars by reactances. An inductor absorbs positive Q; a capacitor absorbs negative Q, which is the same as *supplying* vars. A capacitor near an inductive load can therefore supply the load’s reactive power locally, so the line no longer has to.
+
+</section>
+
+<section id="correction">
+
+<div className="section-heading"><span>05</span><h2>Power-factor correction</h2></div>
+
+Place a capacitor in parallel with an inductive load. It sees the full line voltage, so it absorbs Q_C = −V²ωC regardless of the load. To cancel a load’s reactive power Q completely:
+
+<Equation tex="V_{\mathrm{rms}}^2\,\omega C=Q\qquad\Rightarrow\qquad C=\frac{Q}{\omega V_{\mathrm{rms}}^2}"/>
+
+The load itself is unchanged: its voltage, current, real power and internal reactive power are exactly as before. What changes is the current in the line feeding the pair.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / CORRECTING AN R–L LOAD</span><h3>20 Ω + 50 mH on 230 V, 50 Hz</h3>
+
+<p>X_L = 2π × 50 × 0.05 = 15.71 Ω, so |Z| = 25.43 Ω at 38.1°. The load current is 230/25.43 = <strong>9.04 A</strong>, giving P = 9.04² × 20 = <strong>1636 W</strong>, Q = 9.04² × 15.71 = <strong>1285 var</strong> and PF = 0.786.</p>
+
+<p>Full correction needs C = 1285/(2π × 50 × 230²) = <strong>77.3 µF</strong>. The line current falls to P/V = <strong>7.11 A</strong>, the in-phase part of the load current.</p>
+
+<p>Correcting only to PF 0.95 leaves Q = P tan(cos⁻¹ 0.95) = 538 var, needs 45.0 µF and gives 7.49 A. Most of the benefit comes from the first part of the correction.</p>
+
+</div>
+
+<CorrectionLab client:load/>
+
+<p className="caption">Figure 2. The load current is fixed; the capacitor current is a pure +90° phasor. The line current is their sum and is minimized when the vertical parts cancel.</p>
+
+Over-correcting makes the combination capacitive, and the line current rises again. Real correction capacitors must be rated for continuous AC voltage and current, often switched in steps as the load varies, and checked against harmonic currents (next section), which a capacitor’s falling impedance invites.
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Beyond sinusoids, and maximum power transfer</h2></div>
+
+### Non-sinusoidal current
+
+The definition PF = P/(V_rms I_rms) applies to any waveform, but cos θ only applies to sinusoids. The capacitor-input rectifier of Chapter 14 draws current in short pulses near the voltage peaks. Those pulses are centered on the voltage waveform, so there is no phase shift in the usual sense, yet the power factor is poor: for the default settings of that chapter’s lab it is about **0.66**. The pulses contain harmonics—currents at 3f, 5f, 7f and beyond—that raise I_rms without contributing average power with a sinusoidal voltage.
+
+The total power factor is then the product of a **displacement factor** (cos θ of the fundamental) and a **distortion factor** (fundamental RMS current over total RMS current). A capacitor cannot fix distortion. Power supplies above modest power levels use active power-factor correction, a switching converter that forces the input current to follow the voltage waveform.
+
+Measure such waveforms with a true-RMS instrument. An averaging meter calibrated for sine waves misreads pulse currents.
+
+### Maximum power transfer
+
+A source with internal impedance Z_s = R_s + jX_s delivers the most average power to a load whose impedance is the **complex conjugate**, Z_L = R_s − jX_s. The reactances cancel, leaving the resistive divider of Chapter 2, which delivers |V|²/(4R_s):
+
+<Equation tex="Z_L=Z_s^{*}\qquad\Rightarrow\qquad P_{L,\max}=\frac{|\mathbf V_{\mathrm{rms}}|^2}{4R_s}"/>
+
+For a 10 V RMS source with Z_s = 50 + 30j Ω, a conjugate load 50 − 30j Ω receives **0.500 W**. A plain 50 Ω load receives 0.459 W; the best purely resistive load, R_L = |Z_s| = 58.3 Ω, receives 0.462 W.
+
+Conjugate matching gives exactly 50% efficiency: as much power is dissipated in the source as in the load. It is the right goal for a weak radio signal or an antenna, and the wrong one for a power grid or a battery, where the source impedance should be far smaller than the load’s.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>S = V I*. The real part is <em>consumed</em>, the imaginary part is <em>exchanged</em>, and the wiring pays for both.</p></div>
+
+<p className="reference-note">Coverage: The Art of Electronics §1.7.6, with power-factor correction and conjugate matching added. Power and RMS foundations are in Chapter 4.</p>
+
+</section>
+
+<div className="chapter-end">
+
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p></div>
+
+<a className="primary-link" href="/reactive-power/practice/">Open practice →</a>
+
+</div>

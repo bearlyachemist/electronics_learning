@@ -1,0 +1,134 @@
+import Equation from '../components/Equation.astro';
+import {JunctionLab,DiodeLab,RectifierLab,RegulatorLab,LimiterLab,ProtectionLab} from '../components/DiodeLabs';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 13</span><span className="hairline"/>FOUNDATIONS / DIODES & SUPPLIES</div>
+
+<h1>Diode properties & models<br/><em>A curve, not a threshold.</em></h1>
+
+<p className="dek">Connect semiconductor physics to circuit models, operating points, switching behavior, and datasheet choices.</p>
+
+<div className="chapter-meta"><span>35–45 min + exploration</span><span>Original explanations · Models stated</span></div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Direction and diode models → Derive a useful current law → Find the operating point → Charge, temperature, and speed → Read a diode specification.</p>
+
+</div>
+
+
+<section id="models">
+
+## 01 / Direction and diode models
+
+Call the terminals **anode A** and **cathode K**. Define diode voltage Vᴅ = Vₐ − Vₖ and positive current from anode to cathode. The bar in the circuit symbol marks the cathode. A package stripe often identifies it too, but verify the actual pinout.
+
+A diode model is a deliberate choice about what matters:
+
+| Model | Forward behavior | Reverse behavior | Useful question |
+| --- | --- | --- | --- |
+| Ideal switch | Zero voltage while conducting | Zero current while blocking | Which paths conduct? |
+| Fixed drop | A chosen Vꜰ while conducting | Open circuit below breakdown | Rough current and headroom |
+| Exponential | Current varies continuously with voltage | Small saturation current in its domain | Operating point and local slope |
+| Practical dynamic model | Adds series resistance, charge and capacitance | Adds leakage and breakdown | Switching, loss, overshoot |
+
+For the ideal model, conducting requires Vᴅ = 0 and Iᴅ ≥ 0; blocking requires Iᴅ = 0 and Vᴅ ≤ 0. These are consistency conditions. Guess a state, solve the remaining linear circuit, then check the result. A negative current through an assumed conducting ideal diode means that assumption was wrong.
+
+With the fixed-drop model, replace zero forward voltage by Vꜰ. It is not a hard physical threshold. “0.7 V for silicon” is a convenient estimate at some currents and temperatures, not a law.
+
+**Worked example.** A 5 V source, 1 kΩ resistor and forward diode give (5 − 0.7)/1 kΩ = 4.3 mA in the fixed-drop model. Reversing the diode gives approximately zero current below breakdown, with almost the entire 5 V across the diode in reverse.
+
+</section>
+
+<section id="exponential">
+
+## 02 / Derive a useful current law
+
+The physics chapter found that forward bias increases minority-carrier concentration at a junction edge exponentially. On the p side, the excess electron concentration at the edge is approximately:
+
+<Equation tex="\Delta n(0)=n_{p0}\left(e^{V_D/V_T}-1\right)" />
+
+In a long neutral region with diffusion and recombination, that excess decays as Δn(x) = Δn(0)exp(−x/Lₙ). Its gradient at the junction therefore has magnitude Δn(0)/Lₙ. Multiplying by qDₙ gives the electron diffusion current density. Repeat for holes on the other side, add both contributions, and multiply by junction area:
+
+<Equation tex="I_D=I_S\left(e^{V_D/V_T}-1\right),\qquad I_S=qA n_i^2\left(\frac{D_n}{L_nN_A}+\frac{D_p}{L_pN_D}\right)" />
+
+This derivation assumes low-level injection, negligible neutral-region voltage drop, steady state, and suitable neutral-region lengths. Real devices include other mechanisms; a useful fitted version introduces ideality factor n:
+
+<Equation tex="I_D=I_S\left(e^{V_D/(nV_T)}-1\right)" />
+
+Do not confuse ideality factor n with the electron concentration n used in the preceding physics chapter. Here it is a dimensionless fitting parameter. It may change with operating regime.
+
+At forward current much larger than Iₛ, invert the law:
+
+<Equation tex="V_D\approx nV_T\ln(I_D/I_S),\qquad \Delta V_D=nV_T\ln(I_2/I_1)" />
+
+At 300 K with n = 1.5, a tenfold current increase requires about 89.3 mV more forward voltage in this model. Doubling current needs about 26.9 mV. Current can change dramatically while the displayed voltage seems almost unchanged.
+
+Differentiating gives the small-signal resistance:
+
+<Equation tex="r_d=\left(\frac{dI_D}{dV_D}\right)^{-1}=\frac{nV_T}{I_D+I_S}\approx\frac{nV_T}{I_D}" />
+
+At 1 mA and n = 1.5 this is 38.8 Ω. It is not Vᴅ/Iᴅ and it applies only to small variations around that bias point. At high current, bulk and contact resistance add to the local slope.
+
+</section>
+
+<section id="explore">
+
+## 03 / Find the operating point
+
+The diode cannot choose its current independently of the circuit. For a source Vₛ and series resistor R:
+
+<Equation tex="I_D=\frac{V_S-V_D}{R}" />
+
+This descending load line intersects the rising diode curve. The intersection satisfies both device physics and Kirchhoff's voltage law. The lab finds it by bracketed numerical solution, not by assigning a fixed forward drop.
+
+<DiodeLab client:load />
+
+For the default 5 V, 1 kΩ, Iₛ = 1 pA and n = 1.5, expect roughly 0.86 V and 4.14 mA. This illustrative model deliberately need not match the 0.7 V estimate. Compare the percentage error in current with the percentage error in diode voltage: a large resistor can make current relatively insensitive to the precise forward drop.
+
+**Design example.** A 3.3 V source drives an LED specified near 2.0 V at 5 mA. The first estimate is R = (3.3 − 2.0)/5 mA = 260 Ω; 270 Ω gives about 4.81 mA at that nominal drop. At a 3.6 V supply and 1.8 V LED drop, that same resistor gives 6.67 mA. Design around the allowed current over source and device variation. An LED is not accurately represented by the silicon example's saturation current.
+
+</section>
+
+<section id="dynamic">
+
+## 04 / Charge, temperature, and speed
+
+Temperature changes more than Vₜ. Saturation current changes strongly with temperature too. Holding Iₛ artificially fixed while increasing Vₜ would produce a misleading temperature experiment. At fixed current, many silicon PN diodes show a decreasing forward drop with temperature over useful ranges, but the coefficient is device- and current-dependent.
+
+Reverse leakage also depends on voltage and temperature. The simple exponential model's −Iₛ reverse plateau omits surface leakage, depletion-region generation and breakdown. Avalanche and tunneling can make reverse current rise sharply; safe operation then requires current and power control.
+
+Reverse bias stores depletion charge, creating junction capacitance. Forward injection stores excess minority carriers. When drive reverses, that stored charge must be removed or recombine. Current may temporarily flow in the reverse direction before the device recovers its blocking state.
+
+<Equation tex="Q_{rr}=\int_{\mathrm{recovery}} |i_R(t)|\,dt" />
+
+For a triangular 0.2 A reverse-current pulse lasting 50 ns, the charge is approximately 5 nC. Time alone does not specify recovery loss: current, voltage, temperature and switching slope matter. A Schottky diode uses a metal–semiconductor barrier and avoids the same minority-carrier storage mechanism, but still has capacitance and displacement current.
+
+**Why circuit context matters.** A fast voltage edge across 20 pF produces i = C dv/dt. At 100 V/µs that is 2 mA even without forward conduction. A diode can be “off” in the DC sense and still couple a transient.
+
+</section>
+
+<section id="selection">
+
+## 05 / Read a diode specification
+
+Read maximum ratings separately from typical curves. Check repetitive reverse voltage, average forward current under its stated thermal conditions, surge waveform and duty cycle, forward drop at the intended current, leakage at the intended temperature, and junction temperature. For switching, inspect recovery charge/time and capacitance with their test conditions.
+
+Approximate conduction loss by the average of vᴅ(t)iᴅ(t). A constant 0.8 V at 0.5 A gives 0.4 W; a pulsed rectifier requires averaging its actual current waveform. Package thermal resistance and copper layout then determine temperature rise.
+
+Choose families by the task: a signal PN diode for small-signal switching; a rectifier for power handling; a Schottky where its drop and switching behavior are useful; a zener for controlled reverse operation; a TVS for specified transient clamping; an LED for light. No family wins every combination of leakage, capacitance, voltage, loss and cost.
+
+AoE §1.6.1 is the coverage anchor. [Nexperia's diode handbook](https://assets.nexperia.com/documents/brochure/Nexperia_document_book_DiodeApplicationHandbook_2022.pdf) provides manufacturer treatments of recovery and device characteristics; the models and numerical examples here are illustrative, not fits to a selected part.
+
+</section>
+
+
+<div className="practice-home">
+
+<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p><a className="primary-link" href="/diodes/practice/">Open practice →</a>
+
+</div>
+

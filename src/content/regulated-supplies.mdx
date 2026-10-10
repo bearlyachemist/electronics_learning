@@ -1,0 +1,168 @@
+import Equation from '../components/Equation.astro';
+import {FeedbackGainLab,LoopStabilityLab,DegenerationLab,SupplyControlLab,TemperatureLab,LogicLab} from '../components/FeedbackLabs';
+import {FeedbackBlock,FeedbackAmpFigure,SupplyFigure,ThermalFigure,LogicFigure} from '../components/FeedbackFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 44</span><span className="hairline"/>TRANSISTORS / FEEDBACK & CONTROL</div>
+
+<h1>Regulated power supplies<br/><em>A feedback amplifier that delivers power.</em></h1>
+
+<p className="dek">Design the voltage loop, pass transistor, current limit and thermal budget, then connect stability to real load behavior.</p>
+
+<div className="chapter-meta"><span>60–90 min + exploration</span><span>Work through the examples at your own pace</span></div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Reference, error and pass device → Accuracy and disturbance rejection → Dropout and current limiting → Explore the operating boundaries → Power and safe operating area → Dynamics and a complete design.</p>
+
+</div>
+
+
+<section id="loop">
+
+## 01 / Reference, error and pass device
+
+The earlier [regulator chapter](/regulators/) introduced zener current budgets and dropout. Here the regulator becomes a complete feedback system: a reference specifies the goal, a divider measures the output, an error amplifier compares them, and a power transistor controls the energy delivered to the load.
+
+<SupplyFigure />
+
+For an NPN emitter-follower pass device, collector connects to the raw input, emitter supplies the output, and base drive controls conduction. The drawing is a functional loop: the error amplifier's supply, driver stage, compensation, current-sense element and protection networks still need implementation.
+
+Let the divider fraction be b = Rbottom/(Rtop + Rbottom), and include the loaded error amplifier and pass stage in forward DC gain A. If an output increase reduces base drive, the loop has the correct sign:
+
+<Equation tex="v_o=A(V_{\mathrm{ref}}-bv_o),\qquad v_o=\frac{A}{1+Ab}V_{\mathrm{ref}}" />
+
+At large loop gain:
+
+<Equation tex="V_{\mathrm{out}}\approx\frac{V_{\mathrm{ref}}}{b}=V_{\mathrm{ref}}\left(1+\frac{R_{\mathrm{top}}}{R_{\mathrm{bottom}}}\right)" />
+
+A 1 V reference with 40 kΩ top and 10 kΩ bottom resistors gives b = 0.2 and a nominal 5 V output. The divider consumes 100 µA at 5 V. With A = 1000, the exact unloaded output is 1000/201 = 4.97512 V, a 0.498% shortfall.
+
+A positive output perturbation raises the divider voltage, lowers the error, reduces base drive and reduces emitter output. Trace that physical sequence before deciding which error-amplifier input receives the reference.
+
+### A simple two-transistor alternative
+
+A discrete regulator can pull the pass transistor's base upward through a drive resistor while a second NPN transistor sinks that drive when sensed output rises. Put the sensing transistor's base at the divided output and its emitter at a zener reference. More output then increases its Vᵦₑ and steals pass-base current.
+
+Its approximate regulation condition is bVout ≈ Vz + Vᵦₑ of the sensing transistor, not merely Vz. The Vᵦₑ term introduces temperature and current dependence. The drive resistor must supply both pass-base current and sensing-transistor current; zener bias and the sensing transistor's operating range must also be checked.
+
+For Vz = 2.4 V, a modeled 0.6 V sensing Vᵦₑ and b = 0.6, nominal output is 5 V. If that Vᵦₑ changes by −40 mV with other terms fixed, output shifts by approximately −40/0.6 = −66.7 mV. Loop gain does not reject an error inside the reference comparison.
+
+</section>
+
+<section id="errors">
+
+## 02 / Accuracy and disturbance rejection
+
+Several errors have different paths through the loop. Do not combine them under the word “regulation.”
+
+**Reference and ratio accuracy.** At high loop gain, fractional reference error transfers almost directly to output; fractional divider-factor error transfers with opposite sign. Resistor ratio, temperature tracking and sensing-input current matter.
+
+**Line regulation.** A change in raw input can couple through the pass transistor. If its open-loop output disturbance is d, feedback reduces it by 1/(1 + T) while the loop remains linear and has headroom.
+
+**Load regulation.** Model an open-loop output resistance rₒ. With load resistance Rᴸ:
+
+<Equation tex="v_o=A(V_{\mathrm{ref}}-bv_o)-r_o\frac{v_o}{R_L}" />
+
+<Equation tex="v_o=\frac{A V_{\mathrm{ref}}}{1+Ab+r_o/R_L},\qquad r_{\mathrm{out,closed}}\approx\frac{r_o}{1+Ab}" />
+
+For rₒ = 2 Ω and T = 200, the small-signal output resistance is 9.95 mΩ. A 100 mA load increase would cause approximately 0.995 mV drop in this low-frequency linear model. Wiring outside the sensing point can easily exceed that contribution.
+
+**Remote sense.** If the feedback divider senses the regulator terminal but a cable drops 100 mV, the load still loses 100 mV. Sensing at the load can correct wiring loss within available headroom, but adds another failure mode if a sense lead opens and another dynamic path if long wiring and capacitors are involved.
+
+**Ripple rejection.** T is frequency-dependent. If the raw-input-to-output feedthrough is D(s), the corrected feedthrough is D(s)/(1 + T(s)) in the stated block model. A large DC loop gain is not proof of good rejection at a high ripple frequency.
+
+</section>
+
+<section id="limits">
+
+## 03 / Dropout and current limiting
+
+The error amplifier can demand more output, but it cannot create voltage above the available raw input or provide unlimited base current.
+
+For an NPN pass stage, base must rise roughly one Vᵦₑ above emitter. If the driver cannot approach or exceed the raw rail sufficiently, its swing limit may dominate dropout before the pass transistor's own saturation voltage does. A 0.2 V V꜀ₑ(sat) estimate alone does not establish a 0.2 V regulator dropout.
+
+Current gain also sets driver demand. At 200 mA load and a worst-case pass β of 40, allow roughly 5 mA base current, plus current in any drive or bias network. Check β at the actual collector current and V꜀ₑ, not from an unrelated typical value.
+
+### A transistor current limiter
+
+A common simple limiter senses the voltage across a small series resistor. When that drop reaches the sensing transistor's Vᵦₑ, the transistor diverts pass-base drive:
+
+<Equation tex="I_{\mathrm{lim}}\approx\frac{V_{BE,\mathrm{sense}}}{R_{\mathrm{sense}}}" />
+
+For 200 mA and an assumed 0.6 V threshold, Rₛense ≈ 3 Ω. Its dissipation at the limit is I²R = 0.12 W, and its voltage drop consumes headroom. The sensing Vᵦₑ varies with temperature and current, so this is an approximate limiter, not a precision current reference.
+
+Below the limit the voltage loop controls output. Beyond it, current control takes over and output falls to satisfy the load. For a resistive load, a 200 mA limit and 10 Ω load imply roughly 2 V output. A constant-power load behaves differently and can create additional instability or startup problems.
+
+Foldback reduces allowed current as output voltage collapses to reduce short-circuit stress. That can create startup trouble with capacitive or demanding loads. A hard current limit is simpler conceptually but may dissipate more power into a sustained fault.
+
+</section>
+
+<section id="explore">
+
+## 04 / Explore the operating boundaries
+
+<SupplyControlLab client:load />
+
+First use a light load and lower raw input until dropout begins. Then use adequate input voltage and reduce load resistance until current limiting begins. The output can be wrong even while the error amplifier is doing everything it can.
+
+The temperature estimate remains visible in current limit. Watch what happens as the output collapses: the pass transistor can dissipate **more** power because a larger voltage now appears across it.
+
+The experiment combines a finite-gain voltage loop, a fixed dropout boundary and an ideal current limit. It is a static model. It does not simulate reference startup, output-capacitor charging, thermal shutdown, or compensation.
+
+</section>
+
+<section id="thermal">
+
+## 05 / Power and safe operating area
+
+For a series linear regulator, approximate pass dissipation is:
+
+<Equation tex="P_{\mathrm{pass}}\approx(V_{\mathrm{in}}-V_{\mathrm{out}})I_L" />
+
+At 12 V input, 5 V output and 200 mA, that is 1.4 W. If output is shorted while 200 mA still flows, it becomes approximately 2.4 W. A current limiter prevents unlimited current but does not automatically make the pass transistor safe.
+
+Suppose input may reach 15 V. Normal 5 V, 200 mA operation dissipates 2 W; a short-circuit limit of 200 mA gives 3 W. With ambient 40 °C and a design junction target of 110 °C, the total junction-to-ambient thermal resistance must be no greater than:
+
+<Equation tex="\theta_{\mathrm{total}}\leq\frac{110-40}{3}=23.3\ ^\circ\mathrm C/\mathrm W" />
+
+For a heatsink path, include junction-to-case, interface, heatsink-to-ambient and the actual airflow conditions. A package's board-based θJA is not a universal heatsink calculation.
+
+Bipolar transistors also have **safe operating area** limits: simultaneous collector voltage and current, duration, temperature and secondary breakdown can matter even if average dissipation appears acceptable. Check a device's DC SOA for a sustained linear pass application and its pulse curves for transients, with the specified derating.
+
+The base driver dissipates power too. So do a current-sense resistor, rectifier, transformer and reservoir ESR. A complete supply design is an energy budget, not only a voltage-divider calculation.
+
+</section>
+
+<section id="dynamic">
+
+## 06 / Dynamics and a complete design
+
+A regulator load step initially comes from the output capacitor because the loop cannot respond instantly. Before the controller catches up, a first estimate is:
+
+<Equation tex="\Delta V_C\approx\frac{\Delta I\,\Delta t}{C},\qquad \Delta V_{\mathrm{ESR}}\approx\Delta I\,R_{\mathrm{ESR}}" />
+
+For a 100 mA load step, 20 µs response interval, 100 µF and 0.1 Ω ESR, capacitive droop is about 20 mV and the immediate ESR step about 10 mV. Add wiring inductance for fast edges. The recovery trajectory depends on the loop, not just the capacitor.
+
+Output capacitance and its ESR also alter loop poles and zeros. A capacitor that improves the first microsecond of a transient may reduce phase margin. Some regulator architectures require a particular ESR or capacitance range; follow the chosen circuit's compensation analysis.
+
+A practical design sequence is to establish minimum raw-input trough after rectification, maximum input peak, output/load range, dropout and drive current, pass-device SOA and cooling, current limiting, then loop stability across load and capacitor variation. Finally check startup, shutdown and reverse energy flow.
+
+If input collapses while an output capacitor stays charged, the pass device can be driven in an unintended reverse direction. A protection diode from output anode to input cathode can provide a discharge path in some topologies, but only if that destination can safely absorb the stored energy. It is not a universal add-on.
+
+For a 5 V, 200 mA design using a regulator with a verified 1 V headroom requirement, a raw trough of 6.5 V gives only 0.5 V extra margin. If worst-case raw maximum is 15 V, the thermal and short-circuit budgets above still apply. “More input voltage” helps headroom while worsening heat.
+
+This chapter extends AoE's discrete-regulator foundations toward later supply design. [TI's linear-regulator fundamentals](https://www.ti.com/video/series/power-fundamentals-linear-regulator-fundamentals.html) connects pass-element behavior with regulation. No generic laboratory model here substitutes for device-specific compensation and SOA data.
+
+</section>
+
+
+<div className="practice-home">
+
+<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and complete worked solutions.</p><a className="primary-link" href="/regulated-supplies/practice/">Open practice →</a>
+
+</div>
+

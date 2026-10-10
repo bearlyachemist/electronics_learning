@@ -1,0 +1,241 @@
+import Equation from '../components/Equation.astro';
+import {PhasorLab} from '../components/AcLabs';
+import {EulerFigure} from '../components/Figures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 19</span><span className="hairline"/>FOUNDATIONS / IMPEDANCE & FILTERS</div>
+
+<h1>Sinusoids, complex numbers & phasors<br/><em>Turn calculus into algebra.</em></h1>
+
+<p className="dek">Describe a steady sinusoid by two numbers, represent those numbers as an arrow, and see why a derivative becomes a multiplication by jω.</p>
+
+<div className="chapter-meta"><span>50–60 min + exploration</span><span>Trigonometry · Derivatives · RC circuits</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">An RC filter is driven by a 1 kHz sine. What comes out, and how do we find it without solving a differential equation every time?</p></div>
+
+<div>
+
+Chapters 6–10 solved circuits with capacitors and inductors in the time domain: write KCL, obtain a differential equation, solve it. That works, but it becomes laborious as soon as there are two or three energy-storage elements.
+
+For the most important class of signals—steady sinusoids—there is a shortcut. Every voltage and current in a linear circuit is a sinusoid at the same frequency, differing only in amplitude and phase. If we track just those two numbers, derivatives turn into multiplications and the differential equation turns into algebra. The bookkeeping device is the complex number. This chapter builds that tool carefully, because every chapter after it depends on it.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Why sinusoids are special → Complex numbers as arrows → Euler’s formula → Phasors: freeze the rotation → Add sinusoids by adding arrows → Conventions and pitfalls.</p>
+
+</div>
+
+<section id="why">
+
+<div className="section-heading"><span>01</span><h2>Why sinusoids are special</h2></div>
+
+A sinusoid has three parameters:
+
+<Equation tex="v(t)=V_p\cos(\omega t+\phi),\qquad \omega=2\pi f"/>
+
+V_p is the **peak amplitude**, f the frequency in hertz, ω the **angular frequency** in radians per second, and φ the **phase**. The RMS value of a sinusoid is V_p/√2, and the peak-to-peak value is 2V_p. A phase shift φ is equivalent to a time shift Δt = φ/ω: at 1 kHz, a 45° (π/4 rad) lag is a delay of 125 µs.
+
+The decisive property is what calculus does to it:
+
+<Equation tex="\frac{d}{dt}\cos(\omega t+\phi)=-\omega\sin(\omega t+\phi)=\omega\cos(\omega t+\phi+90^\circ)"/>
+
+Differentiation returns a sinusoid of the **same frequency**, scaled by ω and advanced by 90°. Integration does the opposite: it divides by ω and delays by 90°. Resistors, capacitors and inductors relate voltage and current by multiplication, differentiation and integration. Sums of sinusoids at one frequency are also sinusoids at that frequency. Therefore, once start-up transients have died away, a linear circuit driven by one sinusoid has a sinusoid at that frequency everywhere. Only amplitudes and phases differ from node to node.
+
+This is why sinusoids, not square waves or pulses, are the natural test signal for linear circuits. A non-sinusoidal periodic signal can be written as a sum of sinusoids (its Fourier series). By superposition, each component passes through the circuit independently. Understanding the response to one sinusoid at every frequency is therefore understanding the response to everything.
+
+### The brute-force route, once
+
+To see what we are about to avoid, find the steady-state output of an RC low-pass driven by V₀ cos ωt. The node equation from Chapter 6 is:
+
+<Equation tex="RC\frac{dv}{dt}+v=V_0\cos\omega t"/>
+
+Guess v = A cos ωt + B sin ωt, substitute, and match the cosine and sine terms separately. With x = ωRC:
+
+<Equation tex="A+xB=V_0,\qquad B-xA=0\quad\Rightarrow\quad A=\frac{V_0}{1+x^2},\ B=\frac{xV_0}{1+x^2}"/>
+
+Converting A cos + B sin back into a single cosine with the identity M cos(ωt − φ), where M = √(A² + B²) and tan φ = B/A:
+
+<Equation tex="v(t)=\frac{V_0}{\sqrt{1+x^2}}\cos\!\left(\omega t-\tan^{-1}x\right)"/>
+
+It works, but it needed a guess, two simultaneous equations and a trigonometric identity, for a circuit with one capacitor. By the end of this chapter the same result will take one line.
+
+</section>
+
+<section id="complex">
+
+<div className="section-heading"><span>02</span><h2>Complex numbers as arrows</h2></div>
+
+Electronics writes the imaginary unit as **j**, with j² = −1, because i is already taken by current. A complex number has a real part and an imaginary part:
+
+<Equation tex="z=a+jb,\qquad \mathrm{Re}\,z=a,\quad \mathrm{Im}\,z=b"/>
+
+Picture z as an arrow from the origin to the point (a, b) in the **complex plane**: real part horizontal, imaginary part vertical. The arrow has a length and an angle:
+
+<Equation tex="|z|=\sqrt{a^2+b^2},\qquad \angle z=\operatorname{atan2}(b,a),\qquad z=|z|\left(\cos\theta+j\sin\theta\right)"/>
+
+Writing z by its length and angle, |z|∠θ, is the **polar form**; a + jb is the **rectangular form**. Each is convenient for different operations.
+
+<aside className="margin-note"><strong>The quadrant trap.</strong> The angle of −3 − 4j is −126.87°, not 53.13°. A calculator’s arctan(b/a) sees only the ratio 4/3 and cannot tell (3, 4) from (−3, −4). Use atan2(b, a), or sketch the arrow and check which quadrant it is in.</aside>
+
+### Addition: tip to tail
+
+Add real parts and imaginary parts separately. Geometrically, place the second arrow’s tail at the first arrow’s tip; the sum runs from the origin to the final tip. Addition is easiest in rectangular form.
+
+### Multiplication: scale and rotate
+
+Multiply out and use j² = −1:
+
+<Equation tex="(a+jb)(c+jd)=(ac-bd)+j(ad+bc)"/>
+
+In polar form the result is much more revealing: **magnitudes multiply and angles add.**
+
+<Equation tex="(r_1\angle\theta_1)(r_2\angle\theta_2)=r_1r_2\angle(\theta_1+\theta_2),\qquad \frac{r_1\angle\theta_1}{r_2\angle\theta_2}=\frac{r_1}{r_2}\angle(\theta_1-\theta_2)"/>
+
+The number j itself is 1∠90°. Multiplying by j rotates an arrow 90° counter-clockwise without changing its length. Multiplying by −j rotates 90° clockwise. Since j·(−j) = 1, it follows that **1/j = −j**, an identity used constantly.
+
+### Division and the conjugate
+
+The **complex conjugate** flips the sign of the imaginary part: z* = a − jb. Multiplying a number by its conjugate gives a real result, its squared magnitude: zz* = a² + b². To divide in rectangular form, multiply top and bottom by the conjugate of the denominator:
+
+<Equation tex="\frac{1}{1+j}=\frac{1-j}{(1+j)(1-j)}=\frac{1-j}{2}=0.5-0.5j=0.7071\angle-45^\circ"/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / BOTH FORMS</span><h3>Multiply and divide 3 + 4j and 1 − j</h3>
+
+<p>In polar form, 3 + 4j = 5∠53.13° and 1 − j = 1.4142∠−45°. The product is 5 × 1.4142 = 7.071 at 53.13° − 45° = 8.13°. In rectangular form: (3·1 − 4·(−1)) + j(3·(−1) + 4·1) = <strong>7 + j</strong>, whose length is √50 = 7.071 and angle 8.13°. The two methods agree.</p>
+
+<p>The quotient is 5/1.4142 = 3.536 at 53.13° + 45° = 98.13°, which is <strong>−0.5 + 3.5j</strong>: a point just past the imaginary axis, in the second quadrant.</p>
+
+</div>
+
+</section>
+
+<section id="euler">
+
+<div className="section-heading"><span>03</span><h2>Euler’s formula</h2></div>
+
+The link between complex numbers and sinusoids is Euler’s formula:
+
+<Equation tex="e^{j\theta}=\cos\theta+j\sin\theta" label="EULER’S FORMULA"/>
+
+A short derivation uses only calculus. Define f(θ) = cos θ + j sin θ. Differentiate:
+
+<Equation tex="\frac{df}{d\theta}=-\sin\theta+j\cos\theta=j\left(\cos\theta+j\sin\theta\right)=j\,f(\theta),\qquad f(0)=1"/>
+
+The function whose derivative is a constant k times itself, starting at 1, is e<sup>kθ</sup>. With k = j, f(θ) = e<sup>jθ</sup>. (The Taylor series of eˣ, cos x and sin x give the same result term by term.)
+
+<EulerFigure/>
+
+Every number e<sup>jθ</sup> has length 1. A complex number of length r and angle θ is therefore re<sup>jθ</sup>, and the multiplication rule follows from the law of exponents: r₁e<sup>jθ₁</sup> · r₂e<sup>jθ₂</sup> = r₁r₂e<sup>j(θ₁+θ₂)</sup>.
+
+Now let the angle grow with time, θ = ωt. The point e<sup>jωt</sup> travels counter-clockwise around the unit circle, completing f revolutions per second. Its real part—its shadow on the horizontal axis—is cos ωt. **A sinusoid is the projection of a rotating arrow.**
+
+Adding a conjugate pair cancels the imaginary parts, which gives cosine without taking “the real part”:
+
+<Equation tex="\cos\theta=\frac{e^{j\theta}+e^{-j\theta}}{2},\qquad \sin\theta=\frac{e^{j\theta}-e^{-j\theta}}{2j}"/>
+
+</section>
+
+<section id="phasors">
+
+<div className="section-heading"><span>04</span><h2>Phasors: freeze the rotation</h2></div>
+
+Write a sinusoid with amplitude and phase as the real part of a rotating arrow:
+
+<Equation tex="v(t)=V_p\cos(\omega t+\phi)=\mathrm{Re}\left\{V_pe^{j\phi}\,e^{j\omega t}\right\}=\mathrm{Re}\left\{\mathbf V\,e^{j\omega t}\right\},\qquad \mathbf V=V_p\angle\phi"/>
+
+The complex number **V** = V_p∠φ is the **phasor**. It is the arrow at t = 0. The factor e<sup>jωt</sup> is common to every signal in the circuit: every arrow rotates at the same rate, so their relative lengths and angles never change. We can drop the rotation, do all the work with the phasors, and restore it at the end.
+
+### What calculus does to a phasor
+
+Differentiate the rotating form. The phasor is constant; only e<sup>jωt</sup> depends on time:
+
+<Equation tex="\frac{d}{dt}\left(\mathbf V e^{j\omega t}\right)=j\omega\,\mathbf V e^{j\omega t}\qquad\Longrightarrow\qquad \frac{d}{dt}\ \leftrightarrow\ \times\,j\omega,\qquad \int dt\ \leftrightarrow\ \div\,j\omega" label="THE KEY PROPERTY"/>
+
+Multiplying by jω scales by ω and rotates by +90°—exactly the derivative’s effect found in section 01, now as arithmetic. Because taking the real part commutes with differentiation, adding and multiplication by real constants, any linear differential equation driven by a sinusoid becomes an algebraic equation in phasors.
+
+### The RC low-pass in one line
+
+Replace d/dt by jω in RC dv/dt + v = V₀ cos ωt, with input phasor V₀∠0:
+
+<Equation tex="j\omega RC\,\mathbf V+\mathbf V=V_0\quad\Rightarrow\quad\mathbf V=\frac{V_0}{1+j\omega RC}=\frac{V_0}{\sqrt{1+(\omega RC)^2}}\angle-\tan^{-1}(\omega RC)"/>
+
+This matches the brute-force result exactly. The magnitude of the complex number is the amplitude ratio; its angle is the phase shift.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A DERIVATIVE BY MULTIPLICATION</span><h3>Differentiate 2 cos(1000t + 30°)</h3>
+
+<p>By calculus: −2000 sin(1000t + 30°) = 2000 cos(1000t + 120°). By phasors: jω × 2∠30° = (1000∠90°)(2∠30°) = <strong>2000∠120°</strong>. Same amplitude, same phase.</p>
+
+<p>For R = 1 kΩ, C = 1 µF and ω = 1000 rad/s (f ≈ 159 Hz), ωRC = 1 and the low-pass output phasor is 1/(1 + j) = <strong>0.707∠−45°</strong> per volt of input. At ω = 2000 rad/s it is 1/(1 + 2j) = 0.2 − 0.4j = 0.447∠−63.4°.</p>
+
+</div>
+
+</section>
+
+<section id="explore">
+
+<div className="section-heading"><span>05</span><h2>Add sinusoids by adding arrows</h2></div>
+
+Two sinusoids at the same frequency add to a third. Rather than expanding trigonometric identities, add their phasors tip to tail.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A COSINE PLUS A SINE</span><h3>3 cos ωt + 4 sin ωt</h3>
+
+<p>Write the sine as a delayed cosine: sin ωt = cos(ωt − 90°). The phasors are 3∠0° and 4∠−90° = −4j. Their sum is 3 − 4j = 5∠−53.13°, so the signal is <strong>5 cos(ωt − 53.13°)</strong>. The amplitude is 5, not 7: the two peaks occur at different times.</p>
+
+<p>Similarly 2∠30° + 3∠−45° = (1.732 + 1j) + (2.121 − 2.121j) = 3.853 − 1.121j = <strong>4.013∠−16.2°</strong>.</p>
+
+</div>
+
+<PhasorLab client:load/>
+
+<p className="caption">Figure 1. Two same-frequency phasors and their sum, rotated together by ωt. The dots on the real axis are the instantaneous values; they trace the time graph as the angle advances.</p>
+
+Two sinusoids add constructively when their phasors point the same way and cancel when they point opposite ways. Between those extremes the amplitude of the sum depends on the angle between them, never simply on the sum of amplitudes. This is why a voltmeter reading 3 V RMS across one component and 4 V RMS across another, in series, can sit across a 5 V RMS source: Kirchhoff’s voltage law holds for the phasors, not for the RMS magnitudes.
+
+</section>
+
+<section id="conventions">
+
+<div className="section-heading"><span>06</span><h2>Conventions and pitfalls</h2></div>
+
+**Peak or RMS.** A phasor can carry peak or RMS magnitude; ratios like gain and impedance are unaffected, as long as every phasor in a calculation uses the same convention. Power calculations (Chapter 21) need care about which one was used. This course uses peak phasors for waveforms and RMS phasors for power, and says so.
+
+**Phase reference.** Only phase *differences* are physical. Choose one signal—usually the source—as 0° and measure everything else from it.
+
+**Lead and lag.** A phasor at a positive angle relative to the reference **leads**: its peaks occur earlier. A negative angle **lags**. For a waveform cos(ωt + φ), a positive φ moves the curve to the left on a time graph.
+
+**One frequency at a time.** Phasors with different frequencies rotate at different rates. Their relative angle changes continuously, so they cannot be added as fixed arrows. For multi-frequency signals, analyze each frequency separately and superpose the time-domain results.
+
+**Steady state only.** The phasor solution is the particular (forced) solution. It omits the start-up transient that the differential equation would also contain—the decaying exponential of Chapter 6. For a circuit with a time constant τ, the phasor answer applies after several τ.
+
+**Linear circuits only.** A diode or a saturated amplifier produces new frequencies. Phasor analysis can still be used for small-signal behavior around an operating point (Chapter 3), but not for large-signal nonlinear operation.
+
+**Radians and degrees.** ω is in radians per second. The product ωt is in radians even when phases are quoted in degrees. Mixing the two in a calculator is the most common numerical error in this topic.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>In sinusoidal steady state, a signal is an arrow, a derivative is a <em>quarter turn and a stretch</em>, and circuit equations are complex algebra.</p></div>
+
+<p className="reference-note">Coverage: The Art of Electronics §§1.3.1 and 1.7.1–1.7.3, with the mathematical background expanded. The next chapter applies d/dt → jω to capacitors and inductors to define impedance.</p>
+
+</section>
+
+<div className="chapter-end">
+
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p></div>
+
+<a className="primary-link" href="/phasors/practice/">Open practice →</a>
+
+</div>

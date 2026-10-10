@@ -1,0 +1,9 @@
+function pos(...v){if(!v.every(x=>Number.isFinite(x)&&x>0))throw new RangeError('Expected positive finite parameters.');}
+function finite(...v){if(!v.every(Number.isFinite))throw new RangeError('Expected finite values.');}
+export function capacitor({current,c,t,v0=0}){pos(c);finite(current,t,v0);if(t<0)throw new RangeError('Time cannot be negative.');const voltage=v0+current*t/c;return {voltage,charge:c*voltage,energy:.5*c*voltage**2,slope:current/c};}
+export function rc({vin,v0,r,c,t}){pos(r,c);finite(vin,v0,t);if(t<0)throw new RangeError('Time cannot be negative.');const tau=r*c,e=Math.exp(-t/tau),voltage=vin+(v0-vin)*e;return {tau,voltage,current:(vin-v0)*e/r,fc:1/(2*Math.PI*tau)};}
+export function filter({kind,r,c,hz}){pos(r,c,hz);const tau=r*c,x=2*Math.PI*hz*tau;const high=kind==='highpass';if(!high&&kind!=='lowpass')throw new RangeError('Unknown filter.');const re=high?x*x/(1+x*x):1/(1+x*x),im=high?x/(1+x*x):-x/(1+x*x);return {tau,x,re,im,gain:Math.hypot(re,im),phase:Math.atan2(im,re)*180/Math.PI,approxIm:high?x:-1/x,relativeError:high?x:1/x,fc:1/(2*Math.PI*tau)};}
+export function capacitorImpedance({c,esr,esl,hz}){pos(c,esr,esl,hz);const w=2*Math.PI*hz,reactance=w*esl-1/(w*c);return {magnitude:Math.hypot(esr,reactance),ideal:1/(w*c),phase:Math.atan2(reactance,esr)*180/Math.PI,resonance:1/(2*Math.PI*Math.sqrt(c*esl))};}
+export function inductor({l,r,vin,t,clamp=12,off=false}){pos(l,r,clamp);finite(vin,t);if(vin<0||t<0)throw new RangeError('Nonnegative supply and time required.');const tau=l/r,i0=vin/r,stop=l*i0/clamp;const current=off?Math.max(0,i0-clamp*t/l):i0*(-Math.expm1(-t/tau));const voltage=off?(t<stop?-clamp:0):vin*Math.exp(-t/tau);return {tau,stop,current,voltage,energy:.5*l*current*current};}
+export function transformer({vp,np,ns,rl,hz,area}){pos(vp,np,ns,rl,hz,area);const a=np/ns,vs=vp/a,is=vs/rl,ip=is/a;return {a,vs,is,ip,reflected:a*a*rl,power:vs*is,bpeak:vp/(Math.PI*Math.sqrt(2)*hz*np*area)};}
+

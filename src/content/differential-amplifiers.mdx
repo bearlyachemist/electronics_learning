@@ -1,0 +1,165 @@
+import Equation from '../components/Equation.astro';
+import {DiffPairLab} from '../components/StageLabs';
+import {ActiveLoadFigure} from '../components/Figures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 36</span><span className="hairline"/>FOUNDATIONS / AMPLIFIER BUILDING BLOCKS</div>
+
+<h1>Differential amplifiers<br/><em>Amplify the difference, ignore the rest.</em></h1>
+
+<p className="dek">Derive the long-tailed pair’s tanh transfer law, its differential and common-mode gains and CMRR, then add a current-source tail and a mirror load to make the input stage of an op-amp.</p>
+
+<div className="chapter-meta"><span>60–75 min + exploration</span><span>Common-emitter amplifier · Current sources · Current mirrors</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">A sensor produces 5 mV, but its leads also pick up a volt of 50 Hz hum—identically on both wires. How do you amplify the 5 mV and not the volt?</p></div>
+
+<div>
+
+Every amplifier so far measured its input against ground. When the signal of interest is the *difference* between two wires, and anything common to both is interference, a single-ended amplifier amplifies the interference too.
+
+The **differential amplifier** responds to the difference between two inputs and, ideally, not at all to their common level. It is the input stage of every op-amp, the core of instrumentation and comparators, and the reason a 5 mV signal can be recovered from a volt of common-mode noise. It is also a beautiful application of the Ebers–Moll law: its large-signal behavior can be solved exactly.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Differential and common-mode signals → The large-signal tanh law → Small-signal gains and CMRR → Explore the long-tailed pair → Current-mirror active load → Offsets, bias currents and limits.</p>
+
+</div>
+
+<section id="signals">
+
+<div className="section-heading"><span>01</span><h2>Differential and common-mode signals</h2></div>
+
+Any pair of input voltages v₁ and v₂ can be rewritten as a **differential** part and a **common-mode** part:
+
+<Equation tex="v_d=v_1-v_2,\qquad v_{cm}=\frac{v_1+v_2}{2},\qquad v_1=v_{cm}+\frac{v_d}{2},\ \ v_2=v_{cm}-\frac{v_d}{2}"/>
+
+A linear differential amplifier has a gain for each part:
+
+<Equation tex="v_{\mathrm{out}}=A_d\,v_d+A_{cm}\,v_{cm},\qquad \mathrm{CMRR}=\left|\frac{A_d}{A_{cm}}\right|\quad(\text{often in dB: }20\log_{10}\mathrm{CMRR})"/>
+
+The **common-mode rejection ratio** measures how well the amplifier ignores what both inputs share. With 5 mV differential and 1 V common mode, an amplifier with CMRR = 100 (40 dB) produces equal output contributions from each—useless. With CMRR = 10⁵ (100 dB), the interference is 500 times smaller than the signal at the output.
+
+</section>
+
+<section id="largesignal">
+
+<div className="section-heading"><span>02</span><h2>The large-signal tanh law</h2></div>
+
+The **long-tailed pair** is two matched transistors with their emitters joined and fed from a common “tail” current I_T (a resistor to a negative supply, or a current source). Each collector has a load resistor R_C. The inputs go to the two bases.
+
+The emitters share one node, so the difference in base voltages appears entirely as a difference in base–emitter voltages: V_BE1 − V_BE2 = v_d. Applying Ebers–Moll to each transistor:
+
+<Equation tex="\frac{I_{C1}}{I_{C2}}=\frac{I_Se^{V_{BE1}/V_T}}{I_Se^{V_{BE2}/V_T}}=e^{v_d/V_T},\qquad I_{C1}+I_{C2}=I_T"/>
+
+Solve the two equations:
+
+<Equation tex="I_{C1}=\frac{I_T}{1+e^{-v_d/V_T}},\qquad I_{C2}=\frac{I_T}{1+e^{+v_d/V_T}},\qquad I_{C1}-I_{C2}=I_T\tanh\frac{v_d}{2V_T}" label="LONG-TAILED PAIR"/>
+
+The tail current is **steered** from one side to the other by the input difference. The common-mode voltage does not appear at all: raising both bases together raises the shared emitter node with them, and the tail current, split equally, does not change.
+
+<div className="table-wrap">
+
+<table><thead><tr><th>v_d</th><th>I_C1 / I_T</th><th>Comment</th></tr></thead><tbody><tr><td>0</td><td>0.500</td><td>Balanced</td></tr><tr><td>10 mV</td><td>0.596</td><td>Nearly linear</td></tr><tr><td>26 mV (V_T)</td><td>0.732</td><td>Visibly compressing</td></tr><tr><td>50 mV</td><td>0.874</td><td>Strongly nonlinear</td></tr><tr><td>100 mV</td><td>0.980</td><td>Fully switched</td></tr></tbody></table>
+
+</div>
+
+The slope has fallen by 10% from its center value at only ±17 mV. A plain pair is linear only for a few tens of millivolts; beyond ±100 mV it is a switch, which is what a comparator wants. **Emitter degeneration** (a resistor R_E in each emitter) widens the linear range: v_d = V_T ln(I_C1/I_C2) + (I_C1 − I_C2)R_E. With R_E = 500 Ω at 1 mA tail, 100 mV of input steers only 59% of the current to one side.
+
+</section>
+
+<section id="smallsignal">
+
+<div className="section-heading"><span>03</span><h2>Small-signal gains and CMRR</h2></div>
+
+### Differential gain: the half circuit
+
+For a small differential input, v₁ rises by v_d/2 and v₂ falls by v_d/2. By symmetry the shared emitter node does not move: it is a virtual AC ground for differential signals. Each half is then a common-emitter stage with input v_d/2:
+
+<Equation tex="i_{c1}=-i_{c2}=\frac{v_d/2}{r_e+R_E},\qquad A_d=\frac{v_{c2}}{v_d}=\frac{R_C}{2(r_e+R_E)}\ \ (\text{single-ended}),\qquad A_{d,\mathrm{diff}}=\frac{R_C}{r_e+R_E}"/>
+
+Taking the output from one collector gives half the gain of taking it between the two collectors. With a 1 mA tail, each side runs at 0.5 mA, r_e = 51.7 Ω, and with R_C = 10 kΩ the single-ended gain is 10 000/(2 × 51.7) = **96.7**.
+
+### Common-mode gain: the other half circuit
+
+For a common-mode input both bases rise together and both collector currents change equally. Split the tail resistance R_T into two resistors 2R_T in parallel, one for each half. Each half is now a common-emitter stage with 2R_T of degeneration:
+
+<Equation tex="A_{cm}=-\frac{R_C}{2R_T+r_e+R_E}\approx-\frac{R_C}{2R_T},\qquad \mathrm{CMRR}=\left|\frac{A_d}{A_{cm}}\right|\approx\frac{R_T}{r_e+R_E}"/>
+
+A 14.3 kΩ tail from −15 V (giving 1 mA) yields A_cm = −10 000/28 650 = −0.349 and CMRR = 277, or **49 dB**. Replacing the tail resistor with a transistor current source whose output resistance is several megohms raises CMRR to about 10⁵, nearly **100 dB**. That is the main reason the tail is almost always a current source.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / THE OPENING QUESTION</span><h3>5 mV of signal under 1 V of hum</h3>
+
+<p>With the 14.3 kΩ tail: the signal gives 96.7 × 5 mV = 484 mV at the output; the hum gives 0.349 × 1 V = 349 mV. The output is barely recognizable.</p>
+
+<p>With a 5 MΩ current-source tail: the hum contributes 10 000/10⁷ × 1 V ≈ 1 mV, nearly 500 times smaller than the signal. The circuit now does what was asked—provided the transistors and resistors match well enough, a limit discussed in section 06.</p>
+
+</div>
+
+</section>
+
+<section id="explore">
+
+<div className="section-heading"><span>04</span><h2>Explore the long-tailed pair</h2></div>
+
+<DiffPairLab client:load/>
+
+<p className="caption">Figure 1. Matched long-tailed pair with 10 kΩ collector resistors and a 1 mA tail. The upper plot is the exact large-signal steering law; the lower plot adds a 1 kHz differential signal and a 50 Hz common-mode signal at the inputs.</p>
+
+</section>
+
+<section id="activeload">
+
+<div className="section-heading"><span>05</span><h2>Current-mirror active load</h2></div>
+
+Taking the output from one collector wastes half the signal: the other collector’s current change is simply dumped into its resistor. And high gain needs a large R_C, which needs a large supply voltage to carry the bias current.
+
+Replace both collector resistors with a PNP current mirror. Q₃ (diode-connected) senses Q₁’s collector current; Q₄ copies it into the output node, where it meets Q₂’s collector current.
+
+<ActiveLoadFigure/>
+
+For a differential input, Q₁’s current rises by i and Q₂’s falls by i. The mirror copies Q₁’s increase to the output node, so the output node receives +i from Q₄ while Q₂ draws i less: the net current into the output is 2i. Both halves now contribute. And the node sees only transistor output resistances, r_o of Q₂ in parallel with r_o of Q₄:
+
+<Equation tex="A_d=G_m\,(r_{o2}\parallel r_{o4})=\frac{1}{r_e+R_E}\cdot\frac{V_A}{I_T},\qquad A_d=\frac{V_A}{2V_T}\ \ (R_E=0)" label="ACTIVE-LOAD GAIN"/>
+
+The gain depends only on the Early voltage. For V_A = 100 V it is 100/(2 × 0.02585) ≈ **1930** from one stage—with a single-ended output and no large resistors. With 100 Ω of degeneration it falls to about 660 but becomes more linear. This is the input stage of most bipolar op-amps; its high output impedance also means it must drive a high-impedance next stage, usually a follower or another gain stage.
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Offsets, bias currents and limits</h2></div>
+
+**Input offset voltage.** If the transistors’ V_BEs differ by 1 mV at equal currents, the pair behaves as if 1 mV were applied between its inputs: the output is balanced only when v_d = −1 mV. A 5% I_S mismatch gives V_T ln 1.05 ≈ 1.3 mV; collector-resistor mismatch adds more. Discrete pairs offset by millivolts; monolithic matched pairs by a fraction of a millivolt. Offset also drifts, roughly by (V_OS/T), about 3.3 µV/°C for each millivolt of offset.
+
+**Input bias and offset currents.** Each base draws I_T/(2β): 5 µA for a 1 mA tail and β = 100. That current flows through whatever source resistance drives each input, producing an extra offset voltage. Matching the source resistances at the two inputs cancels the bias current’s effect, leaving only the *difference* between base currents, the input offset current.
+
+**Mismatch limits CMRR.** If the two halves are not identical, a common-mode change produces unequal collector currents, which look like a differential signal. In practice, mismatch rather than the tail impedance often sets CMRR, which is why precision differential amplifiers use matched pairs or laser-trimmed resistors.
+
+**Input ranges.** The common-mode input must stay within the range where both transistors and the tail source remain active: above the tail’s compliance and low enough that the collectors stay above the bases. The differential input must not exceed the emitter–base breakdown voltage (about 6 V) of the reverse-biased side; input protection diodes are common.
+
+**Uses.** Besides op-amp inputs, the pair is a comparator (driven well past ±100 mV), a voltage-controlled amplifier (the gain is proportional to the tail current), and the core of analog multipliers and mixers.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A long-tailed pair <em>steers a fixed tail current</em>: the difference of the inputs decides how it divides, and their common level does not. A current-source tail gives high CMRR; a mirror load gives high gain.</p></div>
+
+<p className="reference-note">Coverage: The Art of Electronics §2.3.8, with the active-load stage of integrated op-amps.</p>
+
+</section>
+
+<div className="chapter-end">
+
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p></div>
+
+<a className="primary-link" href="/differential-amplifiers/practice/">Open practice →</a>
+
+</div>

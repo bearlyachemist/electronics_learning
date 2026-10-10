@@ -1,0 +1,457 @@
+# Analog electronics: source table of contents
+
+Source: user-provided contents from The Art of Electronics, Third Edition. Page numbers refer to the book. Wrapped lines and obvious extraction artifacts are normalized.
+
+Coverage: Chapters 1–8 and partial Chapter 9 through §9.3.2. This is a source reference, not a completion checklist. Digital/mixed-signal entries are preserved; curriculum scope is decided separately.
+
+
+## ONE: Foundations — p. 1
+
+- **1.1 Introduction** — p. 1
+- **1.2 Voltage, current, and resistance** — p. 1
+  - 1.2.1 Voltage and current — p. 1
+  - 1.2.2 Relationship between voltage and current: resistors — p. 3
+  - 1.2.3 Voltage dividers — p. 7
+  - 1.2.4 Voltage sources and current sources — p. 8
+  - 1.2.5 Thévenin equivalent circuit — p. 9
+  - 1.2.6 Small-signal resistance — p. 12
+  - 1.2.7 An example: “It’s too hot!” — p. 13
+- **1.3 Signals** — p. 13
+  - 1.3.1 Sinusoidal signals — p. 14
+  - 1.3.2 Signal amplitudes and decibels — p. 14
+  - 1.3.3 Other signals — p. 15
+  - 1.3.4 Logic levels — p. 17
+  - 1.3.5 Signal sources — p. 17
+- **1.4 Capacitors and ac circuits** — p. 18
+  - 1.4.1 Capacitors — p. 18
+  - 1.4.2 RC circuits: V and I versus time — p. 21
+  - 1.4.3 Differentiators — p. 25
+  - 1.4.4 Integrators — p. 26
+  - 1.4.5 Not quite perfect. . . — p. 28
+- **1.5 Inductors and transformers** — p. 28
+  - 1.5.1 Inductors — p. 28
+  - 1.5.2 Transformers — p. 30
+- **1.6 Diodes and diode circuits** — p. 31
+  - 1.6.1 Diodes — p. 31
+  - 1.6.2 Rectification — p. 31
+  - 1.6.3 Power-supply filtering — p. 32
+  - 1.6.4 Rectifier configurations for power supplies — p. 33
+  - 1.6.5 Regulators — p. 34
+  - 1.6.6 Circuit applications of diodes — p. 35
+  - 1.6.7 Inductive loads and diode protection — p. 38
+  - 1.6.8 Interlude: inductors as friends — p. 39
+- **1.7 Impedance and reactance** — p. 40
+  - 1.7.1 Frequency analysis of reactive circuits — p. 41
+  - 1.7.2 Reactance of inductors — p. 44
+  - 1.7.3 Voltages and currents as complex numbers — p. 44
+  - 1.7.4 Reactance of capacitors and inductors — p. 45
+  - 1.7.5 Ohm’s law generalized — p. 46
+  - 1.7.6 Power in reactive circuits — p. 47
+  - 1.7.7 Voltage dividers generalized — p. 48
+  - 1.7.8 RC highpass filters — p. 48
+  - 1.7.9 RC lowpass filters — p. 50
+  - 1.7.10 RC differentiators and integrators in the frequency domain — p. 51
+  - 1.7.11 Inductors versus capacitors — p. 51
+  - 1.7.12 Phasor diagrams — p. 51
+  - 1.7.13 “Poles” and decibels per octave — p. 52
+  - 1.7.14 Resonant circuits — p. 52
+  - 1.7.15 LC filters — p. 54
+  - 1.7.16 Other capacitor applications — p. 54
+  - 1.7.17 Thévenin’s theorem generalized — p. 55
+- **1.8 Putting it all together – an AM radio** — p. 55
+- **1.9 Other passive components** — p. 56
+  - 1.9.1 Electromechanical devices: switches — p. 56
+  - 1.9.2 Electromechanical devices: relays — p. 59
+  - 1.9.3 Connectors — p. 59
+  - 1.9.4 Indicators — p. 61
+  - 1.9.5 Variable components — p. 63
+- **1.10 A parting shot: confusing markings and itty-bitty components** — p. 64
+  - 1.10.1 Surface-mount technology: the joy and the pain — p. 65
+- Additional Exercises for Chapter 1 — p. 66
+- Review of Chapter 1 — p. 68
+
+## TWO: Bipolar Transistors — p. 71
+
+- **2.1 Introduction** — p. 71
+  - 2.1.1 First transistor model: current amplifier — p. 72
+- **2.2 Some basic transistor circuits** — p. 73
+  - 2.2.1 Transistor switch — p. 73
+  - 2.2.2 Switching circuit examples — p. 75
+  - 2.2.3 Emitter follower — p. 79
+  - 2.2.4 Emitter followers as voltage regulators — p. 82
+  - 2.2.5 Emitter follower biasing — p. 83
+  - 2.2.6 Current source — p. 85
+  - 2.2.7 Common-emitter amplifier — p. 87
+  - 2.2.8 Unity-gain phase splitter — p. 88
+  - 2.2.9 Transconductance — p. 89
+- **2.3 Ebers–Moll model applied to basic transistor circuits** — p. 90
+  - 2.3.1 Improved transistor model: transconductance amplifier — p. 90
+  - 2.3.2 Consequences of the Ebers–Moll model: rules of thumb for transistor design — p. 91
+  - 2.3.3 The emitter follower revisited — p. 93
+  - 2.3.4 The common-emitter amplifier revisited — p. 93
+  - 2.3.5 Biasing the common-emitter amplifier — p. 96
+  - 2.3.6 An aside: the perfect transistor — p. 99
+  - 2.3.7 Current mirrors — p. 101
+  - 2.3.8 Differential amplifiers — p. 102
+- **2.4 Some amplifier building blocks** — p. 105
+  - 2.4.1 Push–pull output stages — p. 106
+  - 2.4.2 Darlington connection — p. 109
+  - 2.4.3 Bootstrapping — p. 111
+  - 2.4.4 Current sharing in paralleled BJTs — p. 112
+  - 2.4.5 Capacitance and Miller effect — p. 113
+  - 2.4.6 Field-effect transistors — p. 115
+- **2.5 Negative feedback** — p. 115
+  - 2.5.1 Introduction to feedback — p. 116
+  - 2.5.2 Gain equation — p. 116
+  - 2.5.3 Effects of feedback on amplifier circuits — p. 117
+  - 2.5.4 Two important details — p. 120
+  - 2.5.5 Two examples of transistor amplifiers with feedback — p. 121
+- **2.6 Some typical transistor circuits** — p. 123
+  - 2.6.1 Regulated power supply — p. 123
+  - 2.6.2 Temperature controller — p. 123
+  - 2.6.3 Simple logic with transistors and diodes — p. 123
+- Additional Exercises for Chapter 2 — p. 124
+- Review of Chapter 2 — p. 126
+
+## THREE: Field-Effect Transistors — p. 131
+
+- **3.1 Introduction** — p. 131
+  - 3.1.1 FET characteristics — p. 131
+  - 3.1.2 FET types — p. 134
+  - 3.1.3 Universal FET characteristics — p. 136
+  - 3.1.4 FET drain characteristics — p. 137
+  - 3.1.5 Manufacturing spread of FET characteristics — p. 138
+  - 3.1.6 Basic FET circuits — p. 140
+- **3.2 FET linear circuits** — p. 141
+  - 3.2.1 Some representative JFETs: a brief tour — p. 141
+  - 3.2.2 JFET current sources — p. 142
+  - 3.2.3 FET amplifiers — p. 146
+  - 3.2.4 Differential amplifiers — p. 152
+  - 3.2.5 Oscillators — p. 155
+  - 3.2.6 Source followers — p. 156
+  - 3.2.7 FETs as variable resistors — p. 161
+  - 3.2.8 FET gate current — p. 163
+- **3.3 A closer look at JFETs** — p. 165
+  - 3.3.1 Drain current versus gate voltage — p. 165
+  - 3.3.2 Drain current versus drain-source voltage: output conductance — p. 166
+  - 3.3.3 Transconductance versus drain current — p. 168
+  - 3.3.4 Transconductance versus drain voltage — p. 170
+  - 3.3.5 JFET capacitance — p. 170
+  - 3.3.6 Why JFET (versus MOSFET) amplifiers? — p. 170
+- **3.4 FET switches** — p. 171
+  - 3.4.1 FET analog switches — p. 171
+  - 3.4.2 Limitations of FET switches — p. 174
+  - 3.4.3 Some FET analog switch examples — p. 182
+  - 3.4.4 MOSFET logic switches — p. 184
+- **3.5 Power MOSFETs** — p. 187
+  - 3.5.1 High impedance, thermal stability — p. 187
+  - 3.5.2 Power MOSFET switching parameters — p. 192
+  - 3.5.3 Power switching from logic levels — p. 192
+  - 3.5.4 Power switching cautions — p. 196
+  - 3.5.5 MOSFETs versus BJTs as high-current switches — p. 201
+  - 3.5.6 Some power MOSFET circuit examples — p. 202
+  - 3.5.7 IGBTs and other power semiconductors — p. 207
+- **3.6 MOSFETs in linear applications** — p. 208
+  - 3.6.1 High-voltage piezo amplifier — p. 208
+  - 3.6.2 Some depletion-mode circuits — p. 209
+  - 3.6.3 Paralleling MOSFETs — p. 212
+  - 3.6.4 Thermal runaway — p. 214
+- Review of Chapter 3 — p. 219
+
+## FOUR: Operational Amplifiers — p. 223
+
+- **4.1 Introduction to op-amps – the “perfect component”** — p. 223
+  - 4.1.1 Feedback and op-amps — p. 223
+  - 4.1.2 Operational amplifiers — p. 224
+  - 4.1.3 The golden rules — p. 225
+- **4.2 Basic op-amp circuits** — p. 225
+  - 4.2.1 Inverting amplifier — p. 225
+  - 4.2.2 Noninverting amplifier — p. 226
+  - 4.2.3 Follower — p. 227
+  - 4.2.4 Difference amplifier — p. 227
+  - 4.2.5 Current sources — p. 228
+  - 4.2.6 Integrators — p. 230
+  - 4.2.7 Basic cautions for op-amp circuits — p. 231
+- **4.3 An op-amp smorgasbord** — p. 232
+  - 4.3.1 Linear circuits — p. 232
+  - 4.3.2 Nonlinear circuits — p. 236
+  - 4.3.3 Op-amp application: triangle-wave oscillator — p. 239
+  - 4.3.4 Op-amp application: pinch-off voltage tester — p. 240
+  - 4.3.5 Programmable pulse-width generator — p. 241
+  - 4.3.6 Active lowpass filter — p. 241
+- **4.4 A detailed look at op-amp behavior** — p. 242
+  - 4.4.1 Departure from ideal op-amp performance — p. 243
+  - 4.4.2 Effects of op-amp limitations on circuit behavior — p. 249
+  - 4.4.3 Example: sensitive millivoltmeter — p. 253
+  - 4.4.4 Bandwidth and the op-amp current source — p. 254
+- **4.5 A detailed look at selected op-amp circuits** — p. 254
+  - 4.5.1 Active peak detector — p. 254
+  - 4.5.2 Sample-and-hold — p. 256
+  - 4.5.3 Active clamp — p. 257
+  - 4.5.4 Absolute-value circuit — p. 257
+  - 4.5.5 A closer look at the integrator — p. 257
+  - 4.5.6 A circuit cure for FET leakage — p. 259
+  - 4.5.7 Differentiators — p. 260
+- **4.6 Op-amp operation with a single power supply** — p. 261
+  - 4.6.1 Biasing single-supply ac amplifiers — p. 261
+  - 4.6.2 Capacitive loads — p. 264
+  - 4.6.3 “Single-supply” op-amps — p. 265
+  - 4.6.4 Example: voltage-controlled oscillator — p. 267
+  - 4.6.5 VCO implementation: through-hole versus surface-mount — p. 268
+  - 4.6.6 Zero-crossing detector — p. 269
+  - 4.6.7 An op-amp table — p. 270
+- **4.7 Other amplifiers and op-amp types** — p. 270
+- **4.8 Some typical op-amp circuits** — p. 274
+  - 4.8.1 General-purpose lab amplifier — p. 274
+  - 4.8.2 Stuck-node tracer — p. 276
+  - 4.8.3 Load-current-sensing circuit — p. 277
+  - 4.8.4 Integrating suntan monitor — p. 278
+- **4.9 Feedback amplifier frequency compensation** — p. 280
+  - 4.9.1 Gain and phase shift versus frequency — p. 281
+  - 4.9.2 Amplifier compensation methods — p. 282
+  - 4.9.3 Frequency response of the feedback network — p. 284
+- Additional Exercises for Chapter 4 — p. 287
+- Review of Chapter 4 — p. 288
+
+## FIVE: Precision Circuits — p. 292
+
+- **5.1 Precision op-amp design techniques** — p. 292
+  - 5.1.1 Precision versus dynamic range — p. 292
+  - 5.1.2 Error budget — p. 293
+- **5.2 An example: the millivoltmeter, revisited** — p. 293
+  - 5.2.1 The challenge: 10mV, 1%, 10MΩ, 1.8V single supply — p. 293
+  - 5.2.2 The solution: precision RRIO current source — p. 294
+- **5.3 The lessons: error budget, unspecified parameters** — p. 295
+- **5.4 Another example: precision amplifier with null offset** — p. 297
+  - 5.4.1 Circuit description — p. 297
+- **5.5 A precision-design error budget** — p. 298
+  - 5.5.1 Error budget — p. 299
+- **5.6 Component errors** — p. 299
+  - 5.6.1 Gain-setting resistors — p. 300
+  - 5.6.2 The holding capacitor — p. 300
+  - 5.6.3 Nulling switch — p. 300
+- **5.7 Amplifier input errors** — p. 301
+  - 5.7.1 Input impedance — p. 302
+  - 5.7.2 Input bias current — p. 302
+  - 5.7.3 Voltage offset — p. 304
+  - 5.7.4 Common-mode rejection — p. 305
+  - 5.7.5 Power-supply rejection — p. 306
+  - 5.7.6 Nulling amplifier: input errors — p. 306
+- **5.8 Amplifier output errors** — p. 307
+  - 5.8.1 Slew rate: general considerations — p. 307
+  - 5.8.2 Bandwidth and settling time — p. 308
+  - 5.8.3 Crossover distortion and output impedance — p. 309
+  - 5.8.4 Unity-gain power buffers — p. 311
+  - 5.8.5 Gain error — p. 312
+  - 5.8.6 Gain nonlinearity — p. 312
+  - 5.8.7 Phase error and “active compensation” — p. 314
+- **5.9 RRIO op-amps: the good, the bad, and the ugly** — p. 315
+  - 5.9.1 Input issues — p. 316
+  - 5.9.2 Output issues — p. 316
+- **5.10 Choosing a precision op-amp** — p. 319
+  - 5.10.1 “Seven precision op-amps” — p. 319
+  - 5.10.2 Number per package — p. 322
+  - 5.10.3 Supply voltage, signal range — p. 322
+  - 5.10.4 Single-supply operation — p. 322
+  - 5.10.5 Offset voltage — p. 323
+  - 5.10.6 Voltage noise — p. 323
+  - 5.10.7 Bias current — p. 325
+  - 5.10.8 Current noise — p. 326
+  - 5.10.9 CMRR and PSRR — p. 328
+  - 5.10.10 GBW, f T, slew rate and “m,” and settling time — p. 328
+  - 5.10.11 Distortion — p. 329
+  - 5.10.12 “Two out of three isn’t bad”: creating a perfect op-amp — p. 332
+- **5.11 Auto-zeroing (chopper-stabilized) amplifiers** — p. 333
+  - 5.11.1 Auto-zero op-amp properties — p. 334
+  - 5.11.2 When to use auto-zero op-amps — p. 338
+  - 5.11.3 Selecting an auto-zero op-amp — p. 338
+  - 5.11.4 Auto-zero miscellany — p. 340
+- **5.12 Designs by the masters: Agilent’s accurate DMMs** — p. 342
+  - 5.12.1 It’s impossible! — p. 342
+  - 5.12.2 Wrong – it is possible! — p. 342
+  - 5.12.3 Block diagram: a simple plan — p. 343
+  - 5.12.4 The 34401A 6.5-digit front end — p. 343
+  - 5.12.5 The 34420A 7.5-digit frontend — p. 344
+- **5.13 Difference, differential, and instrumentation amplifiers: introduction** — p. 347
+- **5.14 Difference amplifier** — p. 348
+  - 5.14.1 Basic circuit operation — p. 348
+  - 5.14.2 Some applications — p. 349
+  - 5.14.3 Performance parameters — p. 352
+  - 5.14.4 Circuit variations — p. 355
+- **5.15 Instrumentation amplifier** — p. 356
+  - 5.15.1 A first (but naive) guess — p. 357
+  - 5.15.2 Classic three-op-amp instrumentation amplifier — p. 357
+  - 5.15.3 Input-stage considerations — p. 358
+  - 5.15.4 A “roll-your-own” instrumentation amplifier — p. 359
+  - 5.15.5 A riff on robust input protection — p. 362
+- **5.16 Instrumentation amplifier miscellany** — p. 362
+  - 5.16.1 Input current and noise — p. 362
+  - 5.16.2 Common-mode rejection — p. 364
+  - 5.16.3 Source impedance and CMRR — p. 365
+  - 5.16.4 EMI and input protection — p. 365
+  - 5.16.5 Offset and CMRR trimming — p. 366
+  - 5.16.6 Sensing at the load — p. 366
+  - 5.16.7 Input bias path — p. 366
+  - 5.16.8 Output voltage range — p. 366
+  - 5.16.9 Application example: current source — p. 367
+  - 5.16.10 Other configurations — p. 368
+  - 5.16.11 Chopper and auto-zero instrumentation amplifiers — p. 370
+  - 5.16.12 Programmable gain instrumentation amplifiers — p. 370
+  - 5.16.13 Generating a differential output — p. 372
+- **5.17 Fully differential amplifiers** — p. 373
+  - 5.17.1 Differential amplifiers: basic concepts — p. 374
+  - 5.17.2 Differential amplifier application example: wideband analog link — p. 380
+  - 5.17.3 Differential-input ADCs — p. 380
+  - 5.17.4 Impedance matching — p. 382
+  - 5.17.5 Differential amplifier selection criteria — p. 383
+- Review of Chapter 5 — p. 388
+
+## SIX: Filters — p. 391
+
+- **6.1 Introduction** — p. 391
+- **6.2 Passive filters** — p. 391
+  - 6.2.1 Frequency response with RC filters — p. 391
+  - 6.2.2 Ideal performance with LC filters — p. 393
+  - 6.2.3 Several simple examples — p. 393
+  - 6.2.4 Enter active filters: an overview — p. 396
+  - 6.2.5 Key filter performance criteria — p. 399
+  - 6.2.6 Filter types — p. 400
+  - 6.2.7 Filter implementation — p. 405
+- **6.3 Active-filter circuits** — p. 406
+  - 6.3.1 VCVS circuits — p. 407
+  - 6.3.2 VCVS filter design using our simplified table — p. 407
+  - 6.3.3 State-variable filters — p. 410
+  - 6.3.4 Twin-T notch filters — p. 414
+  - 6.3.5 Allpass filters — p. 415
+  - 6.3.6 Switched-capacitor filters — p. 415
+  - 6.3.7 Digital signal processing — p. 418
+  - 6.3.8 Filter miscellany — p. 422
+- Additional Exercises for Chapter 6 — p. 422
+- Review of Chapter 6 — p. 423
+
+## SEVEN: Oscillators and Timers — p. 425
+
+- **7.1 Oscillators** — p. 425
+  - 7.1.1 Introduction to oscillators — p. 425
+  - 7.1.2 Relaxation oscillators — p. 425
+  - 7.1.3 The classic oscillator–timer chip: the 555 — p. 428
+  - 7.1.4 Other relaxation-oscillator ICs — p. 432
+  - 7.1.5 Sinewave oscillators — p. 435
+  - 7.1.6 Quartz-crystal oscillators — p. 443
+  - 7.1.7 Higher stability: TCXO, OCXO, and beyond — p. 450
+  - 7.1.8 Frequency synthesis: DDS and PLL — p. 451
+  - 7.1.9 Quadrature oscillators — p. 453
+  - 7.1.10 Oscillator “jitter” — p. 457
+- **7.2 Timers** — p. 457
+  - 7.2.1 Step-triggered pulses — p. 458
+  - 7.2.2 Monostable multivibrators — p. 461
+  - 7.2.3 A monostable application: limiting pulse width and duty cycle — p. 465
+  - 7.2.4 Timing with digital counters — p. 465
+- Review of Chapter 7 — p. 470
+
+## EIGHT: Low-Noise Techniques — p. 473
+
+- **8.1 ‘‘Noise”** — p. 473
+  - 8.1.1 Johnson (Nyquist) noise — p. 474
+  - 8.1.2 Shot noise — p. 475
+  - 8.1.3 1/f noise (flicker noise) — p. 476
+  - 8.1.4 Burst noise — p. 477
+  - 8.1.5 Band-limited noise — p. 477
+  - 8.1.6 Interference — p. 478
+- **8.2 Signal-to-noise ratio and noise figure** — p. 478
+  - 8.2.1 Noise power density and bandwidth — p. 479
+  - 8.2.2 Signal-to-noise ratio — p. 479
+  - 8.2.3 Noise figure — p. 479
+  - 8.2.4 Noise temperature — p. 480
+- **8.3 Bipolar transistor amplifier noise** — p. 481
+  - 8.3.1 Voltage noise, en — p. 481
+  - 8.3.2 Current noise in — p. 483
+  - 8.3.3 BJT voltage noise, revisited — p. 484
+  - 8.3.4 A simple design example: loudspeaker as microphone — p. 486
+  - 8.3.5 Shot noise in current sources and emitter followers — p. 487
+- **8.4 Finding en from noise-figure specifications** — p. 489
+  - 8.4.1 Step 1: NF versus IC — p. 489
+  - 8.4.2 Step 2: NF versus Rs — p. 489
+  - 8.4.3 Step 3: getting to en — p. 490
+  - 8.4.4 Step 4: the spectrum of en — p. 491
+  - 8.4.5 The spectrum of in — p. 491
+  - 8.4.6 When operating current is not your choice — p. 491
+- **8.5 Low-noise design with bipolar transistors** — p. 492
+  - 8.5.1 Noise-figure example — p. 492
+  - 8.5.2 Charting amplifier noise with en and in — p. 493
+  - 8.5.3 Noise resistance — p. 494
+  - 8.5.4 Charting comparative noise — p. 495
+  - 8.5.5 Low-noise design with BJTs: two examples — p. 495
+  - 8.5.6 Minimizing noise: BJTs, FETs, and transformers — p. 496
+  - 8.5.7 A design example: 40¢ “lightning detector” preamp — p. 497
+  - 8.5.8 Selecting a low-noise bipolar transistor — p. 500
+  - 8.5.9 An extreme low-noise design challenge — p. 505
+- **8.6 Low-noise design with JFETS** — p. 509
+  - 8.6.1 Voltage noise of JFETs — p. 509
+  - 8.6.2 Current noise of JFETs — p. 511
+  - 8.6.3 Design example: low-noise wideband JFET “hybrid” amplifiers — p. 512
+  - 8.6.4 Designs by the masters: SR560 low-noise preamplifier — p. 512
+  - 8.6.5 Selecting low-noise JFETS — p. 515
+- **8.7 Charting the bipolar–FET shootout** — p. 517
+  - 8.7.1 What about MOSFETs? — p. 519
+- **8.8 Noise in differential and feedback amplifiers** — p. 520
+- **8.9 Noise in operational amplifier circuits** — p. 521
+  - 8.9.1 Guide to Table 8.3: choosing low-noise op-amps — p. 525
+  - 8.9.2 Power-supply rejection ratio — p. 533
+  - 8.9.3 Wrapup: choosing a low-noise op-amp — p. 533
+  - 8.9.4 Low-noise instrumentation amplifiers and video amplifiers — p. 533
+  - 8.9.5 Low-noise hybrid op-amps — p. 534
+- **8.10 Signal transformers** — p. 535
+  - 8.10.1 A low-noise wideband amplifier with transformer feedback — p. 536
+- **8.11 Noise in transimpedance amplifiers** — p. 537
+  - 8.11.1 Summary of the stability problem — p. 537
+  - 8.11.2 Amplifier input noise — p. 538
+  - 8.11.3 The enC noise problem — p. 538
+  - 8.11.4 Noise in the transresistance amplifier — p. 539
+  - 8.11.5 An example: wideband JFET photodiode amplifier — p. 540
+  - 8.11.6 Noise versus gain in the transimpedance amplifier — p. 540
+  - 8.11.7 Output bandwidth limiting in the transimpedance amplifier — p. 542
+  - 8.11.8 Composite transimpedance amplifiers — p. 543
+  - 8.11.9 Reducing input capacitance: bootstrapping the transimpedance amplifier — p. 547
+  - 8.11.10 Isolating input capacitance: cascoding the transimpedance amplifier — p. 548
+  - 8.11.11 Transimpedance amplifiers with capacitive feedback — p. 552
+  - 8.11.12 Scanning tunneling microscope preamplifier — p. 553
+  - 8.11.13 Test fixture for compensation and calibration — p. 554
+  - 8.11.14 A final remark — p. 555
+- **8.12 Noise measurements and noise sources** — p. 555
+  - 8.12.1 Measurement without a noise source — p. 555
+  - 8.12.2 An example: transistor-noise test circuit — p. 556
+  - 8.12.3 Measurement with a noise source — p. 556
+  - 8.12.4 Noise and signal sources — p. 558
+- **8.13 Bandwidth limiting and rms voltage measurement** — p. 561
+  - 8.13.1 Limiting the bandwidth — p. 561
+  - 8.13.2 Calculating the integrated noise — p. 563
+  - 8.13.3 Op-amp “low-frequency noise” with asymmetric filter — p. 564
+  - 8.13.4 Finding the 1/f corner frequency — p. 566
+  - 8.13.5 Measuring the noise voltage — p. 567
+  - 8.13.6 Measuring the noise current — p. 569
+  - 8.13.7 Another way: roll-your-own fA/√Hz instrument — p. 571
+  - 8.13.8 Noise potpourri — p. 574
+- **8.14 Signal-to-noise improvement by bandwidth narrowing** — p. 574
+  - 8.14.1 Lock-in detection — p. 575
+- **8.15 Power-supply noise** — p. 578
+  - 8.15.1 Capacitance multiplier — p. 578
+- **8.16 Interference, shielding, and grounding** — p. 579
+  - 8.16.1 Interfering signals — p. 579
+  - 8.16.2 Signal grounds — p. 582
+  - 8.16.3 Grounding between instruments — p. 583
+- Additional Exercises for Chapter 8 — p. 588
+- Review of Chapter 8 — p. 590
+
+## NINE: Voltage Regulation and Power Conversion — p. 594
+
+- **9.1 Tutorial: from zener to series-pass linear regulator** — p. 595
+  - 9.1.1 Adding feedback — p. 596
+- **9.2 Basic linear regulator circuits with the classic 723** — p. 598
+  - 9.2.1 The 723 regulator — p. 598
+  - 9.2.2 In defense of the beleaguered 723 — p. 600
+- **9.3 Fully integrated linear regulators** — p. 600
+  - 9.3.1 Taxonomy of linear regulator ICs — p. 601
+  - 9.3.2 Three-terminal fixed regulators — p. 601
+
+> Supplied excerpt ends here. The remainder of Chapter 9 was not included.

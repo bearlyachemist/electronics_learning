@@ -1,0 +1,135 @@
+import Equation from '../components/Equation.astro';
+import {BootstrapLab} from '../components/StageLabs';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 39</span><span className="hairline"/>FOUNDATIONS / AMPLIFIER BUILDING BLOCKS</div>
+
+<h1>Bootstrapping<br/><em>Make a resistor disappear by moving both its ends.</em></h1>
+
+<p className="dek">Derive how driving the far end of an impedance with a copy of the signal multiplies it by 1/(1 − G), and use the idea to raise input impedance, increase gain and cancel cable capacitance.</p>
+
+<div className="chapter-meta"><span>45–55 min + exploration</span><span>Biasing · Emitter follower · Impedance</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">An emitter follower can offer three-quarters of a megohm at its base, but its bias divider drags the input impedance down to 64 kΩ. Can the divider be made to vanish for signals while still setting the DC bias?</p></div>
+
+<div>
+
+The current through a resistor depends on the voltage *across* it. If the voltage at its far end rises and falls with the near end, little current flows, however small the resistor is. The resistor then behaves, for signals, as if it were much larger.
+
+Arranging this deliberately—driving the far end of an impedance with a copy of the signal—is called **bootstrapping**, after pulling oneself up by one’s own bootstraps. It is the positive-gain counterpart of the Miller effect in Chapter 41, and it reappears in amplifiers, output stages, guarded cables and instrumentation.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The divider problem → The principle: 1/(1 − G) → The bootstrapped follower → Explore input impedance → Other bootstraps → Limits.</p>
+
+</div>
+
+<section id="problem">
+
+<div className="section-heading"><span>01</span><h2>The divider problem</h2></div>
+
+Chapter 29 biased an audio follower with R₁ = 130 kΩ and R₂ = 150 kΩ on 15 V, with R_E = 7.5 kΩ at about 1 mA. Looking into the base, the transistor offers (β + 1)(r_e + R_E) ≈ 760 kΩ, but the divider sits directly across the input, so the source sees 69.6 kΩ ∥ 760 kΩ ≈ **64 kΩ**. The stiffness rule forced the divider to be small, and the divider then set the input impedance.
+
+The divider must stay small for DC. The question is whether it can be made large for signals.
+
+</section>
+
+<section id="principle">
+
+<div className="section-heading"><span>02</span><h2>The principle: 1/(1 − G)</h2></div>
+
+Take an impedance Z between a node A, which carries the signal v, and a node B. If node B is driven with a scaled copy of the same signal, v_B = G v, the current through Z is
+
+<Equation tex="i=\frac{v-Gv}{Z}=\frac{v(1-G)}{Z}\qquad\Rightarrow\qquad Z_{\mathrm{eff}}=\frac{v}{i}=\frac{Z}{1-G}" label="BOOTSTRAPPED IMPEDANCE"/>
+
+- **G between 0 and 1** (a follower’s output): Z looks larger. With G = 0.99, a hundred times larger; with G = 0.997, about 300 times.
+- **G = 1**: no current at all; Z is invisible.
+- **G greater than 1**: the current reverses—a negative resistance, and the recipe for an oscillator.
+- **G negative** (an inverting amplifier): Z looks *smaller*, Z/(1 + |G|). For a capacitor, that is the Miller effect.
+
+Applied to a capacitance, the result reads C_eff = C(1 − G): a bootstrapped capacitance shrinks.
+
+</section>
+
+<section id="follower">
+
+<div className="section-heading"><span>03</span><h2>The bootstrapped follower</h2></div>
+
+Split the bias path: the divider R₁, R₂ sets a DC voltage at a node M, and a resistor R₃ carries that voltage from M to the base. For DC, nothing has changed except a small extra drop across R₃ from the base current. Now add a capacitor C_B from the emitter to M.
+
+For signals, M now follows the emitter, which follows the base with gain G = R_E/(R_E + r_e) ≈ 0.997. R₃ has the signal at both ends:
+
+<Equation tex="Z_{R_3,\mathrm{eff}}=\frac{R_3}{1-G}\approx\frac{47\ \mathrm{k\Omega}}{0.0034}\approx14\ \mathrm{M\Omega}"/>
+
+The divider has effectively disappeared from the input. What remains is the transistor itself. But the divider has not vanished from the circuit: through C_B it now loads the *emitter*, so for signals the emitter sees R_E ∥ R₁ ∥ R₂ = 7.5 kΩ ∥ 69.6 kΩ = 6.8 kΩ, and the base sees (β + 1) times that:
+
+<Equation tex="Z_{\mathrm{in}}\approx\frac{R_3}{1-G}\ \Big\|\ (\beta+1)\left(r_e+R_E\parallel R_1\parallel R_2\right)\approx14\ \mathrm{M\Omega}\parallel0.69\ \mathrm{M\Omega}\approx0.65\ \mathrm{M\Omega}"/>
+
+The lab’s nodal solution gives **651 kΩ**, ten times the plain divider’s 64 kΩ. The input impedance is now limited by the transistor’s β, as in an unbiased follower, not by the bias network. A Darlington follower would push it into the megohms.
+
+Bootstrapping fails at low frequencies, where C_B’s impedance becomes comparable to the resistances around node M. With 10 µF, the improvement fades below a few hertz.
+
+</section>
+
+<section id="explore">
+
+<div className="section-heading"><span>04</span><h2>Explore input impedance</h2></div>
+
+<BootstrapLab client:load/>
+
+<p className="caption">Figure 1. Input impedance of a divider-biased follower, plain and bootstrapped, from a small-signal nodal model at 1 mA with β = 100. The emitter load can be added to show what limits the bootstrapped impedance.</p>
+
+</section>
+
+<section id="others">
+
+<div className="section-heading"><span>05</span><h2>Other bootstraps</h2></div>
+
+### A collector load that acts like a current source
+
+A common-emitter stage’s gain is limited by R_C (Chapter 32). Split R_C into two resistors and connect a capacitor from their junction to the output of a follower that the stage drives. The junction then moves with the collector, so the upper resistor carries almost no signal current and looks enormous. The stage’s effective load becomes the follower’s input impedance, and the gain rises toward g_m times that. Classic discrete audio amplifiers used exactly this bootstrapped collector load in the driver stage of their push–pull outputs, which also let the output swing closer to the supply.
+
+### Guards and driven shields
+
+A coaxial cable between a high-impedance sensor and an amplifier adds capacitance: 2 m at 100 pF/m is 200 pF, which with a 1 MΩ source gives a low-pass corner of only 800 Hz. Drive the cable’s shield with a follower copy of the signal (G ≈ 0.99), and the capacitance between center conductor and shield carries 1% of the current it would otherwise: effectively 2 pF, raising the corner to about 80 kHz. The same idea, a **guard ring** driven at the signal voltage, surrounds sensitive inputs on circuit boards so that leakage across the board surface finds no voltage difference to act on.
+
+### Inside a transistor
+
+A follower’s own C_π sits between base and emitter, both of which move together, so it too is bootstrapped: the input capacitance of a follower is C_μ plus a small fraction of C_π. Chapter 41 contrasts this with the common-emitter stage, where C_μ is multiplied instead.
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Limits</h2></div>
+
+**Positive feedback.** A bootstrap is positive feedback around a gain just under 1. If G reaches or exceeds 1—through added gain, or phase shifts at high frequency that make the copy arrive late—the effective impedance becomes negative and the circuit can oscillate. Bootstrapped stages need gain margin and sometimes small damping resistors.
+
+**Frequency range.** The capacitor sets a lower limit, as in the lab. At high frequencies, the follower’s gain falls and acquires phase shift, so the improvement fades there too.
+
+**Noise.** A bootstrapped resistor still generates the thermal noise current of its real value. A 14 MΩ *apparent* impedance built from a 47 kΩ resistor injects the noise current of 47 kΩ, √(14 M/47 k) ≈ 17 times more than a genuine 14 MΩ resistor would. Bootstrapping fixes loading, not noise.
+
+**What remains.** Bootstrapping removes one limit and exposes the next. In the follower that limit is β times the emitter load; in a guarded cable it is the follower’s gain accuracy; in a collector load it is the next stage’s input impedance.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Drive the far end of an impedance with a copy of the signal and it looks <em>1/(1 − G) times larger</em>. With G close to 1, resistors vanish and capacitances shrink; with G negative, the same algebra gives the Miller effect.</p></div>
+
+<p className="reference-note">Coverage: The Art of Electronics §2.4.3, with guarding and the link to the Miller effect.</p>
+
+</section>
+
+<div className="chapter-end">
+
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p></div>
+
+<a className="primary-link" href="/bootstrapping/practice/">Open practice →</a>
+
+</div>
