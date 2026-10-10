@@ -1,6 +1,6 @@
+import {FollowerRegulatorFigure,FollowerLoadingFigure} from '../components/BjtTheoryFigures';
 import Equation from '../components/Equation.astro';
 import {FollowerLab} from '../components/BjtLabs';
-import {FollowerRegulatorFigure} from '../components/Figures';
 
 <div className="chapter-hero" id="overview">
 
@@ -20,7 +20,7 @@ import {FollowerRegulatorFigure} from '../components/Figures';
 
 <div>
 
-Connect the signal to a transistor’s base, take the output from its emitter, and tie the collector to the supply. The output then sits one diode drop below the input and follows it. That sounds useless—there is no voltage gain—until you look at the currents. The load’s current comes from the supply through the collector; the source only provides the base current, β + 1 times smaller.
+Connect the signal to a transistor’s base, take the output from its emitter, and tie the collector to the supply. The output then sits one diode drop below the input and follows it. That sounds useless—there is no voltage gain—until you look at the currents. The load’s current comes from the supply through the collector; the source only provides the base current, $\beta$ + 1 times smaller.
 
 The emitter follower is therefore an **impedance converter**: it presents a high impedance to its source and a low impedance to its load. It is the most common transistor stage after the switch.
 
@@ -30,7 +30,7 @@ The emitter follower is therefore an **impedance converter**: it presents a high
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The output follows the input → Impedances looking in and looking back → Explore swing and clipping → Followers in practice → The follower as a voltage regulator → PNP followers and limits.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The output follows the input → Impedances looking in and looking back → Explore swing and clipping → Followers in practice → The follower as a voltage regulator → PNP followers and limits → Check your understanding.</p>
 
 </div>
 
@@ -42,11 +42,11 @@ With the base–emitter junction conducting, rule 2 of Chapter 27 gives:
 
 <Equation tex="V_E=V_B-V_{BE}\approx V_B-0.65\ \mathrm V"/>
 
-Changes are what matter for signals. As long as the transistor stays active, V_BE barely changes (Chapter 34 makes “barely” precise), so
+Changes are what matter for signals. As long as the transistor stays active, $V_{BE}$ barely changes (Chapter 34 makes “barely” precise), so
 
 <Equation tex="\Delta V_E\approx\Delta V_B,\qquad G=\frac{\Delta V_E}{\Delta V_B}\approx1"/>
 
-The voltage gain is slightly less than 1 but the **current** gain is β + 1, so the power gain is large. The follower needs some resistance or current source from the emitter to a lower voltage, so that a current flows and the base–emitter junction stays forward-biased.
+The voltage gain is slightly less than 1 but the **current** gain is $\beta$ + 1, so the power gain is large. The follower needs some resistance or current source from the emitter to a lower voltage, so that a current flows and the base–emitter junction stays forward-biased.
 
 </section>
 
@@ -56,31 +56,41 @@ The voltage gain is slightly less than 1 but the **current** gain is β + 1, so 
 
 ### Input impedance
 
-Let the emitter drive a total resistance R (the emitter resistor in parallel with the load, for signals). A change ΔV_B moves the emitter by the same amount, so the emitter current changes by ΔV_B/R. The base current changes β + 1 times less:
+Let the emitter drive a total resistance R (the emitter resistor in parallel with the load, for signals). A change $\Delta V_B$ moves the emitter by the same amount, so the emitter current changes by $\Delta V_B$/R. The base current changes $\beta$ + 1 times less:
 
 <Equation tex="\Delta I_B=\frac{\Delta I_E}{\beta+1}=\frac{\Delta V_B}{(\beta+1)R}\qquad\Rightarrow\qquad Z_{\mathrm{in}}=(\beta+1)R" label="LOOKING INTO THE BASE"/>
 
-The load appears magnified by β + 1 when seen from the base.
+The load appears magnified by $\beta$ + 1 when seen from the base.
 
 ### Output impedance
 
-Now drive the base from a source with Thévenin resistance R_s and ask how the emitter voltage responds to a change in load current. A change ΔI_E needs a base-current change ΔI_E/(β + 1), which flows through R_s and lowers the base (and emitter) by ΔI_E R_s/(β + 1):
+Now drive the base from a source with Thévenin resistance $R_s$ and ask how the emitter voltage responds to a change in load current. A change $\Delta I_E$ needs a base-current change $\Delta I_E$/($\beta$ + 1), which flows through $R_s$ and lowers the base (and emitter) by $\Delta I_E$ $R_s$/($\beta$ + 1):
 
 <Equation tex="Z_{\mathrm{out}}=\frac{R_s}{\beta+1}" label="LOOKING INTO THE EMITTER"/>
 
-The source impedance appears divided by β + 1 when seen from the emitter. The transistor’s own intrinsic emitter resistance, r_e = V_T/I_E ≈ 25 Ω at 1 mA, adds in series (Chapter 30); for now it is small compared with the effect of R_s.
+The source impedance appears divided by $\beta$ + 1 when seen from the emitter. The transistor’s own intrinsic emitter resistance, $r_e$ = $V_T$/$I_E$ ≈ 25 Ω at 1 mA, adds in series (Chapter 30); for now it is small compared with the effect of $R_s$.
 
 <div className="worked-example">
 
-<span className="tiny-label">WORKED EXAMPLE / THE OPENING QUESTION</span><h3>10 kΩ source, 1 kΩ load, β = 100</h3>
+<span className="tiny-label">WORKED EXAMPLE / THE OPENING QUESTION</span><h3>10 kΩ source, 1 kΩ load, $\beta$ = 100</h3>
 
 <p>Connected directly, the load receives 1/(1 + 10) = <strong>9.1%</strong> of the source voltage.</p>
 
-<p>With a follower, the base sees (β + 1) × 1 kΩ = 101 kΩ, so the base receives 101/(101 + 10) = <strong>91%</strong> of the source voltage. The emitter, looking back, has an output impedance of 10 kΩ/101 ≈ 99 Ω (plus r_e), which the 1 kΩ load hardly loads. One transistor turned a 9% connection into a roughly 80–90% one, depending on r_e and bias.</p>
+<p>With a follower, the base sees ($\beta$ + 1) × 1 kΩ = 101 kΩ, so the base receives 101/(101 + 10) = <strong>91%</strong> of the source voltage. The emitter, looking back, has an output impedance of 10 kΩ/101 ≈ 99 Ω (plus $r_e$), which the 1 kΩ load hardly loads. One transistor turned a 9% connection into a roughly 80–90% one, depending on $r_e$ and bias.</p>
 
 </div>
 
-Both results are the same fact seen from opposite sides: currents in the emitter circuit are β + 1 times the currents in the base circuit, while voltage changes are equal. Impedance is voltage over current, so it scales by β + 1.
+Both results are the same fact seen from opposite sides: currents in the emitter circuit are $\beta$ + 1 times the currents in the base circuit, while voltage changes are equal. Impedance is voltage over current, so it scales by $\beta$ + 1.
+
+### Keep the two gains separate
+
+The base-to-emitter gain and the source-to-emitter gain differ when the source has resistance. With $R=R_E\parallel R_L$ and negligible Early effect, the hybrid-π model gives:
+
+<Equation tex="Z_{in}=r_π+(\beta+1)R,\qquad A_{BE}=\frac{(\beta+1)R}{r_π+(\beta+1)R},\qquad A_{SE}=A_{BE}\frac{Z_{in}}{R_s+Z_{in}}" />
+
+The first factor describes following; the second describes source loading. Count each once. Using the input divider and then applying a second output divider based on the same source resistance would double-count one effect.
+
+<FollowerLoadingFigure/>
 
 </section>
 
@@ -98,9 +108,9 @@ With the transistor off, the emitter is pulled down to the divider voltage
 
 <Equation tex="V_{\mathrm{floor}}=-V_{EE}\,\frac{R_L}{R_E+R_L}"/>
 
-With R_E = 3.3 kΩ and a 1 kΩ load on ±12 V supplies, that is −12 × 1/4.3 = −2.79 V, however far the input goes. To swing to −6 V into 1 kΩ, R_E must carry the load’s 6 mA from the remaining 6 V: R_E ≤ 1 kΩ.
+With $R_E$ = 3.3 kΩ and a 1 kΩ load on ±12 V supplies, that is −12 × 1/4.3 = −2.79 V, however far the input goes. To swing to −6 V into 1 kΩ, $R_E$ must carry the load’s 6 mA from the remaining 6 V: $R_E$ ≤ 1 kΩ.
 
-That fix has a cost. With R_E = 1 kΩ to −10 V and the output resting at 0 V, 10 mA flows continuously: 0.1 W in the transistor and 0.1 W in R_E, to deliver a signal whose average power may be far smaller. The **push–pull** stage (a later chapter) pairs an NPN follower that sources with a PNP follower that sinks, so that neither has to idle at the peak load current.
+That fix has a cost. With $R_E$ = 1 kΩ to −10 V and the output resting at 0 V, 10 mA flows continuously: 0.1 W in the transistor and 0.1 W in $R_E$, to deliver a signal whose average power may be far smaller. The **push–pull** stage (a later chapter) pairs an NPN follower that sources with a PNP follower that sinks, so that neither has to idle at the peak load current.
 
 </section>
 
@@ -110,7 +120,7 @@ That fix has a cost. With R_E = 1 kΩ to −10 V and the output resting at 0 V, 
 
 **AC coupling.** A follower driving a capacitively coupled load must be biased so that the emitter sits near the middle of the available swing. Biasing is the subject of Chapter 29.
 
-**Reverse base–emitter breakdown.** Suppose a follower charges a large capacitor to +8 V, and then its base is suddenly pulled to −5 V. The capacitor holds the emitter at +8 V, so the base–emitter junction is reverse-biased by 13 V, well past a typical V_EBO of 6 V. A diode across the base–emitter junction (cathode to base) prevents this.
+**Reverse base–emitter breakdown.** Suppose a follower charges a large capacitor to +8 V, and then its base is suddenly pulled to −5 V. The capacitor holds the emitter at +8 V, so the base–emitter junction is reverse-biased by 13 V, well past a typical $V_{EBO}$ of 6 V. A diode across the base–emitter junction (cathode to base) prevents this.
 
 **Followers inside other circuits.** A follower is placed after a high-impedance stage to drive a load, before a stage whose input would load a source, and as the output stage of regulators and amplifiers. Its high input impedance and low output impedance are why it appears so often.
 
@@ -130,7 +140,7 @@ Chapter 15’s zener regulator wastes current: the resistor must supply the full
 
 <span className="tiny-label">WORKED EXAMPLE / 100 mA FROM AN UNREGULATED 15 V</span><h3>A 10 V zener and a follower</h3>
 
-<p>The output is about 10 − 0.65 = <strong>9.35 V</strong>. At 100 mA and a worst-case β of 50, the base needs 0.1 A/51 = 1.96 mA.</p>
+<p>The output is about 10 − 0.65 = <strong>9.35 V</strong>. At 100 mA and a worst-case $\beta$ of 50, the base needs 0.1 A/51 = 1.96 mA.</p>
 
 <p>Allowing 5 mA of minimum zener current at the input’s ripple trough of 13 V: R ≤ (13 − 10)/(5 + 1.96) mA = 431 Ω; choose <strong>390 Ω</strong>. Without the follower, the same resistor would have to pass 105 mA, about 29 Ω, and with no load at a 15 V peak the zener would dissipate (15 − 10)/29 Ω × 10 V ≈ 1.7 W.</p>
 
@@ -138,7 +148,7 @@ Chapter 15’s zener regulator wastes current: the resistor must supply the full
 
 </div>
 
-The output still changes with load current through the transistor’s r_e and the zener’s dynamic resistance divided by β, and with temperature through V_BE. Feedback regulators (Chapter 15’s preview, and later chapters) compare the output with a reference and correct both.
+The output still changes with load current through the transistor’s $r_e$ and the zener’s dynamic resistance divided by $\beta$, and with temperature through $V_{BE}$. Feedback regulators (Chapter 15’s preview, and later chapters) compare the output with a reference and correct both.
 
 </section>
 
@@ -146,17 +156,80 @@ The output still changes with load current through the transistor’s r_e and th
 
 <div className="section-heading"><span>06</span><h2>PNP followers and limits</h2></div>
 
-A PNP follower is the mirror image: emitter one V_BE above the base, collector to the negative supply, able to sink current but not source it. Pairing an NPN and a PNP follower gives push–pull operation, with a crossover region near zero where neither conducts strongly—another later topic.
+A PNP follower is the mirror image: emitter one $V_{BE}$ above the base, collector to the negative supply, able to sink current but not source it. Pairing an NPN and a PNP follower gives push–pull operation, with a crossover region near zero where neither conducts strongly—another later topic.
 
 The first-model results above omit three effects that matter for precise work:
 
-- **r_e.** The emitter has an intrinsic resistance V_T/I_E in series with R_s/(β + 1). At 1 mA it is about 26 Ω; at 10 µA it is 2.6 kΩ. A follower biased at very low current is a poor driver.
-- **V_BE changes with current.** By about 60 mV per decade of current (Chapter 34). For large swings into a load, the emitter does not follow the base exactly; the gain is R/(R + r_e), slightly less than 1, and slightly signal-dependent.
-- **V_BE changes with temperature.** By about −2.1 mV/°C, so a DC-coupled follower’s output drifts upward as it warms.
+- **$r_e$.** The emitter has an intrinsic resistance $V_T$/$I_E$ in series with $R_s$/($\beta$ + 1). At 1 mA it is about 26 Ω; at 10 µA it is 2.6 kΩ. A follower biased at very low current is a poor driver.
+- **$V_{BE}$ changes with current.** By about 60 mV per decade of current (Chapter 34). For large swings into a load, the emitter does not follow the base exactly; the gain is R/(R + $r_e$), slightly less than 1, and slightly signal-dependent.
+- **$V_{BE}$ changes with temperature.** By about −2.1 mV/°C, so a DC-coupled follower’s output drifts upward as it warms.
 
-<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A follower copies a voltage while multiplying impedance by β + 1 looking in and dividing it by β + 1 looking back. It <em>sources easily but sinks only through its emitter resistor</em>.</p></div>
+<div className="worked-example">
 
-<p className="reference-note">Coverage: The Art of Electronics §§2.2.3–2.2.4. Biasing a follower for AC signals is in Chapter 29; the r_e correction is in Chapters 30 and 34.</p>
+<span className="tiny-label">WORKED DESIGN / BUDGET THE NEGATIVE PEAK</span><h3>±4 V into 1 kΩ from ±10 V</h3>
+
+<p>At the −4 V output peak the grounded load injects 4 mA into the output node. A 1 kΩ pull-down resistor to −10 V removes 6 mA, leaving 2 mA to flow through the NPN. The transistor therefore remains conducting. At the +4 V peak it must supply 14 mA through the pull-down plus 4 mA to the load: 18 mA total.</p>
+
+<p>Those peak currents set base-drive requirements. At β = 50, the positive peak needs about $18/51=0.353$ mA of base current. A 10 kΩ signal source would lose 3.53 V in delivering it, so a large ideal-source swing does not prove that a weak sensor can drive the circuit.</p>
+
+<p>At zero output, the 1 kΩ pull-down dissipates 100 mW and the transistor roughly another 100 mW. Check both standing power and peak current; the follower’s current gain is supplied by its power rails.</p>
+
+</div>
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A follower copies a voltage while multiplying impedance by $\beta$ + 1 looking in and dividing it by $\beta$ + 1 looking back. It <em>sources easily but sinks only through its emitter resistor</em>.</p></div>
+
+<p className="reference-note">Coverage: The Art of Electronics §§2.2.3–2.2.4. Biasing a follower for AC signals is in Chapter 29; the $r_e$ correction is in Chapters 30 and 34.</p>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Does a follower have unity gain from the original signal source?</summary>
+<div>
+
+Not necessarily. Its base-to-emitter gain is near unity, but finite source resistance and base current create an additional input divider.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why can its negative swing clip before its positive swing?</summary>
+<div>
+
+The NPN supplies current readily, but the pull-down must remove current at negative peaks. Once the required transistor current would be negative, it turns off and the passive divider sets the output.
+
+</div>
+</details>
+
+<details>
+<summary>3. What can a capacitor held above the base do to the base–emitter junction?</summary>
+<div>
+
+It can reverse-bias that junction when the base falls. A protection diode with anode at emitter and cathode at base clamps the reverse voltage, if the surrounding circuit can carry its current.
+
+</div>
+</details>
+
+<details>
+<summary>4. Is the zener follower output exactly the zener voltage?</summary>
+<div>
+
+No. It is lower by the operating base–emitter voltage and varies with current, temperature and reference impedance.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why specify bias current when quoting output impedance?</summary>
+<div>
+
+The intrinsic contribution is approximately $V_T/I_E$. At low bias it can be much larger than the transformed source resistance.
+
+</div>
+</details>
 
 </section>
 

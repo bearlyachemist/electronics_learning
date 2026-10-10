@@ -1,3 +1,4 @@
+import {CommonEmitterFigure,DegeneratedGainFigure} from '../components/BjtTheoryFigures';
 import Equation from '../components/Equation.astro';
 import {CEAmpLab} from '../components/BjtLabs';
 
@@ -7,7 +8,7 @@ import {CEAmpLab} from '../components/BjtLabs';
 
 <h1>The common-emitter amplifier<br/><em>Voltage gain from a ratio of resistors.</em></h1>
 
-<p className="dek">Derive the gain −R_C/R_E, refine it with r_e, trade gain for linearity with emitter degeneration, and design a complete stage with its swing and frequency limits.</p>
+<p className="dek">Derive the gain −$R_C$/$R_E$, refine it with $r_e$, trade gain for linearity with emitter degeneration, and design a complete stage with its swing and frequency limits.</p>
 
 <div className="chapter-meta"><span>60–75 min + exploration</span><span>Biasing · Small-signal model · RC filters</span></div>
 
@@ -29,7 +30,7 @@ This is the common-emitter amplifier, so called because for signals the emitter 
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Gain from a ratio of resistors → Refine with r_e: degeneration and bypassing → Explore a real stage → Output swing and loading → Frequency response → Design a complete stage.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Gain from a ratio of resistors → Refine with $r_e$: degeneration and bypassing → Explore a real stage → Output swing and loading → Frequency response → Design a complete stage → Check your understanding.</p>
 
 </div>
 
@@ -37,52 +38,56 @@ This is the common-emitter amplifier, so called because for signals the emitter 
 
 <div className="section-heading"><span>01</span><h2>Gain from a ratio of resistors</h2></div>
 
-Bias the stage as in Chapter 29: a stiff divider sets the base, R_E sets the current, R_C sets the collector voltage. Couple the signal into the base. Then follow a small change:
+Bias the stage as in Chapter 29: a stiff divider sets the base, $R_E$ sets the current, $R_C$ sets the collector voltage. Couple the signal into the base. Then follow a small change:
 
-1. The emitter follows the base: Δv_E = Δv_B.
-2. The emitter current changes by Δi_E = Δv_B/R_E.
-3. The collector current changes by nearly the same amount: Δi_C ≈ Δi_E.
-4. The collector voltage changes by the drop across R_C, in the opposite direction: Δv_C = −Δi_C R_C.
+1. The emitter follows the base: $\Delta v_E$ = $\Delta v_B$.
+2. The emitter current changes by $\Delta i_E$ = $\Delta v_B$/$R_E$.
+3. The collector current changes by nearly the same amount: $\Delta i_C$ ≈ $\Delta i_E$.
+4. The collector voltage changes by the drop across $R_C$, in the opposite direction: $\Delta v_C$ = −$\Delta i_C$ $R_C$.
 
 <Equation tex="G=\frac{\Delta v_C}{\Delta v_B}=-\frac{R_C}{R_E}" label="FIRST-MODEL GAIN"/>
 
-The minus sign means the output is **inverted**: when the input rises, the collector falls. With R_C = 7.5 kΩ and R_E = 1 kΩ the gain is −7.5. β does not appear. The gain is a ratio of two resistors, as predictable as the resistors are.
+The minus sign means the output is **inverted**: when the input rises, the collector falls. With $R_C$ = 7.5 kΩ and $R_E$ = 1 kΩ the gain is −7.5. $\beta$ does not appear. The gain is a ratio of two resistors, as predictable as the resistors are.
 
-The input impedance is the bias divider in parallel with (β + 1)R_E; the output impedance, looking back into the collector, is R_C (the collector itself being a current source of very high impedance, Chapter 31).
+The input impedance is the bias divider in parallel with ($\beta$ + 1)$R_E$; the output impedance, looking back into the collector, is $R_C$ (the collector itself being a current source of very high impedance, Chapter 31).
 
 </section>
+
+<CommonEmitterFigure/>
 
 <section id="refine">
 
-<div className="section-heading"><span>02</span><h2>Refine with r_e: degeneration and bypassing</h2></div>
+<div className="section-heading"><span>02</span><h2>Refine with $r_e$: degeneration and bypassing</h2></div>
 
-The small-signal model (Chapter 30) adds the transistor’s intrinsic emitter resistance r_e = V_T/I_C in series with R_E:
+The small-signal model (Chapter 30) adds the transistor’s intrinsic emitter resistance $r_e$ = $V_T$/$I_C$ in series with $R_E$:
 
 <Equation tex="G=-\frac{R_C}{R_E+r_e}"/>
 
-At 0.89 mA, r_e = 29 Ω, so the gain of the example stage is −7500/1029 = **−7.29**, close to −7.5 because R_E ≫ r_e.
+At 0.89 mA, $r_e$ = 29 Ω, so the gain of the example stage is −7500/1029 = **−7.29**, close to −7.5 because $R_E$ ≫ $r_e$.
 
 ### Bypassing the emitter for maximum gain
 
-A large capacitor across R_E keeps the emitter at a fixed DC voltage (bias still set by R_E) but grounds it for signals. Then only r_e remains:
+A large capacitor across $R_E$ keeps the emitter at a fixed DC voltage (bias still set by $R_E$) but grounds it for signals. Then only $r_e$ remains:
 
 <Equation tex="G_{\max}=-\frac{R_C}{r_e}=-g_mR_C=-\frac{I_CR_C}{V_T}=-\frac{V_{R_C}}{25\ \mathrm{mV}}" label="BYPASSED GAIN"/>
 
-The maximum gain depends only on the DC voltage across the collector resistor. With 6.7 V across R_C it is about −258. That is a large gain from one transistor, but at a cost:
+The maximum gain depends only on the DC voltage across the collector resistor. With 6.7 V across $R_C$ it is about −258. That is a large gain from one transistor, but at a cost:
 
-- **It depends on I_C**, and so on temperature and β (through the bias).
-- **It is nonlinear.** r_e changes during the signal itself, because the current changes. A 5 mV input raises the current 21% on one peak and lowers it 18% on the other; the output is visibly distorted.
-- **Input impedance collapses** from (β + 1)(R_E + r_e) ≈ 100 kΩ to (β + 1)r_e ≈ 2.9 kΩ, in parallel with the divider.
+- **It depends on $I_C$**, and so on temperature and $\beta$ (through the bias).
+- **It is nonlinear.** $r_e$ changes during the signal itself, because the current changes. A 5 mV input raises the current 21% on one peak and lowers it 18% on the other; the output is visibly distorted.
+- **Input impedance collapses** from ($\beta$ + 1)($R_E$ + $r_e$) ≈ 100 kΩ to ($\beta$ + 1)$r_e$ ≈ 2.9 kΩ, in parallel with the divider.
 
 ### The compromise: partial bypassing
 
-Split R_E into an unbypassed part R_E1 and a bypassed part R_E2. The bias sees R_E1 + R_E2; the signal sees only R_E1:
+Split $R_E$ into an unbypassed part $R_{E1}$ and a bypassed part $R_{E2}$. The bias sees $R_{E1}$ + $R_{E2}$; the signal sees only $R_{E1}$:
 
 <Equation tex="G\approx-\frac{R_C}{R_{E1}+r_e}"/>
 
-With R_E1 = 100 Ω, the example’s gain becomes −7500/129 = −58, still mostly set by resistors. This resistance in the emitter is called **emitter degeneration**. It trades gain for predictability, linearity and input impedance—an early example of negative feedback.
+With $R_{E1}$ = 100 Ω, the example’s gain becomes −7500/129 = −58, still mostly set by resistors. This resistance in the emitter is called **emitter degeneration**. It trades gain for predictability, linearity and input impedance—an early example of negative feedback.
 
 </section>
+
+<DegeneratedGainFigure/>
 
 <section id="explore">
 
@@ -100,13 +105,13 @@ The lab solves the stage with the full exponential Ebers–Moll law (Chapter 34)
 
 <div className="section-heading"><span>04</span><h2>Output swing and loading</h2></div>
 
-The collector can rise only to V_CC (when the transistor cuts off) and fall only to about V_E + 0.2 V (when it saturates). With V_C = 8.3 V, V_E = 0.9 V and V_CC = 15 V, an unloaded stage can swing about +6.7 V and −7.2 V.
+The collector can rise only to $V_{CC}$ (when the transistor cuts off) and fall only to about $V_E$ + 0.2 V (when it saturates). With $V_C$ = 8.3 V, $V_E$ = 0.9 V and $V_{CC}$ = 15 V, an unloaded stage can swing about +6.7 V and −7.2 V.
 
-A load changes both the gain and the swing. If the output drives a load R_L through a coupling capacitor, signals see R_C ∥ R_L:
+A load changes both the gain and the swing. If the output drives a load $R_L$ through a coupling capacitor, signals see $R_C$ ∥ $R_L$:
 
 <Equation tex="G=-\frac{R_C\parallel R_L}{R_E+r_e}"/>
 
-A 10 kΩ load reduces the example’s gain from −7.29 to −4.17. It also limits the **upward** swing: as the transistor turns off, the output can rise only until the quiescent current that was flowing through the load has gone, about I_CQ(R_C ∥ R_L) = 0.89 mA × 4.29 kΩ = 3.8 V. The symmetric swing into 10 kΩ is therefore ±3.8 V, not ±6.7 V. Larger load currents need more quiescent current, a lower R_C, or a follower between the collector and the load.
+A 10 kΩ load reduces the example’s gain from −7.29 to −4.17. It also limits the **upward** swing: as the transistor turns off, collector current can decrease by at most $I_{CQ}$, giving an upward swing of about $I_{CQ}(R_C\parallel R_L)$ = 0.89 mA × 4.29 kΩ = 3.8 V. The symmetric swing into 10 kΩ is therefore ±3.8 V, not ±6.7 V. Larger load currents need more quiescent current, a lower $R_C$, or a follower between the collector and the load.
 
 </section>
 
@@ -117,10 +122,10 @@ A 10 kΩ load reduces the example’s gain from −7.29 to −4.17. It also limi
 Three capacitors set the low-frequency limit. Each is a high-pass corner, 1/(2πRC), where R is the resistance the capacitor sees:
 
 - **Input coupling**: the source resistance plus the stage’s input impedance.
-- **Output coupling**: R_C plus the load.
-- **Emitter bypass**: the bypassed resistor in parallel with whatever looks into the emitter: r_e + R_E1 + (R_TH ∥ R_s)/(β + 1).
+- **Output coupling**: $R_C$ plus the load.
+- **Emitter bypass**: the bypassed resistor in parallel with whatever looks into the emitter: $r_e$ + $R_{E1}$ + ($R_{TH}$ ∥ $R_s$)/($\beta$ + 1).
 
-The bypass capacitor sees a very small resistance and must therefore be large. Fully bypassing the example’s 1 kΩ for a 20 Hz corner, with r_e = 29 Ω, needs about 280 µF.
+The bypass capacitor sees a very small resistance and must therefore be large. Fully bypassing the example’s 1 kΩ for a 20 Hz corner, with $r_e$ = 29 Ω, needs about 280 µF.
 
 At high frequencies, the transistor’s capacitances take over. The base–collector capacitance is especially harmful: it connects the input to an inverted output with gain G, so it draws a current as if it were (1 + |G|) times larger. This **Miller effect** makes high-gain common-emitter stages slow, and motivates the cascode and other configurations in a later chapter.
 
@@ -134,25 +139,86 @@ At high frequencies, the transistor’s capacitances take over. The base–colle
 
 <span className="tiny-label">WORKED EXAMPLE / GAIN OF −10 INTO 10 kΩ</span><h3>15 V supply, 20 Hz low-frequency corner</h3>
 
-<p><strong>Bias.</strong> Keep the Chapter 29 design: 82 kΩ / 10 kΩ divider, R_C = 7.5 kΩ, total R_E ≈ 1 kΩ, I_C = 0.89 mA, r_e = 29 Ω, V_C = 8.3 V.</p>
+<p><strong>Bias.</strong> Keep the Chapter 29 design: 82 kΩ / 10 kΩ divider, $R_C$ = 7.5 kΩ, total $R_E$ ≈ 1 kΩ, $I_C$ = 0.89 mA, $r_e$ = 29 Ω, $V_C$ = 8.3 V.</p>
 
-<p><strong>Gain.</strong> Signals see R_C ∥ R_L = 4.29 kΩ. For −10, R_E1 + r_e = 429 Ω, so R_E1 ≈ 400 Ω. Choose <strong>390 Ω unbypassed and 620 Ω bypassed</strong> (1.01 kΩ total, bias unchanged). Gain: −4286/(390 + 29) = <strong>−10.2</strong>.</p>
+<p><strong>Gain.</strong> Signals see $R_C$ ∥ $R_L$ = 4.29 kΩ. For −10, $R_{E1}$ + $r_e$ = 429 Ω, so $R_{E1}$ ≈ 400 Ω. Choose <strong>390 Ω unbypassed and 620 Ω bypassed</strong> (1.01 kΩ total, bias unchanged). Gain: −4286/(390 + 29) = <strong>−10.2</strong>.</p>
 
-<p><strong>Input.</strong> Z_in = 8.91 kΩ ∥ 101 × 419 Ω = <strong>7.36 kΩ</strong>. A 20 Hz input corner needs C_in ≥ 1.1 µF; use 4.7 µF.</p>
+<p><strong>Input.</strong> $Z_{\mathrm{in}}$ = 8.91 kΩ ∥ 101 × 419 Ω = <strong>7.36 kΩ</strong>. A 20 Hz input corner needs $C_{\mathrm{in}}$ ≥ 1.1 µF; use 4.7 µF.</p>
 
-<p><strong>Output.</strong> The output capacitor sees 7.5 + 10 kΩ, so C_out ≥ 0.45 µF; use 2.2 µF.</p>
+<p><strong>Output.</strong> The output capacitor sees 7.5 + 10 kΩ, so $C_{\mathrm{out}}$ ≥ 0.45 µF; use 2.2 µF.</p>
 
-<p><strong>Bypass.</strong> C_E sees 620 Ω ∥ 419 Ω ≈ 250 Ω, needing 32 µF for 20 Hz; use 100 µF so this corner sits well below the others.</p>
+<p><strong>Bypass.</strong> $C_E$ sees 620 Ω ∥ 419 Ω ≈ 250 Ω, needing 32 µF for 20 Hz; use 100 µF so this corner sits well below the others.</p>
 
-<p><strong>Swing.</strong> About ±3.8 V into the load, limited by cutoff as computed above. Distortion stays low because 390 Ω of degeneration is thirteen times r_e.</p>
+<p><strong>Swing.</strong> About ±3.8 V into the load, limited by cutoff as computed above. Distortion stays low because 390 Ω of degeneration is thirteen times $r_e$.</p>
 
 </div>
 
-Notice what made the design robust: the gain depends on R_C, R_L and R_E1, with r_e as a modest correction; the bias depends on the divider and R_E; β appears only in the input impedance. When higher gain is needed, it is better to cascade two degenerated stages than to rely on one bypassed stage—or to wrap the gain inside an overall feedback loop.
+Notice what made the design robust: the gain depends on $R_C$, $R_L$ and $R_{E1}$, with $r_e$ as a modest correction; the bias depends on the divider and $R_E$; $\beta$ appears only in the input impedance. When higher gain is needed, it is better to cascade two degenerated stages than to rely on one bypassed stage—or to wrap the gain inside an overall feedback loop.
 
-<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A common-emitter stage converts input voltage to emitter current with R_E, then current back to voltage with R_C: <em>G = −R_C/(R_E + r_e)</em>. Degeneration buys predictability with gain.</p></div>
+### A bypass capacitor produces a shelf, not simply an output high-pass
+
+For split emitter resistance, the signal emitter impedance is $Z_E=R_{E1}+R_{E2}/(1+j\omega R_{E2}C_E)$. Neglect base loading and Early effect:
+
+<Equation tex="A_v(j\omega)\approx-\frac{R_C\parallel R_L}{r_e+R_{E1}+R_{E2}/(1+j\omega R_{E2}C_E)}" />
+
+At low frequency, both emitter resistors degenerate the stage. At high frequency, only $R_{E1}$ remains. The gain rises between two finite levels, with an associated phase change. Calling the bypass "a short" is justified only after checking its impedance across the intended band.
+
+For $R_{E1}=390\ \Omega$, $R_{E2}=620\ \Omega$, $r_e=29\ \Omega$ and $C_E=100$ µF, the gain-shaping zero is about 2.57 Hz and the pole about 6.37 Hz with a stiff base source. Coupling capacitors add their own high-pass responses. Putting each individual corner at 20 Hz does not make the complete amplifier only 3 dB down at 20 Hz; their losses and phases combine.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A common-emitter stage converts input voltage to emitter current with $R_E$, then current back to voltage with $R_C$: <em>G = −$R_C$/($R_E$ + $r_e$)</em>. Degeneration buys predictability with gain.</p></div>
 
 <p className="reference-note">Coverage: The Art of Electronics §§2.2.7, 2.3.4 and 2.3.5 (bias in Chapter 29). The Miller effect and feedback amplifiers follow in later chapters.</p>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why is collector voltage inverted?</summary>
+<div>
+
+A positive base signal increases collector current, increasing the collector-resistor drop and lowering collector voltage.
+
+</div>
+</details>
+
+<details>
+<summary>2. Does bypassing the emitter resistor remove its DC bias feedback?</summary>
+<div>
+
+No. The capacitor carries changing current but is open in steady DC, so the resistor still sets the bias.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does an AC-coupled collector load reduce maximum positive swing?</summary>
+<div>
+
+Collector current can decrease by only $I_{CQ}$ before cutoff. That current change across $R_C\parallel R_L$ gives the available upward voltage swing.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why use partial rather than complete bypassing?</summary>
+<div>
+
+It retains signal degeneration and input impedance while increasing gain, leaving the DC emitter resistance substantially unchanged.
+
+</div>
+</details>
+
+<details>
+<summary>5. Can several individually chosen 20 Hz corners give a total 20 Hz −3 dB point?</summary>
+<div>
+
+Usually not. Multiply the individual transfer functions and account for the bypass shelf; their losses and phases combine.
+
+</div>
+</details>
 
 </section>
 

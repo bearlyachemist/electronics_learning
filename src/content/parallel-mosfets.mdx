@@ -1,3 +1,4 @@
+import {ParallelMosFigure} from '../components/FetTeachingFigures';
 import Equation from '../components/Equation.astro';
 import {FetCurves,JfetBiasLab,FetGainLab,VariableFetLab,FetOscillatorLab,AnalogSwitchLab,GateChargeLab,PowerFetLab,ParallelFetLab} from '../components/FetLabs';
 import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
@@ -15,25 +16,55 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 </div>
 
 
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">Does current moving away from a hot MOSFET guarantee that its heating falls?</p></div>
+
+<div>
+
+Sharing a voltage or gate command does not force equal branch currents. Fully enhanced resistance, near-threshold transconductance and switching parasitics create different balancing mechanisms. Start with the actual operating region, then calculate each device’s electrical and thermal stress.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Two on-resistances share one voltage → See the limits of the reassuring rule → Near threshold, the feedback can reverse sign → Derive the action of individual source resistors → Equal DC resistance does not imply equal switching stress → Read the safe operating area as a set of conditions → Check your understanding.</p>
+
+</div>
+
 <section id="ohmic">
 
-## 01 / Two on-resistances share one voltage
+<div className="section-heading"><span>01</span><h2>Two on-resistances share one voltage</h2></div>
 
-When two fully enhanced MOSFETs connect in parallel, their drain-source voltages are equal. If their on-resistances are R1 and R2 and total load current is IT:
+<ParallelMosFigure/>
+
+When two fully enhanced MOSFETs connect in parallel, their drain-source voltages are equal. If their on-resistances are $R_1$ and $R_2$ and total load current is $I_T$:
 
 <Equation tex="I_1=\frac{V}{R_1},\quad I_2=\frac{V}{R_2},\quad I_1=I_T\frac{R_2}{R_1+R_2},\quad I_2=I_T\frac{R_1}{R_1+R_2}" />
 
-At IT = 20 A, R1 = 20 mΩ and R2 = 30 mΩ, currents are 12 A and 8 A. Dissipations are 2.88 W and 1.92 W. The lower-resistance device carries more current and dissipates more power in this fixed-total-current parallel circuit.
+At $I_T$ = 20 A, $R_1$ = 20 mΩ and $R_2$ = 30 mΩ, currents are 12 A and 8 A. Dissipations are 2.88 W and 1.92 W. The lower-resistance device carries more current and dissipates more power in this fixed-total-current parallel circuit.
 
-In a fully enhanced MOSFET, on-resistance commonly rises with temperature. Model it locally as R(T) = R25[1 + α(T − 25°C)]. If device 1 warms by 75°C and α = 0.004/°C, its resistance rises from 20 to 26 mΩ. With the other still at 30 mΩ, currents become 10.71 A and 9.29 A. Current shifts away from the hotter branch.
+In a fully enhanced MOSFET, on-resistance commonly rises with temperature. Model it locally as R(T) = $R_{25}$[1 + $\alpha$(T − 25°C)]. If device 1 warms by 75°C and $\alpha$ = 0.004/°C, its resistance rises from 20 to 26 mΩ. With the other still at 30 mΩ, currents become 10.71 A and 9.29 A. Current shifts away from the hotter branch.
 
 This is a useful stabilizing tendency. It is not perfect balancing: package temperatures, device tolerances, copper resistance and cooling differ. Nor does it mean heating always reduces power. The electrical constraint matters. At fixed current a resistor's I²R power increases as resistance rises; at fixed voltage V²/R decreases. A coupled circuit must be analyzed with its actual load constraint.
+
+### Current redistribution is not the same as power reduction
+
+At fixed total current, branch-one power is $P_1=I_T^2R_1R_2^2/(R_1+R_2)^2$. Hold the other branch resistance fixed and differentiate:
+
+<Equation tex="\frac{\partial\ln I_1}{\partial\ln R_1}=-\frac{R_1}{R_1+R_2},\qquad \frac{\partial\ln P_1}{\partial\ln R_1}=\frac{R_2-R_1}{R_1+R_2}"/>
+
+For 20 mΩ and 30 mΩ, the sensitivities are −0.4 and +0.2. A small 10% increase in the lower resistance reduces its current by about 4% yet increases its power by about 2% locally. At equal resistances that first-order power sensitivity is zero.
+
+The positive resistance coefficient helps current sharing, but this example shows why the actual electrical constraint and thermal coupling still matter. A near-threshold current source obeys a different law, and a multicell die can have internal thermal modes absent from this two-resistor model.
 
 </section>
 
 <section id="explore">
 
-## 02 / See the limits of the reassuring rule
+<div className="section-heading"><span>02</span><h2>See the limits of the reassuring rule</h2></div>
 
 <ParallelFetLab client:load />
 
@@ -45,15 +76,15 @@ The cost of ballast is real. A 10 mΩ resistor carrying 10 A dissipates 1 W. If 
 
 <section id="linear">
 
-## 03 / Near threshold, the feedback can reverse sign
+<div className="section-heading"><span>03</span><h2>Near threshold, the feedback can reverse sign</h2></div>
 
-In linear power service, a MOSFET may sustain a large VDS while its gate is only slightly above threshold. Mobility tends to decrease with temperature, reducing current, while threshold voltage often decreases, increasing overdrive and current. Their competition depends on the operating point.
+In linear power service, a MOSFET may sustain a large $V_{DS}$ while its gate is only slightly above threshold. Mobility tends to decrease with temperature, reducing current, while threshold voltage often decreases, increasing overdrive and current. Their competition depends on the operating point.
 
-Using ID = k(T)(VGS − VT(T))²/2 at fixed VGS and VDS:
+Using $I_D$ = k(T)($V_{GS}$ − $V_T$(T))²/2 at fixed $V_{GS}$ and $V_{DS}$:
 
 <Equation tex="\frac1{I_D}\frac{dI_D}{dT}=\frac1k\frac{dk}{dT}-\frac{2}{u}\frac{dV_T}{dT}" />
 
-For illustrative dk/(k dT) = −0.004/°C and dVT/dT = −0.002 V/°C, the fractional current slope is −0.004 + 0.004/u per °C, with u in volts. At u = 0.5 V it is +0.004/°C; at u = 2 V it is −0.002/°C. These are teaching coefficients, not a universal crossover specification.
+For illustrative dk/(k dT) = −0.004/°C and $dV_T/dT$ = −0.002 V/°C, the fractional current slope is −0.004 + 0.004/u per °C, with u in volts. At u = 0.5 V it is +0.004/°C; at u = 2 V it is −0.002/°C. These are teaching coefficients, not a universal crossover specification.
 
 At small overdrive a warmer region can carry more current. More current at nearly fixed drain voltage generates more heat, which attracts still more current. This can occur between separate transistors or within the cells of a single die. A heatsink that keeps average case temperature low does not necessarily prevent local hot spots.
 
@@ -65,21 +96,21 @@ At an equilibrium, small temperature perturbations decay only if:
 
 <Equation tex="\left.\frac{dP}{dT}\right|_{\mathrm{eq}}<\frac1{R_\theta}" />
 
-If Rθ = 10°C/W, the restoring heat-flow slope is 0.1 W/°C. A modeled electrical power slope of 0.15 W/°C makes that lumped equilibrium unstable. Passing this test does not prove a multicell die is locally stable; it merely checks the simplified thermal mode being modeled.
+If $R_θ$ = 10°C/W, the restoring heat-flow slope is 0.1 W/°C. A modeled electrical power slope of 0.15 W/°C makes that lumped equilibrium unstable. Passing this test does not prove a multicell die is locally stable; it merely checks the simplified thermal mode being modeled.
 
 </section>
 
 <section id="ballast">
 
-## 04 / Derive the action of individual source resistors
+<div className="section-heading"><span>04</span><h2>Derive the action of individual source resistors</h2></div>
 
-Give each MOSFET its own source resistor while driving the gates from a common node. If one branch current rises, its source voltage rises, reducing its own VGS. This is local negative feedback.
+Give each MOSFET its own source resistor while driving the gates from a common node. If one branch current rises, its source voltage rises, reducing its own $V_{GS}$. This is local negative feedback.
 
-Neglect output conductance and consider a threshold mismatch δVT at fixed common gate voltage:
+Neglect output conductance and consider a threshold mismatch $\delta V_T$ at fixed common gate voltage:
 
 <Equation tex="\delta i=g_m(-\delta V_T-\delta iR_S),\qquad \delta i=-\frac{g_m\,\delta V_T}{1+g_mR_S}" />
 
-With gm = 2 S, a −50 mV threshold shift produces about +100 mA current change without ballast. With RS = 0.5 Ω, the change falls to 50 mA. For large gmRS, mismatch current approaches −δVT/RS. The resistor reduces sensitivity rather than making the devices identical.
+With $g_m$ = 2 S, a −50 mV threshold shift produces about +100 mA current change without ballast. With $R_S$ = 0.5 Ω, the change falls to 50 mA. For large $g_mR_S$, mismatch current approaches −$\delta V_T$/$R_S$. The resistor reduces sensitivity rather than making the devices identical.
 
 At 1 A, a 0.5 Ω source resistor dissipates 0.5 W and consumes 0.5 V headroom. At 10 A the same resistor would waste 50 W. Thus resistor values suitable for a linear current-sharing stage are often unacceptable in a low-loss power switch.
 
@@ -91,7 +122,7 @@ For precision linear sharing, each branch can have its own sense resistor and co
 
 <section id="dynamic">
 
-## 05 / Equal DC resistance does not imply equal switching stress
+<div className="section-heading"><span>05</span><h2>Equal DC resistance does not imply equal switching stress</h2></div>
 
 During switching, current sharing depends on threshold, gate charge, gate resistance, source inductance, drain inductance and timing. A device that turns on first may temporarily carry most of the load while the other is still off. During turn-off, the slower branch may absorb a disproportionate share of switching energy.
 
@@ -105,7 +136,7 @@ Thermal coupling can help average temperatures between discrete devices, yet mec
 
 <section id="soa">
 
-## 06 / Read the safe operating area as a set of conditions
+<div className="section-heading"><span>06</span><h2>Read the safe operating area as a set of conditions</h2></div>
 
 An SOA plot bounds combinations of current and drain voltage for specified pulse durations and thermal conditions. A current rating, voltage rating and power rating are not three independent permissions that can be simultaneously maximized.
 
@@ -118,7 +149,58 @@ The practical lesson is conditional: fully enhanced resistance can encourage sta
 </section>
 
 
-<div className="practice-home">
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. How do two fully enhanced branches divide a fixed total current?</summary>
+<div>
+
+Inversely with their total branch resistances, including channel, wiring and any individual ballast.
+
+</div>
+</details>
+
+<details>
+<summary>2. Does a positive on-resistance temperature coefficient imply perfect sharing?</summary>
+<div>
+
+No. It encourages redistribution, but device mismatch, thermal paths and the load constraint still affect current and power.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why can thermal feedback reverse near threshold?</summary>
+<div>
+
+Falling threshold can increase overdrive faster than mobility loss reduces current, producing a positive current-temperature slope.
+
+</div>
+</details>
+
+<details>
+<summary>4. Can one source resistor below the common node balance the two branches?</summary>
+<div>
+
+It senses total current and cannot directly oppose a redistribution that leaves the total unchanged.
+
+</div>
+</details>
+
+<details>
+<summary>5. Can two devices automatically be credited with twice one device’s SOA?</summary>
+<div>
+
+No. Static and transient sharing must be established; one branch may carry disproportionate current or switching energy.
+
+</div>
+</details>
+
+</section>
+
+<div className="chapter-end">
 
 <span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems, hints and complete worked solutions.</p><a className="primary-link" href="/parallel-mosfets/practice/">Open practice →</a>
 

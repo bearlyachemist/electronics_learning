@@ -1,0 +1,80 @@
+name: Deploy electronics to hebert.phd
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Serialize publications so concurrent pushes cannot race in the host repository.
+concurrency:
+  group: electronics-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: notebook
+    steps:
+      - name: Check out notebook
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          path: notebook
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: notebook/package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Verify notebook
+        run: |
+          npm test
+          npx tsc --noEmit
+          npm run build:hosted
+          npm run check:hosted
+
+      - name: Check deployment credential
+        env:
+          DEPLOY_KEY: ${{ secrets.HEBERT_PHD_DEPLOY_KEY }}
+        run: |
+          if [ -z "$DEPLOY_KEY" ]; then
+            echo '::error::Missing HEBERT_PHD_DEPLOY_KEY repository secret. See docs/deployment.md.'
+            exit 1
+          fi
+
+      - name: Check out host website
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: bearlyachemist/hebert.phd
+          ref: main
+          path: host-site
+          ssh-key: ${{ secrets.HEBERT_PHD_DEPLOY_KEY }}
+
+      - name: Sync and publish notebook
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          node scripts/stage-hosted.mjs ../host-site
+          cd ../host-site
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- public/electronics
+          if git diff --cached --quiet; then
+            echo 'The hosted notebook already matches this build.'
+          else
+            git commit -m "Update electronics notebook from electronics_learning@${SOURCE_SHA:0:7}"
+            git push origin HEAD:main
+          fi
+          printf 'Published notebook: https://hebert.phd/electronics/\n\nSource commit: `%s`\n\nCloudflare Pages deploys the updated host repository.\n' "$SOURCE_SHA" >> "$GITHUB_STEP_SUMMARY"

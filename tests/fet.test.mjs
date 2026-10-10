@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {channel,jfet,selfBias,stage,bodyThreshold,wien,switchLoss,sharing,gateTrace} from '../src/engine/fet.mjs';
+import {channel,jfet,selfBias,stage,gateLoading,bodyThreshold,wien,switchLoss,sharing,gateTrace} from '../src/engine/fet.mjs';
 const close=(a,b,t=1e-9)=>assert.ok(Math.abs(a-b)<t, a+' != '+b);
 test('MOS region boundaries are continuous and cutoff is zero',()=>{
  close(channel(3,1,.004,2).id,.002);
@@ -18,7 +18,7 @@ test('JFET normalized values and reverse-gate domain',()=>{
  close(jfet(-4,8).id,0);assert.throws(()=>jfet(.1,8),RangeError);
 });
 test('self bias satisfies KVL and channel law across compliance',()=>{
- for(const vdd of [3,12,20])for(const rs of [0,500,2000])for(const rd of [100,1000,4000]){
+ for(const vdd of [3,12,20])for(const rs of [0,500,2000])for(const rd of [0,100,1000,4000]){
  const b=selfBias({vdd,rs,rd});close(b.vds+b.id*(rs+rd),vdd);
  close(b.vgs,-b.id*rs);close(b.id,jfet(b.vgs,b.vds).id);
  assert.ok(b.vds>=0&&b.id>=0);
@@ -52,3 +52,15 @@ test('charge trace is continuous at both plateau boundaries',()=>{
  close(gateTrace(30,8,10,30),10);close(gateTrace(0,8,10,30),0);
 });
 
+
+test('gate loading equals incremental charge at both capacitor terminals',()=>{
+ for(const rs of [0,470,2000]){
+ const gm=.004,rd=4700,rl=10000,cgs=10e-12,cgd=3e-12,vg=.001;
+ // Independently solve DC incremental source/drain voltages from KCL.
+ const id=gm*vg/(1+gm*rs),vs=id*rs,vd=-id/(1/rd+1/rl);
+ const charge=cgs*(vg-vs)+cgd*(vg-vd),d=gateLoading({gm,rd,rl,rs,cgs,cgd});
+ close(d.cin,charge/vg,1e-22);
+ }
+ const boot=gateLoading({gm:.004,rd:4700,rl:10000,rs:470,cgs:10e-12,cgd:0});
+ assert.ok(boot.cin<10e-12,'source motion must reduce gate-source loading');
+});

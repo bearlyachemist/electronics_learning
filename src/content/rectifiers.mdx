@@ -1,5 +1,6 @@
 import Equation from '../components/Equation.astro';
-import {BridgePaths,JunctionLab,DiodeLab,RectifierLab,RegulatorLab,LimiterLab,ProtectionLab} from '../components/DiodeLabs';
+import {BridgePaths,RectifierLab} from '../components/DiodeLabs';
+import {RectifiedWaveFigure,RippleVsCFigure,PivFigure,HalfWaveFigure,CenterTapFigure,DoublerFigure,SupplyBlockFigure} from '../components/DiodeFigures';
 
 <div className="chapter-hero" id="overview">
 
@@ -9,24 +10,37 @@ import {BridgePaths,JunctionLab,DiodeLab,RectifierLab,RegulatorLab,LimiterLab,Pr
 
 <p className="dek">Follow current through rectifiers, derive reservoir ripple, and distinguish load current from recharge current.</p>
 
-<div className="chapter-meta"><span>35–45 min + exploration</span><span>Original explanations · Models stated</span></div>
+<div className="chapter-meta"><span>45–55 min + exploration</span><span>Diodes · Capacitors · RMS</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">THE QUESTION</span><p className="opening-question">A transformer says "9 V." Why does the supply built from it measure 12 V?</p></div>
+
+<div>
+
+Transformer voltages are RMS values, and a capacitor charges to the *peak* of a sine, $\sqrt2$ times higher, less the diode drops. With no load, a "9 V" winding produces over 11 V of DC; at light load, a small transformer's own regulation pushes it higher still.
+
+This chapter follows the current through a rectifier step by step: which diodes conduct, what the reservoir capacitor does between peaks, why the source current arrives in short violent pulses, and how to budget a supply so the voltage never dips below what the next stage needs.
+
+</div>
 
 </div>
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Half-wave and full-wave paths → What the reservoir really does → See the recharge pulses → Design the current and voltage budget → Configurations and limits.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Half-wave and full-wave paths → What the reservoir really does → See the recharge pulses → Design the current and voltage budget → Configurations and limits → Check your understanding.</p>
 
 </div>
 
-
 <section id="paths">
 
-## 01 / Half-wave and full-wave paths
+<div className="section-heading"><span>01</span><h2>Half-wave and full-wave paths</h2></div>
 
 A rectifier steers alternating current so that current through a load keeps one direction. It does not by itself produce constant voltage.
 
-For a half-wave circuit, put a diode in series between an isolated sinusoidal source and a resistor load. During the positive half-cycle the anode is above the cathode and current flows. During the negative half-cycle the diode blocks. With peak source voltage Vₚ and a fixed forward drop:
+For a half-wave circuit, put a diode in series between an isolated sinusoidal source and a resistor load. During the positive half-cycle the anode is above the cathode and current flows. During the negative half-cycle the diode blocks. With peak source voltage $V_p$ and a fixed forward drop:
 
 <Equation tex="v_o(t)=\max\!\left(0,V_p\sin(\omega t)-V_F\right)" />
 
@@ -36,43 +50,51 @@ A full-wave bridge uses four diodes. Label the AC terminals A and B and the DC t
 
 <BridgePaths client:load />
 
-The bridge costs two forward drops and produces two pulses per input cycle. With ideal diodes and no reservoir capacitor, averaging the positive sine gives Vₚ/π for half-wave and 2Vₚ/π for full-wave. Neither is the peak value.
+<RectifiedWaveFigure/>
 
-**Worked example.** A 9 V RMS sine has peak √2 × 9 = 12.73 V. An unloaded reservoir behind a bridge with 0.7 V drops can approach 11.33 V. Calling the output “9 V DC” confuses RMS source voltage with capacitor peak charging.
+The bridge costs two forward drops and produces two pulses per input cycle. With ideal diodes and no reservoir capacitor, averaging the positive sine gives $V_p/\pi$ for half-wave and $2V_p/\pi$ for full-wave. Neither is the peak value.
+
+**Worked example.** A 9 V RMS sine has peak $\sqrt2 \times 9 = 12.73$ V. An unloaded reservoir behind a bridge with 0.7 V drops can approach 11.33 V. Calling the output "9 V DC" confuses RMS source voltage with capacitor peak charging.
 
 </section>
 
 <section id="reservoir">
 
-## 02 / What the reservoir really does
+<div className="section-heading"><span>02</span><h2>What the reservoir really does</h2></div>
 
 Connect a capacitor across the load. The diodes conduct only when the instantaneous source, after diode drops and source losses, can drive current into the capacitor/load node. Between recharge intervals the source path is blocked and the capacitor supplies the load.
 
-For a resistive load while the rectifier is off, KCL gives C dv/dt = −v/Rᴸ. The voltage therefore decays exponentially:
+<HalfWaveFigure/>
+
+The capacitor is a bucket that is topped up at each peak and drained steadily between peaks. The diode is a one-way valve that keeps the bucket from emptying back into the source when the source voltage falls below the bucket level.
+
+For a resistive load while the rectifier is off, KCL gives $C\,dv/dt = -v/R_L$. The voltage therefore decays exponentially:
 
 <Equation tex="v(t)=v(t_0)e^{-(t-t_0)/(R_LC)}" />
 
-If ripple is small, current changes little during discharge. Treating it as approximately constant gives ΔQ ≈ IᴸΔt and ΔV = ΔQ/C. For pulses repeating at fᵣ:
+If ripple is small, current changes little during discharge. Treating it as approximately constant gives $\Delta Q \approx I_L\,\Delta t$ and $\Delta V = \Delta Q/C$. For pulses repeating at $f_r$:
 
 <Equation tex="\Delta V_{\mathrm{pp}}\approx\frac{I_L}{f_rC},\qquad f_r=f_{\mathrm{line}}\ \text{(half-wave)},\quad f_r=2f_{\mathrm{line}}\ \text{(full-wave)}" />
 
-This approximates discharge time by the full pulse spacing. Actual charging takes finite time, and its start/end depend on source impedance and load. The approximation becomes poor when ripple is large or source voltage sags strongly.
+This approximates discharge time by the full pulse spacing. Actual charging takes finite time, and its start/end depend on source impedance and load. The approximation becomes poor when ripple is large or source voltage sags strongly. It slightly overestimates ripple, which is the safe direction for design.
 
 For 20 mA, 100 Hz recharge, and 470 µF, the estimate is 0.426 V p-p. A half-wave circuit at the same 50 Hz input gives about 0.851 V p-p. Double capacitance and the approximate ripple halves; the source must still deliver the same average charge.
 
+<RippleVsCFigure/>
+
 ### During recharge
 
-Include total source resistance Rₛ instead of imagining an unlimited current source at every peak. If u(t) is the available rectified voltage after fixed diode drops, conducting-state KCL is:
+Include total source resistance $R_s$ instead of imagining an unlimited current source at every peak. If $u(t)$ is the available rectified voltage after fixed diode drops, conducting-state KCL is:
 
 <Equation tex="C\frac{dv}{dt}=\frac{u(t)-v}{R_s}-\frac{v}{R_L}" />
 
-The off state requires u ≤ v and source current zero. The on state requires nonnegative source current (u − v)/Rₛ. These conditions couple the diode state to the capacitor state; you cannot select conduction purely from the sign of the original sine.
+The off state requires $u \le v$ and source current zero. The on state requires nonnegative source current $(u - v)/R_s$. These conditions couple the diode state to the capacitor state; you cannot select conduction purely from the sign of the original sine.
 
 </section>
 
 <section id="explore">
 
-## 03 / See the recharge pulses
+<div className="section-heading"><span>03</span><h2>See the recharge pulses</h2></div>
 
 <RectifierLab client:load />
 
@@ -80,17 +102,31 @@ The upper plot compares the voltage available from the rectifier with the capaci
 
 Increase capacitance and inspect both plots. A smoother output does not imply a smoother source current. Change to half-wave and observe the longer discharge gap. The graph shows settled operation; an initially empty capacitor produces a different startup transient.
 
+Here is the counterintuitive core of this chapter. All the charge the load uses over a whole cycle must be delivered during the brief interval near each peak when the diodes conduct. If that window is 10% of the cycle, the recharge current averages ten times the load current while it flows. Bigger capacitors make the ripple smaller, which narrows the window and makes the pulses *taller*.
+
 The model integrates the on/off KCL equations with a finite source resistance. It does not simply snap the capacitor to every ideal source peak. Even so, real transformer leakage inductance, winding resistance variation, diode behavior and capacitor ESR require more detailed models for component stress.
 
 </section>
 
 <section id="design">
 
-## 04 / Design the current and voltage budget
+<div className="section-heading"><span>04</span><h2>Design the current and voltage budget</h2></div>
 
 Start from the downstream circuit's minimum allowed input. For a 5 V regulator requiring 0.5 V headroom, the **trough**, not the mean, must remain above 5.5 V with any additional margin.
 
 A first budget subtracts diode drops, source sag and ripple from the lowest available peak. At 7 V RMS minimum, two 0.8 V drops leave 8.30 V before source sag. A 50 mA load and 470 µF at 100 Hz give about 1.064 V ripple, leaving a rough 7.24 V trough before allowing for source resistance. This is a first estimate, not a guaranteed minimum.
+
+<SupplyBlockFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED DESIGN / A 5 V, 100 mA SUPPLY</span><h3>From a 9 V RMS transformer</h3>
+<p><strong>Peak.</strong> $9\sqrt2 = 12.73$ V. A bridge at 100 mA drops about 2 × 0.8 V, leaving 11.1 V at the capacitor's peaks.</p>
+<p><strong>Ripple.</strong> With 2200 µF on 50 Hz mains, $\Delta V \approx 0.1/(100 \times 2.2\times10^{-3}) = 0.45$ V p-p. The trough is about 10.7 V.</p>
+<p><strong>Regulator headroom.</strong> A classic 7805 needs about 2 V of dropout, so its input must stay above 7 V. Now the low-line corner: mains 10% low gives 8.1 V RMS, a peak of 11.5 V, 9.9 V after the bridge, 9.4 V at the trough. Still 2.4 V of margin.</p>
+<p><strong>Heat and rating.</strong> The regulator drops an average of about $10.9 - 5 = 5.9$ V at 0.1 A: 0.6 W, fine for a TO-220 without much heatsink (Chapter 4). At high line and no load the capacitor reaches perhaps 14 V; a 25 V capacitor gives comfortable margin. A 1000 µF capacitor would double the ripple to 0.9 V and still work. The design is a set of corners, not a single calculation.</p>
+
+</div>
 
 Check the opposite corner too. A high source voltage with a light load may charge the capacitor close to the peak and maximize regulator heating when load subsequently increases. Capacitor voltage rating must cover the highest credible voltage, not just the nominal output.
 
@@ -98,33 +134,91 @@ Check the opposite corner too. A high source voltage with a light load may charg
 
 The average source charge per cycle equals the load charge once settled, but source current arrives in pulses. A source winding and bridge therefore carry RMS and peak currents larger than one would infer by treating load DC current as a continuous sine or DC current.
 
-Capacitor current is i꜀ = iₛ − iᴸ. Its mean is zero in periodic steady state, but its RMS value heats ESR. The load current is not the capacitor ripple-current rating. Likewise, a diode's nonrepetitive surge rating is not permission to repeat that surge every half-cycle.
+Capacitor current is $i_C = i_s - i_L$. Its mean is zero in periodic steady state, but its RMS value heats ESR. The load current is not the capacitor ripple-current rating. Likewise, a diode's nonrepetitive surge rating is not permission to repeat that surge every half-cycle.
 
-At startup, a rough upper estimate with an empty capacitor is (Vₚ − total diode drop)/Rₛ. In the lab's bridge this is about 1.13 A at a source peak, well above its settled average load current. Source phase, transformer impedance and any inrush limiter determine the real waveform.
+At startup, a rough upper estimate with an empty capacitor is $(V_p - \text{total diode drop})/R_s$. In the lab's bridge this is about 1.13 A at a source peak, well above its settled average load current. Source phase, transformer impedance and any inrush limiter determine the real waveform.
 
 </section>
 
 <section id="limits">
 
-## 05 / Configurations and limits
+<div className="section-heading"><span>05</span><h2>Configurations and limits</h2></div>
+
+<CenterTapFigure/>
 
 A center-tapped full-wave rectifier uses two diodes and alternate half-windings. Each conducting path loses one diode drop, but the nonconducting diode may see approximately twice the peak of a half-winding. The required transformer winding and reverse rating differ from a bridge.
 
-In a half-wave capacitor-input supply, a charged capacitor near +Vₚ and a source near −Vₚ can place nearly 2Vₚ across the blocking diode. In a bridge, ideal peak reverse stress per diode is about the full secondary peak. Add margin for actual transients and specified conditions; these are topology estimates, not selected ratings.
+<PivFigure/>
 
-Voltage doublers use diode-steered capacitor charging to stack stored voltages. Their no-load voltage is attractive, but output resistance, ripple and diode/capacitor stress matter as load rises. They are not a free doubling of available power.
+In a half-wave capacitor-input supply, a charged capacitor near $+V_p$ and a source near $-V_p$ can place nearly $2V_p$ across the blocking diode. In a bridge, ideal peak reverse stress per diode is about the full secondary peak. Add margin for actual transients and specified conditions; these are topology estimates, not selected ratings.
+
+<DoublerFigure/>
+
+Voltage doublers use diode-steered capacitor charging to stack stored voltages. Their no-load voltage is attractive, but output resistance, ripple and diode/capacitor stress matter as load rises. They are not a free doubling of available power. Cascading more stages (a Cockcroft–Walton multiplier) reaches kilovolts at microamps, which is how many high-voltage supplies work.
 
 All examples use an isolated low-voltage source. Rectification itself does not create isolation. A transformer symbol alone also does not establish a physical isolation rating.
 
-Coverage: AoE §§1.6.2–1.6.4. Continue to regulators to separate “small ripple” from “controlled output voltage.”
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>The capacitor charges to the peak<br/>and drains between peaks.<br/><em>All the charge arrives in short pulses.</em></p></div>
 
 </section>
 
+<section id="check">
 
-<div className="practice-home">
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
 
-<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p><a className="primary-link" href="/rectifiers/practice/">Open practice →</a>
+<details>
+<summary>1. A 12 V RMS winding feeds a bridge and a capacitor with no load. Roughly what DC voltage results?</summary>
+<div>
+
+$12\sqrt2 = 17.0$ V peak, minus about 1.4 V for two diodes: about 15.6 V, higher still if the transformer's no-load voltage exceeds its rating.
 
 </div>
+</details>
 
+<details>
+<summary>2. A full-wave supply on 60 Hz mains has 1000 µF and a 200 mA load. Estimate the ripple.</summary>
+<div>
 
+$f_r = 120$ Hz, so $\Delta V \approx 0.2/(120 \times 10^{-3}) = 1.67$ V p-p.
+
+</div>
+</details>
+
+<details>
+<summary>3. Doubling the reservoir capacitance halves the ripple. Does it reduce the transformer's heating?</summary>
+<div>
+
+No, it tends to increase it. The same charge arrives in narrower, taller pulses, which raises the RMS current in the windings and diodes for the same average.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why can a half-wave capacitor-input rectifier need a diode rated for 2V_p?</summary>
+<div>
+
+The capacitor holds about $+V_p$ on the cathode while the source swings the anode to $-V_p$, so nearly $2V_p$ appears in reverse across the diode.
+
+</div>
+</details>
+
+<details>
+<summary>5. A supply's average output is 9 V, comfortably above a regulator's 7 V minimum, but the output still hums. What should you check?</summary>
+<div>
+
+The trough. With large ripple the minimum can dip below 7 V even though the average is 9 V, and the regulator drops out briefly every cycle. Measure the minimum with a scope at full load and low line.
+
+</div>
+</details>
+
+<p className="reference-note">Coverage: AoE §§1.6.2–1.6.4. Continue to regulators to separate "small ripple" from "controlled output voltage."</p>
+
+</section>
+
+<div className="chapter-end">
+
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p></div>
+
+<a className="primary-link" href="/rectifiers/practice/">Open practice →</a>
+
+</div>

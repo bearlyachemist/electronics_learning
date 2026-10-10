@@ -1,3 +1,4 @@
+import {LoopAccuracyFigure} from '../components/FeedbackTeachingFigures';
 import Equation from '../components/Equation.astro';
 import {FeedbackGainLab,LoopStabilityLab,DegenerationLab,SupplyControlLab,TemperatureLab,LogicLab} from '../components/FeedbackLabs';
 import {FeedbackBlock,FeedbackAmpFigure,SupplyFigure,ThermalFigure,LogicFigure} from '../components/FeedbackFigures';
@@ -14,16 +15,28 @@ import {FeedbackBlock,FeedbackAmpFigure,SupplyFigure,ThermalFigure,LogicFigure} 
 
 </div>
 
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">How much forward gain is enough to guarantee a 1% gain error?</p></div>
+
+<div>
+
+A high-gain amplifier can act on a small error and produce a predictable result. The same correction that improves accuracy also creates a dynamic loop. Trace where each disturbance enters, then calculate how much loop gain remains at the frequency of interest.
+
+</div>
+
+</div>
+
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The error is the input → Derive the closed-loop equations → What feedback changes → Explore gain and sensitivity → Bandwidth and stability → Follow the loop around.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The error is the input → Derive the closed-loop equations → What feedback changes → Explore gain and sensitivity → Bandwidth and stability → Follow the loop around → Check your understanding.</p>
 
 </div>
 
 
 <section id="intuition">
 
-## 01 / The error is the input
+<div className="section-heading"><span>01</span><h2>The error is the input</h2></div>
 
 Imagine trying to hold a room at 25 °C by fixing the heater at one power level. It might work on one day. Opening a window changes the heat loss and the same command now gives a different temperature. Feedback instead measures the result and changes the command when the result differs from the target.
 
@@ -33,7 +46,7 @@ If output rises too far, the returned signal rises, the error falls, and the amp
 
 <FeedbackBlock />
 
-Use x for input, y for output, A for forward gain, and **b** for feedback factor. We deliberately use b instead of β to avoid confusing feedback factor with transistor current gain β. The error is e = x − by, and the forward amplifier responds to e, not directly to x.
+Use x for input, y for output, A for forward gain, and **b** for feedback factor. We deliberately use b instead of $\beta$ to avoid confusing feedback factor with transistor current gain $\beta$. The error is e = x − by, and the forward amplifier responds to e, not directly to x.
 
 **A useful thought experiment.** Suppose the intended gain is ten, so b = 0.1. If output is 1 V, feedback returns 0.1 V. With a 0.1 V input, this sounds perfect—but then the error would be zero, and a finite-gain amplifier would produce zero output. The actual error must remain slightly positive. High gain makes that required error small; it does not make it identically zero.
 
@@ -43,7 +56,7 @@ The output energy comes from the amplifier's power supply. The input and feedbac
 
 <section id="equations">
 
-## 02 / Derive the closed-loop equations
+<div className="section-heading"><span>02</span><h2>Derive the closed-loop equations</h2></div>
 
 Start with the two defining equations and substitute the comparator output into the amplifier equation:
 
@@ -83,17 +96,29 @@ An output disturbance is reduced by the **sensitivity function** S = 1/(1 + T). 
 
 If instead measurement noise n is added to the returned signal, e = x − by − n, its contribution is −A n/(1 + T). At large T, output follows approximately −n/b. Feedback cannot distinguish a true measurement change from measurement noise. Similarly, errors added before the forward amplifier are generally amplified with the signal; “feedback removes all noise” is false.
 
+### Turn an accuracy target into a loop-gain requirement
+
+The target at infinite loop gain is $1/b$. Divide the exact gain by that target:
+
+<Equation tex="\frac{G}{1/b}=\frac{T}{1+T},\qquad \varepsilon_G=\frac{1}{1+T},\qquad T\ge\frac{1}{\varepsilon_G}-1"/>
+
+A 1% shortfall requires $T\ge99$. At $b=0.1$, the minimum forward gain is 990. A 0.1% requirement needs T at least 999. Apply this at the specified frequency and operating condition, rather than substituting only the largest DC gain.
+
+The same denominator reduces an output disturbance, but the sensing network still defines the target. A 1% feedback-ratio error cannot be corrected by making A arbitrarily large. Separate the finite-gain budget from reference, divider and measurement errors.
+
 </section>
 
 <section id="effects">
 
-## 03 / What feedback changes
+<div className="section-heading"><span>03</span><h2>What feedback changes</h2></div>
+
+<LoopAccuracyFigure/>
 
 Feedback usually spends available gain to improve predictability. Its benefits depend on topology, frequency, and remaining actuator range.
 
 **Linearity.** If a forward amplifier's gain changes slightly with signal level, feedback reduces the resulting closed-loop gain variation while loop gain remains large. For distortion generated within a loop, suppression is governed by loop gain at the distortion frequencies. A second harmonic sees the loop at twice the fundamental frequency. The familiar factor 1 + T is an approximation about an operating point, not a promise to repair clipping.
 
-**Output impedance.** For voltage feedback, let an output load current cause an open-loop voltage drop rₒ iᴸ. Then:
+**Output impedance.** For voltage feedback, let an output load current cause an open-loop voltage drop $r_o$ $i_L$. Then:
 
 <Equation tex="y=A(x-by)-r_o i_L\quad\Rightarrow\quad r_{o,\mathrm{closed}}=\frac{r_o}{1+T}" />
 
@@ -116,7 +141,7 @@ These tendencies refer to an appropriately defined loaded forward circuit. A fee
 
 <section id="explore">
 
-## 04 / Explore gain and sensitivity
+<div className="section-heading"><span>04</span><h2>Explore gain and sensitivity</h2></div>
 
 <FeedbackGainLab client:load />
 
@@ -128,19 +153,19 @@ The disturbance control injects a voltage after the forward block but before the
 
 <section id="bandwidth">
 
-## 05 / Bandwidth and stability
+<div className="section-heading"><span>05</span><h2>Bandwidth and stability</h2></div>
 
 So far A and b were real constants. A real amplifier contains capacitors and transit-time effects; its forward gain A(s) changes magnitude and phase. The same algebra gives:
 
 <Equation tex="G(s)=\frac{A(s)}{1+A(s)b(s)}" />
 
-For one forward pole and constant feedback, A(s) = A₀/(1 + s/ωₚ). Substitute and collect terms:
+For one forward pole and constant feedback, A(s) = $A_0$/(1 + s/$\omega_p$). Substitute and collect terms:
 
 <Equation tex="G(s)=\frac{A_0}{1+A_0b}\frac{1}{1+s/[\omega_p(1+A_0b)]}" />
 
-The DC gain falls by 1 + T₀, while the closed-loop pole frequency rises by the same factor. This explains gain–bandwidth trading for a single-pole model.
+The DC gain falls by 1 + $T_0$, while the closed-loop pole frequency rises by the same factor. This explains gain–bandwidth trading for a single-pole model.
 
-**Example.** A₀ = 1000, fₚ = 100 Hz and b = 0.1 give DC gain 9.901 and bandwidth 10.1 kHz. The product is 100 kHz. The original gain–bandwidth product is also 1000 × 100 Hz. This equality depends on the model; it is not universal for multistage amplifiers, slew limiting or nonlinear large signals.
+**Example.** $A_0$ = 1000, $f_p$ = 100 Hz and b = 0.1 give DC gain 9.901 and bandwidth 10.1 kHz. The product is 100 kHz. The original gain–bandwidth product is also 1000 × 100 Hz. This equality depends on the model; it is not universal for multistage amplifiers, slew limiting or nonlinear large signals.
 
 More poles add phase lag. A correction intended to oppose an error may arrive so late that it reinforces the motion. Closing a loop can move poles into the right half of the s-plane even though every forward-amplifier pole was originally stable.
 
@@ -148,7 +173,7 @@ More poles add phase lag. A correction intended to oppose an error may arrive so
 
 <section id="stability">
 
-## 06 / Follow the loop around
+<div className="section-heading"><span>06</span><h2>Follow the loop around</h2></div>
 
 The critical denominator is 1 + T(s). At a frequency where T(jω) is near −1—magnitude one and phase −180°—a small disturbance may be strongly reinforced.
 
@@ -167,7 +192,58 @@ Measurement also requires care: breaking a DC feedback path can destroy the bias
 </section>
 
 
-<div className="practice-home">
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. What signal does the forward amplifier amplify?</summary>
+<div>
+
+The difference between command and returned measurement, not the entire command without regard to output.
+
+</div>
+</details>
+
+<details>
+<summary>2. What loop gain gives at most 1% static gain shortfall?</summary>
+<div>
+
+$T\ge99$ for the stated ideal model.
+
+</div>
+</details>
+
+<details>
+<summary>3. Is measurement noise rejected like an output disturbance?</summary>
+<div>
+
+No. Noise in the returned measurement is interpreted as an output error, so the controller moves output in response.
+
+</div>
+</details>
+
+<details>
+<summary>4. Does correct DC feedback polarity guarantee stability?</summary>
+<div>
+
+No. The frequency-dependent loop must also avoid an unstable characteristic equation.
+
+</div>
+</details>
+
+<details>
+<summary>5. Does feedback always increase input resistance?</summary>
+<div>
+
+No. Series voltage comparison tends to increase it; shunt current comparison tends to decrease it.
+
+</div>
+</details>
+
+</section>
+
+<div className="chapter-end">
 
 <span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and complete worked solutions.</p><a className="primary-link" href="/negative-feedback/practice/">Open practice →</a>
 

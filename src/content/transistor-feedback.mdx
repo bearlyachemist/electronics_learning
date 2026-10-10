@@ -1,3 +1,4 @@
+import {DegenerationSensitivityFigure} from '../components/FeedbackTeachingFigures';
 import Equation from '../components/Equation.astro';
 import {FeedbackGainLab,LoopStabilityLab,DegenerationLab,SupplyControlLab,TemperatureLab,LogicLab} from '../components/FeedbackLabs';
 import {FeedbackBlock,FeedbackAmpFigure,SupplyFigure,ThermalFigure,LogicFigure} from '../components/FeedbackFigures';
@@ -14,28 +15,40 @@ import {FeedbackBlock,FeedbackAmpFigure,SupplyFigure,ThermalFigure,LogicFigure} 
 
 </div>
 
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">How can an inverting transistor amplifier still contain negative feedback?</p></div>
+
+<div>
+
+The block equations become physical voltages and currents inside a transistor stage. Emitter motion subtracts from junction drive; a collector-to-base path also loads its source. Follow each loop’s sign and loading before applying the familiar feedback denominator.
+
+</div>
+
+</div>
+
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Emitter degeneration derived → Gain versus curvature → The emitter follower loop → Collector-to-base feedback → A two-stage feedback amplifier → A practical design workflow.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Emitter degeneration derived → Gain versus curvature → The emitter follower loop → Collector-to-base feedback → A two-stage feedback amplifier → A practical design workflow → Check your understanding.</p>
 
 </div>
 
 
 <section id="degeneration">
 
-## 01 / Emitter degeneration derived
+<div className="section-heading"><span>01</span><h2>Emitter degeneration derived</h2></div>
 
 An unbypassed emitter resistor is a local feedback element. If collector current tries to rise, emitter current rises, emitter voltage rises, and base–emitter voltage falls for a fixed base voltage. That last change opposes the original current increase.
 
-Use lowercase v and i for small changes about the DC bias point. Assume forward-active operation, neglect Early effect and capacitances, and take transistor current gain β as approximately constant. Then i꜀ = gₘvᵦₑ and iₑ = i꜀(1 + 1/β). With an emitter resistor Rᴇ:
+Use lowercase v and i for small changes about the DC bias point. Assume forward-active operation, neglect Early effect and capacitances, and take transistor current gain $\beta$ as approximately constant. Then $i_c$ = $g_m v_{be}$ and $i_e$ = $i_c$(1 + 1/$\beta$). With an emitter resistor $R_E$:
 
 <Equation tex="v_b=v_{be}+i_eR_E=v_{be}\left[1+g_m(1+1/\beta)R_E\right]" />
 
-For effective collector resistance R꜀′ = R꜀ ∥ Rᴸ, output is vₒ = −i꜀R꜀′. Substitute:
+For effective collector resistance $R_C$′ = $R_C$ ∥ $R_L$, output is $v_o$ = −$i_c R_C$′. Substitute:
 
 <Equation tex="A_v=\frac{v_o}{v_b}=-\frac{g_mR_C'}{1+g_m(1+1/\beta)R_E}" />
 
-This is the feedback denominator in circuit clothing. The local loop factor is approximately gₘ(1 + 1/β)Rᴇ. With large local feedback and large β:
+This is the feedback denominator in circuit clothing. The local loop factor is approximately $g_m$(1 + 1/$\beta$)$R_E$. With large local feedback and large $\beta$:
 
 <Equation tex="A_v\approx-\frac{R_C'}{R_E}" />
 
@@ -43,35 +56,47 @@ The minus sign is the common-emitter inversion. The feedback itself is still neg
 
 ### Keep the finite terms when they matter
 
-At I꜀ = 1 mA, Vₜ = 25.85 mV gives gₘ = 38.68 mS. For β = 100, R꜀ = 2.2 kΩ, no external load and Rᴇ = 100 Ω, the denominator is 1 + 3.907 = 4.907. Gain is about −17.34, not −22. The strong-degeneration approximation is useful but its finite-error term is still noticeable here.
+At $I_C$ = 1 mA, $V_T$ = 25.85 mV gives $g_m$ = 38.68 mS. For $\beta$ = 100, $R_C$ = 2.2 kΩ, no external load and $R_E$ = 100 Ω, the denominator is 1 + 3.907 = 4.907. Gain is about −17.34, not −22. The strong-degeneration approximation is useful but its finite-error term is still noticeable here.
 
-With Rᴇ = 1 kΩ, the exact gain is about −2.124, versus −2.2 from the large-loop approximation. Stronger feedback makes the resistor-ratio result more accurate while reducing gain.
+With $R_E$ = 1 kΩ, the exact gain is about −2.124, versus −2.2 from the large-loop approximation. Stronger feedback makes the resistor-ratio result more accurate while reducing gain.
 
-Looking into the base, vᵦ = iᵦrπ + (β + 1)iᵦRᴇ:
+Looking into the base, $v_b$ = $i_b r_π$ + ($\beta$ + 1)$i_b R_E$:
 
 <Equation tex="R_{\mathrm{in,base}}=r_\pi+(\beta+1)R_E,\qquad r_\pi=\frac{\beta}{g_m}" />
 
-At 1 mA and β = 100, rπ = 2.585 kΩ. Adding 100 Ω in the emitter raises the base input resistance to 12.685 kΩ. A physical bias divider appears in parallel with that value; the signal source then forms another divider with its own resistance.
+At 1 mA and $\beta$ = 100, $r_π$ = 2.585 kΩ. Adding 100 Ω in the emitter raises the base input resistance to 12.685 kΩ. A physical bias divider appears in parallel with that value; the signal source then forms another divider with its own resistance.
 
-**Loaded example.** Add a 10 kΩ collector load: R꜀′ = 2.2 kΩ ∥ 10 kΩ = 1.803 kΩ. Gain from base to collector is about −14.22. If the bias divider's Thévenin resistance is 100 kΩ, total input resistance is about 11.26 kΩ. A 1 kΩ signal source adds a factor 11.26/12.26, giving an overall gain near −13.06. Feedback does not remove the need to account for loading.
+**Loaded example.** Add a 10 kΩ collector load: $R_C$′ = 2.2 kΩ ∥ 10 kΩ = 1.803 kΩ. Gain from base to collector is about −14.22. If the bias divider's Thévenin resistance is 100 kΩ, total input resistance is about 11.26 kΩ. A 1 kΩ signal source adds a factor 11.26/12.26, giving an overall gain near −13.06. Feedback does not remove the need to account for loading.
+
+### Measure the gain’s dependence on the transistor
+
+Holding resistances and β fixed, differentiate the finite-degeneration gain with respect to transconductance:
+
+<Equation tex="\frac{\partial\ln|A_v|}{\partial\ln g_m}=\frac{1}{1+g_m(1+1/\beta)R_E}"/>
+
+At the chapter’s 1 mA bias and 100 Ω emitter resistance, the sensitivity is 0.204. A small 10% transconductance increase produces about a 2.04% gain increase locally. This reduction is the same feedback benefit as the block model, now expressed in measurable component terms.
+
+This derivative freezes β and the resistors. Temperature also changes bias, resistor values and sometimes β; it is not a complete gain-temperature coefficient. Re-establish the DC point before applying the tangent model.
 
 </section>
 
 <section id="explore">
 
-## 02 / Gain versus curvature
+<div className="section-heading"><span>02</span><h2>Gain versus curvature</h2></div>
 
-The small-signal result came from a tangent. To inspect a finite signal, use the exponential law with fixed temperature and an adjusted base bias that preserves I꜀Q:
+<DegenerationSensitivityFigure/>
+
+The small-signal result came from a tangent. To inspect a finite signal, use the exponential law with fixed temperature and an adjusted base bias that preserves $I_{CQ}$:
 
 <Equation tex="v_b=V_T\ln\!\left(\frac{I_C}{I_{CQ}}\right)+(I_C-I_{CQ})(1+1/\beta)R_E" />
 
-This equation says that an input change is shared between the nonlinear junction and the linear emitter resistor. With Rᴇ = 0, all the change reaches vᵦₑ. With strong degeneration, most appears across Rᴇ, so the junction voltage varies less and the current becomes more nearly proportional to input.
+This equation says that an input change is shared between the nonlinear junction and the linear emitter resistor. With $R_E$ = 0, all the change reaches $v_{be}$. With strong degeneration, most appears across $R_E$, so the junction voltage varies less and the current becomes more nearly proportional to input.
 
 <DegenerationLab client:load />
 
 The first graph shows actual output voltage, including the lost gain. The second divides each output by its own tangent gain so the different curvature can be compared fairly. A small-looking output waveform alone would not prove better linearity.
 
-A bypass capacitor across some or all of Rᴇ changes the feedback with frequency. At low frequency, the resistor remains effective. At sufficiently high frequency, the capacitor lowers emitter impedance and gain rises. The relevant pole/zero depends on the resistance seen by the capacitor, including the transistor and source; it is not always simply 1/(2πRᴇC).
+A bypass capacitor across some or all of $R_E$ changes the feedback with frequency. At low frequency, the resistor remains effective. At sufficiently high frequency, the capacitor lowers emitter impedance and gain rises. The relevant pole/zero depends on the resistance seen by the capacitor, including the transistor and source; it is not always simply 1/(2π$R_E$C).
 
 The unbypassed portion can preserve local linearity while a bypassed portion establishes DC bias. Keep DC bias design and AC degeneration separate in the reasoning.
 
@@ -79,37 +104,37 @@ The unbypassed portion can preserve local linearity while a bypassed portion est
 
 <section id="follower">
 
-## 03 / The emitter follower loop
+<div className="section-heading"><span>03</span><h2>The emitter follower loop</h2></div>
 
 <FeedbackAmpFigure kind="follower" />
 
-In an emitter follower, the output itself is emitter voltage. Let Rᴇ′ be the parallel combination of the emitter resistor and external load. Increasing emitter output subtracts from base–emitter input. With gₑ = gₘ(1 + 1/β):
+In an emitter follower, the output itself is emitter voltage. Let $R_E$′ be the parallel combination of the emitter resistor and external load. Increasing emitter output subtracts from base–emitter input. With $g_e$ = $g_m$(1 + 1/$\beta$):
 
 <Equation tex="i_e=g_e(v_b-v_e),\qquad v_e=i_eR_E'\quad\Rightarrow\quad \frac{v_e}{v_b}=\frac{g_eR_E'}{1+g_eR_E'}" />
 
 This is an approximately unity-feedback voltage loop. It cannot have voltage gain greater than one in the stated model, but it can deliver substantially more current than the source supplies to the base.
 
-At I꜀ = 1 mA, β = 100 and Rᴇ′ = 1 kΩ, gₑRᴇ′ ≈ 39.07 and gain is 0.9750. The missing 2.5% is finite loop gain, not a second fixed 0.7 V drop in the AC gain.
+At $I_C$ = 1 mA, $\beta$ = 100 and $R_E$′ = 1 kΩ, $g_e R_E$′ ≈ 39.07 and gain is 0.9750. The missing 2.5% is finite loop gain, not a second fixed 0.7 V drop in the AC gain.
 
-For output resistance, suppress the input signal and let its source present Rₛ to the base. Looking into the transistor's emitter gives approximately:
+For output resistance, suppress the input signal and let its source present $R_s$ to the base. Looking into the transistor's emitter gives approximately:
 
 <Equation tex="R_{\mathrm{out}}\approx \frac{r_\pi+R_s}{\beta+1}\parallel R_E" />
 
-With Rₛ = 1 kΩ and the above transistor, the transistor path is 35.5 Ω; in parallel with a 1 kΩ emitter resistor it becomes about 34.3 Ω. If the source becomes very high impedance, the follower loses much of this benefit. Feedback works through the entire source and load network.
+With $R_s$ = 1 kΩ and the above transistor, the transistor path is 35.5 Ω; in parallel with a 1 kΩ emitter resistor it becomes about 34.3 Ω. If the source becomes very high impedance, the follower loses much of this benefit. Feedback works through the entire source and load network.
 
-The DC output still lies roughly one Vᵦₑ below the base. The small-signal follower relation describes *changes*, not absolute voltage equality. Near cutoff, saturation, or the negative swing limit of a single-ended stage, that linear relation fails.
+The DC output still lies roughly one $V_{BE}$ below the base. The small-signal follower relation describes *changes*, not absolute voltage equality. Near cutoff, saturation, or the negative swing limit of a single-ended stage, that linear relation fails.
 
 </section>
 
 <section id="collector">
 
-## 04 / Collector-to-base feedback
+<div className="section-heading"><span>04</span><h2>Collector-to-base feedback</h2></div>
 
 <FeedbackAmpFigure kind="collector" />
 
 A resistor from collector to base can stabilize a common-emitter bias. If collector current rises, the collector voltage falls. That reduces current supplied through the feedback resistor to the base, opposing the rise.
 
-For emitter grounded, no external DC input current, constant Vᵦₑ, and Rꜰ from collector to base, the collector resistor carries **both** collector and base current:
+For emitter grounded, no external DC input current, constant $V_{BE}$, and $R_F$ from collector to base, the collector resistor carries **both** collector and base current:
 
 <Equation tex="V_C=V_{CC}-(\beta+1)I_BR_C,\qquad V_C=V_{BE}+I_BR_F" />
 
@@ -117,13 +142,13 @@ Therefore:
 
 <Equation tex="I_B=\frac{V_{CC}-V_{BE}}{R_F+(\beta+1)R_C},\qquad I_C=\beta I_B" />
 
-With 12 V supply, R꜀ = 2.2 kΩ and Rꜰ = 220 kΩ, β = 100 gives I꜀ ≈ 2.555 mA and V꜀ ≈ 6.322 V. At β = 200, I꜀ rises to about 3.413 mA and V꜀ falls to about 4.454 V. Collector feedback reduces β sensitivity compared with fixed base-current drive, but does not eliminate it.
+With 12 V supply, $R_C$ = 2.2 kΩ and $R_F$ = 220 kΩ, $\beta$ = 100 gives $I_C$ ≈ 2.555 mA and $V_C$ ≈ 6.322 V. At $\beta$ = 200, $I_C$ rises to about 3.413 mA and $V_C$ falls to about 4.454 V. Collector feedback reduces $\beta$ sensitivity compared with fixed base-current drive, but does not eliminate it.
 
-The schematic also shows a signal source through Rₛ. Its **DC** loading must be included if directly connected. To use the preceding bias formula while driving from a ground-referenced signal generator, add an input coupling capacitor and analyze the AC network separately.
+The schematic also shows a signal source through $R_s$. The drawn input coupling capacitor removes external DC loading. If the source is directly connected instead, include its DC current when calculating bias; at midband, retain the source resistance in the AC node equations.
 
 ### AC feedback is also loading
 
-With emitter at AC ground, source x through Rₛ, base voltage vᵦ and output vₒ, write both node equations:
+With emitter at AC ground, source x through $R_s$, base voltage $v_b$ and output $v_o$, write both node equations:
 
 <Equation tex="\frac{v_b-x}{R_s}+\frac{v_b}{r_\pi}+\frac{v_b-v_o}{R_F}=0" />
 
@@ -131,7 +156,7 @@ With emitter at AC ground, source x through Rₛ, base voltage vᵦ and output v
 
 The last term is the controlled collector current leaving the output node. These equations include feedback-resistor loading at both ends. They are safer than guessing b from a divider that is not actually unloaded.
 
-For Rₛ = 10 kΩ, Rꜰ = 100 kΩ, R꜀′ = 2 kΩ, gₘ = 40 mS and rπ = 2.5 kΩ, the equations give vₒ/vᵦ ≈ −78.41 and vᵦ/x ≈ 0.07727, hence total gain about −6.06. Without the feedback resistor, those same frozen small-signal parameters give −16. The DC bias must be re-established if a real circuit's Rꜰ is changed.
+For $R_s$ = 10 kΩ, $R_F$ = 100 kΩ, $R_C$′ = 2 kΩ, $g_m$ = 40 mS and $r_π$ = 2.5 kΩ, the equations give $v_o$/$v_b$ ≈ −78.41 and $v_b$/x ≈ 0.07727, hence total gain about −6.06. Without the feedback resistor, those same frozen small-signal parameters give −16. The DC bias must be re-established if a real circuit's $R_F$ is changed.
 
 This is shunt feedback at the input: it draws current from the source. Its input-resistance behavior differs from emitter degeneration's series comparison.
 
@@ -139,7 +164,7 @@ This is shunt feedback at the input: it draws current from the source. Its input
 
 <section id="global">
 
-## 05 / A two-stage feedback amplifier
+<div className="section-heading"><span>05</span><h2>A two-stage feedback amplifier</h2></div>
 
 Two common-emitter stages each invert. Their combined forward path is noninverting, so returning a fraction of the final output to the first transistor's emitter can oppose its base signal.
 
@@ -159,11 +184,11 @@ Now add dynamics. Both collector nodes introduce poles; coupling capacitors and 
 
 <section id="design">
 
-## 06 / A practical design workflow
+<div className="section-heading"><span>06</span><h2>A practical design workflow</h2></div>
 
 Begin with a DC operating point and usable swing under the real load. Linearize at that point; identify which signal is sampled and where it is subtracted. Compute a loaded gain and input/output resistances. Then examine gain and phase versus frequency, including source impedance and capacitive loads.
 
-For a target gain near −10, one possible first pass is I꜀ = 1 mA and R꜀′ = 2.2 kΩ. Rearranging the finite-β degeneration equation gives:
+For a target gain near −10, one possible first pass is $I_C$ = 1 mA and $R_C$′ = 2.2 kΩ. Rearranging the finite-$\beta$ degeneration equation gives:
 
 <Equation tex="R_E=\frac{R_C'/|A_v|-1/g_m}{1+1/\beta}=\frac{220-25.85}{1.01}\approx192.2\ \Omega" />
 
@@ -176,7 +201,58 @@ This chapter focuses on the feedback mechanism. Current mirrors, differential pa
 </section>
 
 
-<div className="practice-home">
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why is emitter degeneration negative feedback despite inverted output?</summary>
+<div>
+
+A current increase raises emitter voltage and reduces the junction voltage driving that current. Collector inversion describes a different sign relationship.
+
+</div>
+</details>
+
+<details>
+<summary>2. What loads the base besides the transistor input resistance?</summary>
+<div>
+
+The bias network, signal-source impedance and any shunt feedback path.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why compare curvature after dividing by each stage’s tangent gain?</summary>
+<div>
+
+Otherwise reduced signal amplitude alone can make the lower-gain stage appear more linear.
+
+</div>
+</details>
+
+<details>
+<summary>4. Does collector feedback resistor current avoid the collector supply resistor?</summary>
+<div>
+
+No. With no external DC drive, the supply resistor carries collector and base current.
+
+</div>
+</details>
+
+<details>
+<summary>5. Can unloaded stage gains be multiplied to design a global loop?</summary>
+<div>
+
+Only if loading is negligible. Use loaded stages and include the return network’s interaction and dynamics.
+
+</div>
+</details>
+
+</section>
+
+<div className="chapter-end">
 
 <span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and complete worked solutions.</p><a className="primary-link" href="/transistor-feedback/practice/">Open practice →</a>
 

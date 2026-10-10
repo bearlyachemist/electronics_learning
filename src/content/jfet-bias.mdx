@@ -1,3 +1,4 @@
+import {JfetSpreadFigure} from '../components/FetTeachingFigures';
 import Equation from '../components/Equation.astro';
 import {FetCurves,JfetBiasLab,FetGainLab,VariableFetLab,FetOscillatorLab,AnalogSwitchLab,GateChargeLab,PowerFetLab,ParallelFetLab} from '../components/FetLabs';
 import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
@@ -15,11 +16,29 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 </div>
 
 
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">Will the same source resistor give the same current in every JFET?</p></div>
+
+<div>
+
+A normally-on JFET develops its own negative gate-source voltage when current raises the source. This local feedback makes a useful bias circuit, but device spread and drain headroom remain. Solve the current and terminal voltages together before treating the device as a current source.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The channel is already there → A useful square-law approximation → Solve the source-resistor feedback loop → Let the load steal headroom → Three current-source circuits → Design for a family of devices → Check your understanding.</p>
+
+</div>
+
 <section id="junction">
 
-## 01 / The channel is already there
+<div className="section-heading"><span>01</span><h2>The channel is already there</h2></div>
 
-An n-channel JFET conducts at VGS = 0. Reverse bias on its gate junction removes mobile charge from the channel edges. The depletion width of an abrupt junction grows approximately with the square root of built-in voltage plus applied reverse bias. Exact geometry matters: a flat channel, a cylindrical channel and a short channel do not share a universal physical coefficient.
+An n-channel JFET conducts at $V_{GS}$ = 0. Reverse bias on its gate junction removes mobile charge from the channel edges. The depletion width of an abrupt junction grows approximately with the square root of built-in voltage plus applied reverse bias. Exact geometry matters: a flat channel, a cylindrical channel and a short channel do not share a universal physical coefficient.
 
 The drain is positive relative to the source, so the gate-to-channel reverse bias is stronger near the drain. The channel therefore narrows toward the drain. At sufficiently large drain voltage it pinches off at that end, producing an approximately constant current. Making the gate more negative moves the whole device toward cutoff.
 
@@ -29,30 +48,30 @@ A JFET is a majority-carrier device. That helps distinguish its operation from a
 
 <section id="transfer">
 
-## 02 / A useful square-law approximation
+<div className="section-heading"><span>02</span><h2>A useful square-law approximation</h2></div>
 
-Let VP denote the negative gate-source cutoff voltage of an n-channel device, and IDSS the saturation drain current at zero gate-source voltage. The common Shockley approximation is:
+Let $V_P$ denote the negative gate-source cutoff voltage of an n-channel device, and $I_{DSS}$ the saturation drain current at zero gate-source voltage. The common Shockley approximation is:
 
 <Equation tex="I_D=I_{DSS}\left(1-\frac{V_{GS}}{V_P}\right)^2,\qquad V_P\le V_{GS}\le0" />
 
-This formula describes the saturation region, not every drain voltage. It is a practical approximate characteristic; unlike the MOS inversion-charge derivation, it should not be taken as an exact result for every JFET channel geometry. In the matched piecewise teaching model, set k = 2IDSS/VP² and u = VGS − VP, giving saturation when VDS ≥ u.
+This formula describes the saturation region, not every drain voltage. It is a practical approximate characteristic; unlike the MOS inversion-charge derivation, it should not be taken as an exact result for every JFET channel geometry. In the matched piecewise teaching model, set k = $2I_{DSS}/V_P^2$ and u = $V_{GS}$ − $V_P$, giving saturation when $V_{DS}$ ≥ u.
 
-Differentiate carefully. VP is negative:
+Differentiate carefully. $V_P$ is negative:
 
 <Equation tex="g_m=-\frac{2I_{DSS}}{V_P}\left(1-\frac{V_{GS}}{V_P}\right)=\frac{2\sqrt{I_{DSS}I_D}}{|V_P|}" />
 <Equation tex="g_{m0}=\frac{2I_{DSS}}{|V_P|},\qquad \frac{g_m}{g_{m0}}=\sqrt{\frac{I_D}{I_{DSS}}}" />
 
-For IDSS = 8 mA and VP = −4 V, gm0 = 4 mS. At VGS = −2 V the current is 2 mA and gm = 2 mS. Biasing at one quarter of IDSS cuts gm in half, not to one quarter. At a fixed ID, a device with a smaller cutoff-voltage magnitude can offer larger gm, but capacitance, leakage and noise must also be considered.
+For $I_{DSS}$ = 8 mA and $V_P$ = −4 V, $g_{m0}$ = 4 mS. At $V_{GS}$ = −2 V the current is 2 mA and $g_m$ = 2 mS. Biasing at one quarter of $I_{DSS}$ cuts $g_m$ in half, not to one quarter. At a fixed $I_D$, a device with a smaller cutoff-voltage magnitude can offer larger $g_m$, but capacitance, leakage and noise must also be considered.
 
-In the ohmic region the teaching model gives gm = kVDS. Thus gm drops toward zero as drain voltage approaches zero, even with the gate unchanged. A saturated-region gm quoted on a datasheet cannot be carried into a near-zero-drain-voltage resistor circuit.
+In the ohmic region the teaching model gives $g_m$ = $kV_{DS}$. Thus $g_m$ drops toward zero as drain voltage approaches zero, even with the gate unchanged. A saturated-region $g_m$ quoted on a datasheet cannot be carried into a near-zero-drain-voltage resistor circuit.
 
 </section>
 
 <section id="bias">
 
-## 03 / Solve the source-resistor feedback loop
+<div className="section-heading"><span>03</span><h2>Solve the source-resistor feedback loop</h2></div>
 
-Connect the gate to ground through a large resistor, the source to ground through RS, and the drain to the positive supply through RD. Neglect gate current initially. Source current equals drain current, so VS = IDRS and VGS = −IDRS. If current rises, the source rises and gate-source voltage becomes more negative. That reduces current: local negative feedback.
+Connect the gate to ground through a large resistor, the source to ground through $R_S$, and the drain to the positive supply through $R_D$. Neglect gate current initially. Source current equals drain current, so $V_S$ = $I_D R_S$ and $V_{GS}$ = −$I_D R_S$. If current rises, the source rises and gate-source voltage becomes more negative. That reduces current: local negative feedback.
 
 <FetCircuit />
 
@@ -60,11 +79,11 @@ Substitution gives an implicit equation:
 
 <Equation tex="I_D=I_{DSS}\left(1-\frac{I_D R_S}{|V_P|}\right)^2" />
 
-A convenient method avoids choosing the wrong root. Let x = √(ID/IDSS), constrained to 0 ≤ x ≤ 1, and a = IDSSRS/|VP|. Then:
+A convenient method avoids choosing the wrong root. Let x = √($I_D$/$I_{DSS}$), constrained to 0 ≤ x ≤ 1, and a = $I_{DSS}R_S$/|$V_P$|. Then:
 
 <Equation tex="ax^2+x-1=0,\qquad x=\frac{2}{1+\sqrt{1+4a}},\qquad I_D=I_{DSS}x^2" />
 
-For IDSS = 8 mA, VP = −4 V and RS = 500 Ω, a = 1, x = 0.618, ID = 3.056 mA and VS = 1.528 V. With VDD = 12 V and RD = 1 kΩ, VD = 8.944 V and VDS = 7.416 V. The saturation boundary is VGS − VP = 2.472 V, comfortably below the available VDS.
+For $I_{DSS}$ = 8 mA, $V_P$ = −4 V and $R_S$ = 500 Ω, a = 1, x = 0.618, $I_D$ = 3.056 mA and $V_S$ = 1.528 V. With $V_{DD}$ = 12 V and $R_D$ = 1 kΩ, $V_D$ = 8.944 V and $V_{DS}$ = 7.416 V. The saturation boundary is $V_{GS}$ − $V_P$ = 2.472 V, comfortably below the available $V_{DS}$.
 
 The second quadratic root from an incautious direct expansion can imply a gate voltage outside the valid transfer range. Always impose the physical domain, then check the drain voltage independently.
 
@@ -72,50 +91,113 @@ The second quadratic root from an incautious direct expansion can imply a gate v
 
 <section id="explore">
 
-## 04 / Let the load steal headroom
+<div className="section-heading"><span>04</span><h2>Let the load steal headroom</h2></div>
 
 <JfetBiasLab client:load />
 
-Raise RD while keeping the gate network unchanged. Eventually the supply cannot support both resistor drops and the required VDS. The lab solves the piecewise device law together with the resistor circuit, so it follows the current reduction into the ohmic region instead of pretending the saturation formula remains true.
+Raise $R_D$ while keeping the gate network unchanged. Eventually the supply cannot support both resistor drops and the required $V_{DS}$. The lab solves the piecewise device law together with the resistor circuit, so it follows the current reduction into the ohmic region instead of pretending the saturation formula remains true.
 
-For a saturated self-biased source, the minimum drain voltage relative to ground is approximately VS + (VGS − VP). With VG = 0, these source-voltage terms cancel, leaving about |VP|. This is a model-specific simplification, not a universal guaranteed compliance voltage for real JFETs.
+For a saturated self-biased source, the minimum drain voltage relative to ground is approximately $V_S$ + ($V_{GS}$ − $V_P$). With $V_G$ = 0, these source-voltage terms cancel, leaving about |$V_P$|. This is a model-specific simplification, not a universal guaranteed compliance voltage for real JFETs.
 
 </section>
 
 <section id="sources">
 
-## 05 / Three current-source circuits
+<div className="section-heading"><span>05</span><h2>Three current-source circuits</h2></div>
 
-**Gate tied to source.** Set VGS = 0 and use the drain-source pair as a two-terminal current regulator. Above the knee, current is approximately IDSS. The circuit has minimal parts but inherits the wide spread of IDSS. Its power is IDVDS, which grows with voltage even though current is “constant.”
+**Gate tied to source.** Set $V_{GS}$ = 0 and use the drain-source pair as a two-terminal current regulator. Above the knee, current is approximately $I_{DSS}$. The circuit has minimal parts but inherits the wide spread of $I_{DSS}$. Its power is $I_D V_{DS}$, which grows with voltage even though current is “constant.”
 
-**Gate referenced to ground with source degeneration.** This is the preceding circuit with the load between the supply and drain. To design 2 mA using the illustrative 8 mA, −4 V device, first find VGS = −2 V, then choose RS = 2 V/2 mA = 1 kΩ. At a drain voltage of 8 V, VS = 2 V and VDS = 6 V, leaving margin above the 2 V knee.
+**Gate referenced to ground with source degeneration.** This is the preceding circuit with the load between the supply and drain. To design 2 mA using the illustrative 8 mA, −4 V device, first find $V_{GS}$ = −2 V, then choose $R_S$ = 2 V/2 mA = 1 kΩ. At a drain voltage of 8 V, $V_S$ = 2 V and $V_{DS}$ = 6 V, leaving margin above the 2 V knee.
 
-**Cascoded current source.** Place another suitable FET above the current-setting device and bias its gate so that the lower device sees nearly constant drain voltage. This reduces drain-voltage-induced current error. It costs voltage headroom and requires a bias arrangement that works during startup. The upper device does not magically remove the lower device's IDSS and VP tolerance.
+**Cascoded current source.** Place another suitable FET above the current-setting device and bias its gate so that the lower device sees nearly constant drain voltage. This reduces drain-voltage-induced current error. It costs voltage headroom and requires a bias arrangement that works during startup. The upper device does not magically remove the lower device's $I_{DSS}$ and $V_P$ tolerance.
 
-For finite output resistance ro, a source resistor increases current-source output resistance approximately to:
+For finite output resistance $r_o$, a source resistor increases current-source output resistance approximately to:
 
 <Equation tex="R_{\mathrm{out}}\approx r_o+R_S+g_mr_oR_S" />
 
-Derive it by holding the gate at AC ground, applying a test drain voltage and noting vs = idRS. Substitute vgs = −idRS and vds = vd − idRS into id = gmvgs + vds/ro. The improvement comes from the same local loop that stabilizes bias. It is valid only while the device remains in its current-source region.
+Derive it by holding the gate at AC ground, applying a test drain voltage and noting $v_s$ = $i_d R_S$. Substitute $v_{gs}$ = −$i_d R_S$ and $v_{ds}$ = $v_d$ − $i_d R_S$ into $i_d$ = $g_m v_{gs}$ + $v_{ds}$/$r_o$. The improvement comes from the same local loop that stabilizes bias. It is valid only while the device remains in its current-source region.
 
 </section>
 
 <section id="spread">
 
-## 06 / Design for a family of devices
+<div className="section-heading"><span>06</span><h2>Design for a family of devices</h2></div>
 
-A nominal transfer curve is not a purchasing specification. IDSS and cutoff voltage can vary substantially, and their correlations cannot be invented by independently selecting convenient typical values. For production, analyze guaranteed limits or characterize the chosen part, then provide adjustment or stronger feedback when current accuracy matters.
+<JfetSpreadFigure/>
+
+A nominal transfer curve is not a purchasing specification. $I_{DSS}$ and cutoff voltage can vary substantially, and their correlations cannot be invented by independently selecting convenient typical values. For production, analyze guaranteed limits or characterize the chosen part, then provide adjustment or stronger feedback when current accuracy matters.
 
 At a given gate bias, temperature changes both carrier mobility and junction-related parameters. Some operating points can have reduced temperature sensitivity, but there is no universal temperature-stable JFET current valid for every device. Gate leakage also rises with temperature and flows through the bias resistor, shifting the gate voltage.
 
-For example, 100 pA through 10 MΩ shifts the gate by 1 mV. With gm = 2 mS, the uncorrected current perturbation is 2 μA. Source degeneration reduces that perturbation by approximately 1 + gmRS. Surface contamination or humidity can dominate the intrinsic gate leakage in very high-impedance circuits.
+For example, 100 pA through 10 MΩ shifts the gate by 1 mV. With $g_m$ = 2 mS, the uncorrected current perturbation is 2 μA. Source degeneration reduces that perturbation by approximately 1 + $g_mR_S$. Surface contamination or humidity can dominate the intrinsic gate leakage in very high-impedance circuits.
 
-Read the parameter conditions as carefully as the numbers: gate leakage, capacitance and gm are specified at particular voltages, currents and temperatures. The [TI JFE150 datasheet](https://www.ti.com/lit/ds/symlink/jfe150.pdf) is a useful example of a modern JFET with separate characterization for these quantities; its parameters are not the illustrative values used here.
+Read the parameter conditions as carefully as the numbers: gate leakage, capacitance and $g_m$ are specified at particular voltages, currents and temperatures. The [TI JFE150 datasheet](https://www.ti.com/lit/ds/symlink/jfe150.pdf) is a useful example of a modern JFET with separate characterization for these quantities; its parameters are not the illustrative values used here.
+
+### Separate sensitivity to the two device parameters
+
+At a saturated self-biased point, with cutoff magnitude P held fixed:
+
+<Equation tex="\frac{\partial\ln I_D}{\partial\ln I_{DSS}}=\frac{1}{1+g_mR_S},\qquad \frac{\partial\ln I_D}{\partial\ln P}=\frac{g_mR_S}{1+g_mR_S},\quad P=|V_P|"/>
+
+At 3.056 mA with 500 Ω source resistance, $g_m=2.472$ mS and $g_mR_S=1.236$. The two sensitivities are 0.447 and 0.553. A small 10% zero-bias-current change gives about 4.47% current change, while a 10% cutoff-magnitude change gives about 5.53%, with the other parameter fixed.
+
+Source feedback reduces dependence on one parameter while retaining dependence on the voltage scale setting the source drop. Real parameter correlations and guaranteed ranges must come from the chosen device; these independent derivatives do not establish a production distribution.
 
 </section>
 
 
-<div className="practice-home">
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why does a grounded gate acquire negative gate-source voltage?</summary>
+<div>
+
+Drain current raises the source through its resistor while the gate stays near zero.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why discard the second algebraic self-bias root?</summary>
+<div>
+
+It can lie outside the physical transfer-law domain. Impose reverse gate bias and the valid current range before checking headroom.
+
+</div>
+</details>
+
+<details>
+<summary>3. What drain-to-ground voltage approximately marks the self-biased knee?</summary>
+<div>
+
+About $|V_P|$ in the piecewise model with gate at zero; the source-voltage terms cancel.
+
+</div>
+</details>
+
+<details>
+<summary>4. Does a cascode correct zero-bias-current and cutoff spread?</summary>
+<div>
+
+It mainly holds lower drain voltage steady, reducing output-voltage sensitivity. It does not remove the current-setting device’s manufacturing spread.
+
+</div>
+</details>
+
+<details>
+<summary>5. What error can gate leakage produce?</summary>
+<div>
+
+Its current through the bias resistance changes gate voltage and therefore drain current, with source feedback reducing the local sensitivity.
+
+</div>
+</details>
+
+</section>
+
+<div className="chapter-end">
 
 <span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems, hints and complete worked solutions.</p><a className="primary-link" href="/jfet-bias/practice/">Open practice →</a>
 

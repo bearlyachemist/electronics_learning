@@ -1,6 +1,7 @@
 ---
 import Book from '../layouts/Book.astro';
 import Equation from '../components/Equation.astro';
+import {sitePath} from '../lib/site-path';
 ---
 <Book title="Practice · Voltage dividers" practice>
 <div class="chapter-hero"><div class="eyebrow"><span>CHAPTER 01</span><span class="hairline"/>THE PRACTICE NOTEBOOK</div><h1>Make the ideas<br/><em>your own.</em></h1><p class="dek">Five problems on divider ratios, loading, and design. Work on paper, use a calculator, and reveal only as much help as you need.</p><div class="chapter-meta"><span>30–45 min</span><span>Independent practice · Fully worked solutions</span></div></div>
@@ -26,7 +27,6 @@ import Equation from '../components/Equation.astro';
 <article class="problem" id="problem-5"><span class="tiny-label">05 / DIAGNOSIS</span><h2>Infer the hidden load</h2><p>An ideal 10 V source drives two exact 10 kΩ resistors. The midpoint measures 5 V with an external module disconnected and 2 V with it connected. Assume the measuring instrument draws negligible current. If the module behaves as a resistance to ground, what is that resistance? Would a disconnected module alone explain a reading of 0 V?</p>
 <details><summary>Show a hint</summary><div><p>Use the Thévenin equivalent and rearrange Vₒᵤₜ = VₜₕRₗ / (Rₜₕ + Rₗ) to solve for Rₗ.</p></div></details>
 <details><summary>Read the worked solution</summary><div><Equation tex={String.raw`R_L=\frac{V_{\mathrm{out}}R_{\mathrm{th}}}{V_{\mathrm{th}}-V_{\mathrm{out}}}=\frac{2(5\ \mathrm{k\Omega})}{5-2}=3.333\ \mathrm{k\Omega}`}/><p>The module draws 2 V / 3.333 kΩ = <strong>0.6 mA</strong>. R₂ carries 0.2 mA, while R₁ supplies 0.8 mA. The currents balance.</p><p>A disconnected module leaves the original unloaded divider, so it predicts <strong>5 V</strong>, not 0 V. A short to ground, missing supply, open R₁, or measurement/reference error could explain a zero reading under different fault assumptions. One observation cannot uniquely identify the fault.</p></div></details></article>
-<div class="practice-home"><a class="primary-link" href="/">← Return to the chapter</a></div>
+<div class="practice-home"><a class="primary-link" href={sitePath('/')}>← Return to the chapter</a></div>
 </Book>
-
 

@@ -1,3 +1,4 @@
+import {FetSteeringFigure} from '../components/FetTeachingFigures';
 import Equation from '../components/Equation.astro';
 import {FetCurves,JfetBiasLab,FetGainLab,VariableFetLab,FetOscillatorLab,AnalogSwitchLab,GateChargeLab,PowerFetLab,ParallelFetLab} from '../components/FetLabs';
 import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
@@ -15,101 +16,129 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 </div>
 
 
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">How much distortion reduction comes from source degeneration?</p></div>
+
+<div>
+
+A valid bias point supplies the transconductance used in every gain calculation. Source degeneration reduces both gain and curvature; drain loading and capacitance add further tradeoffs. Compare the device’s controlling voltage with the external signal to see what each circuit changes.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The common-source amplifier → Bias, gain and swing in one example → The source follower is a feedback amplifier → Common gate and differential pairs → A voltage-controlled resistor → Explore the compromises → Check your understanding.</p>
+
+</div>
+
 <section id="cs">
 
-## 01 / The common-source amplifier
+<div className="section-heading"><span>01</span><h2>The common-source amplifier</h2></div>
 
-Start at a valid DC operating point and replace the transistor with its incremental model. A positive gate perturbation increases drain current. The increased drop across RD pulls the drain downward, producing an inverted output. With the source at AC ground, gate current neglected and effective load RD′ = RD parallel RL parallel ro:
+Start at a valid DC operating point and replace the transistor with its incremental model. A positive gate perturbation increases drain current. The increased drop across $R_D$ pulls the drain downward, producing an inverted output. With the source at AC ground, gate current neglected and effective load $R_D$′ = $R_D$ parallel $R_L$ parallel $r_o$:
 
 <Equation tex="v_o=-i_dR_D',\qquad i_d=g_mv_i,\qquad A_v=-g_mR_D'" />
 
-A source resistor adds feedback. If ro is sufficiently large to neglect, source voltage is idRS, so:
+A source resistor adds feedback. If $r_o$ is sufficiently large to neglect, source voltage is $i_d R_S$, so:
 
 <Equation tex="i_d=g_m(v_i-i_dR_S),\qquad A_v=-\frac{g_m(R_D\parallel R_L)}{1+g_mR_S}" />
 
-For gmRS much greater than one, gain approaches the resistor ratio −(RD parallel RL)/RS. Increased gm then changes gain only slightly. This improves predictability and reduces distortion, but sacrifices gain. A bypass capacitor across all or part of RS restores AC gain above its relevant corner while retaining DC bias feedback.
+For $g_mR_S$ much greater than one, gain approaches the resistor ratio −($R_D$ parallel $R_L$)/$R_S$. Increased $g_m$ then changes gain only slightly. This improves predictability and reduces distortion, but sacrifices gain. A bypass capacitor across all or part of $R_S$ restores AC gain above its relevant corner while retaining DC bias feedback.
 
-The exact finite-ro result for an unloaded gate and an external drain load R is:
+The exact finite-$r_o$ result for an unloaded gate and an external drain load R is:
 
 <Equation tex="A_v=-\frac{g_mR}{1+g_mR_S+(R+R_S)/r_o}" />
 
-Obtain it by writing KCL at drain and source, including the ro branch between those two nodes. Merely adding ro in parallel with RD and then applying the degeneration denominator is an approximation; degeneration moves the source, so ro is not connected directly to AC ground.
+Obtain it by writing KCL at drain and source, including the $r_o$ branch between those two nodes. Merely adding $r_o$ in parallel with $R_D$ and then applying the degeneration denominator is an approximation; degeneration moves the source, so $r_o$ is not connected directly to AC ground.
 
 </section>
 
 <section id="design">
 
-## 02 / Bias, gain and swing in one example
+<div className="section-heading"><span>02</span><h2>Bias, gain and swing in one example</h2></div>
 
-Use the previous chapter's JFET: IDSS = 8 mA, VP = −4 V. Choose RS = 1 kΩ, RD = 3.3 kΩ, VDD = 15 V and a 100 kΩ AC-coupled load. At ID = 2 mA, VS = 2 V, VD = 8.4 V and VDS = 6.4 V. The required saturation headroom is 2 V, so the bias is valid. gm = 2 mS.
+Use the previous chapter's JFET: $I_{DSS}$ = 8 mA, $V_P$ = −4 V. Choose $R_S$ = 1 kΩ, $R_D$ = 3.3 kΩ, $V_{DD}$ = 15 V and a 100 kΩ AC-coupled load. At $I_D$ = 2 mA, $V_S$ = 2 V, $V_D$ = 8.4 V and $V_{DS}$ = 6.4 V. The required saturation headroom is 2 V, so the bias is valid. $g_m$ = 2 mS.
 
-The AC drain resistance is 3.195 kΩ. With RS unbypassed:
+The AC drain resistance is 3.195 kΩ. With $R_S$ unbypassed:
 
 <Equation tex="A_v\approx-\frac{0.002(3195)}{1+0.002(1000)}=-2.13" />
 
 A 100 mV peak input therefore produces about 213 mV peak output and 66.7 μA peak drain-current change. The gate-source perturbation is only about 33.3 mV because the source follows part of the input. This is why degeneration improves linearity: the device itself sees a smaller signal than the external input.
 
-With RS completely bypassed at the signal frequency, gain is approximately −6.39. The same 100 mV input now changes drain current by about 200 μA and creates more curvature. In a square-law saturation model, the second-harmonic-to-fundamental ratio for a sinusoidal gate-source amplitude a is approximately:
+With $R_S$ completely bypassed at the signal frequency, gain is approximately −6.39. The same 100 mV input now changes drain current by about 200 μA and creates more curvature. In a square-law saturation model, the second-harmonic-to-fundamental ratio for a sinusoidal gate-source amplitude a is approximately:
 
 <Equation tex="\frac{H_2}{H_1}\approx\frac{a}{4u}" />
 
 Here u = 2 V. A 100 mV gate-source amplitude gives about 1.25% second harmonic before other effects; degeneration reduces the effective gate-source signal. This estimate assumes small enough excursions to stay in the same operating region.
 
-Check large-signal headroom separately. At cutoff the unloaded drain can rise toward 15 V. Toward larger current, the drain falls and the source rises, eventually violating the saturation boundary. For the unbypassed circuit at a slowly varied gate voltage, solve the instantaneous current equation and resistor drops together; do not infer symmetric clipping solely from VD's distance to the rails.
+Check large-signal headroom separately. At cutoff the unloaded drain can rise toward 15 V. Toward larger current, the drain falls and the source rises, eventually violating the saturation boundary. For the unbypassed circuit at a slowly varied gate voltage, solve the instantaneous current equation and resistor drops together; do not infer symmetric clipping solely from $V_D$'s distance to the rails.
 
 A 1 MΩ gate resistor provides a DC return for an input coupling capacitor. With a low-resistance source and 100 nF coupling capacitor, the input high-pass corner is about 1.59 Hz. The capacitor cannot replace the gate resistor: without a DC path, leakage and stored charge determine the bias.
+
+### Second-order curvature with source feedback
+
+Let the gate sine have peak a and expand drain-current change as $\delta i=A_1v+A_2v^2$. With $\delta i=g_m(v-R_S\delta i)+(k/2)(v-R_S\delta i)^2$, matching the linear and quadratic terms gives:
+
+<Equation tex="A_1=\frac{g_m}{1+g_mR_S},\qquad A_2=\frac{k/2}{(1+g_mR_S)^3},\qquad \frac{H_2}{H_1}\approx\frac{a}{4u(1+g_mR_S)^2}"/>
+
+For a = 100 mV, u = 2 V and $g_mR_S=2$, this estimate is 0.139% instead of 1.25% with no degeneration. The input junction signal is reduced, and feedback also opposes the second-order current generated there. This expansion assumes negligible output conductance, adequate headroom and small excursions; it excludes higher harmonics and clipping.
 
 </section>
 
 <section id="follower">
 
-## 03 / The source follower is a feedback amplifier
+<div className="section-heading"><span>03</span><h2>The source follower is a feedback amplifier</h2></div>
 
-Connect the drain directly to the positive supply and take the output at the source. A rising source voltage reduces VGS, opposing further current increase. With a source load R and neglecting ro and body effect:
+Connect the drain directly to the positive supply and take the output at the source. A rising source voltage reduces $V_{GS}$, opposing further current increase. With a source load R and neglecting $r_o$ and body effect:
 
 <FetCircuit mode="follower" />
 
 <Equation tex="\frac{v_s}{R}=g_m(v_g-v_s),\qquad A_v=\frac{g_mR}{1+g_mR}" />
 
-For gm = 4 mS and R = 2 kΩ, gain is 8/9 = 0.889. It takes a large gmR product to get very close to unity. The ideal gate draws no signal current at low frequency, while output resistance with the gate held by a low-impedance source is approximately 1/gm parallel R. Here that is 250 Ω parallel 2 kΩ = 222 Ω.
+For $g_m$ = 4 mS and R = 2 kΩ, gain is 8/9 = 0.889. It takes a large $g_m R$ product to get very close to unity. The ideal gate draws no signal current at low frequency, while output resistance with the gate held by a low-impedance source is approximately 1/$g_m$ parallel R. Here that is 250 Ω parallel 2 kΩ = 222 Ω.
 
-Unlike the familiar silicon emitter follower, a JFET follower does not have a universal 0.7 V offset. At the 2 mA operating point above, VGS = −2 V, so the source is **2 V above the gate**. A suitable negative supply or positive gate bias may be necessary to put the desired signal range at the source.
+Unlike the familiar silicon emitter follower, a JFET follower does not have a universal 0.7 V offset. At the 2 mA operating point above, $V_{GS}$ = −2 V, so the source is **2 V above the gate**. A suitable negative supply or positive gate bias may be necessary to put the desired signal range at the source.
 
-An enhancement n-MOS follower usually places its source below its gate by the required positive VGS. A MOS body held at a fixed potential can add body-effect transconductance, further reducing gain. A buffer with high input resistance is not automatically a precision unity-gain amplifier.
+An enhancement n-MOS follower usually places its source below its gate by the required positive $V_{GS}$. A MOS body held at a fixed potential can add body-effect transconductance, further reducing gain. A buffer with high input resistance is not automatically a precision unity-gain amplifier.
 
 </section>
 
 <section id="other">
 
-## 04 / Common gate and differential pairs
+<div className="section-heading"><span>04</span><h2>Common gate and differential pairs</h2></div>
 
-In a common-gate stage the gate is at AC ground and the input enters the source. A positive source signal decreases VGS and drain current; the drain voltage rises. Thus the voltage gain is noninverting, approximately gmRD′, and the input resistance is approximately 1/gm. This is useful when a low input impedance is desirable or when reducing drain-to-input Miller multiplication. A cascode combines a common-source input device with a common-gate upper device, holding the lower drain nearly still.
+<FetSteeringFigure/>
 
-A matched JFET differential pair shares a tail current IT. At zero differential input each device carries IT/2. For equal and opposite gate perturbations ±vd/2, an ideal tail keeps the common source nearly fixed for differential signals. Each drain current changes by ±gmvd/2.
+In a common-gate stage the gate is at AC ground and the input enters the source. A positive source signal decreases $V_{GS}$ and drain current; the drain voltage rises. Thus the voltage gain is noninverting, approximately $g_m R_D'$, and the input resistance is approximately 1/$g_m$. This is useful when a low input impedance is desirable or when reducing drain-to-input Miller multiplication. A cascode combines a common-source input device with a common-gate upper device, holding the lower drain nearly still.
+
+A matched JFET differential pair shares a tail current $I_T$. At zero differential input each device carries $I_T$/2. For equal and opposite gate perturbations ±$v_d$/2, an ideal tail keeps the common source nearly fixed for differential signals. Each drain current changes by ±$g_m v_d$/2.
 
 <Equation tex="A_{\mathrm{single}}=-\frac{g_mR_D}{2},\qquad A_{\mathrm{differential}}=-g_mR_D" />
 
-For IT = 4 mA and each device's gm = 2 mS, RD = 3.3 kΩ gives single-ended differential gain −3.3 and drain-to-drain gain magnitude 6.6. Define which drain is subtracted before assigning the final sign.
+For $I_T$ = 4 mA and each device's $g_m$ = 2 mS, $R_D$ = 3.3 kΩ gives single-ended differential gain −3.3 and drain-to-drain gain magnitude 6.6. Define which drain is subtracted before assigning the final sign.
 
 The large-signal steering law differs from the BJT tanh law. For matched square-law devices, while both conduct:
 
 <Equation tex="I_1-I_2=k\,v_d\sqrt{\frac{I_T}{k}-\frac{v_d^2}{4}},\qquad |v_d|\le\sqrt{\frac{2I_T}{k}}" />
 
-Derive it by writing overdrives as u ± vd/2, adding the two currents to enforce IT, then subtracting. Beyond the boundary, one device is cut off and the other carries the tail current. Gate leakage creates input bias errors; mismatch creates offset; finite tail resistance turns common-mode signals into current changes. These remain real even when ideal gate current is zero.
+Derive it by writing overdrives as u ± $v_d$/2, adding the two currents to enforce $I_T$, then subtracting. Beyond the boundary, one device is cut off and the other carries the tail current. Gate leakage creates input bias errors; mismatch creates offset; finite tail resistance turns common-mode signals into current changes. These remain real even when ideal gate current is zero.
 
 </section>
 
 <section id="resistor">
 
-## 05 / A voltage-controlled resistor
+<div className="section-heading"><span>05</span><h2>A voltage-controlled resistor</h2></div>
 
 In the ohmic region, a FET's conductance changes with gate voltage. The same quadratic term that produced saturation also produces distortion in resistor service:
 
 <Equation tex="I_D=k\left[(V_{GS}-V_T)V_{DS}-\frac{V_{DS}^2}{2}\right]" />
 
-Hold VGS fixed and the apparent resistance changes over the signal waveform. For small VDS, R ≈ 1/[k(VGS − VT)]. With k = 1 mA/V² and overdrive 2 V, the zero-signal resistance is 500 Ω.
+Hold $V_{GS}$ fixed and the apparent resistance changes over the signal waveform. For small $V_{DS}$, R ≈ 1/[k($V_{GS}$ − $V_T$)]. With k = 1 mA/V² and overdrive 2 V, the zero-signal resistance is 500 Ω.
 
-If the gate tracks half of the voltage across the channel, VGS = VC + VDS/2, substitution cancels the quadratic term in this ideal model:
+If the gate tracks half of the voltage across the channel, $V_{GS}$ = VC + $V_{DS}$/2, substitution cancels the quadratic term in this ideal model:
 
 <Equation tex="I_D=k(V_C-V_T)V_{DS}" />
 
@@ -121,7 +150,7 @@ JFET resistors appear in automatic gain control, soft attenuation and oscillator
 
 <section id="explore">
 
-## 06 / Explore the compromises
+<div className="section-heading"><span>06</span><h2>Explore the compromises</h2></div>
 
 <FetGainLab client:load />
 
@@ -132,7 +161,58 @@ First increase source degeneration and predict both gain and Miller capacitance.
 </section>
 
 
-<div className="practice-home">
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why is common-source gain negative?</summary>
+<div>
+
+Increasing gate drive increases drain current and the voltage drop across the drain load, lowering output voltage.
+
+</div>
+</details>
+
+<details>
+<summary>2. Can finite output resistance always be added in parallel with the load?</summary>
+<div>
+
+That is exact only with a stationary source. Source degeneration moves the source, so the drain-to-source output-resistance branch must be retained in nodal analysis.
+
+</div>
+</details>
+
+<details>
+<summary>3. Is a JFET follower offset universally 0.7 V?</summary>
+<div>
+
+No. Its required gate-source voltage depends on bias and device parameters and can be negative.
+
+</div>
+</details>
+
+<details>
+<summary>4. Does the FET pair obey the BJT tanh steering law?</summary>
+<div>
+
+No. The chapter’s square-law pair has a different two-device conduction boundary and large-signal steering function.
+
+</div>
+</details>
+
+<details>
+<summary>5. What cancels the ideal resistor-mode quadratic term?</summary>
+<div>
+
+Adding half of the channel voltage to the gate control, while preserving reverse bias at both ends.
+
+</div>
+</details>
+
+</section>
+
+<div className="chapter-end">
 
 <span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems, hints and complete worked solutions.</p><a className="primary-link" href="/jfet-amplifiers/practice/">Open practice →</a>
 

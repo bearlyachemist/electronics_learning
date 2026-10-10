@@ -1,69 +1,38 @@
 import Equation from '../components/Equation.astro';
-import {CapacitorLab,RCLab,FilterLab,RealCapLab,InductorLab,TransformerLab} from '../components/PassiveLabs';
-
-
+import {InductorLab} from '../components/PassiveLabs';
+import {CoreFluxFigure,RLResponseFigure,ClampDecayFigure,FlybackOptionsFigure,SaturationFigure,InductorSRFFigure} from '../components/PassiveFigures';
 
 <div className="chapter-hero" id="overview">
 
-
-
-
-<div className="eyebrow">
-
-<span>CHAPTER 10</span><span className="hairline"/>FOUNDATIONS / ENERGY & SIGNALS
-
-</div>
-
+<div className="eyebrow"><span>CHAPTER 10</span><span className="hairline"/>FOUNDATIONS / ENERGY & SIGNALS</div>
 
 <h1>Inductors<br/><em>Current has a memory.</em></h1>
+
 <p className="dek">Start with magnetic flux, derive the inductor law, track stored energy, and see why a current path matters when a switch opens.</p>
 
-
-<div className="chapter-meta">
-
-<span>35–45 min + exploration</span><span>Current · energy · RC analogy</span>
+<div className="chapter-meta"><span>45–55 min + exploration</span><span>Current · energy · RC analogy</span></div>
 
 </div>
-
-
-
-
-</div>
-
-
-
-
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Flux linkage and voltage → Magnetic energy → Energize and turn off → Inductors in AC circuits → Saturation and real windings.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Flux linkage and voltage → Magnetic energy → Energize and turn off → Inductors in AC circuits → Saturation and real windings → Check your understanding.</p>
 
 </div>
-
-
-
-
 
 <section id="flux">
 
+<div className="section-heading"><span>01</span><h2>Flux linkage and voltage</h2></div>
 
+Current in a winding produces a magnetic field. Magnetic flux $\Phi$ describes the field passing through a surface; flux linkage $\lambda$ accounts for the turns linked by that flux. For a simplified winding with $N$ equally linked turns, $\lambda = N\Phi$.
 
-
-<div className="section-heading">
-
-<span>01</span><h2>Flux linkage and voltage</h2>
-
-</div>
-
-
-
-Current in a winding produces a magnetic field. Magnetic flux Φ describes the field passing through a surface; flux linkage λ accounts for the turns linked by that flux. For a simplified winding with N equally linked turns, λ = NΦ.
+<CoreFluxFigure/>
 
 For a linear magnetic system, linkage is proportional to current:
 
 <Equation tex="\lambda=Li"/>
 
-L is inductance, measured in henries. Faraday’s law connects changing flux linkage to induced voltage. Using the passive terminal convention—positive current enters the positive voltage terminal—the inductor voltage is:
+$L$ is inductance, measured in henries. Faraday’s law connects changing flux linkage to induced voltage. Using the passive terminal convention (positive current enters the positive voltage terminal), the inductor voltage is:
 
 <Equation tex="v=\frac{d\lambda}{dt}=L\frac{di}{dt}" label="01 / VOLTAGE CONTROLS THE SLOPE OF CURRENT"/>
 
@@ -71,39 +40,27 @@ The induced electromotive force opposes the change that produces it; that is Len
 
 ### Current continuity
 
-A finite voltage across a finite ideal inductance cannot instantaneously change current. To change current by ΔI over Δt requires average voltage LΔI/Δt. A rapid change requires a large voltage.
+A finite voltage across a finite ideal inductance cannot instantaneously change current. To change current by $\Delta I$ over $\Delta t$ requires average voltage $L\,\Delta I/\Delta t$. A rapid change requires a large voltage.
 
-An inductor does not “keep the voltage constant.” It resists a change in current by developing whatever terminal voltage the rest of the modeled circuit allows. If no credible current path is modeled during switching, the ideal model can demand an unbounded voltage.
+An inductor does not "keep the voltage constant." It resists a change in current by developing whatever terminal voltage the rest of the modeled circuit allows. If no credible current path is modeled during switching, the ideal model can demand an unbounded voltage.
 
-At settled DC, di/dt = 0 and the ideal inductive voltage is zero. A real winding still has resistance. “Short circuit at DC” applies to the ideal inductance in steady state, not to every winding at startup.
+**A mechanical picture.** An inductor behaves like the mass of water flowing in a long pipe, or a heavy flywheel. Voltage is the push, current is the flow. A steady flow needs no push (apart from friction, the winding resistance). Changing the flow takes push in proportion to how fast you change it. And slamming a valve shut on a moving column of water produces a pressure spike, water hammer, exactly as opening a switch on an inductor produces a voltage spike.
+
+At settled DC, $di/dt = 0$ and the ideal inductive voltage is zero. A real winding still has resistance. "Short circuit at DC" applies to the ideal inductance in steady state, not to every winding at startup.
 
 ### Geometry and the core
 
-In a simple linear magnetic circuit, L ≈ N²/ℜ, where ℜ is magnetic reluctance. More turns generally increase inductance strongly; a high-permeability core reduces reluctance. An air gap increases reluctance but can make useful energy storage and saturation behavior easier to control.
+In a simple linear magnetic circuit, $L \approx N^2/\mathcal{R}$, where $\mathcal{R}$ is magnetic reluctance. More turns generally increase inductance strongly; a high-permeability core reduces reluctance. An air gap increases reluctance but can make useful energy storage and saturation behavior easier to control.
 
-This simple expression assumes an appropriate flux path and roughly linear material behavior. Near saturation, a single constant L is no longer adequate.
-
+This simple expression assumes an appropriate flux path and roughly linear material behavior. Near saturation, a single constant $L$ is no longer adequate.
 
 </section>
 
-
-
-
-
 <section id="energy">
 
+<div className="section-heading"><span>02</span><h2>Magnetic energy</h2></div>
 
-
-
-<div className="section-heading">
-
-<span>02</span><h2>Magnetic energy</h2>
-
-</div>
-
-
-
-Electrical power entering an ideal inductor is vi. Substitute v = L di/dt and integrate from zero current:
+Electrical power entering an ideal inductor is $vi$. Substitute $v = L\,di/dt$ and integrate from zero current:
 
 <Equation tex="W=\int_0^I Li\,di=\frac{1}{2}LI^2" label="02 / ENERGY IN THE MAGNETIC FIELD"/>
 
@@ -113,87 +70,70 @@ The energy need not become heat in the winding when current falls. It may be ret
 
 ### The RC analogy, with different state
 
-A capacitor stores a voltage state and obeys i = C dv/dt. An inductor stores a current state and obeys v = L di/dt. The equations look similar, but swapping voltage and current changes how sources, loads, and switching paths behave.
+<div className="table-wrap"><table><thead><tr><th></th><th>Capacitor</th><th>Inductor</th></tr></thead><tbody><tr><td>Defining law</td><td>$i = C\,dv/dt$</td><td>$v = L\,di/dt$</td></tr><tr><td>State it remembers</td><td>Voltage (charge)</td><td>Current (flux)</td></tr><tr><td>Cannot change instantly</td><td>Voltage</td><td>Current</td></tr><tr><td>Stored energy</td><td>$\tfrac12CV^2$</td><td>$\tfrac12LI^2$</td></tr><tr><td>Steady DC</td><td>Open circuit</td><td>Short circuit</td></tr><tr><td>Dangerous to…</td><td>short when charged</td><td>open when carrying current</td></tr><tr><td>Time constant with $R$</td><td>$RC$</td><td>$L/R$</td></tr><tr><td>Impedance</td><td>$1/(j\omega C)$</td><td>$j\omega L$</td></tr></tbody></table></div>
 
-For a series RL circuit driven by a constant Vₛ:
+Every row swaps voltage with current: the two components are electrical duals. A capacitor stores a voltage state and obeys $i = C\,dv/dt$. An inductor stores a current state and obeys $v = L\,di/dt$. The equations look similar, but swapping voltage and current changes how sources, loads, and switching paths behave.
+
+For a series RL circuit driven by a constant $V_s$:
 
 <Equation tex="L\frac{di}{dt}+Ri=V_s"/>
 <Equation tex="i(t)=\frac{V_s}{R}+\left(I_0-\frac{V_s}{R}\right)e^{-t/\tau_L},\qquad \tau_L=\frac{L}{R}"/>
 
-Resistance in an RL circuit reduces the time constant when it increases, whereas increasing series resistance in an RC circuit increases its time constant. Memorizing “more resistance means slower” would fail here.
+Resistance in an RL circuit reduces the time constant when it increases, whereas increasing series resistance in an RC circuit increases its time constant. Memorizing "more resistance means slower" would fail here.
 
+<RLResponseFigure/>
 
 </section>
 
-
-
-
-
 <section id="explore">
 
-
-
-
-<div className="section-heading">
-
-<span>03</span><h2>Energize and turn off</h2>
-
-</div>
-
-
+<div className="section-heading"><span>03</span><h2>Energize and turn off</h2></div>
 
 The first mode applies 5 V through a resistor to an initially unenergized inductor. The second starts with the steady current that charging would establish, disconnects that supply and resistor, and gives the isolated inductor an ideal opposing clamp path.
 
 <InductorLab client:load/>
 
-<p className="caption">Figure 1. Two deliberately simplified switching configurations. The one-way clamp model stops conducting at zero current; it does not drive the current backward.</p>
+<p className="caption">Two deliberately simplified switching configurations. The one-way clamp model stops conducting at zero current; it does not drive the current backward.</p>
 
 At the default 10 mH and 100 Ω, time constant is **100 µs**, final current **50 mA**, and initial current slope **500 A/s**. At one time constant, current is about 31.61 mA.
 
 ### A constant opposing voltage gives a linear decay
 
-If an isolated ideal inductor starts at I₀ and sees v_L = −V_clamp until current reaches zero:
+If an isolated ideal inductor starts at $I_0$ and sees $v_L = -V_{\mathrm{clamp}}$ until current reaches zero:
 
 <Equation tex="i(t)=I_0-\frac{V_{\mathrm{clamp}}}{L}t,\qquad t_{\mathrm{stop}}=\frac{LI_0}{V_{\mathrm{clamp}}}"/>
 
 For 10 mH, 50 mA, and a 12 V clamp magnitude, stopping time is **41.67 µs**. The clamp absorbs the original 12.5 µJ. A larger clamp voltage removes the same energy faster and increases the peak power handled by the clamp.
 
-
-
 <div className="worked-example">
-
 
 <span className="tiny-label">WORKED EXAMPLE / RELEASE TIME</span><h3>Low voltage does not mean fast turn-off</h3>
 <p>A 100 mH ideal coil carries 100 mA, storing <strong>0.5 mJ</strong>. A constant 0.7 V opposing clamp gives an ideal stopping time of <strong>14.29 ms</strong>. A 20 V opposing clamp gives <strong>0.5 ms</strong>.</p>
 <p>Real winding resistance also removes energy, and real clamp voltage is not perfectly constant. Nevertheless, the comparison explains why a simple low-voltage flyback path can make an actuator release more slowly.</p>
 <p>Voltage across the inductor is not automatically the voltage across the switch. In a common low-side arrangement, the supply voltage can add to the flyback rise seen by the switch; analyze the actual references and path.</p>
 
+</div>
+
+<ClampDecayFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / WITH NO CLAMP AT ALL</span><h3>How high does the voltage go?</h3>
+<p>Take the same 100 mH coil at 100 mA and open the switch with no diode. The current must go somewhere; the only path is the small stray capacitance of the open switch and wiring, say 50 pF. The coil's energy moves into that capacitance: $\tfrac12LI^2 = \tfrac12CV^2$, so</p>
+<Equation tex="V=I\sqrt{L/C}=0.1\ \mathrm{A}\times\sqrt{0.1\ \mathrm H/50\ \mathrm{pF}}\approx4.5\ \mathrm{kV}"/>
+<p>Long before that, the switch breaks down: a transistor avalanches, a contact arcs. A 0.5 mJ pulse is small, but repeated every time the relay opens it destroys transistors and erodes contacts. That is why the flywheel diode is not optional (Chapter 17).</p>
 
 </div>
 
-
-
+<FlybackOptionsFigure/>
 
 </section>
 
-
-
-
-
 <section id="frequency">
 
+<div className="section-heading"><span>04</span><h2>Inductors in AC circuits</h2></div>
 
-
-
-<div className="section-heading">
-
-<span>04</span><h2>Inductors in AC circuits</h2>
-
-</div>
-
-
-
-For sinusoidal steady state, differentiating multiplies the current phasor by jω:
+For sinusoidal steady state, differentiating multiplies the current phasor by $j\omega$:
 
 <Equation tex="Z_L=j\omega L,\qquad |Z_L|=2\pi fL"/>
 
@@ -205,35 +145,25 @@ With a capacitor, the opposite-sign reactances can cancel. That is the basis of 
 
 ### A choke has a usable frequency range
 
-A real winding has series resistance and parasitic capacitance. Above its self-resonant region, an inductor may behave more capacitively than inductively. It cannot be assumed to block arbitrarily high frequencies simply because ωL increases in the ideal equation.
+A real winding has series resistance and parasitic capacitance. Above its self-resonant region, an inductor may behave more capacitively than inductively. It cannot be assumed to block arbitrarily high frequencies simply because $\omega L$ increases in the ideal equation.
+
+<InductorSRFFigure/>
 
 The winding and mounting form an electromagnetic structure. At sufficiently high frequency, a small lumped equivalent may no longer capture it adequately.
 
-
 </section>
-
-
-
-
 
 <section id="real">
 
+<div className="section-heading"><span>05</span><h2>Saturation and real windings</h2></div>
 
+As a magnetic core approaches saturation, incremental inductance can decrease. At a fixed applied voltage, a smaller $d\lambda/di$ produces a faster current increase. Treating the current ramp as indefinitely linear can therefore badly underestimate its peak.
 
-
-<div className="section-heading">
-
-<span>05</span><h2>Saturation and real windings</h2>
-
-</div>
-
-
-
-As a magnetic core approaches saturation, incremental inductance can decrease. At a fixed applied voltage, a smaller dλ/di produces a faster current increase. Treating the current ramp as indefinitely linear can therefore badly underestimate its peak.
+<SaturationFigure/>
 
 Saturation-current and RMS-current ratings answer different questions. A saturation rating specifies a defined reduction of inductance under stated conditions. An RMS-current rating generally relates to permitted temperature rise. Their definitions and test conditions are part-specific; meeting one does not establish the other.
 
-Copper loss begins with I_rms² times winding resistance, but resistance can increase with temperature and frequency. Core loss depends on flux waveform, amplitude, frequency, and material. A DC-resistance calculation alone does not account for every AC loss.
+Copper loss begins with $I_{\mathrm{rms}}^2$ times winding resistance, but resistance can increase with temperature and frequency. Core loss depends on flux waveform, amplitude, frequency, and material. A DC-resistance calculation alone does not account for every AC loss.
 
 ### A practical analysis sequence
 
@@ -241,28 +171,65 @@ Find the peak and RMS currents separately. Estimate voltage-time requirements, e
 
 The interactive figure intentionally holds inductance constant and models no saturation. Its clean curves are a way to understand the equations, not a claim that an arbitrary real coil follows them at every current.
 
-<p className="reference-note">Coverage: The Art of Electronics §1.5.1, with switching and energy connections. <a href="https://www.coilcraft.com/en-us/resources/application-notes/basics-of-inductor-selection-%28from-electronic-desi/">Coilcraft’s inductor-selection discussion</a> distinguishes saturation behavior and RMS-current heating.</p>
+</section>
 
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. 5 V is applied across an ideal 1 mH inductor carrying no current. What is the current after 20 µs?</summary>
+<div>
+
+$di/dt = V/L = 5000$ A/s, so after 20 µs the current is 0.1 A. With constant voltage, the current ramps linearly; it does not settle, because nothing in the ideal model limits it.
+
+</div>
+</details>
+
+<details>
+<summary>2. In an RL circuit, $L$ = 50 mH and $R$ = 25 Ω. What is the time constant, and what happens to it if $R$ doubles?</summary>
+<div>
+
+$L/R = 2$ ms. Doubling $R$ halves it to 1 ms: the opposite of an RC circuit, where more resistance means slower.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does a relay with a plain flywheel diode release more slowly than one with a diode and zener?</summary>
+<div>
+
+The coil current decays at a rate set by the opposing voltage, $di/dt = -V/L$. A diode holds only about 0.7 V across the coil; adding a zener raises it to $V_Z$ + 0.7 V, so the current, and the magnetic force holding the armature, dies away proportionally faster.
+
+</div>
+</details>
+
+<details>
+<summary>4. A ferrite bead or choke is added to stop 500 MHz noise. Its datasheet shows self-resonance at 200 MHz. Will it help?</summary>
+<div>
+
+Probably less than expected. Above 200 MHz its impedance falls as the parasitic capacitance takes over. Check its impedance curve at 500 MHz rather than extrapolating $2\pi fL$.
+
+</div>
+</details>
+
+<details>
+<summary>5. An inductor's saturation current is 2 A and its RMS rating 3 A. A converter runs it at 1.5 A RMS with 2.5 A peaks. Is that acceptable?</summary>
+<div>
+
+No. Heating is fine (1.5 A RMS is under 3 A), but the 2.5 A peaks exceed the saturation rating, so the inductance collapses at each peak and the current spikes. The two ratings must be checked separately.
+
+</div>
+</details>
+
+<p className="reference-note">Coverage: The Art of Electronics §1.5.1, with switching and energy connections. <a href="https://www.coilcraft.com/en-us/resources/application-notes/basics-of-inductor-selection-%28from-electronic-desi/">Coilcraft’s inductor-selection discussion</a> distinguishes saturation behavior and RMS-current heating.</p>
 
 </section>
 
-
-
-
-
 <div className="chapter-end">
 
-
-
-<div>
-
-<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent practice with hints and fully worked solutions.</p>
-
-</div>
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent practice with hints and fully worked solutions.</p></div>
 
 <a className="primary-link" href="/inductors/practice/">Open practice →</a>
 
 </div>
-
-
-

@@ -1,3 +1,4 @@
+import {GateDrainChargeFigure} from '../components/FetTeachingFigures';
 import Equation from '../components/Equation.astro';
 import {FetCurves,JfetBiasLab,FetGainLab,VariableFetLab,FetOscillatorLab,AnalogSwitchLab,GateChargeLab,PowerFetLab,ParallelFetLab} from '../components/FetLabs';
 import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
@@ -15,9 +16,27 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 </div>
 
 
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">How can a cooler resistance estimate lead to an incorrect heat budget?</p></div>
+
+<div>
+
+The driver first moves gate charge, then the channel carries load current. Voltage and current overlap during transitions, adding loss beyond on-resistance. Keeping charge, switching energy and the thermal path in one calculation exposes the tradeoffs behind a low-loss switch.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Start with the current paths → Why $C_{iss}$ times voltage is often inadequate → Derive the main power terms → Frequency and temperature change the budget → Decide where the magnetic energy goes → Fast voltage changes can turn an off device on → Check your understanding.</p>
+
+</div>
+
 <section id="switch">
 
-## 01 / Start with the current paths
+<div className="section-heading"><span>01</span><h2>Start with the current paths</h2></div>
 
 Connect an n-channel MOSFET source to ground, drain to the bottom of the load, and the load's top to the positive supply. A gate driver applies voltage relative to the source. A gate-source pull-down establishes an off state when the driver is disconnected; a series gate resistor controls charging current and damps some ringing.
 
@@ -25,13 +44,15 @@ Connect an n-channel MOSFET source to ground, drain to the bottom of the load, a
 
 For an inductive load, add a freewheel path. The external flyback diode has its anode at the drain/load junction and cathode at the positive rail. While the MOSFET is on, it is reverse biased. When the MOSFET turns off, the inductor raises the drain voltage until the diode conducts, circulating current through the load and diode. The MOSFET's own body diode points from source to drain and does not provide this path for the usual low-side load.
 
-The driver must supply a gate voltage at which the desired RDS(on) is specified. Its output-high voltage can sag under transient load, and the source can move due to wiring inductance. Measure or reason about VGS at the device terminals, not merely the logic pin voltage relative to a distant ground.
+The driver must supply a gate voltage at which the desired $R_{DS(\mathrm{on})}$ is specified. Its output-high voltage can sag under transient load, and the source can move due to wiring inductance. Measure or reason about $V_{GS}$ at the device terminals, not merely the logic pin voltage relative to a distant ground.
 
 </section>
 
 <section id="charge">
 
-## 02 / Why Ciss times voltage is often inadequate
+<div className="section-heading"><span>02</span><h2>Why $C_{iss}$ times voltage is often inadequate</h2></div>
+
+<GateDrainChargeFigure/>
 
 Small-signal capacitance is a local slope dQ/dV. A switching event moves through a wide range of drain and gate voltages, so gate charge is usually more useful for timing than a single input-capacitance value.
 
@@ -41,7 +62,7 @@ For approximately constant gate current:
 
 <Equation tex="t_{\mathrm{Miller}}\approx\frac{Q_{gd}}{I_g},\qquad I_g\approx\frac{V_{\mathrm{drive}}-V_{\mathrm{plateau}}}{R_{\mathrm{driver}}+R_g+R_{\mathrm{gate,int}}}" />
 
-If drive is 10 V, plateau is 4 V and total resistance is 20 Ω, current is approximately 0.3 A. With Qgd = 12 nC, the estimated drain-voltage transition lasts 40 ns. This is a conditional estimate: plateau voltage and charge depend on current and drain voltage, and the driver may have nonlinear output impedance.
+If drive is 10 V, plateau is 4 V and total resistance is 20 Ω, current is approximately 0.3 A. With $Q_{gd}$ = 12 nC, the estimated drain-voltage transition lasts 40 ns. This is a conditional estimate: plateau voltage and charge depend on current and drain voltage, and the driver may have nonlinear output impedance.
 
 <GateChargeLab client:load />
 
@@ -51,19 +72,19 @@ Turn-off uses the driver's sink path and may have different resistance. A diode 
 
 <section id="loss">
 
-## 03 / Derive the main power terms
+<div className="section-heading"><span>03</span><h2>Derive the main power terms</h2></div>
 
-During the on interval, an ohmic switch dissipates i²RDS(on). Average over the actual waveform:
+During the on interval, an ohmic switch dissipates i²$R_{DS(\mathrm{on})}$. Average over the actual waveform:
 
 <Equation tex="P_{\mathrm{cond}}=\frac1T\int_{\mathrm{on}}i^2(t)R_{DS(on)}(T_J)\,dt" />
 
-For nearly constant on-state current I and duty D, this becomes I²RDS(on)D. If inductor current has triangular peak-to-peak ripple ΔI around I, replace I² with I² + ΔI²/12 over that interval. Using average current squared without checking ripple can underestimate loss.
+For nearly constant on-state current I and duty D, this becomes I²$R_{DS(\mathrm{on})}$D. If inductor current has triangular peak-to-peak ripple ΔI around I, replace I² with I² + ΔI²/12 over that interval. Using average current squared without checking ripple can underestimate loss.
 
 During hard switching, current and voltage overlap. Approximating each overlap interval as a triangular power pulse gives:
 
 <Equation tex="P_{\mathrm{overlap}}\approx\frac12V_{\mathrm{bus}}I(t_r+t_f)f_s" />
 
-For 24 V, 5 A, 30 ns rise overlap, 20 ns fall overlap and 100 kHz, this is 0.30 W. With hot RDS(on) = 24 mΩ and D = 0.5, conduction loss is 0.30 W. The estimated MOSFET total is 0.60 W before additional effects.
+For 24 V, 5 A, 30 ns rise overlap, 20 ns fall overlap and 100 kHz, this is 0.30 W. With hot $R_{DS(\mathrm{on})}$ = 24 mΩ and D = 0.5, conduction loss is 0.30 W. The estimated MOSFET total is 0.60 W before additional effects.
 
 The gate-drive supply delivers approximately:
 
@@ -71,27 +92,37 @@ The gate-drive supply delivers approximately:
 
 At 30 nC, 10 V and 100 kHz, this is 30 mW. Much of it is dissipated in driver and gate resistances rather than the MOSFET channel. Report it separately when estimating MOSFET junction temperature.
 
-Output-capacitance energy, body-diode conduction, reverse recovery and avalanche can add substantial loss. For nonlinear output capacitance, stored energy is the integral of V Coss(V) dV, not automatically one half of a single tabulated capacitance times voltage squared. Measured switching-energy data may already include some of these mechanisms; adding them again double-counts loss.
+Output-capacitance energy, body-diode conduction, reverse recovery and avalanche can add substantial loss. For nonlinear output capacitance, stored energy is the integral of V $C_{oss}$(V) dV, not automatically one half of a single tabulated capacitance times voltage squared. Measured switching-energy data may already include some of these mechanisms; adding them again double-counts loss.
 
 </section>
 
 <section id="explore">
 
-## 04 / Frequency and temperature change the budget
+<div className="section-heading"><span>04</span><h2>Frequency and temperature change the budget</h2></div>
 
 <PowerFetLab client:load />
 
 At low frequency conduction dominates; increasing frequency raises switching and drive losses. A larger transistor may reduce resistance while increasing gate and output charge. The best device depends on duty, current waveform, bus voltage and switching rate.
 
-A steady thermal estimate is TJ = TA + P RθJA, with a thermal resistance appropriate to the actual board and mounting. For the 0.60 W example and an assumed 50°C/W path at 40°C ambient, TJ is about 70°C. That assumption must then be used to update on-resistance and losses. Iterate if temperature dependence materially changes power.
+A steady thermal estimate is $T_J$ = $T_A$ + P RθJA, with a thermal resistance appropriate to the actual board and mounting. For the 0.60 W example and an assumed 50°C/W path at 40°C ambient, $T_J$ is about 70°C. That assumption must then be used to update on-resistance and losses. Iterate if temperature dependence materially changes power.
 
 For a mounted heatsink, add the relevant junction-to-case, interface and sink-to-ambient terms. For short pulses, use transient thermal impedance. A quoted package thermal resistance is not a universal property independent of layout and cooling.
+
+### Solve the temperature-resistance loop explicitly
+
+Let $C_0=I^2D R_{25}$, fixed switching loss $P_{sw}$, and local resistance coefficient α. Combining resistance and thermal equations gives:
+
+<Equation tex="P=\frac{C_0[1+\alpha(T_A-25)]+P_{sw}}{1-\theta\alpha C_0},\qquad T_J=T_A+\theta P"/>
+
+For 5 A, duty 0.5, 20 mΩ at 25 °C, $C_0=0.25$ W. With α = 0.004/°C, ambient 40 °C, θ = 50 °C/W and switching loss 0.30 W, the denominator is 0.95. Total loss is 0.595 W and junction estimate 69.7 °C.
+
+This closes the earlier iteration in a linear resistance model. The denominator must be positive for a finite stable equilibrium under its fixed-current assumptions. It does not represent every real temperature dependence, SOA mechanism or cooling configuration.
 
 </section>
 
 <section id="inductive">
 
-## 05 / Decide where the magnetic energy goes
+<div className="section-heading"><span>05</span><h2>Decide where the magnetic energy goes</h2></div>
 
 An inductor stores energy LI²/2. A 10 mH coil at 2 A contains 20 mJ. Turning off the transistor does not delete that energy; a diode, clamp, resistor, supply or the transistor must absorb or recover it.
 
@@ -103,9 +134,9 @@ Avalanche is controlled breakdown of the MOSFET's drain junction. A specified si
 
 <section id="layout">
 
-## 06 / Fast voltage changes can turn an off device on
+<div className="section-heading"><span>06</span><h2>Fast voltage changes can turn an off device on</h2></div>
 
-A rising drain voltage drives current through Cgd even when the gate command is off:
+A rising drain voltage drives current through $C_{gd}$ even when the gate command is off:
 
 <Equation tex="i_{\mathrm{Miller}}\approx C_{gd}\frac{dV_D}{dt}" />
 
@@ -118,7 +149,58 @@ The [Infineon gate-drive application note](https://www.infineon.com/dgdl/Infineo
 </section>
 
 
-<div className="practice-home">
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why is gate charge often more useful than one $C_{iss}$ value?</summary>
+<div>
+
+A large switching excursion traverses voltage-dependent capacitances; charge counts what the driver must actually move.
+
+</div>
+</details>
+
+<details>
+<summary>2. What approximately sets the Miller interval?</summary>
+<div>
+
+Gate-drain charge divided by available plateau gate current, under the stated charge and driver conditions.
+
+</div>
+</details>
+
+<details>
+<summary>3. Should gate-supply power all be added to MOS channel heating?</summary>
+<div>
+
+No. Much is dissipated in the driver and gate resistances; keep it separate unless its physical partition is known.
+
+</div>
+</details>
+
+<details>
+<summary>4. Does the nMOS body diode clamp an ordinary low-side load’s positive drain flyback?</summary>
+<div>
+
+No. It points from source to drain; the load needs its own deliberate turn-off path.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why does source inductance matter to the gate driver?</summary>
+<div>
+
+Power-current di/dt moves the source voltage relative to the driver return, altering actual gate-source drive.
+
+</div>
+</details>
+
+</section>
+
+<div className="chapter-end">
 
 <span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems, hints and complete worked solutions.</p><a className="primary-link" href="/mosfet-power/practice/">Open practice →</a>
 

@@ -1,52 +1,22 @@
 import Equation from '../components/Equation.astro';
 import DividerLab from '../components/DividerLab';
-
-
+import {DividerEquivalentFigure,LoadingErrorFigure,ImpedanceLevelFigure,DividerTradeoffFigure,BatteryMonitorFigure} from '../components/FoundationFigures';
 
 <div className="chapter-hero" id="overview">
 
-
-
-
-<div className="eyebrow">
-
-<span>CHAPTER 01</span><span className="hairline"/>FOUNDATIONS / A SAMPLE CHAPTER
-
-</div>
-
+<div className="eyebrow"><span>CHAPTER 01</span><span className="hairline"/>FOUNDATIONS / DIVIDERS</div>
 
 <h1>Voltage dividers<br/>&amp; <em>the art of loading.</em></h1>
+
 <p className="dek">Two resistors can set a voltage. Understanding what happens when you use that voltage opens the door to almost every analog circuit.</p>
 
-
-<div className="chapter-meta">
-
-<span>25–35 min read + exploration</span><span>Algebra · Ohm’s law · DC circuits</span>
+<div className="chapter-meta"><span>35–45 min read + exploration</span><span>Algebra · Ohm’s law · DC circuits</span></div>
 
 </div>
-
-
-
-
-</div>
-
-
-
-
 
 <div className="opening-grid">
 
-
-
-
-<div>
-
-<span className="tiny-label">THE QUESTION</span><p className="opening-question">You have 10 volts.<br/>You want 5.<br/>Are two equal resistors enough?</p>
-
-</div>
-
-
-
+<div><span className="tiny-label">THE QUESTION</span><p className="opening-question">You have 10 volts.<br/>You want 5.<br/>Are two equal resistors enough?</p></div>
 
 <div>
 
@@ -54,14 +24,7 @@ import DividerLab from '../components/DividerLab';
 
 </div>
 
-
-
-
 </div>
-
-
-
-
 
 <div className="learning-map">
 
@@ -69,52 +32,28 @@ import DividerLab from '../components/DividerLab';
 
 </div>
 
-
-
-
-
 <section id="divider">
 
-
-
-
-<div className="section-heading">
-
-<span>01</span><h2>Two resistors, one ratio</h2>
-
-</div>
-
-
+<div className="section-heading"><span>01</span><h2>Two resistors, one ratio</h2></div>
 
 A voltage is a difference in electric potential between two points. We choose the bottom wire as our **0 V reference**, then describe the supply and output voltages relative to it. Ground here is a reference node; it does not mean current disappears into the earth.
 
 The source maintains a voltage across two resistors in series. With no external connection drawing current from the midpoint, the same current flows through both resistors. That condition is what makes the familiar divider equation possible.
 
-
-
 <details className="prerequisite">
-
 <summary>A quick bridge: voltage, current, and resistance</summary>
-
 <div>
 
-
-<p><strong>Current</strong> is the rate at which charge passes a point, measured in amperes. <strong>Voltage</strong> is energy transferred per unit charge, measured in volts. A resistor relates its voltage drop to its current through Ohm’s law: V = IR.</p>
+<p><strong>Current</strong> is the rate at which charge passes a point, measured in amperes. <strong>Voltage</strong> is energy transferred per unit charge, measured in volts. A resistor relates its voltage drop to its current through Ohm’s law: $V = IR$.</p>
 <p>Kirchhoff’s current law says that currents entering a node equal currents leaving it, for this lumped DC model. Kirchhoff’s voltage law says that the signed voltage changes around a loop sum to zero. We use conventional current, flowing from the source’s positive terminal through the resistors toward the negative terminal.</p>
 <p>A resistance of 10 kΩ is 10,000 Ω. A current of 0.5 mA is 0.0005 A. Multiplying them gives a voltage drop of 5 V.</p>
 
-
 </div>
-
-
-
 </details>
-
-
 
 ### Follow the current first
 
-The total series resistance is R₁ + R₂. Applying Ohm’s law around the loop gives the current. The output is the voltage drop across the lower resistor:
+The total series resistance is $R_1 + R_2$. Applying Ohm’s law around the loop gives the current. The output is the voltage drop across the lower resistor:
 
 <Equation tex={String.raw`I = \frac{V_{\mathrm{in}}}{R_1+R_2}, \qquad V_{\mathrm{out}} = I R_2`} label="01 / CURRENT → VOLTAGE"/>
 
@@ -122,173 +61,118 @@ Substitute the current into the second expression. This is the unloaded divider 
 
 <Equation tex={String.raw`\boxed{V_{\mathrm{out}} = V_{\mathrm{in}}\frac{R_2}{R_1+R_2}}`} label="02 / THE DIVIDER RATIO"/>
 
-The numerator contains R₂ because we measure the output **across R₂**. A larger fraction of the total resistance below the midpoint means a larger fraction of the supply voltage appears there.
+The numerator contains $R_2$ because we measure the output **across $R_2$**. A larger fraction of the total resistance below the midpoint means a larger fraction of the supply voltage appears there.
 
-<aside className="margin-note"><strong>Check the limits.</strong> If R₂ approaches zero, the output approaches ground. If R₁ approaches zero, the output approaches the supply. If they are equal, the ratio is one half. These checks are often better than memorizing the numerator.</aside>
+<aside className="margin-note"><strong>Check the limits.</strong> If $R_2$ approaches zero, the output approaches ground. If $R_1$ approaches zero, the output approaches the supply. If they are equal, the ratio is one half. These checks are often better than memorizing the numerator.</aside>
+
+### Think in voltage drops, not just ratios
+
+There is a second way to see the same result, which generalizes better. The current is common to both resistors, so each resistor's share of the supply is its share of the total resistance: $R_1$ drops $V_{\mathrm{in}}R_1/(R_1+R_2)$ and $R_2$ drops the rest. Walking down from the supply, the voltage falls in proportion to the resistance passed through, like the height along a uniform ramp. A potentiometer is exactly that ramp, with a sliding contact: the wiper picks off any fraction from 0 to 1.
 
 <DividerLab client:load simple={true}/>
 
-<p className="caption">Figure 1. The ratio sets the unloaded voltage; the absolute resistance sets the current and dissipation. Values in this figure are saved locally in your browser.</p>
+<p className="caption">The ratio sets the unloaded voltage; the absolute resistance sets the current and dissipation. Values in this figure are saved locally in your browser.</p>
 
 ### A first calculation
 
-With a 10 V source and two 10 kΩ resistors, the current is 10 V / 20 kΩ = **0.5 mA**. Each resistor drops 5 V. Each dissipates I²R = **2.5 mW**, so the source delivers 5 mW in total.
+With a 10 V source and two 10 kΩ resistors, the current is $10\text{ V}/20\text{ k}\Omega =$ **0.5 mA**. Each resistor drops 5 V. Each dissipates $I^2R =$ **2.5 mW**, so the source delivers 5 mW in total.
 
 Replace both with 100 kΩ resistors: the output is still 5 V, but current falls to 0.05 mA and total dissipation to 0.5 mW. This looks like an easy improvement. We have not yet asked the output to supply anything.
 
+<div className="worked-example">
 
-</section>
+<span className="tiny-label">WORKED EXAMPLE / AN UNEQUAL RATIO</span><h3>Make 3.3 V from 12 V</h3>
 
+<p>The ratio must be $3.3/12 = 0.275$, so $R_2/(R_1+R_2) = 0.275$, which rearranges to $R_1/R_2 = (1 - 0.275)/0.275 = 2.636$.</p>
 
+<p>Pick $R_2$ first from a convenient value, say 10 kΩ, so $R_1$ should be 26.36 kΩ. The nearest standard 1% values are 26.1 kΩ and 26.7 kΩ. With 26.1 kΩ the output is $12 \times 10/36.1 = 3.324$ V (+0.7%); with 26.7 kΩ it is 3.270 V (−0.9%). Either error is smaller than the effect of a 1% supply tolerance, and both are smaller than the loading error we are about to meet.</p>
 
-
-
-<section id="loading">
-
-
-
-
-<div className="section-heading">
-
-<span>02</span><h2>When a load joins in</h2>
+<p>Rearranging the divider equation into a resistor ratio, $R_1/R_2 = V_{\mathrm{in}}/V_{\mathrm{out}} - 1$, is the quickest route for any design.</p>
 
 </div>
 
+</section>
 
+<section id="loading">
 
-A **load** is whatever you connect to receive the output: a measuring instrument, another amplifier, a sensor interface. Start with a simple model—a resistor Rₗ connected between output and ground.
+<div className="section-heading"><span>02</span><h2>When a load joins in</h2></div>
 
-Rₗ and R₂ now share the same two nodes, so they are in parallel. Their equivalent resistance is smaller than either resistance alone. Replace R₂ in the original divider equation by this parallel combination:
+A **load** is whatever you connect to receive the output: a measuring instrument, another amplifier, a sensor interface. Start with a simple model: a resistor $R_L$ connected between output and ground.
+
+$R_L$ and $R_2$ now share the same two nodes, so they are in parallel. Their equivalent resistance is smaller than either resistance alone. Replace $R_2$ in the original divider equation by this parallel combination:
 
 <Equation tex={String.raw`R_{\mathrm{bottom}} = R_2 \parallel R_L = \frac{R_2R_L}{R_2+R_L}`}/>
 <Equation tex={String.raw`V_{\mathrm{out}} = V_{\mathrm{in}}\frac{R_2\parallel R_L}{R_1+(R_2\parallel R_L)}`} label="03 / THE LOADED DIVIDER"/>
 
-With R₁ = R₂ = Rₗ = 10 kΩ, the lower combination is 5 kΩ. The output becomes 10 × 5 / (10 + 5) = **3.333 V**, not 5 V.
+With $R_1 = R_2 = R_L = 10$ kΩ, the lower combination is 5 kΩ. The output becomes $10 \times 5/(10 + 5) =$ **3.333 V**, not 5 V.
 
 ### Why does the output fall?
 
-The extra branch draws current from the midpoint. Current through R₁ now splits between R₂ and the load. The effective total resistance seen by the source falls, so the source supplies more current. More current through R₁ means a larger voltage drop across it, leaving less voltage at the output.
+The extra branch draws current from the midpoint. Current through $R_1$ now splits between $R_2$ and the load. The effective total resistance seen by the source falls, so the source supplies more current. More current through $R_1$ means a larger voltage drop across it, leaving less voltage at the output.
 
-Current is not “used up” by R₁. Charge keeps moving, and current divides between branches. The source supplies energy; the resistors turn electrical energy into heat.
+Current is not "used up" by $R_1$. Charge keeps moving, and current divides between branches. The source supplies energy; the resistors turn electrical energy into heat.
 
 <DividerLab client:visible/>
-<p className="caption">Figure 2. The curve sweeps the possible load resistance; the orange point is the currently selected load. Each equal horizontal interval is a factor of ten in resistance.</p>
 
-
+<p className="caption">The curve sweeps the possible load resistance; the orange point is the currently selected load. Each equal horizontal interval is a factor of ten in resistance.</p>
 
 <details className="derivation">
-
 <summary>Derive the same result directly from the node equation</summary>
-
 <div>
 
-
-<p>At the output node, current arriving through R₁ equals the sum leaving through R₂ and Rₗ:</p>
+<p>At the output node, current arriving through $R_1$ equals the sum leaving through $R_2$ and $R_L$:</p>
 <Equation tex={String.raw`\frac{V_{\mathrm{in}}-V_{\mathrm{out}}}{R_1} = \frac{V_{\mathrm{out}}}{R_2} + \frac{V_{\mathrm{out}}}{R_L}`}/>
 <p>Collect every term containing the unknown output voltage on the right:</p>
 <Equation tex={String.raw`\frac{V_{\mathrm{in}}}{R_1} = V_{\mathrm{out}}\left(\frac1{R_1}+\frac1{R_2}+\frac1{R_L}\right)`}/>
-<p>Divide by the quantity in parentheses, then multiply numerator and denominator by R₁R₂Rₗ:</p>
+<p>Divide by the quantity in parentheses, then multiply numerator and denominator by $R_1R_2R_L$:</p>
 <Equation tex={String.raw`V_{\mathrm{out}} = \frac{V_{\mathrm{in}}R_2R_L}{R_1R_2+R_1R_L+R_2R_L}`}/>
 <p>This is algebraically identical to the parallel-resistance expression. The node method will remain useful when a circuit no longer looks like a recognizable divider.</p>
 
-
 </div>
-
-
-
 </details>
 
+<ImpedanceLevelFigure/>
 
-
-
+The plot makes the cost of the "easy improvement" from section 01 visible. Raising both resistors from 1 kΩ to 100 kΩ keeps the ratio and cuts the current a hundredfold, but it also shifts the whole loading curve a hundred times to the right. The load that was negligible for the low-impedance divider now halves the output of the high-impedance one.
 
 <div className="worked-example">
 
 <span className="tiny-label">ILLUSTRATIVE EXAMPLE / MEASURING CHANGES THE CIRCUIT</span><h3>A meter is also a load</h3>
-<p>Suppose two 1 MΩ resistors divide 10 V. A voltmeter modeled as a 10 MΩ input resistance measures the midpoint. The unloaded voltage is 5 V, but the lower effective resistance is 1 MΩ ∥ 10 MΩ = 0.9091 MΩ.</p>
+<p>Suppose two 1 MΩ resistors divide 10 V. A voltmeter modeled as a 10 MΩ input resistance measures the midpoint. The unloaded voltage is 5 V, but the lower effective resistance is $1\text{ M}\Omega \parallel 10\text{ M}\Omega = 0.9091$ MΩ.</p>
 <p>The meter therefore reads <strong>4.7619 V</strong>: about 4.76% below the unloaded value. Even an accurate meter can report a voltage that differs from the voltage present before it was connected.</p>
 <p>Using two 10 kΩ divider resistors with the same meter reduces the loading error to about <strong>0.050%</strong>, at the cost of 100 times the unloaded divider current.</p>
 
 </div>
 
-
-
-
 </section>
-
-
-
-
 
 <section id="thevenin">
 
-
-
-
-<div className="section-heading">
-
-<span>03</span><h2>A simpler way to see it</h2>
-
-</div>
-
-
+<div className="section-heading"><span>03</span><h2>A simpler way to see it</h2></div>
 
 Instead of carrying three resistors through every calculation, describe the original divider as an ideal voltage source with a resistance in series. This is its **Thévenin equivalent**, seen between the output terminal and ground.
 
-The equivalent voltage Vₜₕ is the voltage measured with no load. The equivalent resistance Rₜₕ tells us how strongly the terminal voltage changes when current is drawn.
+The equivalent voltage $V_{\mathrm{th}}$ is the voltage measured with no load. The equivalent resistance $R_{\mathrm{th}}$ tells us how strongly the terminal voltage changes when current is drawn.
 
 <Equation tex={String.raw`V_{\mathrm{th}} = V_{\mathrm{in}}\frac{R_2}{R_1+R_2}, \qquad R_{\mathrm{th}} = R_1\parallel R_2`} label="04 / THE OUTPUT AS A SOURCE"/>
 
-
-
-<div className="thevenin-figure" role="img" aria-label="Thévenin equivalent: an ideal 5 volt source in series with 5 kiloohms supplies a 10 kiloohm load. The output across the load is 3.333 volts.">
-
-
-
-
-<svg viewBox="0 0 650 205" aria-hidden="true">
-
-
-
-<g fill="none" stroke="currentColor" strokeWidth="2">
-
-<path d="M100 85 V45 H245 M305 45 H465 V85 M465 135 V172 H100 V135"/><circle cx="100" cy="110" r="25"/><path d="M94 100 h12 m-6 -6 v12 m-6 16 h12"/><rect x="245" y="35" width="60" height="20"/><rect x="455" y="85" width="20" height="50"/><path d="M465 45 H535" stroke="var(--accent)"/><circle cx="465" cy="45" r="3" fill="var(--accent)"/><path d="M465 172 v12 m-14 0 h28 m-22 6 h16"/>
-
-</g>
-
-
-
-<g className="symbol-label">
-
-<text x="135" y="120">Vₜₕ = 5 V</text><text x="225" y="23">Rₜₕ = 5 kΩ</text><text x="485" y="115">Rₗ = 10 kΩ</text><text x="345" y="76" fill="var(--accent)">3.333 V</text>
-
-</g>
-
-
-
-</svg>
-
-
-<p className="caption">Figure 3. A different drawing, but the same voltage–current behavior at the output terminals. This figure is illustrative; it does not follow the controls above.</p>
-
-
-</div>
-
-
+<DividerEquivalentFigure/>
 
 ### Why are the two resistors in parallel here?
 
-To find the output resistance of this linear circuit, set the **independent ideal voltage source to zero volts**. An ideal zero-volt source is a short circuit. The top of R₁ is now connected to ground, just like the bottom of R₂. Looking into the output, both resistors lead to the same reference node; they are in parallel.
+To find the output resistance of this linear circuit, set the **independent ideal voltage source to zero volts**. An ideal zero-volt source is a short circuit. The top of $R_1$ is now connected to ground, just like the bottom of $R_2$. Looking into the output, both resistors lead to the same reference node; they are in parallel.
 
-This source-deactivation rule applies to finding the equivalent resistance. We have not physically shorted a powered supply. For networks with dependent sources, keep those sources active and use a test source when necessary.
+This source-deactivation rule applies to finding the equivalent resistance. We have not physically shorted a powered supply. For networks with dependent sources, keep those sources active and use a test source when necessary (Chapter 2).
+
+There is also a measurement view, which needs no rule at all. Short the output to ground and the current that flows is $V_{\mathrm{in}}/R_1$ (no current reaches $R_2$, which now has zero volts across it). The Thévenin resistance is the open-circuit voltage divided by that short-circuit current: $V_{\mathrm{th}}/I_{\mathrm{sc}} = [V_{\mathrm{in}}R_2/(R_1+R_2)]/(V_{\mathrm{in}}/R_1) = R_1R_2/(R_1+R_2)$, the same answer.
 
 ### Loading becomes a second divider
 
-The external load now forms a divider with Rₜₕ:
+The external load now forms a divider with $R_{\mathrm{th}}$:
 
 <Equation tex={String.raw`V_{\mathrm{out}} = V_{\mathrm{th}}\frac{R_L}{R_{\mathrm{th}}+R_L}`}/>
 
-Equivalently, Vₒᵤₜ = Vₜₕ − IₗRₜₕ. The output resistance is the amount of voltage lost per ampere drawn. It is a property of the source circuit as seen from its terminals, not necessarily a single physical resistor.
+Equivalently, $V_{\mathrm{out}} = V_{\mathrm{th}} - I_LR_{\mathrm{th}}$. The output resistance is the amount of voltage lost per ampere drawn. It is a property of the source circuit as seen from its terminals, not necessarily a single physical resistor.
 
 Define fractional loading error relative to the unloaded voltage. For positive resistances and a nonzero supply:
 
@@ -298,201 +182,164 @@ Solving this expression for the load requirement gives a useful design inequalit
 
 <Equation tex={String.raw`R_L \geq R_{\mathrm{th}}\left(\frac{1}{\epsilon_{\max}}-1\right)`}/>
 
-
-
 <div className="table-wrap">
 
-<table><thead><tr><th>Maximum loading error</th><th>Required load</th><th>What it means</th></tr></thead><tbody><tr><td>10%</td><td>Rₗ ≥ 9 Rₜₕ</td><td>A visible disturbance</td></tr><tr><td>1%</td><td>Rₗ ≥ 99 Rₜₕ</td><td>A much lighter load</td></tr><tr><td>0.1%</td><td>Rₗ ≥ 999 Rₜₕ</td><td>Precision needs margin</td></tr></tbody></table>
+<table><thead><tr><th>Maximum loading error</th><th>Required load</th><th>What it means</th></tr></thead><tbody><tr><td>10%</td><td>$R_L \ge 9R_{\mathrm{th}}$</td><td>A visible disturbance</td></tr><tr><td>1%</td><td>$R_L \ge 99R_{\mathrm{th}}$</td><td>A much lighter load</td></tr><tr><td>0.1%</td><td>$R_L \ge 999R_{\mathrm{th}}$</td><td>Precision needs margin</td></tr></tbody></table>
 
 </div>
 
+<LoadingErrorFigure/>
 
-
-Notice that “the load is ten times the source resistance” means roughly **9.09% error**, not 1%. A rule of thumb is only useful when its implied error is acceptable.
-
+Notice that "the load is ten times the source resistance" means roughly **9.09% error**, not 1%. A rule of thumb is only useful when its implied error is acceptable. For large ratios $\epsilon \approx R_{\mathrm{th}}/R_L$, which is easy to remember: the error is just the ratio of the two resistances.
 
 </section>
 
-
-
-
-
 <section id="design">
 
-
-
-
-<div className="section-heading">
-
-<span>04</span><h2>From calculation to design</h2>
-
-</div>
-
-
+<div className="section-heading"><span>04</span><h2>From calculation to design</h2></div>
 
 A ratio tells us which voltage we obtain unloaded. Absolute resistance tells us how much current we waste and how easily a load can move that voltage. Design means choosing both.
 
-
+<DividerTradeoffFigure/>
 
 <div className="worked-example">
 
 <span className="tiny-label">WORKED DESIGN / A 1% LOADING BUDGET</span><h3>Choose a divider for a known input resistance</h3>
 <p>We want an unloaded 5 V midpoint from 10 V. The following circuit is modeled as a 100 kΩ resistance to ground. Allow at most 1% error from loading alone.</p>
-<p><strong>1. Set the ratio.</strong> Equal resistors give the desired half-supply voltage. Call each resistance R; their Thévenin resistance is R/2.</p>
-<p><strong>2. Apply the error constraint.</strong> Rₜₕ ≤ Rₗ/99 = 1.0101 kΩ, so each resistor must be no larger than 2.0202 kΩ.</p>
-<p><strong>3. Choose values.</strong> Two nominal 2 kΩ resistors give Rₜₕ = 1 kΩ. The loaded output is 5 × 100/101 = <strong>4.9505 V</strong>. Loading error is 0.9901%.</p>
-<p><strong>4. Check dissipation.</strong> Unloaded current is 2.5 mA, giving 12.5 mW per resistor. With the specified load connected, R₁ dissipates about 12.75 mW and R₂ about 12.25 mW.</p>
+<p><strong>1. Set the ratio.</strong> Equal resistors give the desired half-supply voltage. Call each resistance $R$; their Thévenin resistance is $R/2$.</p>
+<p><strong>2. Apply the error constraint.</strong> $R_{\mathrm{th}} \le R_L/99 = 1.0101$ kΩ, so each resistor must be no larger than 2.0202 kΩ.</p>
+<p><strong>3. Choose values.</strong> Two nominal 2 kΩ resistors give $R_{\mathrm{th}} = 1$ kΩ. The loaded output is $5 \times 100/101 =$ <strong>4.9505 V</strong>. Loading error is 0.9901%.</p>
+<p><strong>4. Check dissipation.</strong> Unloaded current is 2.5 mA, giving 12.5 mW per resistor. With the specified load connected, $R_1$ dissipates about 12.75 mW and $R_2$ about 12.25 mW.</p>
 <p><strong>5. Interpret the result.</strong> The nominal loading target is met with almost no margin. This is not yet a 1%-accurate output design: resistor tolerances and supply variation are still outside the budget. A lower resistance can buy loading margin, but costs current.</p>
 
 </div>
 
+<BatteryMonitorFigure/>
 
+<div className="worked-example">
+
+<span className="tiny-label">WORKED DESIGN / WHEN CURRENT IS PRECIOUS</span><h3>Watch a 12 V battery with a 3.3 V converter</h3>
+<p><strong>1. Ratio.</strong> A lead-acid battery can reach 14.4 V while charging. Keep that below about 3.1 V to leave headroom under the converter's 3.3 V limit: $R_1/R_2 = 14.4/3.1 - 1 = 3.65$. Standard values 100 kΩ and 27 kΩ give a ratio of 3.70, so 14.4 V becomes 3.06 V.</p>
+<p><strong>2. Drain.</strong> The divider draws $12.6\text{ V}/127\text{ k}\Omega = 99\ \mu\text{A}$ all the time: about 0.87 A·h per year. That is acceptable for a car battery and too much for a coin cell. Here the high resistances are deliberate.</p>
+<p><strong>3. Source resistance.</strong> The converter sees $R_{\mathrm{th}} = 100\text{ k}\Omega \parallel 27\text{ k}\Omega = 21$ kΩ, while its datasheet asks for 10 kΩ or less. The reason is dynamic: at each sample, the converter connects a small internal capacitor (a few picofarads) that must charge within a microsecond or so. Through 21 kΩ that takes too long.</p>
+<p><strong>4. Fix.</strong> A 100 nF capacitor across $R_2$ holds the node steady and supplies the sampling charge, dropping only millivolts. It costs speed (the node now follows the battery with a time constant $R_{\mathrm{th}}C = 2.1$ ms), which is irrelevant for a battery. Static loading is still worth checking: converter leakage of 1 µA through 21 kΩ shifts the reading by 21 mV, about 0.7%.</p>
+
+</div>
 
 ### What resistor tolerance actually changes
 
-Two resistors marked “10 kΩ, 1%” do not necessarily have the same actual resistance. If they both shift upward by the same percentage, the unloaded ratio is unchanged. The troublesome case is **ratio mismatch**.
+Two resistors marked "10 kΩ, 1%" do not necessarily have the same actual resistance. If they both shift upward by the same percentage, the unloaded ratio is unchanged. The troublesome case is **ratio mismatch**.
 
-For two nominally equal resistors and an exact 10 V source, the lowest unloaded output occurs when R₁ is 1% high and R₂ is 1% low:
+For two nominally equal resistors and an exact 10 V source, the lowest unloaded output occurs when $R_1$ is 1% high and $R_2$ is 1% low:
 
 <Equation tex={String.raw`V_{\min}=10\frac{9.9}{10.1+9.9}=4.95\ \mathrm{V},\qquad V_{\max}=5.05\ \mathrm{V}`}/>
 
 The resistances in this expression are in kΩ; their units cancel in the ratio. These are worst-case bounds, not a probability statement. They also exclude loading. To combine tolerances with a load, evaluate the loaded equation at the relevant extremes of resistor, load, and supply values.
 
-
-
 <details className="derivation">
-
 <summary>Go deeper: sensitivity explains ratio matching</summary>
-
 <div>
 
-
-<p>Let k = R₂/(R₁ + R₂). For small changes, logarithmic differentiation gives:</p>
+<p>Let $k = R_2/(R_1 + R_2)$. For small changes, logarithmic differentiation gives:</p>
 <Equation tex={String.raw`\frac{\Delta k}{k}\approx\frac{R_1}{R_1+R_2}\left(\frac{\Delta R_2}{R_2}-\frac{\Delta R_1}{R_1}\right)`}/>
 <p>For equal resistors the coefficient is one half. Opposite 1% changes produce approximately 1% ratio error. Equal fractional changes cancel. This is why tracking between resistors can matter more than either resistor’s absolute accuracy.</p>
+<p>Notice the coefficient $R_1/(R_1+R_2) = 1 - k$. A divider with a small ratio (large $R_1$) is almost fully sensitive to mismatch; one with a ratio near 1 is barely sensitive. In the battery monitor above, $1 - k = 0.79$, so 1% resistors give up to 1.6% error in the worst case.</p>
 <p>The approximation is a first-order local result. Use the exact divider expression for final corner calculations or large changes.</p>
 
-
 </div>
-
-
-
 </details>
 
+### Compensate for a known load, or reduce its effect?
 
-
-### Compensate for a known load—or reduce its effect?
-
-If a load is fixed, we can design the divider around it. For a 10 V supply, a 10 kΩ lower resistor and a fixed 10 kΩ load combine to 5 kΩ. Choosing R₁ = 5 kΩ gives exactly 5 V at that particular load.
+If a load is fixed, we can design the divider around it. For a 10 V supply, a 10 kΩ lower resistor and a fixed 10 kΩ load combine to 5 kΩ. Choosing $R_1 = 5$ kΩ gives exactly 5 V at that particular load.
 
 Disconnect that load, however, and the output rises to **6.667 V**. Compensation has corrected one operating condition; it has not made a stiff voltage source.
 
-A buffer is another option: its input draws little current from the divider, while its output supplies the receiving circuit. Real buffers bring their own offset, input current, output-current limits, and supply-range constraints. We will develop those ideas in the amplifier chapters.
-
+A buffer is another option: its input draws little current from the divider, while its output supplies the receiving circuit. Real buffers bring their own offset, input current, output-current limits, and supply-range constraints. We will develop those ideas in the amplifier chapters, starting with the emitter follower (Chapter 28).
 
 </section>
 
-
-
-
-
 <section id="limits">
 
+<div className="section-heading"><span>05</span><h2>Where the model ends</h2></div>
 
-
-
-<div className="section-heading">
-
-<span>05</span><h2>Where the model ends</h2>
-
-</div>
-
-
-
-The calculations here assume an ideal DC supply, linear resistors, steady conditions, and a load described by a resistance to ground. Those assumptions are useful—and specific.
-
-
+The calculations here assume an ideal DC supply, linear resistors, steady conditions, and a load described by a resistance to ground. Those assumptions are useful, and specific.
 
 <div className="limit-grid">
 
+<div><span className="tiny-label">SUPPLY VARIATION</span><h3>A divider is not a regulator</h3><p>With fixed resistances, output is proportional to input. A 5% supply increase causes a 5% output increase. The divider does not correct it.</p></div>
 
+<div><span className="tiny-label">TIME & FREQUENCY</span><h3>An input can store charge</h3><p>Input capacitance interacts with output resistance. In a simple model, $R_{\mathrm{th}}$ and an input capacitance create a time constant $\tau = R_{\mathrm{th}}C$. A correct DC voltage may still settle too slowly.</p></div>
 
+<div><span className="tiny-label">HEAT & NOISE</span><h3>Resistance has other costs</h3><p>Lower resistance increases source current and dissipation. Higher resistance can increase thermal voltage noise and sensitivity to leakage. Loading is only one part of the tradeoff.</p></div>
 
+<div><span className="tiny-label">REAL LOADS</span><h3>Not everything is a resistor</h3><p>A current sink, diode input, or switched sampling capacitor needs a different load model. Keep the node equation; replace the load relationship with one appropriate to the device.</p></div>
+
+</div>
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>The ratio sets the voltage.<br/>The output resistance tells you<br/><em>how easily that voltage moves.</em></p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Answer each question before opening it.
+
+<details>
+<summary>1. You double both resistors of a divider. What happens to the unloaded output, the current, and the output resistance?</summary>
 <div>
 
-<span className="tiny-label">SUPPLY VARIATION</span><h3>A divider is not a regulator</h3><p>With fixed resistances, output is proportional to input. A 5% supply increase causes a 5% output increase. The divider does not correct it.</p>
+The unloaded output is unchanged (the ratio is the same). The current halves. The output resistance $R_1 \parallel R_2$ doubles, so any given load now causes roughly twice the loading error.
 
 </div>
+</details>
 
-
-
-
+<details>
+<summary>2. A divider's output reads 4.0 V unloaded and 3.0 V with a 6 kΩ load. What is its Thévenin resistance?</summary>
 <div>
 
-<span className="tiny-label">TIME & FREQUENCY</span><h3>An input can store charge</h3><p>Input capacitance interacts with output resistance. In a simple model, Rₜₕ and an input capacitance create a time constant τ = RₜₕC. A correct DC voltage may still settle too slowly.</p>
+The load current is $3.0\text{ V}/6\text{ k}\Omega = 0.5$ mA, and the output fell by 1.0 V. So $R_{\mathrm{th}} = 1.0\text{ V}/0.5\text{ mA} = 2$ kΩ. Two measurements at the terminals are enough; you never needed to see the resistors inside.
 
 </div>
+</details>
 
-
-
-
+<details>
+<summary>3. Why is "the load should be ten times the source resistance" not a 1% rule?</summary>
 <div>
 
-<span className="tiny-label">HEAT & NOISE</span><h3>Resistance has other costs</h3><p>Lower resistance increases source current and dissipation. Higher resistance can increase thermal voltage noise and sensitivity to leakage. Loading is only one part of the tradeoff.</p>
+The error is $R_{\mathrm{th}}/(R_{\mathrm{th}} + R_L) = 1/11 \approx 9.1\%$. For 1% the load must be 99 times the source resistance.
 
 </div>
+</details>
 
-
-
-
+<details>
+<summary>4. You compensate a divider for a 10 kΩ load. Then the load turns out to be 12 kΩ. Is the error smaller or larger than if you had not compensated at all?</summary>
 <div>
 
-<span className="tiny-label">REAL LOADS</span><h3>Not everything is a resistor</h3><p>A current sink, diode input, or switched sampling capacitor needs a different load model. Keep the node equation; replace the load relationship with one appropriate to the device.</p>
+Much smaller. The compensated divider ($R_1 = 5$ kΩ, $R_2 = 10$ kΩ) gives 5.22 V with a 12 kΩ load, 4.3% high. The uncompensated pair of 10 kΩ resistors gives 3.53 V, 29% low. Compensation absorbs most of the load's effect and leaves only the effect of the *change* in load. It fails when the load disappears or changes by large factors.
 
 </div>
+</details>
 
+<details>
+<summary>5. A divider feeds a converter whose input looks like a 5 pF capacitor switched in periodically. Why might a 1 MΩ divider read low even though the converter's DC input current is nearly zero?</summary>
+<div>
 
-
-
-</div>
-
-
-
-
-
-<div className="takeaway">
-
-<span className="tiny-label">THE IDEA TO KEEP</span><p>The ratio sets the voltage.<br/>The output resistance tells you<br/><em>how easily that voltage moves.</em></p>
+Each sample must charge the 5 pF capacitor through $R_{\mathrm{th}}$. With 500 kΩ the time constant is 2.5 µs, so a short sampling window ends before the capacitor charges. A reservoir capacitor across the lower resistor, or a buffer, solves it.
 
 </div>
+</details>
 
-
-
-<p className="reference-note">Coverage reference: <cite>The Art of Electronics</cite>, third edition, §§1.2.3–1.2.5. Explanations, worked examples, and figures here are original. This is a sample chapter for reviewing teaching depth and visual design.</p>
-
-
+<p className="reference-note">Coverage reference: <cite>The Art of Electronics</cite>, third edition, §§1.2.3–1.2.5. Explanations, worked examples, and figures here are original.</p>
 
 <div className="chapter-end">
 
-
-
-<div>
-
-<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Ready to put the ideas to work?</h3><p>Five practice problems, with optional hints and fully worked solutions.</p>
-
-</div>
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Ready to put the ideas to work?</h3><p>Practice problems with optional hints and fully worked solutions.</p></div>
 
 <a className="primary-link" href="/practice/">Open practice <span>→</span></a>
 
 </div>
 
-
-
-
 </section>
-
-
-
-
-
-

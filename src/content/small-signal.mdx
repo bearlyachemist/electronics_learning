@@ -1,53 +1,22 @@
-import CircuitFigure from '../components/CircuitFigure.astro';
 import Equation from '../components/Equation.astro';
 import {SmallSignalLab} from '../components/FoundationLabs';
-
-
+import {ChordTangentFigure,ResistanceVsBiasFigure,LinearizationErrorFigure,DistortionFigure,IncrementalFigure,AttenuatorFigure} from '../components/FoundationFigures';
 
 <div className="chapter-hero" id="overview">
 
-
-
-
-<div className="eyebrow">
-
-<span>CHAPTER 03</span><span className="hairline"/>FOUNDATIONS / LOCAL MODELS
-
-</div>
-
+<div className="eyebrow"><span>CHAPTER 03</span><span className="hairline"/>FOUNDATIONS / LOCAL MODELS</div>
 
 <h1>Small-signal resistance.<br/><em>The slope is the story.</em></h1>
+
 <p className="dek">A device can have one voltage-to-current ratio and a very different resistance to a small change. That distinction is the bridge from nonlinear devices to linear amplifiers.</p>
 
-
-<div className="chapter-meta">
-
-<span>30–40 min + exploration</span><span>Ohm’s law · slopes · Thévenin equivalents</span>
+<div className="chapter-meta"><span>40–50 min + exploration</span><span>Ohm’s law · slopes · Thévenin equivalents</span></div>
 
 </div>
-
-
-
-
-</div>
-
-
-
-
 
 <div className="opening-grid">
 
-
-
-
-<div>
-
-<span className="tiny-label">THE QUESTION</span><p className="opening-question">A diode carries 1 mA<br/>at roughly half a volt.<br/>Is its resistance 500 Ω?</p>
-
-</div>
-
-
-
+<div><span className="tiny-label">THE QUESTION</span><p className="opening-question">A diode carries 1 mA<br/>at roughly half a volt.<br/>Is its resistance 500 Ω?</p></div>
 
 <div>
 
@@ -55,113 +24,71 @@ import {SmallSignalLab} from '../components/FoundationLabs';
 
 </div>
 
-
-
-
 </div>
-
-
-
-
 
 <section id="slope">
 
+<div className="section-heading"><span>01</span><h2>The resistance of a change</h2></div>
 
-
-
-<div className="section-heading">
-
-<span>01</span><h2>The resistance of a change</h2>
-
-</div>
-
-
-
-For a linear resistor, the graph of current against voltage is a straight line through the origin. The ratio V/I is the same everywhere, and any change obeys ΔV = RΔI.
+For a linear resistor, the graph of current against voltage is a straight line through the origin. The ratio $V/I$ is the same everywhere, and any change obeys $\Delta V = R\,\Delta I$.
 
 For a nonlinear device, the graph curves. The ratio from the origin to a point on that curve need not equal the slope of the tangent at that point.
 
-Choose a DC operating point, or **bias point**, Q = (VQ, IQ). Separate the total quantities into their bias values and small variations:
+Choose a DC operating point, or **bias point**, $Q = (V_Q, I_Q)$. Separate the total quantities into their bias values and small variations:
 
 <Equation tex="V(t)=V_Q+v(t),\qquad I(t)=I_Q+i(t)" label="01 / TOTAL = BIAS + VARIATION"/>
 
 Here uppercase symbols identify DC values and lowercase symbols identify variations. A lowercase current can be negative: it then means less current than the bias value, not necessarily a reversal of the total current.
 
-If I = F(V), expand around VQ:
+If $I = F(V)$, expand around $V_Q$:
 
 <Equation tex="I_Q+i=F(V_Q)+F'(V_Q)v+\frac{1}{2}F''(V_Q)v^2+\cdots"/>
 
-Because F(VQ) = IQ, the bias terms cancel. If the higher-order terms are negligible, the remaining relation is linear:
+Because $F(V_Q) = I_Q$, the bias terms cancel. If the higher-order terms are negligible, the remaining relation is linear:
 
 <Equation tex="i\approx g_d v,\qquad g_d=\left.\frac{dI}{dV}\right|_Q"/>
 <Equation tex="r_d=\frac{1}{g_d}=\left.\frac{dV}{dI}\right|_Q" label="02 / DIFFERENTIAL CONDUCTANCE AND RESISTANCE"/>
 
 The reciprocal relation assumes a finite nonzero slope that can be locally inverted. Conductance has units of amperes per volt, or siemens; resistance has units of volts per ampere, or ohms.
 
-
-
 <details className="prerequisite">
-
-
 <summary>If derivatives are new: think of a shrinking measurement</summary>
-
-
 <div>
-
 
 <p>Measure a voltage and current, move a little along the curve, and measure again. Divide the change in voltage by the change in current. This gives the slope of a short chord.</p>
 <p>Make the change smaller and the chord approaches a tangent. The derivative is the limiting slope. We use it because a short section of a smooth curve can be approximated by a straight line.</p>
 <p>This is a local approximation, not a claim that the entire device obeys Ohm’s law with one fixed resistor value.</p>
 
-
 </div>
-
-
-
-
 </details>
 
-
+<ChordTangentFigure/>
 
 ### Three quantities that are easy to confuse
 
-
-
 <div className="table-wrap">
 
-<table><thead><tr><th>Quantity</th><th>Meaning</th><th>Use</th></tr></thead><tbody><tr><td>VQ / IQ</td><td>DC ratio from the origin</td><td>Describe one operating point</td></tr><tr><td>ΔV / ΔI</td><td>Finite chord between points</td><td>Describe a measured change</td></tr><tr><td>dV / dI at Q</td><td>Local tangent resistance</td><td>Predict sufficiently small changes</td></tr></tbody></table>
+<table><thead><tr><th>Quantity</th><th>Meaning</th><th>Use</th></tr></thead><tbody><tr><td>$V_Q/I_Q$</td><td>DC ratio from the origin</td><td>Describe one operating point</td></tr><tr><td>$\Delta V/\Delta I$</td><td>Finite chord between points</td><td>Describe a measured change</td></tr><tr><td>$dV/dI$ at Q</td><td>Local tangent resistance</td><td>Predict sufficiently small changes</td></tr></tbody></table>
 
 </div>
-
-
 
 The bias must be found first. A differential resistance is a property of a device **at an operating point**, not a replacement for calculating that operating point.
 
+### Why this matters beyond diodes
+
+Almost every useful electronic device is nonlinear: diodes, transistors, lamps, thermistors, batteries. Analyzing nonlinear circuits exactly is hard, but analyzing linear ones is easy, and we already have the tools (dividers, Thévenin). Small-signal modeling is the trade that lets us use them: solve the nonlinear circuit once, for its DC bias; then treat each device as a linear element for signals that stay close to that bias. Every amplifier chapter in this book follows this two-step plan.
 
 </section>
 
-
-
-
-
 <section id="diode">
 
-
-
-
-<div className="section-heading">
-
-<span>02</span><h2>Derive the diode model</h2>
-
-</div>
-
-
+<div className="section-heading"><span>02</span><h2>Derive the diode model</h2></div>
 
 Use a simplified diode with fixed temperature, negligible series resistance, and no capacitive effects. Its current is modeled by:
 
 <Equation tex="I=I_S\left(e^{V/(nV_T)}-1\right),\qquad V_T=\frac{kT}{q}"/>
 
-Iₛ is the saturation-current parameter; n is the ideality factor; Vₜ is the thermal voltage. At approximately 300 K, Vₜ is 25.85 mV. Here k is Boltzmann’s constant, q is the magnitude of the electron charge, and T is absolute temperature in kelvin. The thermal voltage is a physical scale, not the diode’s forward voltage.
+$I_S$ is the saturation-current parameter; $n$ is the ideality factor; $V_T$ is the thermal voltage. At approximately 300 K, $V_T$ is 25.85 mV. Here $k$ is Boltzmann’s constant, $q$ is the magnitude of the electron charge, and $T$ is absolute temperature in kelvin. The thermal voltage is a physical scale, not the diode’s forward voltage.
 
 Differentiate the exponential, then express the result in terms of current:
 
@@ -171,164 +98,118 @@ At the chosen bias point:
 
 <Equation tex="r_d=\frac{nV_T}{I_Q+I_S}\approx\frac{nV_T}{I_Q}\quad\text{when }I_Q\gg I_S" label="03 / MORE BIAS CURRENT → LESS INCREMENTAL RESISTANCE"/>
 
-For n = 1 and IQ = 1 mA, r_d ≈ 25.85 Ω. At 0.1 mA, it is 258.5 Ω. At 10 mA, it is 2.585 Ω—within this model.
+For $n = 1$ and $I_Q = 1$ mA, $r_d \approx 25.85\ \Omega$. At 0.1 mA, it is 258.5 Ω. At 10 mA, it is 2.585 Ω, within this model.
 
-A real diode can depart from this prediction because n changes with operating region, series resistance adds a voltage drop, temperature changes, or stored charge matters. We are building a useful model with a stated domain, not a universal description of a particular part.
+Notice what the result does *not* contain: $I_S$, which varies by orders of magnitude between diode types, has dropped out. Every junction that obeys the exponential law has the same small-signal resistance at the same current. That universality is what makes transistor amplifiers predictable (Chapter 30).
 
+<ResistanceVsBiasFigure/>
 
+A real diode can depart from this prediction because $n$ changes with operating region, series resistance adds a voltage drop, temperature changes, or stored charge matters. We are building a useful model with a stated domain, not a universal description of a particular part.
 
 <div className="worked-example">
 
-
-<span className="tiny-label">WORKED EXAMPLE / TWO DIFFERENT RATIOS</span>
-<h3>A 1 mA bias point</h3>
-<p>Take Iₛ = 10⁻¹² A, n = 1, and Vₜ = 25.85 mV. Inverting the model gives VQ = Vₜ ln(1 + IQ/Iₛ) ≈ <strong>0.5357 V</strong>.</p>
-<p>The DC ratio VQ/IQ is approximately <strong>535.7 Ω</strong>. The small-signal resistance is approximately <strong>25.85 Ω</strong>.</p>
-<p>A +10 µA current change produces a linear voltage estimate of 25.85 Ω × 10 µA = <strong>0.2585 mV</strong>. The exact model gives Vₜ ln(1.01) ≈ <strong>0.2572 mV</strong>, with Iₛ negligible compared with the bias.</p>
+<span className="tiny-label">WORKED EXAMPLE / TWO DIFFERENT RATIOS</span><h3>A 1 mA bias point</h3>
+<p>Take $I_S = 10^{-12}$ A, $n = 1$, and $V_T = 25.85$ mV. Inverting the model gives $V_Q = V_T\ln(1 + I_Q/I_S) \approx$ <strong>0.5357 V</strong>.</p>
+<p>The DC ratio $V_Q/I_Q$ is approximately <strong>535.7 Ω</strong>. The small-signal resistance is approximately <strong>25.85 Ω</strong>.</p>
+<p>A +10 µA current change produces a linear voltage estimate of $25.85\ \Omega \times 10\ \mu\text{A} =$ <strong>0.2585 mV</strong>. The exact model gives $V_T\ln(1.01) \approx$ <strong>0.2572 mV</strong>, with $I_S$ negligible compared with the bias.</p>
 <p>Using the DC ratio would predict 5.357 mV, over twenty times too much. It uses a line from the origin where we needed the tangent at Q.</p>
-
 
 </div>
 
-
-
-
 </section>
-
-
-
-
 
 <section id="explore">
 
+<div className="section-heading"><span>03</span><h2>Explore the operating point</h2></div>
 
+The source in this figure sets the diode voltage directly. Changing the bias-current control chooses a new $I_Q$ and computes the voltage needed to produce it. The perturbation control then adds a small voltage around that bias.
 
-
-<div className="section-heading">
-
-<span>03</span><h2>Explore the operating point</h2>
-
-</div>
-
-
-
-The source in this figure sets the diode voltage directly. Changing the bias-current control chooses a new IQ and computes the voltage needed to produce it. The perturbation control then adds a small voltage around that bias.
-
-The **incremental circuit** removes the DC bias and replaces the diode by r_d. Its source is only the added voltage v. The linear current from that circuit is a change i; add IQ back to obtain a prediction for total current.
+The **incremental circuit** removes the DC bias and replaces the diode by $r_d$. Its source is only the added voltage $v$. The linear current from that circuit is a change $i$; add $I_Q$ back to obtain a prediction for total current.
 
 <SmallSignalLab client:load/>
 
-<p className="caption">Figure 1. Fixed 300 K model with n = 1 and Iₛ = 10⁻¹² A. The tangent is exact at Q and becomes less accurate away from it. This lab does not model self-heating.</p>
+<p className="caption">Fixed 300 K model with $n = 1$ and $I_S = 10^{-12}$ A. The tangent is exact at Q and becomes less accurate away from it. This lab does not model self-heating.</p>
 
 ### The tangent does not pass through the origin
 
-Written in total quantities, the tangent model is I ≈ IQ + (V − VQ)/r_d. Written in variations, it is simply i ≈ v/r_d. These are the same relation in different coordinates.
+Written in total quantities, the tangent model is $I \approx I_Q + (V - V_Q)/r_d$. Written in variations, it is simply $i \approx v/r_d$. These are the same relation in different coordinates.
 
 A resistor alone cannot replace the diode for both DC bias and small changes. In a total-voltage representation, the tangent requires an offset source as well. In the incremental representation, subtracting the bias hides that offset cleanly.
 
-
 </section>
-
-
-
-
 
 <section id="circuit">
 
+<div className="section-heading"><span>04</span><h2>Put the local model in a circuit</h2></div>
 
+Consider a diode from a node to ground, with a source feeding that node through a 1 kΩ resistor. Choose the source’s DC value to establish $I_Q = 1$ mA. Using our model, the source must provide about 0.5357 V across the diode plus 1 V across the resistor: **1.5357 V**.
 
-
-<div className="section-heading">
-
-<span>04</span><h2>Put the local model in a circuit</h2>
-
-</div>
-
-
-
-Consider a diode from a node to ground, with a source feeding that node through a 1 kΩ resistor. Choose the source’s DC value to establish IQ = 1 mA. Using our model, the source must provide about 0.5357 V across the diode plus 1 V across the resistor: **1.5357 V**.
-
-Now add a small signal vₛ to the source. For the incremental circuit, a constant ideal DC voltage source becomes zero volts, while the signal source remains. Replace the diode by its resistance at the established bias point.
+Now add a small signal $v_s$ to the source. For the incremental circuit, a constant ideal DC voltage source becomes zero volts, while the signal source remains. Replace the diode by its resistance at the established bias point.
 
 <Equation tex="v_d\approx v_s\frac{r_d}{R_S+r_d},\qquad i\approx\frac{v_s}{R_S+r_d}"/>
 
-With r_d = 25.85 Ω and vₛ = 10 mV, the diode-voltage change is about **0.2520 mV** and the current change is about **9.748 µA**. Most of the source’s small voltage change appears across the 1 kΩ resistor.
+With $r_d = 25.85\ \Omega$ and $v_s = 10$ mV, the diode-voltage change is about **0.2520 mV** and the current change is about **9.748 µA**. Most of the source’s small voltage change appears across the 1 kΩ resistor.
 
-<CircuitFigure kind="incremental"/>
+<IncrementalFigure/>
 
 This is a voltage divider again, but one resistance comes from the slope of a nonlinear device. The signal is small **at the diode** even though the source perturbation is much larger.
 
-
-
 <details className="derivation">
-
-
 <summary>Check the approximation against the nonlinear circuit</summary>
-
-
 <div>
 
-
-<p>Subtract the original DC equation from the new circuit equation. Neglecting Iₛ relative to IQ gives:</p>
+<p>Subtract the original DC equation from the new circuit equation. Neglecting $I_S$ relative to $I_Q$ gives:</p>
 <Equation tex="v_s=R_S i+nV_T\ln\!\left(1+\frac{i}{I_Q}\right)"/>
-<p>For i/IQ much smaller than one, ln(1 + i/IQ) ≈ i/IQ. The circuit equation becomes vₛ ≈ i(Rₛ + nVₜ/IQ), reproducing the incremental result.</p>
+<p>For $i/I_Q$ much smaller than one, $\ln(1 + i/I_Q) \approx i/I_Q$. The circuit equation becomes $v_s \approx i(R_S + nV_T/I_Q)$, reproducing the incremental result.</p>
 <p>For the 10 mV example, solving the nonlinear expression gives approximately 9.749 µA. The linear answer differs by about 0.012%. The series resistance limits the change at the nonlinear junction.</p>
 
+</div>
+</details>
+
+<AttenuatorFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A DC CURRENT THAT SETS AN AC GAIN</span><h3>An electronically controlled attenuator</h3>
+<p>In the circuit above, the signal sees a divider of $R_s = 1$ kΩ and $r_d = V_T/I_Q$ (assume $R_B$ is large enough to ignore). The bias current is set separately, by the control source.</p>
+<div className="table-wrap"><table><thead><tr><th>Control current $I_Q$</th><th>$r_d$</th><th>Gain $r_d/(R_s + r_d)$</th></tr></thead><tbody><tr><td>10 µA</td><td>2.585 kΩ</td><td>0.72 (−2.8 dB)</td></tr><tr><td>100 µA</td><td>258.5 Ω</td><td>0.205 (−13.7 dB)</td></tr><tr><td>1 mA</td><td>25.85 Ω</td><td>0.0252 (−32 dB)</td></tr><tr><td>10 mA</td><td>2.585 Ω</td><td>0.0026 (−52 dB)</td></tr></tbody></table></div>
+<p>A control current spanning three decades sweeps the gain over about 50 dB. The catch is the previous section's warning: the output must stay well below a few millivolts for the diode to behave as a resistor. At 10 µA bias and 0.72 gain, a 10 mV input already puts 7 mV across the junction and distorts badly. Such circuits are used where signals are small, or the distortion is tolerable, as in old automatic-gain-control loops.</p>
 
 </div>
 
-
-
-
-</details>
-
-
-
 ### From a diode to an amplifier
 
-For a bipolar transistor in an appropriate forward-active model, collector current depends exponentially on base–emitter voltage. Differentiation gives transconductance gₘ ≈ IC/Vₜ.
+For a bipolar transistor in an appropriate forward-active model, collector current depends exponentially on base–emitter voltage. Differentiation gives transconductance $g_m \approx I_C/V_T$.
 
 Transconductance relates a voltage at one port to a current at another; it is **not** automatically a two-terminal resistance. Nevertheless, the same method applies: solve the bias, differentiate the device relationships, then analyze the resulting linear circuit.
 
 Feedback can change the resistance seen at a port. A resistor-like small-signal model may describe an entire active circuit, even when no physical resistor of that value exists.
 
-
 </section>
-
-
-
-
 
 <section id="limits">
 
+<div className="section-heading"><span>05</span><h2>How small is “small”?</h2></div>
 
-
-
-<div className="section-heading">
-
-<span>05</span><h2>How small is “small”?</h2>
-
-</div>
-
-
-
-For our diode, let x = v/(nVₜ). The exact current change around Q is:
+For our diode, let $x = v/(nV_T)$. The exact current change around Q is:
 
 <Equation tex="\Delta I=(I_Q+I_S)(e^x-1)=(I_Q+I_S)\left(x+\frac{x^2}{2}+\cdots\right)"/>
 
-The linear model keeps only x. The ratio of the quadratic term to the linear term has magnitude |x|/2. Requiring that ratio to be at most about 1% suggests |v| ≲ 0.02 nVₜ, or roughly **0.52 mV** when n = 1 at 300 K. That is an estimate for the error in the current change, not a universal signal limit.
-
-
+The linear model keeps only $x$. The ratio of the quadratic term to the linear term has magnitude $|x|/2$. Requiring that ratio to be at most about 1% suggests $|v| \lesssim 0.02\,nV_T$, or roughly **0.52 mV** when $n = 1$ at 300 K. That is an estimate for the error in the current change, not a universal signal limit.
 
 <div className="table-wrap">
 
-<table><thead><tr><th>Positive voltage change</th><th>Approx. error in ΔI</th><th>Interpretation</th></tr></thead><tbody><tr><td>1 mV</td><td>1.92%</td><td>Often a useful first approximation</td></tr><tr><td>5 mV</td><td>9.36%</td><td>Curvature is becoming significant</td></tr><tr><td>20 mV</td><td>33.75%</td><td>A poor linear estimate of the change</td></tr></tbody></table>
+<table><thead><tr><th>Positive voltage change</th><th>Approx. error in $\Delta I$</th><th>Interpretation</th></tr></thead><tbody><tr><td>1 mV</td><td>1.92%</td><td>Often a useful first approximation</td></tr><tr><td>5 mV</td><td>9.36%</td><td>Curvature is becoming significant</td></tr><tr><td>20 mV</td><td>33.75%</td><td>A poor linear estimate of the change</td></tr></tbody></table>
 
 </div>
 
-
+<LinearizationErrorFigure/>
 
 These errors compare the linear estimate with the exact exponential current **change**. Error relative to total current is a different number. State the denominator whenever quoting an approximation error.
+
+<DistortionFigure/>
+
+The waveform shows what curvature does to a signal over time. The positive half-cycle grows and the negative half shrinks, so the average current rises above $I_Q$ and the shape acquires harmonics. Amplifiers built on exponential devices therefore rely on keeping the signal at the junction small, or on feedback (Chapter 42) to straighten the overall response.
 
 ### Small-signal does not mean high-frequency
 
@@ -336,40 +217,67 @@ Small describes amplitude. A slowly varying perturbation can be too large to lin
 
 Temperature is another state variable. If a perturbation changes dissipation enough to heat the device, a slowly measured slope may include thermal feedback. It need not match the fixed-temperature derivative used here.
 
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Find the operating point.<br/>Take the local slope.<br/><em>Check how far the signal moves.</em></p></div>
 
+</section>
 
-<div className="takeaway">
+<section id="check">
 
-<span className="tiny-label">THE IDEA TO KEEP</span><p>Find the operating point.<br/>Take the local slope.<br/><em>Check how far the signal moves.</em></p>
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. A diode's bias current doubles. What happens to $r_d$, and to $V_Q$?</summary>
+<div>
+
+$r_d = V_T/I_Q$ halves. $V_Q$ rises by only $V_T\ln 2 \approx 18$ mV. A large relative change in current needs only a small change in voltage; that is the exponential at work, and it is why $r_d$ is small.
 
 </div>
+</details>
 
+<details>
+<summary>2. Why can't you use $r_d$ to find the bias point?</summary>
+<div>
 
+$r_d$ depends on the bias current, so you need the bias before you can compute it. It also describes only changes around Q; it says nothing about the total voltage there. Solve the nonlinear DC circuit first, then linearize.
 
-<p className="reference-note">Coverage reference: The Art of Electronics, third edition, §1.2.6. The diode-model discussion is supported by <a href="https://wiki.analog.com/university/courses/electronics/text/chapter-5">Analog Devices’ diode characteristics tutorial</a>. The derivations, examples, and interactive figure here are original.</p>
+</div>
+</details>
 
+<details>
+<summary>3. In the incremental circuit, what happens to a 5 V DC supply? To a DC current source?</summary>
+<div>
+
+Both are constant, so their variations are zero. The voltage source becomes a short (zero volts change) and the current source becomes an open (zero current change). Only the sources that carry the signal remain.
+
+</div>
+</details>
+
+<details>
+<summary>4. A 1 kΩ resistor feeds a diode biased at 1 mA. Is a 50 mV signal at the source "small"?</summary>
+<div>
+
+Check at the diode, not at the source. The divider puts $50 \times 25.85/1025.85 \approx 1.26$ mV across the junction, giving about 2.5% error in the current change: small enough for many purposes. The same 50 mV applied directly to the diode would be wildly nonlinear.
+
+</div>
+</details>
+
+<details>
+<summary>5. Two different diodes (different $I_S$) are biased at the same current. Do they have the same $r_d$?</summary>
+<div>
+
+Yes, if both have $n = 1$ and the same temperature: $r_d = V_T/I_Q$ does not involve $I_S$. Their bias voltages differ, but their slopes at equal current are equal.
+
+</div>
+</details>
+
+<p className="reference-note">Coverage reference: The Art of Electronics, third edition, §1.2.6. The diode-model discussion is supported by <a href="https://wiki.analog.com/university/courses/electronics/text/chapter-5">Analog Devices’ diode characteristics tutorial</a>. The derivations, examples, and figures here are original.</p>
 
 <div className="chapter-end">
 
-
-
-<div>
-
-<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Practice the local model</h3><p>Four problems on slopes, bias, circuit response, and error.</p>
-
-</div>
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Practice the local model</h3><p>Problems on slopes, bias, circuit response, and error.</p></div>
 
 <a className="primary-link" href="/small-signal/practice/">Open practice →</a>
 
 </div>
 
-
-<p><a href="/power/">Next: power dissipation & heating →</a></p>
-
-
 </section>
-
-
-
-
-

@@ -1,6 +1,7 @@
 // Shared schematic primitives. Each two-terminal part is 60 units long, centred on (x, y);
 // `v` draws it vertically. Wires are drawn separately by the figure that uses them.
 import type {ReactNode} from 'react';
+import {svgMath} from './MathText';
 type P={x:number;y:number;v?:boolean};
 export const green='var(--accent)',orange='var(--orange)',gray='var(--muted)',ink='var(--ink)';
 export function Wires({d,color=ink,width=1.8,dashed=false}:{d:string;color?:string;width?:number;dashed?:boolean}){return <path d={d} fill="none" stroke={color} strokeWidth={width} strokeDasharray={dashed?'5 4':undefined}/>}
@@ -15,7 +16,7 @@ export function Source({x,y,ac=false,label,flip=false}:{x:number;y:number;ac?:bo
 export function Ground({x,y}:{x:number;y:number}){return <path d={`M${x} ${y} v10 m-14 0 h28 m-23 6 h18 m-12 6 h6`} stroke={ink} strokeWidth="1.5" fill="none"/>}
 export function Dot({x,y,color=ink}:{x:number;y:number;color?:string}){return <circle cx={x} cy={y} r="3.2" fill={color}/>}
 export function Switch({x,y,closed=false}:{x:number;y:number;closed?:boolean}){return <g fill="none" stroke={ink} strokeWidth="1.8"><path d={`M${x-30} ${y} H${x-15} M${x+15} ${y} H${x+30}`}/><path d={closed?`M${x-15} ${y} L${x+15} ${y}`:`M${x-15} ${y} L${x+12} ${y-15}`}/><circle cx={x-15} cy={y} r="2.5" fill={ink}/><circle cx={x+15} cy={y} r="2.5" fill={ink}/></g>}
-export function Label({x,y,children,kind='symbol',anchor='start'}:{x:number;y:number;children:ReactNode;kind?:'symbol'|'value'|'output';anchor?:'start'|'middle'|'end'}){return <text x={x} y={y} textAnchor={anchor} className={kind+'-label'}>{children}</text>}
+export function Label({x,y,children,kind='symbol',anchor='start'}:{x:number;y:number;children:ReactNode;kind?:'symbol'|'value'|'output';anchor?:'start'|'middle'|'end'}){return <text x={x} y={y} textAnchor={anchor} className={kind+'-label'}>{svgMath(children)}</text>}
 
 // Complex-plane drawing: real axis right, imaginary axis up. Vectors may start at `from` for tip-to-tail sums.
 export type Vec={re:number;im:number;color:string;label?:string;from?:{re:number;im:number};dashed?:boolean;width?:number;side?:1|-1};
@@ -31,7 +32,7 @@ export function PhasorDiagram({vectors,scale,description,size=300,circle,xLabel=
    const ux=(x2-x1)/len,uy=(y2-y1)/len,h=Math.min(11,len*.45),bx=x2-ux*h,by=y2-uy*h;
    const head=`${x2},${y2} ${bx-uy*h*.42},${by+ux*h*.42} ${bx+uy*h*.42},${by-ux*h*.42}`;
    const side=v.side??1,lx=(x1+x2)/2-uy*15*side,ly=(y1+y2)/2+ux*15*side;
-   return <g key={i}><line x1={x1} y1={y1} x2={bx} y2={by} stroke={v.color} strokeWidth={v.width??2.6} strokeDasharray={v.dashed?'6 4':undefined}/><polygon points={head} fill={v.color}/>{v.label&&<text x={lx} y={ly+4} textAnchor="middle" className="phasor-label" fill={v.color}>{v.label}</text>}</g>;})}
+   return <g key={i}><line x1={x1} y1={y1} x2={bx} y2={by} stroke={v.color} strokeWidth={v.width??2.6} strokeDasharray={v.dashed?'6 4':undefined}/><polygon points={head} fill={v.color}/>{v.label&&<text x={lx} y={ly+4} textAnchor="middle" className="phasor-label" fill={v.color}>{svgMath(v.label)}</text>}</g>;})}
   {points.map((p,i)=><circle key={'p'+i} cx={X(p.re)} cy={Y(p.im)} r="4.5" fill={p.color} stroke="var(--paper)" strokeWidth="1.5"/>)}
  </svg>;
 }

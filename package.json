@@ -6,16 +6,19 @@
   "scripts": {
     "dev": "astro dev --host 127.0.0.1",
     "build": "astro build",
+    "build:hosted": "ELECTRONICS_BASE_PATH=/electronics astro build",
+    "check:hosted": "node scripts/check-hosted.mjs",
     "preview": "astro preview --host 127.0.0.1",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "check:schematics": "node scripts/check-schematics.mjs"
   },
   "dependencies": {
-    "astro": "latest",
-    "@astrojs/react": "latest",
     "@astrojs/mdx": "latest",
+    "@astrojs/react": "latest",
+    "astro": "latest",
+    "katex": "latest",
     "react": "latest",
-    "react-dom": "latest",
-    "katex": "latest"
+    "react-dom": "latest"
   },
   "devDependencies": {
     "@types/react": "latest",

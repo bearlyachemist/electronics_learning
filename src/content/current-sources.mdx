@@ -1,3 +1,4 @@
+import {CurrentSinkFigure,CurrentComplianceFigure} from '../components/BjtTheoryFigures';
 import Equation from '../components/Equation.astro';
 import {CurrentSourceLab} from '../components/BjtLabs';
 
@@ -29,7 +30,7 @@ The crude method is a large resistor from a large voltage: 15 V through 10 kΩ g
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>From follower to current source → Compliance → Explore a current source → What limits accuracy → Setting the base voltage → Uses of current sources.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>From follower to current source → Compliance → Explore a current source → What limits accuracy → Setting the base voltage → Uses of current sources → Check your understanding.</p>
 
 </div>
 
@@ -37,27 +38,31 @@ The crude method is a large resistor from a large voltage: 15 V through 10 kΩ g
 
 <div className="section-heading"><span>01</span><h2>From follower to current source</h2></div>
 
-Hold the base of an NPN transistor at a fixed voltage V_B, put a resistor R_E from the emitter to ground, and connect the load between the supply and the collector. The emitter follows the base, so the emitter voltage is fixed at V_B − 0.65 V, and so is the emitter current:
+Hold the base of an NPN transistor at a fixed voltage $V_B$, put a resistor $R_E$ from the emitter to ground, and connect the load between the supply and the collector. The emitter follows the base, so the emitter voltage is fixed at $V_B$ − 0.65 V, and so is the emitter current:
 
 <Equation tex="I_E=\frac{V_B-V_{BE}}{R_E},\qquad I_C=\alpha I_E\approx I_E" label="TRANSISTOR CURRENT SOURCE"/>
 
-Nothing in that expression mentions the load. The collector current is fixed by V_B and R_E, so the collector **sinks** a constant current from whatever is connected to it. With V_B = 1.65 V and R_E = 1 kΩ, the current is 1 mA into a short, into 5 kΩ, or into 10 kΩ.
+Nothing in that expression mentions the load. The collector current is fixed by $V_B$ and $R_E$, so the collector **sinks** a constant current from whatever is connected to it. With $V_B$ = 1.65 V and $R_E$ = 1 kΩ, the current is 1 mA into a short, into 5 kΩ, or into 10 kΩ.
 
 A PNP version, with emitter resistor to the positive supply and the base held a fixed voltage below it, **sources** current into a grounded load.
 
 </section>
 
+<CurrentSinkFigure/>
+
 <section id="compliance">
 
 <div className="section-heading"><span>02</span><h2>Compliance</h2></div>
 
-The transistor can only maintain the current while it stays in the active region. As the load resistance grows, the load drops more voltage and the collector falls toward the emitter. When V_CE reaches a few tenths of a volt, the transistor saturates and the current falls. The range of collector voltage over which the source works is its **compliance**:
+The transistor can only maintain the current while it stays in the active region. As the load resistance grows, the load drops more voltage and the collector falls toward the emitter. When $V_{CE}$ reaches a few tenths of a volt, the transistor saturates and the current falls. The required collector headroom depends on the allowed current error. Forward active operation requires the collector–base junction not to be forward biased, so $V_C\ge V_B$ is a useful conservative check. The 0.2 V approximation below marks a low-voltage saturation limit, not a guaranteed flat-current boundary. The usable voltage range is its **compliance**:
 
 <Equation tex="V_E+V_{CE(\mathrm{sat})}\ \lesssim\ V_C\ \le\ V_{CC},\qquad R_{L,\max}\approx\frac{V_{CC}-V_E-0.2\ \mathrm V}{I_C}"/>
 
-For a 15 V supply, V_E = 1 V and 1 mA, the source works into loads up to about 13.8 kΩ. A larger V_B gives more current from the same R_E but raises V_E, reducing compliance. Choosing V_E around a volt balances stability (Chapter 29) against compliance.
+For a 15 V supply, $V_E$ = 1 V and 1 mA, the source works into loads up to about 13.8 kΩ. A larger $V_B$ gives more current from the same $R_E$ but raises $V_E$, reducing compliance. Choosing $V_E$ around a volt balances stability (Chapter 29) against compliance.
 
 </section>
+
+<CurrentComplianceFigure/>
 
 <section id="explore">
 
@@ -75,23 +80,23 @@ For a 15 V supply, V_E = 1 V and 1 mA, the source works into loads up to about 1
 
 Four effects make a real transistor current source less than perfect.
 
-**V_BE depends on temperature.** At −2.1 mV/°C, a source with V_E = 1 V changes current by about +0.21%/°C. A larger V_E reduces the sensitivity; compensating the base voltage with a diode drop (section 05) cancels much of it.
+**$V_{BE}$ depends on temperature.** At −2.1 mV/°C, a source with $V_E$ = 1 V changes current by about +0.21%/°C. A larger $V_E$ reduces the sensitivity; compensating the base voltage with a diode drop (section 05) cancels much of it.
 
-**V_BE depends on current.** It changes by about 60 mV per decade of current (Chapter 34). In this circuit that is the same feedback effect that makes the source stable, and it matters only when V_E is small.
+**$V_{BE}$ depends on current.** It changes by about 60 mV per decade of current (Chapter 34). In this circuit that is the same feedback effect that makes the source stable, and it matters only when $V_E$ is small.
 
-**α depends on β.** The collector current is α times the emitter current. β = 100 gives α = 0.990; β = 300 gives 0.9967: a 0.7% difference between transistors. Base current also loads the base voltage source unless that source is stiff.
+**$\alpha$ depends on $\beta$.** The collector current is $\alpha$ times the emitter current. $\beta$ = 100 gives $\alpha$ = 0.990; $\beta$ = 300 gives 0.9967: a 0.7% difference between transistors. Base current also loads the base voltage source unless that source is stiff.
 
-**The Early effect.** Collector current rises slowly with V_CE (Chapter 26). In a plain transistor with a grounded emitter, the output resistance is only r_o = V_A/I_C—50 kΩ for V_A = 50 V at 1 mA. The emitter resistor improves it enormously. If the collector current tries to rise, the emitter voltage rises with it, reducing V_BE and correcting the current. The small-signal analysis gives:
+**The Early effect.** Collector current rises slowly with $V_{CE}$ (Chapter 26). In a plain transistor with a grounded emitter, the output resistance is only $r_o$ = $V_A$/$I_C$—50 kΩ for $V_A$ = 50 V at 1 mA. The emitter resistor improves it enormously. If the collector current tries to rise, the emitter voltage rises with it, reducing $V_{BE}$ and correcting the current. The small-signal analysis gives:
 
 <Equation tex="R_{\mathrm{out}}\approx r_o\left[1+g_m\left(R_E\parallel r_\pi\right)\right]\qquad(\text{at most about }\beta r_o)" label="DEGENERATED OUTPUT RESISTANCE"/>
 
 <div className="worked-example">
 
-<span className="tiny-label">WORKED EXAMPLE / HOW CONSTANT IS CONSTANT?</span><h3>1 mA, R_E = 1 kΩ, V_A = 50 V, β = 100</h3>
+<span className="tiny-label">WORKED EXAMPLE / HOW CONSTANT IS CONSTANT?</span><h3>1 mA, $R_E$ = 1 kΩ, $V_A$ = 50 V, $\beta$ = 100</h3>
 
-<p>r_o = 50 kΩ, g_m = 38.7 mS, r_π = 2.59 kΩ. R_E ∥ r_π = 721 Ω, so the bracket is 1 + 27.9 and R_out ≈ <strong>1.45 MΩ</strong>, nearly thirty times r_o.</p>
+<p>$r_o$ = 50 kΩ, $g_m$ = 38.7 mS, $r_π$ = 2.59 kΩ. $R_E$ ∥ $r_π$ = 721 Ω, so the bracket is 1 + 27.9 and $R_{\mathrm{out}}$ ≈ <strong>1.45 MΩ</strong>, nearly thirty times $r_o$.</p>
 
-<p>The Ebers–Moll model in the lab agrees: changing the load from a short to 10 kΩ (V_CE from 14 V to 4.1 V) changes the current from 0.9936 mA to 0.9880 mA, only 0.56%, equivalent to about 1.7 MΩ over that range. The 10 kΩ resistor-and-15 V “source” would have changed by 50%.</p>
+<p>The Ebers–Moll model in the lab agrees: changing the load from a short to 10 kΩ ($V_{CE}$ from 14 V to 4.1 V) changes the current from 0.9936 mA to 0.9880 mA, only 0.56%, equivalent to about 1.7 MΩ over that range. The 10 kΩ resistor-and-15 V “source” would have changed by 50%.</p>
 
 </div>
 
@@ -105,11 +110,11 @@ Even better sources use two transistors so that the collector voltage of the cur
 
 The base needs a voltage that is stable and stiff compared with the base current.
 
-- **A resistive divider** is simplest. Make it stiff (R_TH ≪ (β + 1)R_E) and accept that the current follows the supply voltage.
+- **A resistive divider** is simplest. Make it stiff ($R_{TH}$ ≪ ($\beta$ + 1)$R_E$) and accept that the current follows the supply voltage.
 - **A zener** gives a base voltage independent of the supply. Bias the zener with a current that comfortably exceeds the base current.
-- **A diode plus divider**: put a forward-biased diode in series with the bottom resistor of the divider. Its forward voltage falls with temperature at roughly the same rate as V_BE, so the emitter voltage, and hence the current, becomes nearly temperature-independent.
-- **An LED** is a convenient 1.6–2 V reference with a temperature coefficient similar to V_BE’s.
-- **Another transistor** with the same V_BE: the current mirror, introduced with the Ebers–Moll model in Chapter 34.
+- **A diode reference** can be arranged to track the transistor’s junction voltage. Cancellation depends on topology, current density and thermal coupling; a diode inserted into an arbitrary divider is not automatically a compensator.
+- **An LED** can be a convenient approximate reference, but its voltage and temperature coefficient depend on material and current. Treat any temperature compensation as something to calculate and measure.
+- **Another transistor** with the same $V_{BE}$: the current mirror, introduced with the Ebers–Moll model in Chapter 34.
 
 </section>
 
@@ -127,9 +132,72 @@ The base needs a voltage that is stable and stiff compared with the base current
 
 **Sensing and transmission.** The 4–20 mA current loop of industrial instrumentation transmits a measurement as a current, so wiring resistance and connection voltage drops do not change the signal—within the source’s compliance.
 
+<div className="worked-example">
+
+<span className="tiny-label">WORKED DESIGN / CHECK THE LOAD AND THE TRANSISTOR</span><h3>A 10 mA LED sink from a 12 V supply</h3>
+
+<p>A 1.65 V base reference and $R_E=100\ \Omega$ give approximately 10 mA emitter current; at β = 100 the collector carries about 9.90 mA. Three LEDs dropping 2.0 V each leave 6 V at the collector and about 5 V across the transistor. Its dissipation is approximately 49.5 mW.</p>
+
+<p>Replace the LED string with a short and collector voltage rises to 12 V. Current stays roughly the same, but transistor dissipation rises to about 109 mW. Open the load and collector current becomes zero. A current sink’s thermal worst case can be the smallest load voltage, not the largest.</p>
+
+<p>If the LEDs require 11.5 V altogether, only 0.5 V remains at the collector while the emitter wants 1 V. That operating point is impossible; the sink loses compliance. Budget maximum LED voltage, minimum supply, reference tolerance and emitter drop together.</p>
+
+</div>
+
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Fix the emitter voltage and you fix the collector current. The <em>emitter resistor</em> sets the value and multiplies the output resistance; <em>compliance</em> sets how much voltage the load may use.</p></div>
 
 <p className="reference-note">Coverage: The Art of Electronics §2.2.6, with the output-resistance analysis from §2.3. Current mirrors follow in Chapter 34.</p>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. What actually fixes the current in the simple sink?</summary>
+<div>
+
+The base reference minus the operating junction voltage establishes emitter voltage; the emitter resistor converts that voltage to current.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why is collector current slightly less than emitter current?</summary>
+<div>
+
+The base supplies part of the emitter current: $I_C=\alpha I_E$ and $\alpha=\beta/(\beta+1)$.
+
+</div>
+</details>
+
+<details>
+<summary>3. What happens when the load uses too much supply voltage?</summary>
+<div>
+
+Collector headroom is exhausted and the transistor leaves its intended active region. Current then depends strongly on the load.
+
+</div>
+</details>
+
+<details>
+<summary>4. Which load can make the transistor hottest?</summary>
+<div>
+
+Often the smallest load voltage or a short, because a regulated current then flows through the largest collector–emitter voltage.
+
+</div>
+</details>
+
+<details>
+<summary>5. Does a temperature-compensating diode automatically remove drift?</summary>
+<div>
+
+No. Junction current density, temperature tracking, reference topology and resistor drift determine how well the junction voltages cancel.
+
+</div>
+</details>
 
 </section>
 

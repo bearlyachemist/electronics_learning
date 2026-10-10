@@ -1,6 +1,6 @@
 import Equation from '../components/Equation.astro';
 import {ACTheveninLab,SupplyLab} from '../components/AcLabs';
-import {RadioFigure} from '../components/Figures';
+import {RadioFigure,CouplingFigure,BypassLoopFigure} from '../components/AcFigures';
 
 <div className="chapter-hero" id="overview">
 
@@ -30,7 +30,7 @@ This chapter generalizes the Thévenin equivalent of Chapter 2 to AC circuits an
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Thévenin’s theorem generalized → Explore an AC equivalent → Bypass capacitors → Coupling and AC grounds → Other capacitor jobs → Putting it together: an AM radio.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Thévenin’s theorem generalized → Explore an AC equivalent → Bypass capacitors → Coupling and AC grounds → Other capacitor jobs → Putting it together: an AM radio → Check your understanding.</p>
 
 </div>
 
@@ -42,25 +42,25 @@ Chapter 2 showed that any linear network of resistors and sources, seen at two t
 
 <Equation tex="\mathbf V_{\mathrm{th}}=\mathbf V_{\mathrm{open\ circuit}},\qquad Z_{\mathrm{th}}=\frac{\mathbf V_{\mathrm{oc}}}{\mathbf I_{\mathrm{sc}}}=\text{impedance with independent sources zeroed}" label="THÉVENIN AT ONE FREQUENCY"/>
 
-Both quantities are complex. The procedure is the same as before: find the open-circuit voltage phasor, then the impedance looking back in with voltage sources shorted and current sources opened (keeping dependent sources, and using a test source if necessary). The Norton form is a current source **I**<sub>N</sub> = **V**<sub>th</sub>/Z_th in parallel with Z_th.
+Both quantities are complex. The procedure is the same as before: find the open-circuit voltage phasor, then the impedance looking back in with voltage sources shorted and current sources opened (keeping dependent sources, and using a test source if necessary). The Norton form is a current source **I**<sub>N</sub> = **V**<sub>th</sub>/$Z_{\mathrm{th}}$ in parallel with $Z_{\mathrm{th}}$.
 
-The important difference is that **V**<sub>th</sub> and Z_th are functions of frequency. An equivalent found at 1 kHz is wrong at 2 kHz. For signals containing many frequencies, the equivalent must be computed (or at least checked) at each one.
+The important difference is that **V**<sub>th</sub> and $Z_{\mathrm{th}}$ are functions of frequency. An equivalent found at 1 kHz is wrong at 2 kHz. For signals containing many frequencies, the equivalent must be computed (or at least checked) at each one.
 
 <div className="worked-example">
 
 <span className="tiny-label">WORKED EXAMPLE / A LOADED LOW-PASS</span><h3>1 kΩ and 100 nF at 1 kHz, driving 1 kΩ</h3>
 
-<p>Remove the load. The capacitor’s impedance is −j1592 Ω, so the open-circuit divider gives <strong>V</strong>_th = −j1592/(1000 − j1592) = 0.717 − 0.451j = <strong>0.847∠−32.1°</strong> per volt of input.</p>
+<p>Remove the load. The capacitor’s impedance is −j1592 Ω, so the open-circuit divider gives $\mathbf V_{\mathrm{th}}$ = −j1592/(1000 − j1592) = 0.717 − 0.451j = <strong>0.847∠−32.1°</strong> per volt of input.</p>
 
-<p>Short the source and look back in: Z_th = 1000 ∥ (−j1592) = <strong>717 − 451j Ω</strong> = 847 Ω ∠−32.1°. (That the angles match is a coincidence of this network: V_th/Z_th = 1/R exactly, the Norton current through R.)</p>
+<p>Short the source and look back in: $Z_{\mathrm{th}}$ = 1000 ∥ (−j1592) = <strong>717 − 451j Ω</strong> = 847 Ω ∠−32.1°. (That the angles match is a coincidence of this network: $V_{\mathrm{th}}$/$Z_{\mathrm{th}}$ = 1/R exactly, the Norton current through R.)</p>
 
-<p>Reconnect the 1 kΩ load: <strong>V</strong>_out = <strong>V</strong>_th × 1000/(Z_th + 1000) = <strong>0.477∠−17.4°</strong>. The load has nearly halved the output and changed its phase, which a resistive Thévenin model could not have predicted.</p>
+<p>Reconnect the 1 kΩ load: $\mathbf V_{\mathrm{out}}$ = $\mathbf V_{\mathrm{th}}$ × 1000/($Z_{\mathrm{th}}$ + 1000) = <strong>0.477∠−17.4°</strong>. The load has nearly halved the output and changed its phase, which a resistive Thévenin model could not have predicted.</p>
 
 </div>
 
 ### Maximum power at a single frequency
 
-From the Thévenin form, the conjugate-match result of Chapter 21 follows immediately: a load Z_L = Z_th* receives |V_th,rms|²/(4R_th). In the example above, a load of 717 + 451j Ω would receive the maximum possible power at 1 kHz—and less at every other frequency, because the matching reactance is right only at the design frequency.
+From the Thévenin form, the conjugate-match result of Chapter 21 follows immediately: a load $Z_L$ = $Z_{\mathrm{th}}$* receives $|\mathbf V_{\mathrm{th,rms}}|^2/(4R_{\mathrm{th}})$. In the example above, a load of 717 + 451j Ω would receive the maximum possible power at 1 kHz in the fixed-frequency model. Away from 1 kHz, recompute the source equivalent and the load impedance; a match at one frequency does not guarantee a match across a band.
 
 </section>
 
@@ -88,6 +88,8 @@ A digital chip, or an analog stage switching a load, draws current in short burs
 
 which is impossible; the supply at the chip simply collapses until the current arrives. The regulator is fine; the path is the problem.
 
+<BypassLoopFigure/>
+
 ### A local reservoir
 
 A capacitor placed at the chip supplies the burst locally. For a short burst, the capacitor’s voltage changes by
@@ -101,6 +103,26 @@ Placement decides whether it works. The capacitor’s own lead and trace inducta
 <SupplyLab client:load/>
 
 <p className="caption">Figure 2. The impedance seen by the load, looking back toward a 20 mΩ supply through wiring inductance, with and without a bypass capacitor modeled as C + ESR + ESL.</p>
+
+### Budget charge, ESR and inductance separately
+
+A first estimate of a load-step droop has three contributions:
+
+<Equation tex="\Delta V\approx L_{loop}\frac{\Delta I}{\Delta t_{rise}}+\Delta I\,ESR+\frac{\Delta I\,\Delta t_{hold}}{C}" />
+
+These terms describe different parts of the event rather than a universal waveform sum: inductance acts during the edge, ESR makes an immediate resistive step, and charge removal makes a ramp until the supply responds.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED DESIGN / A LOCAL PULSE BUDGET</span><h3>100 mA for 1 µs, with a 50 mV droop budget</h3>
+
+<p>Ignoring parasitics, $C\ge0.1\times1\ \mu\mathrm{s}/0.05=2$ µF. A 4.7 µF effective capacitance gives 21.3 mV of charge droop. With 50 mΩ ESR the step adds 5 mV; 1 nH loop inductance and a 10 ns rise add about 10 mV. The rough sum is 36 mV.</p>
+
+<p>Make the rise 1 ns and the inductive contribution alone becomes 100 mV. More capacitance cannot repair that edge; reduce the loop inductance. Use effective capacitance at the operating bias, then check the full impedance curve and supply response rather than treating this estimate as a complete transient model.</p>
+
+</div>
+
+<p className="reference-note">Analog Devices’ <a href="https://www.analog.com/media/en/training-seminars/tutorials/mt-101.pdf">MT-101, Decoupling Techniques</a> explains local current paths and how ESR, ESL and placement change bypass behavior.</p>
 
 ### The anti-resonance trap
 
@@ -120,6 +142,12 @@ A series capacitor between stages blocks the DC operating point of one stage fro
 
 A coupling capacitor has memory. If the DC level on either side changes—at power-up, for example—the capacitor must charge through the surrounding resistances, and the signal path sees a slow transient with time constant RC. Large coupling capacitors produce slow settling and audible thumps.
 
+<CouplingFigure/>
+
+With finite source resistance, the coupling time constant is $(R_s+R_{in})C$, and passband gain is $R_{in}/(R_s+R_{in})$. For $R_s=1$ kΩ, $R_{in}=10$ kΩ and C = 1 µF, the pole is 14.5 Hz. At 20 Hz the absolute gain is about 0.737 (−2.65 dB), including the 0.909 passband divider. Choosing 4.7 µF lowers the pole to 3.08 Hz and gives 0.898 gain at 20 Hz (−0.93 dB), of which only 0.10 dB is the high-pass loss.
+
+The capacitor must tolerate the **difference** between the two stages’ DC biases, plus signal excursions. A DC-blocking symbol does not establish a safe polarity: work out which terminal remains more positive over the operating range.
+
 ### An AC ground
 
 A node held at a constant DC voltage, with a capacitor to ground large enough that its impedance is negligible at signal frequencies, is an **AC ground**: signals see it as ground while DC sees it at its bias voltage. Later chapters use this constantly, for instance bypassing a transistor’s emitter resistor.
@@ -130,7 +158,7 @@ A node held at a constant DC voltage, with a capacitor to ground large enough th
 
 <p>Two 100 kΩ resistors from a 12 V supply give a 6 V reference. Seen from the reference node, the Thévenin resistance is 100 kΩ ∥ 100 kΩ = 50 kΩ. Add 10 µF from the node to ground: supply noise reaches the node through a low-pass with corner 1/(2π × 50 kΩ × 10 µF) = <strong>0.32 Hz</strong>.</p>
 
-<p>The bare divider passes half of any supply ripple to the reference (−6 dB). With the capacitor, 100 Hz ripple is attenuated by a further <strong>50 dB</strong>, about −56 dB overall. The price is start-up time: τ = 0.5 s, so the reference takes 4.6τ ≈ <strong>2.3 s</strong> to settle within 1%. Every bypass capacitor trades noise for settling time.</p>
+<p>The bare divider passes half of any supply ripple to the reference (−6 dB). With the capacitor, 100 Hz ripple is attenuated by a further <strong>50 dB</strong>, about −56 dB overall. The price is start-up time: $\tau$ = 0.5 s, so the reference takes 4.6τ ≈ <strong>2.3 s</strong> to settle within 1%. Every bypass capacitor trades noise for settling time.</p>
 
 </div>
 
@@ -142,11 +170,11 @@ A node held at a constant DC voltage, with a capacitor to ground large enough th
 
 The capacitor appears throughout electronics in a handful of recurring roles. Each one is an application of a result you have already derived.
 
-- **Timing.** An RC sets a delay or a frequency through t = −τ ln(error) (Chapter 6). Oscillators, debouncers and the power-on reset of Chapter 18 work this way.
-- **Energy storage and hold-up.** At a constant current I, a capacitor discharging from V₁ to V₂ lasts t = C(V₁ − V₂)/I. A 1000 µF capacitor at 12 V can hold a 200 mA load above 9 V for **15 ms**, enough to ride through a brief supply dropout or to finish writing data. Stored energy is ½CV², and only the part above the minimum usable voltage is available.
+- **Timing.** An RC sets a delay or a frequency through t = −$\tau$ ln(error) (Chapter 6). Oscillators, debouncers and the power-on reset of Chapter 18 work this way.
+- **Energy storage and hold-up.** At a constant current I, a capacitor discharging from $V_1$ to $V_2$ lasts t = C($V_1$ − $V_2$)/I. A 1000 µF capacitor at 12 V can hold a 200 mA load above 9 V for **15 ms**, enough to ride through a brief supply dropout or to finish writing data. Stored energy is ½CV², and only the part above the minimum usable voltage is available.
 - **Filtering and smoothing.** The reservoir capacitor of Chapter 14, the RC and LC filters of Chapters 22–24, and bypassing in this chapter.
-- **Snubbing.** An RC across a switch or an inductor damps the ringing between stray inductance and capacitance. Choosing the snubber resistor near the ringing circuit’s characteristic impedance √(L/C) gives strong damping; the capacitor, several times the stray capacitance, sets the frequency above which the resistor is effective. The energy ½C_sV² is dissipated in the resistor at every switching edge.
-- **Sampling and holding.** A capacitor connected briefly to a signal and then isolated holds the value, drooping by I_leak·t/C (the peak detector of Chapter 16 is a cousin).
+- **Snubbing.** An RC across a switch or an inductor damps the ringing between stray inductance and capacitance. Choosing the snubber resistor near the ringing circuit’s characteristic impedance √(L/C) gives strong damping; the capacitor, several times the stray capacitance, sets the frequency above which the resistor is effective. Charging a snubber capacitor from 0 to V through a resistor dissipates $\tfrac12 C_sV^2$ in that resistor; discharging it dissipates the stored $\tfrac12 C_sV^2$ as well. A full 0-to-V-to-0 cycle can therefore cost $C_sV^2$, depending on the topology.
+- **Sampling and holding.** A capacitor connected briefly to a signal and then isolated holds the value, drooping by $I_{\mathrm{leak}}$·t/C (the peak detector of Chapter 16 is a cousin).
 - **Tuning.** A variable capacitor—mechanical, or a reverse-biased junction whose depletion capacitance depends on voltage (a varactor, Chapter 12)—sets a resonant frequency.
 
 </section>
@@ -161,11 +189,11 @@ Amplitude-modulated (AM) broadcast radio encodes audio in the amplitude of a hig
 
 ### 1. Select one station with a tank
 
-A parallel LC tank between the antenna and ground has a high impedance only near f₀ (Chapter 24). The antenna’s signal current develops a large voltage across the tank for the selected station and a small one for the others.
+A parallel LC tank between the antenna and ground has a high impedance only near $f_0$ (Chapter 24). The antenna’s signal current develops a large voltage across the tank for the selected station and a small one for the others.
 
-With L = 250 µH, tuning to 1 MHz needs C = 1/((2π × 1 MHz)² × 250 µH) = **101 pF**. A variable capacitor from about 40 pF to 365 pF (including stray capacitance) tunes from 1.59 MHz down to 527 kHz, covering the AM band. Because f₀ ∝ 1/√C, a 9:1 capacitance range gives only a 3:1 frequency range.
+With L = 250 µH, tuning to 1 MHz needs C = 1/((2π × 1 MHz)² × 250 µH) = **101 pF**. A variable capacitor from about 40 pF to 365 pF (including stray capacitance) tunes from 1.59 MHz down to 527 kHz, covering the AM band. Because $f_0$ ∝ 1/√C, a 9:1 capacitance range gives only a 3:1 frequency range.
 
-Stations are spaced about 10 kHz apart. Separating them needs a bandwidth near 10 kHz at 1 MHz, so Q ≈ 100. With Z₀ = √(250 µH/101 pF) ≈ 1.57 kΩ, that requires an effective parallel resistance of Q·Z₀ ≈ 157 kΩ. Anything connected to the tank—antenna, detector—must not load it much below that, or the selectivity disappears. Real receivers tap the coil or add a buffer amplifier for exactly this reason.
+Stations are spaced about 10 kHz apart. Separating them needs a bandwidth near 10 kHz at 1 MHz, so Q ≈ 100. With $Z_0$ = √(250 µH/101 pF) ≈ 1.57 kΩ, that requires an effective parallel resistance of Q·$Z_0$ ≈ 157 kΩ. Anything connected to the tank—antenna, detector—must not load it much below that, or the selectivity disappears. Real receivers tap the coil or add a buffer amplifier for exactly this reason.
 
 ### 2. Recover the audio with an envelope detector
 
@@ -179,11 +207,71 @@ so RC = 10 µs (for example 10 kΩ and 1 nF) sits comfortably between 1 µs and 
 
 The detector’s output is the envelope, which includes a DC level proportional to the carrier strength. A coupling capacitor removes it before the audio amplifier: into a 10 kΩ input, about 1 µF passes 20 Hz. The amplifier then provides the power to drive a speaker; that is the subject of the transistor chapters ahead.
 
-The diode’s forward voltage is the weak point: a germanium or Schottky diode, or biasing the diode slightly forward, is needed to detect millivolt signals, and an op-amp precision detector does better still. Every limitation of this receiver—selectivity, sensitivity, loading—points toward amplification, which is where the course goes next.
+Detector sensitivity is a weak point. A diode has no hard turn-on threshold: very small signals can rectify weakly, but its nonlinear conductance, leakage, capacitance and the source impedance set the useful output. A suitable low-barrier diode, deliberate bias, or an active detector can improve sensitivity; none removes the tank-loading tradeoff. Every limitation of this receiver—selectivity, sensitivity, loading—points toward amplification, which is where the course goes next.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>At one frequency, any linear network is <em>a phasor source behind a complex impedance</em>. Bypassing, coupling and tuning are all ways of shaping that impedance across frequency.</p></div>
 
 <p className="reference-note">Coverage: The Art of Electronics §§1.7.16, 1.7.17 and 1.8. The radio is a teaching assembly, not a complete receiver design.</p>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Do you remove dependent sources when finding an AC Thévenin impedance?</summary>
+<div>
+
+No. Zero independent sources, keep dependent sources active, and apply a test source when necessary. The method is the same as in DC linear circuits.
+
+</div>
+</details>
+
+<details>
+<summary>2. Does a Thévenin equivalent at 1 kHz describe a fast supply-current step?</summary>
+<div>
+
+A single-frequency equivalent does not. A step has many frequency components and may require a frequency-dependent or time-domain model.
+
+</div>
+</details>
+
+<details>
+<summary>3. A 100 mA pulse lasts 1 µs. What ideal capacitance limits charge droop to 50 mV?</summary>
+<div>
+
+$C=I\Delta t/\Delta V=2$ µF. ESR, loop inductance, bias-dependent capacitance and supply response still need accounting.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why can a capacitor make supply impedance worse near one frequency?</summary>
+<div>
+
+It can resonate in parallel with wiring inductance. Small losses permit a high anti-resonance peak; damping reduces the peak but also changes the impedance floor.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why does an audio coupling capacitor see source resistance as well as input resistance?</summary>
+<div>
+
+After zeroing the source, the resistances lie in series between the capacitor terminals. The time constant is $(R_s+R_{in})C$.
+
+</div>
+</details>
+
+<details>
+<summary>6. Why can the detector ruin a beautifully sharp radio tank?</summary>
+<div>
+
+It loads the tank and lowers its effective parallel resistance and Q. Its nonlinear input also varies with signal level; buffering or coil tapping can reduce the loading.
+
+</div>
+</details>
 
 </section>
 

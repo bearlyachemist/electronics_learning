@@ -15,6 +15,35 @@ Open the local address printed by Astro, normally http://127.0.0.1:4321/.
     npm run build
     npx tsc --noEmit
 
+## Hosted notebook
+
+The published notebook lives at https://hebert.phd/electronics/. It is a static
+section of the existing Cloudflare Pages site; the personal homepage has no link
+to it. All 56 chapters and their practice pages are included, with interactive
+experiments running in the browser.
+
+Push updates to `main` in this repository to deploy automatically. GitHub Actions
+runs the tests, builds and checks the hosted notebook, then syncs only
+`public/electronics` into the hebert.phd repository. Its existing Cloudflare Pages
+integration publishes the update. See [deployment details](docs/deployment.md)
+for the workflow, credential, and troubleshooting information.
+
+The normal local build still uses `/`. To prepare a manual update for the hosted path:
+
+```bash
+npm run build:hosted
+npm run check:hosted
+git -C ../hebert.phd pull --ff-only
+node scripts/stage-hosted.mjs ../hebert.phd
+```
+
+The staging command replaces only the generated `public/electronics` directory
+in the hebert.phd checkout. Review and commit that directory in the host
+repository, then push to `main`; its existing Cloudflare Pages integration
+publishes the update. The homepage source and build configuration need no edits.
+`check:hosted` verifies all 112 HTML pages and their local links, scripts, styles,
+React island modules, and font assets under `/electronics`.
+
 ## Chapters
 
 | Chapter | Reading | Separate practice |

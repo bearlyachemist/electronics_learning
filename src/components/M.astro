@@ -1,0 +1,7 @@
+---
+// Inline math. Chapters write $V_{BE}$; src/lib/inline-math.mjs rewrites it to <M tex="..."/> before MDX parses.
+import katex from 'katex';
+const {tex} = Astro.props;
+const html = katex.renderToString(tex,{displayMode:false,throwOnError:true,output:'htmlAndMathml',strict:false});
+---
+<Fragment set:html={html}/>

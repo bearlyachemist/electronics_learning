@@ -82,3 +82,34 @@ test('invalid AC parameters fail explicitly',()=>{
  assert.throws(()=>network({topology:'mystery'}),RangeError);assert.throws(()=>network({hz:0}),RangeError);
  assert.throws(()=>correction({c:-1}),RangeError);assert.throws(()=>loadedRC({rl:0}),RangeError);
 });
+
+// Independent nodal solution checks the extra loading term used in the chapter figures.
+test('direct RC cascade agrees with nodal analysis, impedance scaling approaches buffering',async()=>{
+ const {rcCascade}=await import('../src/engine/ac.mjs');
+ for(const k of [.1,1,10,100])for(const hz of [10,159.154943,1000]){
+  const r=1000,c=1e-6,w=2*Math.PI*hz,z1=C(0,-1/(w*c)),z2=C(0,-k/(w*c));
+  const branch=add(C(k*r),z2),shunt=parallel(z1,branch);
+  const direct=mul(div(shunt,add(C(r),shunt)),div(z2,branch));
+  cnear(rcCascade({hz,tau:r*c,k}),direct);
+ }
+ const hz=1/(2*Math.PI*1e-3);
+ near(mag(rcCascade({hz})),1/3);near(mag(rcCascade({hz,k:10})),1/2.1);
+ near(mag(rcCascade({hz,buffered:true})),.5);
+});
+
+test('second-order step satisfies the differential equation in all damping regimes',async()=>{
+ const {secondOrderStep}=await import('../src/engine/ac.mjs');
+ for(const q of [.2,.5,Math.SQRT1_2,1,5]){
+  const y=u=>secondOrderStep({u,q});near(y(0),0);
+  const h=1e-4;near((y(h)-y(0))/h,0,1e-4);
+  for(const u of [.1,1,3,8]){
+   const dy=(y(u+h)-y(u-h))/(2*h),ddy=(y(u+h)-2*y(u)+y(u-h))/(h*h);
+   near(ddy+dy/q+y(u),1,1e-6);
+  }
+  near(y(1000),1,1e-9);
+ }
+ const q=1,z=1/(2*q),u=Math.PI/Math.sqrt(1-z*z);
+ near(secondOrderStep({u,q})-1,Math.exp(-Math.PI*z/Math.sqrt(1-z*z)));
+ assert.throws(()=>secondOrderStep({u:-1}),RangeError);
+ assert.throws(()=>secondOrderStep({q:0}),RangeError);
+});

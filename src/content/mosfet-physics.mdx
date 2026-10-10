@@ -1,3 +1,4 @@
+import {BodyEffectFigure} from '../components/FetTeachingFigures';
 import Equation from '../components/Equation.astro';
 import {FetCurves,JfetBiasLab,FetGainLab,VariableFetLab,FetOscillatorLab,AnalogSwitchLab,GateChargeLab,PowerFetLab,ParallelFetLab} from '../components/FetLabs';
 import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
@@ -15,15 +16,33 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 </div>
 
 
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">Does threshold voltage tell you whether a MOSFET is fully on?</p></div>
+
+<div>
+
+The gate, oxide and body establish the mobile charge that carries current. Body connection, threshold and operating point change that charge, while power-device structure adds resistance and intrinsic diode paths. Read a datasheet condition as carefully as the number beside it.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The gate, oxide and semiconductor form a capacitor → The source is not always tied to the body → Threshold is the beginning of conduction → JFET and MOSFET: compare mechanisms → Why a power MOSFET is more than a scaled small one → Turn curves into conditional statements → Check your understanding.</p>
+
+</div>
+
 <section id="surface">
 
-## 01 / The gate, oxide and semiconductor form a capacitor
+<div className="section-heading"><span>01</span><h2>The gate, oxide and semiconductor form a capacitor</h2></div>
 
 A MOS structure places a conductor above a semiconductor with a thin insulating oxide between them. Gate charge is balanced by charge in the semiconductor. For a p-type body, a negative gate attracts majority-carrier holes toward the surface: **accumulation**. Moving the gate positive first repels holes, exposing fixed ionized acceptors: **depletion**. A sufficiently positive surface potential attracts enough electrons that the surface becomes n-like: **inversion**.
 
 The oxide capacitance per area is εox/tox. Reducing oxide thickness raises capacitance and strengthens electrostatic control, but also changes field stress and leakage constraints. Threshold depends on gate/body work-function differences, oxide charge, body doping and the charge needed to establish inversion; it is not simply “the voltage required to cross the oxide.”
 
-Above threshold, a first-order channel charge expression is Cox(VGS − VT − V(x)). The local channel voltage subtracts from effective gate drive. Integrating that charge along the device produced the triode and saturation laws in chapter 47. The same relation explains both: the drain end loses channel charge first because it is at the highest channel potential.
+Above threshold, a first-order channel charge expression is $C_{ox}$($V_{GS}$ − $V_T$ − V(x)). The local channel voltage subtracts from effective gate drive. Integrating that charge along the device produced the triode and saturation laws in chapter 47. The same relation explains both: the drain end loses channel charge first because it is at the highest channel potential.
 
 An enhancement n-channel device has positive threshold in the usual convention. A depletion n-channel MOSFET has negative threshold, so zero gate-source voltage already exceeds threshold. A negative threshold does not imply a negative drain current.
 
@@ -31,35 +50,45 @@ An enhancement n-channel device has positive threshold in the usual convention. 
 
 <section id="body">
 
-## 02 / The source is not always tied to the body
+<div className="section-heading"><span>02</span><h2>The source is not always tied to the body</h2></div>
+
+<BodyEffectFigure/>
 
 When the source rises relative to a p-type body, the source-body junction becomes more reverse biased. More depletion charge must be balanced by the gate before strong inversion occurs. A common model is:
 
 <Equation tex="V_T=V_{T0}+\gamma\left(\sqrt{2\phi_F+V_{SB}}-\sqrt{2\phi_F}\right)" />
 
-Take VT0 = 1 V, γ = 0.5 √V and 2φF = 0.6 V. With VSB = 2 V, threshold rises to approximately 1.419 V. A follower whose source rises while its body stays at ground therefore needs more gate-source voltage than a body-tied-source model predicts.
+Take $V_{T0}$ = 1 V, $\gamma$ = 0.5 √V and 2φF = 0.6 V. With $V_{SB}$ = 2 V, threshold rises to approximately 1.419 V. A follower whose source rises while its body stays at ground therefore needs more gate-source voltage than a body-tied-source model predicts.
 
 Differentiating the threshold law gives a body-effect factor:
 
 <Equation tex="\eta=\frac{\partial V_T}{\partial V_{SB}}=\frac{\gamma}{2\sqrt{2\phi_F+V_{SB}}},\qquad g_{mb}\approx\eta g_m" />
 
-Using vbs = vb − vs, the incremental drain-current model becomes id = gmvgs + gmbvbs + gdsvds. With both drain and body at AC ground, follower gain is approximately gm/(gm + gmb + gds + GL). Body effect adds a restoring response to source motion, lowering gain.
+Using $v_{bs}$ = $v_b$ − $v_s$, the incremental drain-current model becomes $i_d$ = $g_m v_{gs}$ + $g_{mb}v_{bs}$ + $g_{ds}v_{ds}$. With both drain and body at AC ground, follower gain is approximately $g_m/(g_m+g_{mb}+g_{ds}+G_L)$. Body effect adds a restoring response to source motion, lowering gain.
 
-For a discrete MOSFET with body internally tied to source, VSB remains near zero internally and this particular external body-effect mechanism is absent. Do not add a fixed-body term to a circuit whose body follows its source.
+For a discrete MOSFET with body internally tied to source, $V_{SB}$ remains near zero internally and this particular external body-effect mechanism is absent. Do not add a fixed-body term to a circuit whose body follows its source.
+
+### Put body effect into a follower calculation
+
+At source-to-body voltage 2 V, the illustrative body factor is $\eta=0.5/[2\sqrt{2.6}]=0.155$. With $g_m=4$ mS, $g_{mb}=0.620$ mS. For a 2 kΩ load and negligible output conductance:
+
+<Equation tex="A_{follower}=\frac{g_m}{g_m+g_{mb}+1/R_L}=\frac{4}{4+0.620+0.500}=0.781"/>
+
+If body follows source, that body-effect term disappears and the same frozen transconductance gives 0.889. This comparison isolates the incremental body connection. A real DC comparison must also recalculate bias and transconductance as threshold changes. Never silently choose a fourth-terminal connection to improve a three-terminal device model.
 
 </section>
 
 <section id="curves">
 
-## 03 / Threshold is the beginning of conduction
+<div className="section-heading"><span>03</span><h2>Threshold is the beginning of conduction</h2></div>
 
-A datasheet threshold voltage is usually measured at a specified small drain current. It is not the gate voltage that guarantees a low-resistance power switch. If a device's threshold spans 1–3 V, that does not establish useful on-resistance with a 3.3 V driver. The relevant guarantee is RDS(on) at the actual gate drive, temperature and other stated conditions.
+A datasheet threshold voltage is usually measured at a specified small drain current. It is not the gate voltage that guarantees a low-resistance power switch. If a device's threshold spans 1–3 V, that does not establish useful on-resistance with a 3.3 V driver. The relevant guarantee is $R_{DS(\mathrm{on})}$ at the actual gate drive, temperature and other stated conditions.
 
 In the simple strong-inversion model:
 
 <Equation tex="I_D=\frac{k}{2}(V_{GS}-V_T)^2,\qquad g_m=\frac{2I_D}{V_{GS}-V_T}" />
 
-At k = 4 mA/V², VT = 2 V and VGS = 3 V, current is 2 mA and gm = 4 mS provided VDS is at least 1 V. A 0.2 V threshold increase at the same gate voltage reduces the modeled current to 1.28 mA. This illustrates why open-loop MOS current settings can be inaccurate.
+At k = 4 mA/V², $V_T$ = 2 V and $V_{GS}$ = 3 V, current is 2 mA and $g_m$ = 4 mS provided $V_{DS}$ is at least 1 V. A 0.2 V threshold increase at the same gate voltage reduces the modeled current to 1.28 mA. This illustrates why open-loop MOS current settings can be inaccurate.
 
 <FetCurves mos client:load />
 
@@ -73,13 +102,13 @@ At room temperature, the ideal n = 1 slope is about 60 mV per decade; ordinary d
 
 <section id="compare">
 
-## 04 / JFET and MOSFET: compare mechanisms
+<div className="section-heading"><span>04</span><h2>JFET and MOSFET: compare mechanisms</h2></div>
 
 | Property | Conventional JFET | MOSFET |
 |---|---|---|
 | Gate structure | Reverse-biased junction | Insulated gate |
 | Zero-bias channel | Normally present | Depends on enhancement/depletion type |
-| Usual n-channel control | Negative VGS reduces current | VGS above threshold strengthens channel |
+| Usual n-channel control | Negative $V_{GS}$ reduces current | $V_{GS}$ above threshold strengthens channel |
 | Main input concerns | Junction leakage and forward bias | Leakage, oxide stress, capacitance and protection paths |
 | Useful analog roles | Low-current sensor inputs, low-noise stages, current sources | Broad range of integrated analog, switching and power roles |
 | Reverse conduction | Depends on channel/junction geometry | Discrete power parts usually include a body diode |
@@ -92,9 +121,9 @@ Choosing between them requires the signal-source impedance and bandwidth. A devi
 
 <section id="power">
 
-## 05 / Why a power MOSFET is more than a scaled small one
+<div className="section-heading"><span>05</span><h2>Why a power MOSFET is more than a scaled small one</h2></div>
 
-A vertical power MOSFET carries current through many cells and a voltage-supporting drift region. The drift region must withstand the off-state electric field, yet its resistance contributes to on-state loss. Package, contacts, channel, accumulation regions and drift region all contribute to total RDS(on). The elementary 1/(ku) expression captures only a simplified channel contribution.
+A vertical power MOSFET carries current through many cells and a voltage-supporting drift region. The drift region must withstand the off-state electric field, yet its resistance contributes to on-state loss. Package, contacts, channel, accumulation regions and drift region all contribute to total $R_{DS(\mathrm{on})}$. The elementary 1/(ku) expression captures only a simplified channel contribution.
 
 The intrinsic body diode of a conventional n-channel power MOSFET points from source to drain. It can conduct reverse current while the channel is off. When the channel is enhanced, reverse current can also flow through the channel with a lower voltage drop than the diode, depending on current and drive.
 
@@ -104,7 +133,7 @@ Blocking voltage, resistance, gate charge and output charge are coupled design t
 
 <section id="datasheet">
 
-## 06 / Turn curves into conditional statements
+<div className="section-heading"><span>06</span><h2>Turn curves into conditional statements</h2></div>
 
 Read every graph as “under these conditions.” Typical transfer curves are not guaranteed production bounds. Capacitance curves depend strongly on drain voltage; gate-charge curves depend on drain voltage and current. Maximum drain current may assume a case temperature or pulse condition your board cannot provide.
 
@@ -115,7 +144,58 @@ For linear circuits, look for behavior at the actual bias current and drain volt
 </section>
 
 
-<div className="practice-home">
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. What happens during accumulation in a p-type MOS body?</summary>
+<div>
+
+Negative gate drive attracts majority holes toward the surface.
+
+</div>
+</details>
+
+<details>
+<summary>2. What causes threshold to rise when source rises above a fixed body?</summary>
+<div>
+
+Additional reverse bias increases depletion charge, which the gate must balance before strong inversion.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why is threshold insufficient for choosing a 3.3 V power switch?</summary>
+<div>
+
+It is usually measured at a small current and does not guarantee low on-resistance. Use resistance specifications at the actual gate drive.
+
+</div>
+</details>
+
+<details>
+<summary>4. Which way does the ordinary nMOS body diode point?</summary>
+<div>
+
+From source anode to drain cathode, allowing reverse current with the gate off.
+
+</div>
+</details>
+
+<details>
+<summary>5. Can a typical capacitance number predict full switching charge?</summary>
+<div>
+
+No. Capacitance varies with terminal voltages, and charge curves depend on their measurement conditions.
+
+</div>
+</details>
+
+</section>
+
+<div className="chapter-end">
 
 <span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems, hints and complete worked solutions.</p><a className="primary-link" href="/mosfet-physics/practice/">Open practice →</a>
 

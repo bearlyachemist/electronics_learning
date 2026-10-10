@@ -14,13 +14,20 @@ export function bisect(fn,lo,hi){
  for(let i=0;i<90;i++){const m=(lo+hi)/2;if(fn(m)>0)hi=m;else lo=m;}return (lo+hi)/2;
 }
 export function selfBias({vdd=12,rd=1000,rs=500,idss=.008,vp=-4,lambda=0}={}){
- if(vdd<=0||rs<0||rd<0||rd+rs===0)throw new RangeError('Invalid bias circuit');
+ if(vdd<=0||rs<0||rd<0)throw new RangeError('Invalid bias circuit');
+ if(rd+rs===0)return {vgs:0,vds:vdd,vd:vdd,vs:0,...jfet(0,vdd,idss,vp,lambda)};
  const id=bisect(i=>i-jfet(-i*rs,Math.max(0,vdd-i*(rd+rs)),idss,vp,lambda).id,0,vdd/(rd+rs));
  const vgs=-id*rs,vds=vdd-id*(rd+rs);
  return {vgs,vds,vd:vdd-id*rd,vs:id*rs,...jfet(vgs,vds,idss,vp,lambda)};
 }
 export function bodyThreshold(vt,gamma,phi2,vsb){return vt+gamma*(Math.sqrt(phi2+vsb)-Math.sqrt(phi2));}
 export function stage(gm,rd,rl,rs=0){const load=1/(1/rd+1/rl);return {gain:-gm*load/(1+gm*rs),follower:gm*load/(1+gm*load),load};}
+// Midband voltage gains turn incremental gate charge into an input capacitance estimate.
+// This freezes the gains; it is not the full multi-pole high-frequency solution.
+export function gateLoading({gm,rd,rl,rs=0,cgs,cgd}){
+ const {gain}=stage(gm,rd,rl,rs),sourceGain=gm*rs/(1+gm*rs);
+ return {gain,sourceGain,cin:cgs*(1-sourceGain)+cgd*(1-gain)};
+}
 export function wien(f,r,c){const x=2*Math.PI*f*r*c;return {magnitude:x/Math.hypot(1-x*x,3*x),phase:Math.atan2(1-x*x,3*x)*180/Math.PI};}
 export function switchLoss({v=24,i=5,r=.02,d=.5,f=100000,tr=30e-9,tf=20e-9,qg=30e-9,vg=10}={}){
  return {conduction:i*i*r*d,overlap:.5*v*i*(tr+tf)*f,driver:qg*vg*f};

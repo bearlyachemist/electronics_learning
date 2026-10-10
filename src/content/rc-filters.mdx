@@ -1,6 +1,6 @@
 import Equation from '../components/Equation.astro';
 import {BodeLab} from '../components/AcLabs';
-import {DividerFigure} from '../components/Figures';
+import {DividerFigure,FilterPairFigure,FilterLoadingFigure} from '../components/AcFigures';
 
 <div className="chapter-hero" id="overview">
 
@@ -30,7 +30,7 @@ This chapter derives them, introduces the decibel and the logarithmic **Bode plo
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The generalized divider and decibels → The RC low-pass filter → The RC high-pass filter → Explore Bode plots → Sources and loads → Differentiators, integrators and RL filters in frequency.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The generalized divider and decibels → The RC low-pass filter → The RC high-pass filter → Explore Bode plots → Sources and loads → Differentiators, integrators and RL filters in frequency → Check your understanding.</p>
 
 </div>
 
@@ -48,7 +48,7 @@ H(jω) is the **transfer function** (or frequency response). It is complex: its 
 
 ### Decibels
 
-Filter gains span many orders of magnitude, so they are expressed on a logarithmic scale. The **decibel** is defined for power ratios as 10 log₁₀(P₂/P₁). Power in a fixed resistance goes as voltage squared, so for voltage (or current) ratios:
+Filter gains span many orders of magnitude, so they are expressed on a logarithmic scale. The **decibel** is defined for power ratios as 10 $\log_{10}$($P_2$/$P_1$). Power in a fixed resistance goes as voltage squared, so for voltage (or current) ratios:
 
 <Equation tex="G_{\mathrm{dB}}=20\log_{10}\left|\frac{V_{\mathrm{out}}}{V_{\mathrm{in}}}\right|"/>
 
@@ -58,15 +58,17 @@ Filter gains span many orders of magnitude, so they are expressed on a logarithm
 
 </div>
 
-Because logarithms turn products into sums, cascaded gains add in decibels. A −3.01 dB point is where output power has halved, which is why it is called the **half-power** point. Absolute levels use a stated reference: dBV is relative to 1 V RMS; dBm is relative to 1 mW (often in 50 Ω or 600 Ω). A bare “dB” is always a ratio.
+Because logarithms turn products into sums, cascaded gains add in decibels. A −3.01 dB voltage point has half the squared amplitude. Into the same resistance, that means half the power. Comparing input and output power across different impedances requires those impedances too. Absolute levels use a stated reference: dBV is relative to 1 V RMS; dBm is relative to 1 mW (often in 50 Ω or 600 Ω). A bare “dB” is always a ratio.
 
 </section>
+
+<FilterPairFigure/>
 
 <section id="lowpass">
 
 <div className="section-heading"><span>02</span><h2>The RC low-pass filter</h2></div>
 
-Put R in series and C from the output to ground. With Z₁ = R and Z₂ = 1/(jωC), multiply numerator and denominator by jωC:
+Put R in series and C from the output to ground. With $Z_1$ = R and $Z_2$ = 1/(jωC), multiply numerator and denominator by jωC:
 
 <Equation tex="H=\frac{1/(j\omega C)}{R+1/(j\omega C)}=\frac{1}{1+j\omega RC}=\frac{1}{1+jf/f_{3\mathrm{dB}}},\qquad f_{3\mathrm{dB}}=\frac{1}{2\pi RC}" label="LOW-PASS"/>
 
@@ -76,25 +78,25 @@ Physically: at low frequency the capacitor’s impedance is much larger than R, 
 
 <div className="table-wrap">
 
-<table><thead><tr><th>f / f₃dB</th><th>|H|</th><th>Gain</th><th>Phase</th></tr></thead><tbody><tr><td>0.1</td><td>0.995</td><td>−0.04 dB</td><td>−5.7°</td></tr><tr><td>0.5</td><td>0.894</td><td>−0.97 dB</td><td>−26.6°</td></tr><tr><td>1</td><td>0.707</td><td>−3.01 dB</td><td>−45.0°</td></tr><tr><td>2</td><td>0.447</td><td>−6.99 dB</td><td>−63.4°</td></tr><tr><td>10</td><td>0.0995</td><td>−20.04 dB</td><td>−84.3°</td></tr><tr><td>100</td><td>0.0100</td><td>−40.0 dB</td><td>−89.4°</td></tr></tbody></table>
+<table><thead><tr><th>f / $f_{3\mathrm{dB}}$</th><th>|H|</th><th>Gain</th><th>Phase</th></tr></thead><tbody><tr><td>0.1</td><td>0.995</td><td>−0.04 dB</td><td>−5.7°</td></tr><tr><td>0.5</td><td>0.894</td><td>−0.97 dB</td><td>−26.6°</td></tr><tr><td>1</td><td>0.707</td><td>−3.01 dB</td><td>−45.0°</td></tr><tr><td>2</td><td>0.447</td><td>−6.99 dB</td><td>−63.4°</td></tr><tr><td>10</td><td>0.0995</td><td>−20.04 dB</td><td>−84.3°</td></tr><tr><td>100</td><td>0.0100</td><td>−40.0 dB</td><td>−89.4°</td></tr></tbody></table>
 
 </div>
 
 ### Asymptotes: the straight-line Bode plot
 
-Plot gain in dB against log frequency. Far below the corner, |H| ≈ 1: a horizontal line at 0 dB. Far above, |H| ≈ f₃dB/f, so
+Plot gain in dB against log frequency. Far below the corner, |H| ≈ 1: a horizontal line at 0 dB. Far above, |H| ≈ $f_{3\mathrm{dB}}$/f, so
 
 <Equation tex="20\log_{10}|H|\approx-20\log_{10}\frac{f}{f_{3\mathrm{dB}}}"/>
 
-which is a straight line falling **20 dB per decade** (equivalently 6 dB per octave, Chapter 23). The two asymptotes meet at f₃dB, which is why it is also called the **corner** or **break** frequency. The true curve lies 3 dB below the corner of the asymptotes and within 1 dB of them an octave either side.
+which is a straight line falling **20 dB per decade** (equivalently 6 dB per octave, Chapter 23). The two asymptotes meet at $f_{3\mathrm{dB}}$, which is why it is also called the **corner** or **break** frequency. The true curve lies 3 dB below the corner of the asymptotes and within 1 dB of them an octave either side.
 
-The phase moves from 0° toward −90°, passing −45° at the corner. A useful straight-line sketch has the phase change happen over two decades, from 0.1f₃dB to 10f₃dB; the actual error is at most about 6° at those ends.
+The phase moves from 0° toward −90°, passing −45° at the corner. A useful straight-line sketch has the phase change happen over two decades, from 0.1$f_{3\mathrm{dB}}$ to 10$f_{3\mathrm{dB}}$; the actual error is at most about 6° at those ends.
 
 <div className="worked-example">
 
 <span className="tiny-label">WORKED EXAMPLE / A SENSOR FILTER</span><h3>10 kΩ and 10 nF</h3>
 
-<p>f₃dB = 1/(2π × 10 kΩ × 10 nF) = <strong>1.59 kHz</strong>. A 100 Hz sensor signal (f/f₃dB = 0.063) passes with −0.017 dB and a 3.6° lag. A 159 kHz switching residue is a hundred times the corner and is attenuated by 40 dB, to 1%.</p>
+<p>$f_{3\mathrm{dB}}$ = 1/(2π × 10 kΩ × 10 nF) = <strong>1.59 kHz</strong>. A 100 Hz sensor signal (f/$f_{3\mathrm{dB}}$ = 0.063) passes with −0.017 dB and a 3.6° lag. A 159 kHz switching residue is a hundred times the corner and is attenuated by 40 dB, to 1%.</p>
 
 <p>The 3.6° phase lag at 100 Hz is equivalent to a delay of 3.6/360 × 10 ms = 0.1 ms. For f far below the corner, the low-pass behaves like a pure delay of RC = 0.1 ms. That is why even “transparent” filters affect timing.</p>
 
@@ -106,7 +108,7 @@ The phase moves from 0° toward −90°, passing −45° at the corner. A useful
 
 <div className="section-heading"><span>03</span><h2>The RC high-pass filter</h2></div>
 
-Swap the elements: C in series, R to ground. Now Z₁ = 1/(jωC) and Z₂ = R:
+Swap the elements: C in series, R to ground. Now $Z_1$ = 1/(jωC) and $Z_2$ = R:
 
 <Equation tex="H=\frac{R}{R+1/(j\omega C)}=\frac{j\omega RC}{1+j\omega RC}=\frac{jf/f_{3\mathrm{dB}}}{1+jf/f_{3\mathrm{dB}}}" label="HIGH-PASS"/>
 
@@ -126,9 +128,9 @@ A series capacitor followed by the input resistance of the next stage is a high-
 
 <span className="tiny-label">WORKED EXAMPLE / AUDIO COUPLING</span><h3>Pass 20 Hz into a 10 kΩ input</h3>
 
-<p>Setting f₃dB = 20 Hz needs C = 1/(2π × 20 × 10 kΩ) = <strong>0.80 µF</strong>, but that would leave the 20 Hz end 3 dB down with a 45° lead.</p>
+<p>Setting $f_{3\mathrm{dB}}$ = 20 Hz needs C = 1/(2π × 20 × 10 kΩ) = <strong>0.80 µF</strong>, but that would leave the 20 Hz end 3 dB down with a 45° lead.</p>
 
-<p>A 4.7 µF capacitor gives f₃dB = 3.39 Hz. At 20 Hz, |H| = 0.986 (−0.12 dB) with a 9.6° lead. The capacitor must block the DC voltage across it, so check its voltage rating and polarity if it is electrolytic.</p>
+<p>A 4.7 µF capacitor gives $f_{3\mathrm{dB}}$ = 3.39 Hz. At 20 Hz, |H| = 0.986 (−0.12 dB) with a 9.6° lead. The capacitor must block the DC voltage across it, so check its voltage rating and polarity if it is electrolytic.</p>
 
 </div>
 
@@ -142,7 +144,7 @@ Both plots below share a logarithmic frequency axis spanning six decades. The da
 
 <BodeLab client:load/>
 
-<p className="caption">Figure 1. Exact RC response with straight-line asymptotes. With a load connected, the low-pass gains a DC loss and both filters move their corner to 1/(2π(R∥Rₗ)C).</p>
+<p className="caption">Figure 1. Exact RC response with straight-line asymptotes. With a load connected, the low-pass gains a DC loss and both filters move their corner to 1/(2π(R∥$R_L$)C).</p>
 
 A Bode plot rewards reading in decades. Each horizontal division here is a factor of ten in frequency; each 20 dB of vertical change is a factor of ten in amplitude. A slope of “one division down per division across” is the signature of a single RC.
 
@@ -156,17 +158,41 @@ The transfer functions above assume an ideal voltage source driving the filter a
 
 ### Output impedance: the Thévenin view
 
-At the output terminals, a low-pass filter looks like a Thévenin source (Chapter 2, generalized in Chapter 25) with V_th = H·V_in and
+At the output terminals, a low-pass filter looks like a Thévenin source (Chapter 2, generalized in Chapter 25) with $V_{\mathrm{th}}$ = H·$V_{\mathrm{in}}$ and
 
 <Equation tex="Z_{\mathrm{out}}=R\parallel\frac{1}{j\omega C}"/>
 
-At low frequency Z_out ≈ R; at high frequency it falls. A load resistance R_L forms a divider with Z_out. For the low-pass, the DC gain becomes R_L/(R + R_L) and the corner moves to 1/(2π(R∥R_L)C).
+At low frequency $Z_{\mathrm{out}}$ ≈ R; at high frequency it falls. A load resistance $R_L$ forms a divider with $Z_{\mathrm{out}}$. For the low-pass, the DC gain becomes $R_L$/(R + $R_L$) and the corner moves to 1/(2π(R∥$R_L$)C).
 
 With 10 kΩ and 10 nF loaded by another 10 kΩ, the DC gain is 0.5 (−6.02 dB) and the corner rises from 1.59 kHz to **3.18 kHz**. The high-pass is affected differently: its passband gain stays at 1, because the capacitor shorts out at high frequency, but its corner rises in the same way.
 
+<FilterLoadingFigure/>
+
 ### Input impedance
 
-The source sees Z_in = R + 1/(jωC) for the low-pass. It is very large at low frequency and falls to R at high frequency. For the high-pass, Z_in = 1/(jωC) + R falls toward R at high frequency. Any source resistance R_s simply adds to the series element.
+The source sees $Z_{\mathrm{in}}$ = R + 1/(jωC) for the low-pass. It is very large at low frequency and falls to R at high frequency. For the high-pass, $Z_{\mathrm{in}}$ = 1/(jωC) + R falls toward R at high frequency. Any source resistance $R_s$ simply adds to the series element.
+
+### Include source resistance explicitly
+
+Let $R_t=R_s+R$, measured from the ideal source to the low-pass output. With a load $R_L$ across C:
+
+<Equation tex="H_{LP}=\frac{R_L}{R_t+R_L}\frac{1}{1+j\omega(R_t\parallel R_L)C}" />
+
+For a high-pass, let $R_p=R\parallel R_L$, with $R_s$ before the series capacitor. Its response is:
+
+<Equation tex="H_{HP}=\frac{R_p}{R_s+R_p}\frac{j\omega(R_s+R_p)C}{1+j\omega(R_s+R_p)C}" />
+
+Unlike the ideal-source high-pass, its passband gain is now below 1. To find either time constant, zero the independent source and look into the capacitor terminals: the low-pass sees a parallel resistance; the high-pass sees a series sum. The −3 dB corner is measured relative to that circuit’s passband, not automatically relative to the original source amplitude.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED DESIGN / TWO REQUIREMENTS, ONE POLE</span><h3>Pass 100 Hz within 0.5 dB; reject 10 kHz by at least 30 dB</h3>
+
+<p>For an unloaded low-pass, $10\log_{10}(1+(100/f_c)^2)\le0.5$ requires $f_c\ge286$ Hz. Rejection $10\log_{10}(1+(10000/f_c)^2)\ge30$ requires $f_c\le316$ Hz. There is only a narrow allowable range.</p>
+
+<p>A nominal 300 Hz corner works: 0.458 dB loss at 100 Hz and 30.46 dB rejection at 10 kHz. But a 5% resistor and 10% capacitor move the corner from 260 to 351 Hz at opposite tolerance extremes, breaking one specification or the other. Use tighter values, widen the transition band, or add a higher-order response. A nominal calculation alone does not close the design.</p>
+
+</div>
 
 <aside className="margin-note"><strong>A working rule.</strong> Make the source impedance much smaller than the filter’s input impedance, and the load impedance much larger than its output impedance—a factor of ten in each case gives errors near 10%. When that is not possible, include the source and load in the calculation, or isolate the stages with a buffer amplifier.</aside>
 
@@ -192,7 +218,7 @@ For a non-sinusoidal signal, the condition must hold for every significant Fouri
 
 <p>Time domain: RC = 1.59 ms is much longer than the 50 µs half-period, so the capacitor current is nearly constant at ±1 V/R. The output is a triangle with peak-to-peak value (1 V/RC) × 50 µs = <strong>31.4 mV</strong>.</p>
 
-<p>Frequency domain: the square wave’s fundamental is (4/π) × 1 V = 1.273 V at 10 kHz, attenuated by f₃dB/f = 0.01 to <strong>12.7 mV</strong>. A triangle of amplitude 15.7 mV has a fundamental of (8/π²) × 15.7 mV = 12.7 mV. The two descriptions agree.</p>
+<p>Frequency domain: the square wave’s fundamental is (4/π) × 1 V = 1.273 V at 10 kHz, attenuated by $f_{3\mathrm{dB}}$/f = 0.01 to <strong>12.7 mV</strong>. A triangle of amplitude 15.7 mV has a fundamental of (8/π²) × 15.7 mV = 12.7 mV. The two descriptions agree.</p>
 
 </div>
 
@@ -202,11 +228,62 @@ Replace the capacitor with an inductor and swap positions. A series L with R to 
 
 <Equation tex="f_{3\mathrm{dB}}=\frac{R}{2\pi L}"/>
 
-For 100 Ω and 10 mH, f₃dB = 1.59 kHz, the same as the 10 kΩ / 10 nF capacitor example but with a component that is larger, heavier and less ideal. RL filters appear where the resistance is already low and the current is large: a loudspeaker crossover feeding an 8 Ω woofer through 0.64 mH rolls off above 2 kHz without dissipating the signal power in a series resistor.
+For 100 Ω and 10 mH, $f_{3\mathrm{dB}}$ = 1.59 kHz, the same as the 10 kΩ / 10 nF capacitor example but with a component that is larger, heavier and less ideal. RL filters appear where the resistance is already low and the current is large: a loudspeaker crossover feeding an 8 Ω woofer through 0.64 mH rolls off above 2 kHz without dissipating the signal power in a series resistor, within the ideal-inductor model.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>An RC filter is a divider with one <em>frequency-dependent arm</em>. On log axes it is two straight lines meeting at 1/(2πRC), and every real use starts by asking what drives it and what it drives.</p></div>
 
 <p className="reference-note">Coverage: The Art of Electronics §§1.3.2, 1.7.7–1.7.10. Multiple poles, band-pass and notch filters follow in Chapter 23.</p>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. At the RC corner, is the output half the input voltage?</summary>
+<div>
+
+No. Its amplitude is $1/\sqrt2\approx0.707$ of the passband value. Its squared amplitude is one half.
+
+</div>
+</details>
+
+<details>
+<summary>2. Does a high-pass phase of +45° mean a delayed output?</summary>
+<div>
+
+It means the output leads the input by 45°. At the corner, a low-pass lags by 45°.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does a resistive load increase the low-pass pole frequency?</summary>
+<div>
+
+After zeroing the source, the capacitor sees $R\parallel R_L$, smaller than R. The time constant falls, while the DC divider also reduces gain.
+
+</div>
+</details>
+
+<details>
+<summary>4. Can you infer power loss by applying 20 log to a voltage ratio across different resistances?</summary>
+<div>
+
+You can report voltage gain that way. Power gain also includes the resistance ratio; voltage gain alone does not determine it.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why might a filter meeting both nominal limits fail in production?</summary>
+<div>
+
+R, C, source impedance and load impedance vary. Evaluate the limiting combinations rather than relying on the nominal corner.
+
+</div>
+</details>
 
 </section>
 

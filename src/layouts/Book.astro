@@ -2,7 +2,10 @@
 import '../styles/global.css';
 import 'katex/dist/katex.min.css';
 import {chapters as chapterData} from '../curriculum/chapters';
-const chapters=[...chapterData].sort((a,b)=>Number(a.number)-Number(b.number));
+import {sitePath} from '../lib/site-path';
+// Section labels may contain X_sub notation (e.g. g_m); show it as a real subscript.
+const sub=(s:string)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/([A-Za-zα-ω])_([A-Za-z0-9]+)/g,'<var>$1</var><sub>$2</sub>');
+const chapters=chapterData.map(c=>({...c, href:sitePath(c.href), practice:sitePath(c.practice)})).sort((a,b)=>Number(a.number)-Number(b.number));
 const {title, practice=false, chapter='dividers'} = Astro.props;
 const current=chapters.find(c=>c.id===chapter) ?? chapters[0];
 const currentIndex=chapters.indexOf(current), previous=chapters[currentIndex-1], next=chapters[currentIndex+1];
@@ -12,15 +15,15 @@ const currentIndex=chapters.indexOf(current), previous=chapters[currentIndex-1],
 <head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="description" content="Explore analog electronics through original explanations, derivations, interactive circuits, and independent practice."/><title>{title ?? current.title} · The Analog Notebook</title></head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="topbar"><a class="brand" href="/"><span class="brand-icon" aria-hidden="true">∿</span> the analog notebook<span class="brand-dot">.</span></a><span class="edition">A WORKING EDITION <span> / </span> FOUNDATIONS</span><a class="top-link" href={practice?current.href:current.practice}>{practice?'Read the chapter':'Practice problems'} <span aria-hidden="true">↗</span></a></header>
+<header class="topbar"><a class="brand" href={sitePath('/')}><span class="brand-icon" aria-hidden="true">∿</span> the analog notebook<span class="brand-dot">.</span></a><span class="edition">A WORKING EDITION <span> / </span> FOUNDATIONS</span><a class="top-link" href={practice?current.href:current.practice}>{practice?'Read the chapter':'Practice problems'} <span aria-hidden="true">↗</span></a></header>
 <details class="mobile-chapters"><summary>Chapters · {current.number} / {current.title}</summary><nav aria-label="All chapters">{chapters.map(c=><a href={c.href} aria-current={c.id===chapter?'page':undefined}>{c.number} · {c.title}</a>)}</nav></details>
 <div class="book-shell">
 <aside class="sidebar">
-<a class="course-label" href="/">FOUNDATIONS <span>{chapters.length} CHAPTERS</span></a>
+<a class="course-label" href={sitePath('/')}>FOUNDATIONS <span>{chapters.length} CHAPTERS</span></a>
 <details class="course-contents"><summary>Browse all {chapters.length} chapters</summary><nav class="course-nav" aria-label="All chapters">{chapters.map(c=><a href={c.href} class={c.id===chapter?'current-chapter':''} aria-current={c.id===chapter?'page':undefined}>{c.number}<span>{c.title}</span></a>)}</nav>
 </details>
 <p class="sidebar-title">{current.title}</p>
-<nav aria-label="Chapter sections">{current.sections.map(([id,label],i)=><a href={current.href+'#'+id}>{String(i).padStart(2,'0')} <span>{label}</span></a>)}</nav>
+<nav aria-label="Chapter sections">{current.sections.map(([id,label],i)=><a href={current.href+'#'+id}>{String(i).padStart(2,'0')} <span set:html={sub(label)}/></a>)}</nav>
 <a class={practice?'practice-link selected':'practice-link'} href={current.practice}>Practice independently <span>→</span></a>
 <div class="sidebar-note"><span class="tiny-label">THE APPROACH</span><p>Build intuition.<br/>Follow the mathematics.<br/>Try the circuit.</p></div>
 </aside>
@@ -28,6 +31,5 @@ const currentIndex=chapters.indexOf(current), previous=chapters[currentIndex-1],
 </div>
 <footer class="footer"><span>The Analog Notebook · Foundations</span><span>Original teaching material · Models and assumptions stated in each chapter</span></footer>
 </body></html>
-
 
 

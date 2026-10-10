@@ -1,25 +1,24 @@
 import {useEffect, useState} from 'react';
 import {divider} from '../engine/divider.mjs';
+import {Schematic,Wire,Res,Source,Ground,Dot,Terminal,Text,CurrentArrow,green,orange,gray,type Pt} from './Schematic';
+import {Tx} from './MathText';
 
 type Values = {vin:number;r1:number;r2:number;rl:number;connected:boolean};
 const defaults:Values={vin:10,r1:10,r2:10,rl:10,connected:true};
 const fmt=(n:number,d=2)=>n.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
-function resistor(x:number,y:number,label:string,value:string,color='currentColor') {
- return <g><path d={`M ${x} ${y-28} v10 M ${x} ${y+18} v10`} stroke={color}/><rect x={x-10} y={y-18} width="20" height="36" rx="1" stroke={color} fill="var(--paper)"/><text x={x+23} y={y-3} className="symbol-label">{label}</text><text x={x+23} y={y+14} className="symbol-value">{value}</text></g>;
-}
 export function Circuit({v=defaults, simple=false}:{v?:Values;simple?:boolean}) {
  const d=divider({vin:v.vin,r1:v.r1*1000,r2:v.r2*1000,rl:!simple&&v.connected?v.rl*1000:Infinity});
- return <svg className="circuit-svg" viewBox="0 0 510 300" role="img" aria-label={`Voltage source ${v.vin} volts connects through R1 ${v.r1} kiloohms to the output, then through R2 ${v.r2} kiloohms to ground.${!simple&&v.connected?' Load '+v.rl+' kiloohms is parallel with R2.':''} Output ${fmt(d.out)} volts.`}>
- <g fill="none" stroke="var(--ink)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
- <path d="M80 124 V44 H220 V58 M220 114 V154 M220 154 V192 M220 248 V268 H80 V184"/>
- <circle cx="80" cy="154" r="30" fill="var(--paper)"/><path d="M74 143 h12 M80 137 v12 M74 167 h12"/>
- {resistor(220,86,'R₁',v.r1+' kΩ')}{resistor(220,220,'R₂',v.r2+' kΩ')}
- <path d="M220 268 v10 m-15 0 h30 m-23 6 h16 m-11 6 h6"/>
- <path d="M183 117 v27 m-4 -6 l4 6 l4 -6" stroke="var(--muted)"/><text x="161" y="135" className="symbol-value">I₁</text><path d="M220 154 H400" stroke="var(--accent)"/><circle cx="220" cy="154" r="3.5" fill="var(--accent)" stroke="var(--accent)"/>
- {!simple&&v.connected&&<><path d="M400 154 V192 M400 248 V268 H220" stroke="var(--orange)"/>{resistor(400,220,'Rₗ',(v.rl>=1000?'1 MΩ':fmt(v.rl,v.rl<1?2:1)+' kΩ'),'var(--orange)')}<circle cx="220" cy="268" r="3" fill="var(--ink)"/></>}
- </g><text x="100" y="65" className="symbol-label">Vᵢₙ = {v.vin} V</text><text x="275" y="141" className="output-label">Vₒᵤₜ = {fmt(d.out)} V</text><text x="35" y="290" className="symbol-value">0 V reference</text>
- {simple&&<text x="276" y="184" className="symbol-value">No output current</text>}
- </svg>;
+ const loaded=!simple&&v.connected,out:Pt=[220,154];
+ return <Schematic className="circuit-svg" width={510} height={300} description={`Voltage source ${v.vin} volts connects through R1 ${v.r1} kiloohms to the output, then through R2 ${v.r2} kiloohms to ground.${loaded?' Load '+v.rl+' kiloohms is parallel with R2.':''} Output ${fmt(d.out)} volts.`}>
+  <Source a={[80,190]} b={[80,118]} label={'V_in = '+v.vin+' V'}/><Wire pts={[[80,118],[80,44],[220,44]]}/>
+  <Res a={[220,44]} b={out} label="R_1" value={v.r1+' kΩ'}/><Res a={out} b={[220,268]} label="R_2" value={v.r2+' kΩ'}/>
+  <Wire pts={[[220,268],[80,268],[80,190]]}/><Ground at={[150,268]}/><CurrentArrow at={[160,44]} dir="right" label="I_1" color={gray}/>
+  <Wire pts={[out,[400,154]]} color={green}/><Dot at={out} color={green}/>
+  <Text x={262} y={141} kind="output">V_out = {fmt(d.out)} V</Text>
+  {loaded?<><Res a={[400,154]} b={[400,268]} label="R_L" value={v.rl>=1000?'1 MΩ':fmt(v.rl,v.rl<1?2:1)+' kΩ'} color={orange}/><Wire pts={[[400,268],[220,268]]} color={orange}/><Dot at={[220,268]}/></>
+   :<><Terminal at={[400,154]}/><Text x={276} y={184} kind="value">No output current</Text></>}
+  <Text x={172} y={288} kind="value">0 V reference</Text>
+ </Schematic>;
 }
 function Plot({v}:{v:Values}) {
  const d=divider({vin:v.vin,r1:v.r1*1000,r2:v.r2*1000});
@@ -49,12 +48,12 @@ export default function DividerLab({simple=false}:{simple?:boolean}) {
  return <div className={'lab '+(simple?'simple-lab':'')} aria-label={simple?'Unloaded divider experiment':'Loaded divider experiment'}>
  <div className="lab-heading"><div><span className="live-dot"/><span className="tiny-label">INTERACTIVE FIGURE {simple?'01':'02'}</span></div><button onClick={()=>setV({...defaults})}>Reset ↺</button></div>
  <div className="lab-body"><div className="lab-visual"><Circuit v={v} simple={simple}/><div className="figure-legend"><span><i className="legend-line"/>Output node</span>{!simple&&<span><i className="legend-line orange"/>External load</span>}<span>Ideal DC model</span></div></div>
- <div className="lab-controls">{control('vin','Supply voltage','V',1,24)}{control('r1','Upper resistor R₁','kΩ',1,100)}{control('r2','Lower resistor R₂','kΩ',1,100)}
- {!simple&&<><div className="control"><label htmlFor={key+'rl'}>Load Rₗ<span>{fmt(v.rl,1)} kΩ</span></label><input id={key+'rl'} type="range" min="-1" max="3" step=".01" aria-valuetext={fmt(v.rl,2)+" kiloohms"} value={Math.log10(v.rl)} onChange={e=>update('rl',10**(+e.target.value))} disabled={!v.connected}/><div className="range-ends"><span>100 Ω</span><span>1 MΩ</span></div></div><label className="check"><input type="checkbox" checked={v.connected} onChange={e=>update('connected',e.target.checked)}/> Connect the load</label></>}
+ <div className="lab-controls">{control('vin','Supply voltage','V',1,24)}{control('r1','Upper resistor R1','kΩ',1,100)}{control('r2','Lower resistor R2','kΩ',1,100)}
+ {!simple&&<><div className="control"><label htmlFor={key+'rl'}>Load resistance<span>{fmt(v.rl,1)} kΩ</span></label><input id={key+'rl'} type="range" min="-1" max="3" step=".01" aria-valuetext={fmt(v.rl,2)+" kiloohms"} value={Math.log10(v.rl)} onChange={e=>update('rl',10**(+e.target.value))} disabled={!v.connected}/><div className="range-ends"><span>100 Ω</span><span>1 MΩ</span></div></div><label className="check"><input type="checkbox" checked={v.connected} onChange={e=>update('connected',e.target.checked)}/> Connect the load</label></>}
  </div></div>
  <div className="readouts"><div><span>OUTPUT</span><strong>{fmt(d.out)} <small>V</small></strong></div><div><span>{simple?'DIVIDER CURRENT':'LOAD CURRENT'}</span><strong>{fmt((simple?d.i1:d.il)*1000,3)} <small>mA</small></strong></div><div><span>{simple?'TOTAL DISSIPATION':'LOADING ERROR'}</span><strong>{fmt(simple?(d.p1+d.p2)*1000:d.drop*100)} <small>{simple?'mW':'%'}</small></strong></div></div>
- {!simple&&<div className="plot-area"><div className="plot-heading"><h4>A load changes the operating point</h4><span><i className="legend-dashed"/>Unloaded: {fmt(d.vth)} V</span></div><Plot v={v}/><p className="plot-summary">With this divider, Rₗ = Rₜₕ = {fmt(d.rth/1000)} kΩ gives half the unloaded voltage. {v.connected?`Your connected load gives ${fmt(d.out)} V, a ${fmt(d.drop*100)}% decrease.`:'The load is disconnected; the output is at its unloaded limit. The curve shows what different connected loads would do.'}</p></div>}
- <div className="lab-prompt"><strong>Try this.</strong> {simple?'Keep R₁ and R₂ equal, then increase both from 10 kΩ to 100 kΩ. The voltage stays the same. What happens to current and power?':'Start at the default values, then disconnect and reconnect the load. Sweep Rₗ upward: a larger load resistance draws less current and disturbs the divider less.'}</div>
+ {!simple&&<div className="plot-area"><div className="plot-heading"><h4>A load changes the operating point</h4><span><i className="legend-dashed"/>Unloaded: {fmt(d.vth)} V</span></div><Plot v={v}/><p className="plot-summary"><Tx>{`With this divider, $R_L = R_{\\mathrm{th}}$ = ${fmt(d.rth/1000)} kΩ gives half the unloaded voltage. `+(v.connected?`Your connected load gives ${fmt(d.out)} V, a ${fmt(d.drop*100)}% decrease.`:'The load is disconnected; the output is at its unloaded limit. The curve shows what different connected loads would do.')}</Tx></p></div>}
+ <div className="lab-prompt"><strong>Try this.</strong> <Tx>{simple?'Keep $R_1$ and $R_2$ equal, then increase both from 10 kΩ to 100 kΩ. The voltage stays the same. What happens to current and power? Then make $R_1$ three times $R_2$ and predict the output before you look.':'Start at the default values, then disconnect and reconnect the load. Sweep $R_L$ upward: a larger load resistance draws less current and disturbs the divider less. Find the load that halves the unloaded voltage, and compare it with $R_1 \\parallel R_2$.'}</Tx></div>
  </div>;
 }
 

@@ -24,3 +24,7 @@
 .phasor-svg{display:block;width:100%;max-width:320px;margin:10px auto 0}.phasor-label{font:600 12px var(--sans)}.split-plots{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:22px;align-items:center}.split-plots h4{margin-bottom:0}.lab-warning{font-size:13px;padding:12px 15px;background:#f9eee5;color:#904021;border-radius:3px;margin:12px 0 0}.figure-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.figure-row figure{margin:0}.static-plot{margin:30px 0;max-width:820px;background:var(--white);border:1px solid var(--line);border-radius:4px;padding:16px 20px 6px}.static-plot figcaption,.figure-row figcaption{font-size:12px;line-height:1.7;color:var(--muted);margin:4px 0 12px}.support-figure .phasor-svg{background:var(--mint);border-radius:4px;max-width:300px;margin:0}
 @media(max-width:700px){.split-plots,.figure-row{grid-template-columns:1fr}.phasor-svg{max-width:280px}}
 @media(max-width:540px){.phasor-label{font-size:15px}.phasor-svg .axis-title{font-size:12px}.static-plot{padding:12px 8px 4px}}
+/* Inline math: KaTeX defaults to 1.21em, which towers over 17px DM Sans. Display equations keep their own size. */
+.katex{font-size:1.06em;line-height:1.2}.equation .katex{font-size:1.21em}summary .katex{font-size:1.04em}
+.plot-key sub,.sidebar sub,.course-nav sub{font-size:.75em;line-height:0}
+var{font-style:italic}.plot-key sub{line-height:0}

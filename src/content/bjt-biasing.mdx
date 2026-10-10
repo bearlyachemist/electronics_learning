@@ -1,3 +1,4 @@
+import {DividerBiasFigure,BiasSpreadFigure} from '../components/BjtTheoryFigures';
 import Equation from '../components/Equation.astro';
 import {BiasLab} from '../components/BjtLabs';
 
@@ -7,7 +8,7 @@ import {BiasLab} from '../components/BjtLabs';
 
 <h1>Biasing transistor stages<br/><em>Set the quiescent point so it stays put.</em></h1>
 
-<p className="dek">Choose a resting current and voltage that leave room for the signal, set them with a stiff divider and an emitter resistor, and make the result insensitive to β and temperature.</p>
+<p className="dek">Choose a resting current and voltage that leave room for the signal, set them with a stiff divider and an emitter resistor, and make the result insensitive to $\beta$ and temperature.</p>
 
 <div className="chapter-meta"><span>50–60 min + exploration</span><span>Emitter follower · Thévenin equivalents · Coupling capacitors</span></div>
 
@@ -15,13 +16,13 @@ import {BiasLab} from '../components/BjtLabs';
 
 <div className="opening-grid">
 
-<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">A design works perfectly with the transistor on your bench. The next one from the same reel has β = 400 and the stage is dead. What went wrong?</p></div>
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">A design works perfectly with the transistor on your bench. The next one from the same reel has $\beta$ = 400 and the stage is dead. What went wrong?</p></div>
 
 <div>
 
 Audio, sensor and radio signals swing both positive and negative, but an NPN transistor only conducts with its base above its emitter and its collector above that. The cure is to give the transistor a steady **quiescent** current and voltages—a **bias**—and to superimpose the signal on top, usually through coupling capacitors.
 
-Choosing the bias point is half of the job. The other half is making it *stay* there, whatever the transistor’s β, whatever the temperature, and whatever the resistor tolerances. This chapter treats the emitter follower first, then the common-emitter stage, then the effects of β and temperature.
+Choosing the bias point is half of the job. The other half is making it *stay* there, whatever the transistor’s $\beta$, whatever the temperature, and whatever the resistor tolerances. This chapter treats the emitter follower first, then the common-emitter stage, then the effects of $\beta$ and temperature.
 
 </div>
 
@@ -29,7 +30,7 @@ Choosing the bias point is half of the job. The other half is making it *stay* t
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Why a stage needs bias → Biasing an emitter follower → Biasing a common-emitter stage → Explore bias stability → Temperature and feedback → A biasing recipe.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Why a stage needs bias → Biasing an emitter follower → Biasing a common-emitter stage → Explore bias stability → Temperature and feedback → A biasing recipe → Check your understanding.</p>
 
 </div>
 
@@ -41,7 +42,7 @@ Feed a ±1 V signal straight into the base of an emitter follower whose emitter 
 
 Raise the base to a steady DC level instead—say, half the supply—and add the signal through a capacitor. The capacitor passes the signal (a high-pass filter, Chapter 22) while blocking the DC level of the source. The transistor now operates around a fixed point and responds to signal swings in both directions.
 
-The **quiescent point** consists of the resting collector current I_CQ and the resting terminal voltages. It determines how far the output can swing before cutoff or saturation, what the input and output impedances are (they depend on current through r_e, Chapter 30), and how much power the stage wastes.
+The **quiescent point** consists of the resting collector current $I_{CQ}$ and the resting terminal voltages. It determines how far the output can swing before cutoff or saturation, what the input and output impedances are (they depend on current through $r_e$, Chapter 30), and how much power the stage wastes.
 
 </section>
 
@@ -49,25 +50,25 @@ The **quiescent point** consists of the resting collector current I_CQ and the r
 
 <div className="section-heading"><span>02</span><h2>Biasing an emitter follower</h2></div>
 
-For the largest symmetric swing, put the emitter near the middle of the supply. Then set the base one V_BE higher with a divider, and choose the divider so that the base current does not pull it significantly away from its unloaded voltage.
+For the largest symmetric swing, put the emitter near the middle of the supply. Then set the base one $V_{BE}$ higher with a divider, and choose the divider so that the base current does not pull it significantly away from its unloaded voltage.
 
 ### The stiffness rule
 
-The divider is a Thévenin source V_TH behind R_TH = R₁ ∥ R₂ (Chapter 1). Looking into the base, the transistor presents (β + 1)R_E (Chapter 28). Treat this as a voltage divider between R_TH and (β + 1)R_E:
+The divider is a Thévenin source $V_{TH}$ behind $R_{TH}$ = $R_1$ ∥ $R_2$ (Chapter 1). Looking into the base, the transistor presents ($\beta$ + 1)$R_E$ (Chapter 28). Treat this as a voltage divider between $R_{TH}$ and ($\beta$ + 1)$R_E$:
 
 <Equation tex="R_{TH}\le\frac{(\beta+1)R_E}{10}\qquad\Rightarrow\qquad V_B\ \text{within about 10\% of}\ V_{TH}\ \text{even as}\ \beta\ \text{varies}"/>
 
-Use the *minimum* β. A divider ten times stiffer than the transistor’s input keeps the base voltage set by the resistors, not by the transistor.
+Use the *minimum* $\beta$. A divider ten times stiffer than the transistor’s input keeps the base voltage set by the resistors, not by the transistor.
 
 <div className="worked-example">
 
 <span className="tiny-label">WORKED EXAMPLE / AN AUDIO FOLLOWER ON 15 V</span><h3>1 mA quiescent, input coupled from 20 Hz</h3>
 
-<p>Put the emitter at 7.5 V with 1 mA: R_E = <strong>7.5 kΩ</strong>. The base should be near 8.15 V, and with β ≥ 100 the stiffness rule asks for R_TH ≤ 101 × 7.5 kΩ/10 ≈ 76 kΩ.</p>
+<p>Put the emitter at 7.5 V with 1 mA: $R_E$ = <strong>7.5 kΩ</strong>. The base should be near 8.15 V, and with $\beta$ ≥ 100 the stiffness rule asks for $R_{TH}$ ≤ 101 × 7.5 kΩ/10 ≈ 76 kΩ.</p>
 
-<p>R₁ = 130 kΩ (top) and R₂ = 150 kΩ (bottom) give V_TH = 15 × 150/280 = 8.04 V and R_TH = 69.6 kΩ. The emitter rests at about 7.39 V with I_Q ≈ 0.98 mA.</p>
+<p>$R_1$ = 130 kΩ (top) and $R_2$ = 150 kΩ (bottom) give $V_{TH}$ = 15 × 150/280 = 8.04 V and $R_{TH}$ = 69.6 kΩ. The emitter rests at about 7.39 V with $I_Q$ ≈ 0.98 mA.</p>
 
-<p>The signal source sees the divider in parallel with the transistor: Z_in = 69.6 kΩ ∥ 757 kΩ = <strong>63.8 kΩ</strong>. For a 20 Hz corner the input capacitor must be at least 1/(2π × 20 × 63.8 kΩ) = 0.125 µF; choosing <strong>0.47 µF</strong> puts the corner at 5.3 Hz, so 20 Hz passes nearly unattenuated.</p>
+<p>The signal source sees the divider in parallel with the transistor: $Z_{\mathrm{in}}$ = 69.6 kΩ ∥ 757 kΩ = <strong>63.8 kΩ</strong>. For a 20 Hz corner the input capacitor must be at least 1/(2π × 20 × 63.8 kΩ) = 0.125 µF; choosing <strong>0.47 µF</strong> puts the corner at 5.3 Hz, so 20 Hz passes nearly unattenuated.</p>
 
 </div>
 
@@ -79,33 +80,37 @@ Note the price of stiffness: the divider dominates the input impedance. The tran
 
 <div className="section-heading"><span>03</span><h2>Biasing a common-emitter stage</h2></div>
 
-The common-emitter amplifier (Chapter 32) takes its output from the collector, through a collector resistor R_C to the supply. Its bias design has three targets:
+The common-emitter amplifier (Chapter 32) takes its output from the collector, through a collector resistor $R_C$ to the supply. Its bias design has three targets:
 
-- **Collector current**, set by the base voltage and an emitter resistor: I_C ≈ (V_B − 0.65)/R_E.
-- **Collector voltage**, near the middle of the range it can swing over: up to V_CC at cutoff and down to roughly V_E + 0.2 V at saturation.
-- **Emitter voltage** around 1 V or more, so that V_BE’s variations (tens of millivolts with temperature and current) are small compared with it.
+- **Collector current**, set by the base voltage and an emitter resistor: $I_C$ ≈ ($V_B$ − 0.65)/$R_E$.
+- **Collector voltage**, near the middle of the range it can swing over: up to $V_{CC}$ at cutoff and down to roughly $V_E$ + 0.2 V at saturation.
+- **Emitter voltage** around 1 V or more, so that $V_{BE}$’s variations (tens of millivolts with temperature and current) are small compared with it.
 
 Solving the base loop exactly, with the divider replaced by its Thévenin equivalent:
 
 <Equation tex="V_{TH}=I_BR_{TH}+V_{BE}+I_ER_E\quad\Rightarrow\quad I_C=\frac{V_{TH}-V_{BE}}{R_E+R_{TH}/\beta}\ \ (\text{taking }I_E\approx I_C)" label="DIVIDER BIAS"/>
 
-β appears only in the term R_TH/β. If that is small compared with R_E, β hardly matters—which is just the stiffness rule again.
+$\beta$ appears only in the term $R_{TH}$/$\beta$. If that is small compared with $R_E$, $\beta$ hardly matters—which is just the stiffness rule again.
 
 <div className="worked-example">
 
-<span className="tiny-label">WORKED EXAMPLE / 1 mA ON 15 V</span><h3>R_C = 7.5 kΩ, R_E = 1 kΩ, divider 82 kΩ / 10 kΩ</h3>
+<span className="tiny-label">WORKED EXAMPLE / 1 mA ON 15 V</span><h3>$R_C$ = 7.5 kΩ, $R_E$ = 1 kΩ, divider 82 kΩ / 10 kΩ</h3>
 
-<p>V_TH = 15 × 10/92 = 1.63 V and R_TH = 8.91 kΩ. With β = 100: I_C = 100 × (1.63 − 0.65)/(8.91 k + 101 × 1 k) = <strong>0.892 mA</strong>, V_C = 15 − 0.892 × 7.5 = 8.31 V, V_E = 0.90 V.</p>
+<p>$V_{TH}$ = 15 × 10/92 = 1.63 V and $R_{TH}$ = 8.91 kΩ. With $\beta$ = 100: $I_C$ = 100 × (1.63 − 0.65)/(8.91 k + 101 × 1 k) = <strong>0.892 mA</strong>, $V_C$ = 15 − 0.892 × 7.5 = 8.31 V, $V_E$ = 0.90 V.</p>
 
-<p>With β = 50 the current is 0.818 mA; with β = 500, 0.961 mA. A tenfold range of β moves the collector current by only ±8%. Using R₁ = 75 kΩ instead would bring the nominal current to 1.02 mA.</p>
+<p>With $\beta$ = 50 the current is 0.818 mA; with $\beta$ = 500, 0.961 mA. A tenfold range of $\beta$ moves the collector current by only ±8%. Using $R_1$ = 75 kΩ instead would bring the nominal current to 1.02 mA.</p>
 
 </div>
 
 ### The tempting alternative
 
-A single resistor from the supply to the base sets I_B = (V_CC − 0.65)/R_B and therefore I_C = βI_B. Choosing R_B = 1.61 MΩ matches the design above at β = 100. But at β = 50 the current halves to 0.45 mA, and at β = 500 the transistor saturates. This “base-resistor bias” makes the circuit’s operation proportional to the least predictable parameter of the transistor. Avoid it.
+A single resistor from the supply to the base sets $I_B$ = ($V_{CC}$ − 0.65)/$R_B$ and therefore $I_C$ = $\beta I_B$. Choosing $R_B$ = 1.61 MΩ matches the design above at $\beta$ = 100. But at $\beta$ = 50 the current halves to 0.45 mA, and at $\beta$ = 500 the transistor saturates. This “base-resistor bias” makes the circuit’s operation proportional to the least predictable parameter of the transistor. Avoid it.
 
 </section>
+
+<DividerBiasFigure/>
+
+<BiasSpreadFigure/>
 
 <section id="explore">
 
@@ -113,9 +118,9 @@ A single resistor from the supply to the base sets I_B = (V_CC − 0.65)/R_B and
 
 <BiasLab client:load/>
 
-<p className="caption">Figure 1. Fixed-V_BE model of the divider-and-emitter-resistor stage, compared with a single base resistor chosen to give the same current at β = 100 and 25 °C.</p>
+<p className="caption">Figure 1. Fixed-$V_{BE}$ model of the divider-and-emitter-resistor stage, compared with a single base resistor chosen to give the same current at $\beta$ = 100 and 25 °C.</p>
 
-The green curve is almost flat because the emitter resistor provides **negative feedback**: if the collector current tries to rise, V_E rises, which reduces V_BE and pulls the current back down. Formal feedback theory comes later, but you can already see it working here.
+The green curve is almost flat because the emitter resistor provides **negative feedback**: if the collector current tries to rise, $V_E$ rises, which reduces $V_{BE}$ and pulls the current back down. Formal feedback theory comes later, but you can already see it working here.
 
 </section>
 
@@ -123,11 +128,11 @@ The green curve is almost flat because the emitter resistor provides **negative 
 
 <div className="section-heading"><span>05</span><h2>Temperature and feedback</h2></div>
 
-V_BE at fixed current falls about 2.1 mV/°C (Chapter 26). In the divider stage the base voltage is fixed, so a falling V_BE raises V_E and therefore the current:
+$V_{BE}$ at fixed current falls about 2.1 mV/°C (Chapter 26). In the divider stage the base voltage is fixed, so a falling $V_{BE}$ raises $V_E$ and therefore the current:
 
 <Equation tex="\frac{\Delta I_C}{I_C}\approx\frac{-\Delta V_{BE}}{V_E}=\frac{2.1\ \mathrm{mV/^\circ C}\times\Delta T}{V_E}"/>
 
-With V_E ≈ 0.9 V, a 60 °C rise increases the current by roughly 13–14%: in the lab, from 0.89 mA at 25 °C to 1.01 mA at 85 °C. If V_E were only 0.1 V, the same rise would more than double the current. That is the reason for the rule “a volt or so across the emitter resistor.” In power circuits, where self-heating raises temperature, which raises current, which raises heating, inadequate emitter degeneration leads to **thermal runaway**.
+With $V_E$ ≈ 0.9 V, a 60 °C rise increases the current by roughly 13–14%: in the lab, from 0.89 mA at 25 °C to 1.01 mA at 85 °C. If $V_E$ were only 0.1 V, the same rise would more than double the current. That is the reason for the rule “a volt or so across the emitter resistor.” In power circuits, where self-heating raises temperature, which raises current, which raises heating, inadequate emitter degeneration leads to **thermal runaway**.
 
 ### Collector-to-base feedback
 
@@ -135,11 +140,11 @@ Another way to stabilize bias is to connect the base resistor to the collector i
 
 <Equation tex="I_C\approx\frac{V_{CC}-V_{BE}}{R_C+R_B/\beta}"/>
 
-With R_C = 7.5 kΩ and R_B = 750 kΩ, β = 50 gives 0.63 mA and β = 500 gives 1.59 mA. That is far better than the single base resistor (it can never saturate hard), but much worse than the divider with R_E. Its advantage is that the emitter can be grounded directly, which is useful at high frequencies. It also lowers the stage’s gain and input impedance, a feedback effect treated later.
+With $R_C$ = 7.5 kΩ and $R_B$ = 750 kΩ, $\beta$ = 50 gives 0.63 mA and $\beta$ = 500 gives 1.59 mA. That is far better than the single base resistor (it can never saturate hard), but much worse than the divider with $R_E$. Its advantage is that the emitter can be grounded directly, which is useful at high frequencies. It also lowers the stage’s gain and input impedance, a feedback effect treated later.
 
 ### Other stable schemes
 
-Biasing the base from a split supply through a resistor to ground, biasing the emitter with a current source (Chapter 31), and matching a diode’s V_BE drift with another junction in the divider are all used. They share a principle: **make the operating point depend on resistors and voltages, not on β or V_BE.**
+Biasing the base from a split supply through a resistor to ground, biasing the emitter with a current source (Chapter 31), and matching a diode’s $V_{BE}$ drift with another junction in the divider are all used. They share a principle: **make the operating point depend on resistors and voltages, not on $\beta$ or $V_{BE}$.**
 
 </section>
 
@@ -148,17 +153,86 @@ Biasing the base from a split supply through a resistor to ground, biasing the e
 <div className="section-heading"><span>06</span><h2>A biasing recipe</h2></div>
 
 1. **Choose the quiescent current** from the needs of the stage: noise, speed, output impedance and drive capability argue for more; power and input impedance for less. 0.1–1 mA is typical for small-signal stages.
-2. **Choose V_E** of about 1 V (more for very stable designs, less if supply voltage is scarce). Then R_E = V_E/I_C.
-3. **Choose R_C** for a common-emitter stage so that V_C sits about halfway between V_CC and V_E plus a few tenths of a volt—or wherever the expected signal swing needs it to be.
-4. **Design the divider** for V_B = V_E + 0.65 V with R_TH ≤ (β_min + 1)R_E/10.
-5. **Check the extremes**: β from minimum to maximum, resistor tolerances, temperature range, and supply variation. Confirm the transistor stays active with the full signal swing superimposed.
+2. **Choose $V_E$** of about 1 V (more for very stable designs, less if supply voltage is scarce). Then $R_E$ = $V_E$/$I_C$.
+3. **Choose $R_C$** for a common-emitter stage so that $V_C$ sits about halfway between $V_{CC}$ and $V_E$ plus a few tenths of a volt—or wherever the expected signal swing needs it to be.
+4. **Design the divider** for $V_B$ = $V_E$ + 0.65 V with $R_{TH}$ ≤ ($\beta_{\mathrm{min}}$ + 1)$R_E$/10.
+5. **Check the extremes**: $\beta$ from minimum to maximum, resistor tolerances, temperature range, and supply variation. Confirm the transistor stays active with the full signal swing superimposed.
 6. **Choose coupling and bypass capacitors** for the lowest signal frequency using the impedances they see (Chapters 22 and 32).
 
-Expect the exact current to differ from the nominal by several percent: V_BE is not exactly 0.65 V, and the divider and emitter resistors have tolerances. A good bias design does not need it to be exact; it needs it to be predictable and to leave margin for the signal.
+Expect the exact current to differ from the nominal by several percent: $V_{BE}$ is not exactly 0.65 V, and the divider and emitter resistors have tolerances. A good bias design does not need it to be exact; it needs it to be predictable and to leave margin for the signal.
 
-<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Set the base with a stiff divider and the current with an emitter resistor carrying about a volt. Then <em>β and V_BE barely matter</em>, which is the only safe way to depend on them.</p></div>
+### Quantify the remaining β sensitivity
+
+For the unsaturated divider stage, $I_C=\beta(V_{TH}-V_{BE})/[R_{TH}+(\beta+1)R_E]$. Differentiating its logarithm gives:
+
+<Equation tex="\frac{\partial\ln I_C}{\partial\ln\beta}=\frac{R_{TH}+R_E}{R_{TH}+(\beta+1)R_E}" />
+
+For the chapter’s $R_{TH}=8.91$ kΩ, $R_E=1$ kΩ and β = 100, the sensitivity is 0.0902. A small 10% β change causes only about 0.90% current change locally. Making the divider ten times weaker raises the sensitivity to 0.474; a good voltage ratio does not by itself make a good bias source.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED CHECK / COLLECTOR HEADROOM AT TWO EXTREMES</span><h3>Keep the stage active when it warms</h3>
+
+<p>With the 82 kΩ / 10 kΩ divider, at β = 50 and 25 °C the fixed-drop model gives $I_C=0.818$ mA, $V_E=0.834$ V and $V_C=8.87$ V. At β = 500 and 85 °C it gives about 1.085 mA, 1.087 V and 6.86 V.</p>
+
+<p>Both DC states are active, but their available output swings differ substantially. Resistor tolerances and supply extremes must be included before assigning a guaranteed signal swing. Bias stability means bounded, useful behavior across the specified conditions, not identical collector current.</p>
+
+</div>
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Set the base with a stiff divider and the current with an emitter resistor carrying about a volt. Then <em>$\beta$ and $V_{BE}$ barely matter</em>, which is the only safe way to depend on them.</p></div>
 
 <p className="reference-note">Coverage: The Art of Electronics §§2.2.5 and 2.3.5. The common-emitter amplifier itself is analyzed in Chapter 32.</p>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why use the divider’s Thévenin resistance as well as its voltage?</summary>
+<div>
+
+Base current causes a voltage drop through that resistance. An unloaded divider ratio alone cannot predict the operating point.
+
+</div>
+</details>
+
+<details>
+<summary>2. How can a divider keep its ratio but become less stable?</summary>
+<div>
+
+Scale both resistors upward. The open-circuit voltage stays the same, but Thévenin resistance rises and base-current loading becomes more significant.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does emitter resistance reduce current drift?</summary>
+<div>
+
+A current rise increases emitter voltage, reducing base–emitter voltage and opposing the original change.
+
+</div>
+</details>
+
+<details>
+<summary>4. Does choosing a middle-of-supply collector voltage finish bias design?</summary>
+<div>
+
+No. Check β, temperature, resistor and supply extremes, then verify that the full signal swing remains within cutoff and saturation limits.
+
+</div>
+</details>
+
+<details>
+<summary>5. What is the cost of a very stiff divider?</summary>
+<div>
+
+More standing current and lower signal input impedance. The divider can dominate the impedance seen by a weak source.
+
+</div>
+</details>
 
 </section>
 

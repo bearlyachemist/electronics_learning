@@ -1,6 +1,6 @@
 import Equation from '../components/Equation.astro';
 import {PolarityLab,HotPlugLab,BoostLab} from '../components/ProtectionLabs';
-import {RegulatorBypassFigure,SteeringFigure,ResetFigure} from '../components/Figures';
+import {RegulatorBypassFigure,SteeringFigure,ResetFigure,InrushFigure,OvershootDampingFigure,EsdPulseFigure,ResetDropoutFigure} from '../components/DiodeFigures';
 
 <div className="chapter-hero" id="overview">
 
@@ -44,9 +44,9 @@ There are four common responses. Each one is a different answer to *what happens
 
 ### Option 1: a series diode blocks it
 
-Put a diode in the positive lead, anode toward the connector. With correct polarity, it is forward-biased and the load receives Vin − Vꜰ. Reversed, it blocks, and only reverse leakage flows.
+Put a diode in the positive lead, anode toward the connector. With correct polarity, it is forward-biased and the load receives $V_{\mathrm{in}} - V_F$. Reversed, it blocks, and only reverse leakage flows.
 
-The cost is paid all the time: the load always loses Vꜰ of headroom and the diode always dissipates Vꜰ·I.
+The cost is paid all the time: the load always loses $V_F$ of headroom and the diode always dissipates $V_FI$.
 
 <Equation tex="P_{\mathrm{loss}}=V_F\,I_{\mathrm{load}},\qquad \eta=\frac{V_{\mathrm{in}}-V_F}{V_{\mathrm{in}}}"/>
 
@@ -62,13 +62,13 @@ The cost is paid all the time: the load always loses Vꜰ of headroom and the di
 
 ### Option 2: a shunt diode and a fuse sacrifice something
 
-Put a fuse in the positive lead, then a diode across the load with its cathode on the positive rail. With correct polarity the diode is reverse-biased and costs nothing. Reversed, it becomes a near-short across the source: it holds the load to about −Vꜰ while a large current flows until the fuse opens.
+Put a fuse in the positive lead, then a diode across the load with its cathode on the positive rail. With correct polarity the diode is reverse-biased and costs nothing. Reversed, it becomes a near-short across the source: it holds the load to about −$V_F$ while a large current flows until the fuse opens.
 
-This topology has zero normal-operation loss but turns a reversed connection into a deliberate fault. The diode must survive the fuse’s let-through energy (its I²t), and the source must be able to deliver enough current to blow the fuse promptly. A weak source—a small battery or a current-limited bench supply—may never blow it, leaving the diode to overheat.
+This topology has zero normal-operation loss but turns a reversed connection into a deliberate fault. The diode must survive the fuse’s let-through energy (its $I^2t$), and the source must be able to deliver enough current to blow the fuse promptly. A weak source—a small battery or a current-limited bench supply—may never blow it, leaving the diode to overheat.
 
 ### Option 3: a MOSFET behaves like a diode with almost no drop
 
-A P-channel MOSFET in the positive lead, with its drain toward the connector and its gate pulled to ground through a resistor, combines the two. At power-up its internal body diode conducts first. Once the source terminal is above the gate by more than the threshold, the channel turns on and bypasses the body diode with a small resistance R_DS(on). Reversed, the gate is not pulled below the source, the channel stays off, and the body diode points the wrong way to conduct.
+A P-channel MOSFET in the positive lead, with its drain toward the connector and its gate pulled to ground through a resistor, combines the two. At power-up its internal body diode conducts first. Once the source terminal is above the gate by more than the threshold, the channel turns on and bypasses the body diode with a small resistance $R_{DS(\mathrm{on})}$. Reversed, the gate is not pulled below the source, the channel stays off, and the body diode points the wrong way to conduct.
 
 <Equation tex="P_{\mathrm{loss}}=I^2R_{DS(\mathrm{on})}"/>
 
@@ -80,7 +80,7 @@ A bridge rectifier accepts either polarity and always delivers a positive output
 
 <PolarityLab client:load/>
 
-<p className="caption">Figure 1. Normal-operation loss versus load current for the four topologies, and the result of a reversed connection. Constant-current load; fixed diode drops; ideal fuse not modeled.</p>
+<p className="caption">Normal-operation loss versus load current for the four topologies, and the result of a reversed connection. Constant-current load; fixed diode drops; ideal fuse not modeled.</p>
 
 <div className="table-wrap">
 
@@ -104,7 +104,7 @@ When does the output exceed the input? Whenever the input is pulled down faster 
 
 <RegulatorBypassFigure/>
 
-A diode from output (anode) to input (cathode) is reverse-biased whenever Vin exceeds Vout, which is always in normal operation. If the input collapses, the output capacitor discharges through the diode rather than through the regulator.
+A diode from output (anode) to input (cathode) is reverse-biased whenever $V_{\mathrm{in}}$ exceeds $V_{\mathrm{out}}$, which is always in normal operation. If the input collapses, the output capacitor discharges through the diode rather than through the regulator.
 
 How much current does that involve? A capacitor’s current is set by how fast its voltage is forced to change:
 
@@ -132,7 +132,9 @@ Connecting a supply to a circuit with large capacitance creates two different pr
 
 ### A capacitor behind a resistance: inrush current
 
-An empty capacitor connected through a resistance R initially behaves as a short, so the initial current is V/R. A 24 V supply connected through 0.5 Ω of total wiring and ESR to an empty 4700 µF capacitor draws an initial **48 A**, decaying with τ = RC = 2.35 ms. That is enough to weld a relay contact, trip a supply’s current limit, or spark a connector.
+An empty capacitor connected through a resistance R initially behaves as a short, so the initial current is V/R. A 24 V supply connected through 0.5 Ω of total wiring and ESR to an empty 4700 µF capacitor draws an initial **48 A**, decaying with $\tau$ = RC = 2.35 ms. That is enough to weld a relay contact, trip a supply’s current limit, or spark a connector.
+
+<InrushFigure/>
 
 There is a remarkable energy result here. While the capacitor charges from 0 to V, the source delivers charge Q = CV at constant voltage V, so it supplies energy QV = CV². The capacitor stores only ½CV². The other half is dissipated in the resistance:
 
@@ -140,7 +142,7 @@ There is a remarkable energy result here. While the capacitor charges from 0 to 
 
 The result is independent of R. For the 4700 µF example, **1.35 J** is dissipated however large or small the resistance. A larger resistance spreads that energy over a longer time and reduces peak current; it does not reduce the energy.
 
-That is why inrush limiters use a resistance that is removed after start-up. An NTC thermistor is hot and low-resistance during operation; a fixed resistor is shorted by a relay or MOSFET once the capacitor has charged. With 10 Ω, the 4700 µF example limits the initial current to 2.4 A and charges with τ = 47 ms.
+That is why inrush limiters use a resistance that is removed after start-up. An NTC thermistor is hot and low-resistance during operation; a fixed resistor is shorted by a relay or MOSFET once the capacitor has charged. With 10 Ω, the 4700 µF example limits the initial current to 2.4 A and charges with $\tau$ = 47 ms.
 
 ### A capacitor behind an inductance: overshoot
 
@@ -154,29 +156,31 @@ With v(0) = 0 and i(0) = 0 the solution is a cosine about the final value:
 
 The output reaches **2V** after half a cycle. Physically, the inductor current is at its maximum when v = V. At that moment the capacitor has the right voltage, but the inductor’s stored energy ½Li² still has to go somewhere. It continues charging the capacitor past V until the current reaches zero. Energy sloshes between L and C.
 
-The quantity Z₀ = √(L/C) is the circuit’s **characteristic impedance**. It sets the peak inrush current V/Z₀ without any resistor at all.
+The quantity $Z_0$ = √(L/C) is the circuit’s **characteristic impedance**. It sets the peak inrush current V/$Z_0$ without any resistor at all.
 
 <div className="worked-example">
 
 <span className="tiny-label">WORKED EXAMPLE / HOT-PLUGGING A 12 V INPUT</span><h3>10 µH of cable and filter, 22 µF of ceramics</h3>
 
-<p>Z₀ = √(10 µH / 22 µF) = 0.674 Ω, f₀ = 1/(2π√LC) = 10.7 kHz. The undamped peak current is 12/0.674 ≈ 17.8 A, and the undamped peak voltage is 24 V.</p>
+<p>$Z_0$ = √(10 µH / 22 µF) = 0.674 Ω, $f_0$ = 1/(2π√LC) = 10.7 kHz. The undamped peak current is 12/0.674 ≈ 17.8 A, and the undamped peak voltage is 24 V.</p>
 
-<p>With 50 mΩ total series resistance the damping ratio is ζ ≈ R/(2Z₀) ≈ 0.04 (plus a little from the load). The simulated peak is <strong>22.5 V</strong> and the peak current <strong>16.8 A</strong>. A part rated for a 20 V input is now exposed to 22.5 V every time the cable is plugged in.</p>
+<p>With 50 mΩ total series resistance the damping ratio is $\zeta \approx R/(2Z_0) \approx 0.04$ (plus a little from the load). The simulated peak is <strong>22.5 V</strong> and the peak current <strong>16.8 A</strong>. A part rated for a 20 V input is now exposed to 22.5 V every time the cable is plugged in.</p>
 
 </div>
 
 ### Three ways to stop the overshoot
 
-**Damping.** Series resistance damps the oscillation. The damping ratio of this series RLC is ζ = R/(2Z₀). Critical damping (ζ = 1) needs R = 2Z₀ = 1.35 Ω in this example: the overshoot disappears, but at 1 A of normal load it also wastes 1.35 W and drops 1.35 V. A partial measure, 0.5 Ω (ζ ≈ 0.37), still lets the output reach about 15.3 V. A common alternative adds damping only at AC: an electrolytic capacitor with significant ESR in parallel with the ceramics, which carries no DC current.
+**Damping.** Series resistance damps the oscillation. The damping ratio of this series RLC is $\zeta = R/(2Z_0)$. Critical damping ($\zeta = 1$) needs $R = 2Z_0 = 1.35\ \Omega$ in this example: the overshoot disappears, but at 1 A of normal load it also wastes 1.35 W and drops 1.35 V. A partial measure, 0.5 Ω ($\zeta \approx 0.37$), still lets the output reach about 15.3 V. A common alternative adds damping only at AC: an electrolytic capacitor with significant ESR in parallel with the ceramics, which carries no DC current.
+
+<OvershootDampingFigure/>
 
 **Clamping.** A TVS diode at the input absorbs the excess above its breakdown. It must absorb part of the overshoot energy each time.
 
-**Bypass diode across the inductor.** Place a diode across the series inductor with its anode at the output and cathode at the input. Normally the output is at or below the input and the diode is reverse-biased. If the output tries to exceed Vin + Vꜰ, the diode conducts. The inductor current now circulates through the diode instead of continuing to charge the capacitor, and the inductor sees a reverse voltage of about Vꜰ that slowly removes its current. The energy is returned to the input side rather than stored as overvoltage.
+**Bypass diode across the inductor.** Place a diode across the series inductor with its anode at the output and cathode at the input. Normally the output is at or below the input and the diode is reverse-biased. If the output tries to exceed $V_{\mathrm{in}} + V_F$, the diode conducts. The inductor current now circulates through the diode instead of continuing to charge the capacitor, and the inductor sees a reverse voltage of about $V_F$ that slowly removes its current. The energy is returned to the input side rather than stored as overvoltage.
 
 <HotPlugLab client:load/>
 
-<p className="caption">Figure 2. A 12 V step into series L–R and shunt C with a light 100 Ω load. Toggle the bypass diode to clamp the output near 12.7 V. Backward-Euler integration with explicit diode state switching.</p>
+<p className="caption">A 12 V step into series L–R and shunt C with a light 100 Ω load. Toggle the bypass diode to clamp the output near 12.7 V. Backward-Euler integration with explicit diode state switching.</p>
 
 The bypass diode is common across series inductors in regulator output filters and in front of linear regulators fed by inductive cables. It does not limit the inrush *current*; it limits the *overshoot*. The diode must carry a current comparable to the peak inductor current for a fraction of a cycle.
 
@@ -201,6 +205,8 @@ A common test model represents a charged person as 150 pF discharging through 33
 <Equation tex="I_{\mathrm{peak}}\approx\frac{8000\ \mathrm V}{330\ \Omega}\approx 24\ \mathrm A,\qquad E=\tfrac12(150\ \mathrm{pF})(8\ \mathrm{kV})^2=4.8\ \mathrm{mJ},\qquad \tau=RC\approx 50\ \mathrm{ns}"/>
 
 The energy is small but the current is large and fast. The real waveform has a sub-nanosecond leading edge, so the inductance of the path from the TVS to ground matters as much as the TVS: 10 nH carrying a current rising at 10 A/ns develops 100 V. Put the protection device at the connector with a short, wide return.
+
+<EsdPulseFigure/>
 
 ### Steering diodes and the rail-injection trap
 
@@ -228,7 +234,7 @@ A capacitor charged and discharged through the same resistor has equal time cons
 
 ### Fast discharge for a power-on delay
 
-A resistor from the supply charges a capacitor; the capacitor’s voltage feeds a reset input that holds a circuit in reset until the voltage passes a threshold. With R = 100 kΩ and C = 1 µF, τ = 100 ms and a threshold at 70% of the supply is reached after −τ ln(0.3) ≈ **120 ms**.
+A resistor from the supply charges a capacitor; the capacitor’s voltage feeds a reset input that holds a circuit in reset until the voltage passes a threshold. With R = 100 kΩ and C = 1 µF, $\tau$ = 100 ms and a threshold at 70% of the supply is reached after −$\tau$ ln(0.3) ≈ **120 ms**.
 
 <ResetFigure/>
 
@@ -236,17 +242,19 @@ Without a diode, a brief supply dropout is the dangerous case. If the supply dis
 
 With a diode across R, anode at the capacitor and cathode at the supply, the capacitor discharges through the diode as soon as the supply falls below the capacitor voltage. If the supply is pulled to 0 V by its other loads, the capacitor falls to about one diode drop in tens of microseconds, then continues slowly through R. A dropout longer than that produces a fresh delay.
 
-Two assumptions hide here. The supply must actually be pulled low; a disconnected supply rail with no load floats and provides no path. And the residual voltage near Vꜰ must be below the reset threshold.
+Two assumptions hide here. The supply must actually be pulled low; a disconnected supply rail with no load floats and provides no path. And the residual voltage near $V_F$ must be below the reset threshold.
+
+<ResetDropoutFigure/>
 
 ### Independent charge and discharge times
 
-Use two diodes and two resistors: one path charges the capacitor through R₁ and D₁, the other discharges through R₂ and D₂. The rise time depends on R₁C and the fall time on R₂C. An oscillator built this way can have a duty cycle that is not 50%; a pulse stretcher can respond instantly to a pulse but release slowly.
+Use two diodes and two resistors: one path charges the capacitor through $R_1$ and $D_1$, the other discharges through $R_2$ and $D_2$. The rise time depends on $R_1C$ and the fall time on $R_2C$. An oscillator built this way can have a duty cycle that is not 50%; a pulse stretcher can respond instantly to a pulse but release slowly.
 
-The diode drops make the effective source voltage Vꜰ smaller in each direction. Exact timing needs the shifted final values in the RC formula:
+The diode drops make the effective source voltage $V_F$ smaller in each direction. Exact timing needs the shifted final values in the RC formula:
 
 <Equation tex="t=\tau\ln\frac{V_{\mathrm{final}}-V_{\mathrm{start}}}{V_{\mathrm{final}}-V_{\mathrm{threshold}}}"/>
 
-where V_final is the supply minus a diode drop for charging, and one diode drop above 0 V for discharging.
+where $V_{\mathrm{final}}$ is the supply minus a diode drop for charging, and one diode drop above 0 V for discharging.
 
 </section>
 
@@ -258,25 +266,25 @@ Chapter 17 treated the inductive kick as a hazard: a current that will not stop 
 
 ### The boost cycle
 
-Connect an inductor from a 5 V supply to a switch node. A switch connects that node to ground; a diode leads from the node to an output capacitor held near Vout.
+Connect an inductor from a 5 V supply to a switch node. A switch connects that node to ground; a diode leads from the node to an output capacitor held near $V_{\mathrm{out}}$.
 
-**Switch on.** The node is at 0 V and the inductor sees Vin across it. Its current ramps linearly:
+**Switch on.** The node is at 0 V and the inductor sees $V_{\mathrm{in}}$ across it. Its current ramps linearly:
 
 <Equation tex="\frac{di}{dt}=\frac{V_{\mathrm{in}}}{L},\qquad I_{\mathrm{pk}}=\frac{V_{\mathrm{in}}t_{\mathrm{on}}}{L},\qquad E=\tfrac12LI_{\mathrm{pk}}^2"/>
 
-**Switch off.** The current must continue. It forces the node upward until the diode conducts at Vout + Vꜰ. The inductor now has Vin − Vout − Vꜰ across it, which is negative, so its current ramps down:
+**Switch off.** The current must continue. It forces the node upward until the diode conducts at $V_{\mathrm{out}} + V_F$. The inductor now has $V_{\mathrm{in}} - V_{\mathrm{out}} - V_F$ across it, which is negative, so its current ramps down:
 
 <Equation tex="t_{\mathrm{off}}=\frac{L\,I_{\mathrm{pk}}}{V_{\mathrm{out}}+V_F-V_{\mathrm{in}}}"/>
 
-**Idle.** When the current reaches zero, the diode stops conducting and the node returns to Vin (with some ringing in a real circuit). If the cycle repeats at frequency f with the current always returning to zero, the circuit runs in **discontinuous conduction**.
+**Idle.** When the current reaches zero, the diode stops conducting and the node returns to $V_{\mathrm{in}}$ (with some ringing in a real circuit). If the cycle repeats at frequency f with the current always returning to zero, the circuit runs in **discontinuous conduction**.
 
 <BoostLab client:load/>
 
-<p className="caption">Figure 3. Discontinuous-mode boost: 5 V input, 20 kHz switching, output held constant, 0.4 V diode. The model is valid only while the current returns to zero before the next on-time.</p>
+<p className="caption">Discontinuous-mode boost: 5 V input, 20 kHz switching, output held constant, 0.4 V diode. The model is valid only while the current returns to zero before the next on-time.</p>
 
 ### Follow the energy
 
-During the on-time the source delivers ½LI²pk into the inductor. During release, the inductor gives that energy back, but the source is still in series with it, supplying Vin times the falling current. The charge delivered to the output per cycle is the area of the falling triangle, Ipk·toff/2:
+During the on-time the source delivers $\tfrac12LI_{\mathrm{pk}}^2$ into the inductor. During release, the inductor gives that energy back, but the source is still in series with it, supplying $V_{\mathrm{in}}$ times the falling current. The charge delivered to the output per cycle is the area of the falling triangle, $I_{\mathrm{pk}}t_{\mathrm{off}}/2$:
 
 <Equation tex="E_{\mathrm{out}}=V_{\mathrm{out}}\frac{I_{\mathrm{pk}}t_{\mathrm{off}}}{2},\qquad P_{\mathrm{out}}=E_{\mathrm{out}}f"/>
 
@@ -284,15 +292,68 @@ During the on-time the source delivers ½LI²pk into the inductor. During releas
 
 <span className="tiny-label">WORKED EXAMPLE / 5 V TO 12 V</span><h3>100 µH, 10 µs on, 20 kHz</h3>
 
-<p>Ipk = 5 V × 10 µs / 100 µH = <strong>0.5 A</strong>; stored energy ½(100 µH)(0.5 A)² = <strong>12.5 µJ</strong>. Release takes 100 µH × 0.5 A / (12 + 0.4 − 5) V = <strong>6.76 µs</strong>, well inside the 50 µs period.</p>
+<p>$I_{\mathrm{pk}} = 5\text{ V} \times 10\ \mu\text{s}/100\ \mu\text{H} =$ <strong>0.5 A</strong>; stored energy $\tfrac12(100\ \mu\text{H})(0.5\text{ A})^2 =$ <strong>12.5 µJ</strong>. Release takes 100 µH × 0.5 A / (12 + 0.4 − 5) V = <strong>6.76 µs</strong>, well inside the 50 µs period.</p>
 
-<p>Charge to the output per cycle is 0.5 × 6.76 µs / 2 = 1.69 µC, so E_out = 12 × 1.69 µC = 20.3 µJ and P_out = <strong>0.405 W</strong> at 20 kHz (33.8 mA average). The diode takes 0.68 µJ per cycle. The source supplies 20.9 µJ: the 12.5 µJ stored plus 8.4 µJ delivered directly during release. Energy balances exactly.</p>
+<p>Charge to the output per cycle is 0.5 × 6.76 µs / 2 = 1.69 µC, so $E_{\mathrm{out}}$ = 12 × 1.69 µC = 20.3 µJ and $P_{\mathrm{out}}$ = <strong>0.405 W</strong> at 20 kHz (33.8 mA average). The diode takes 0.68 µJ per cycle. The source supplies 20.9 µJ: the 12.5 µJ stored plus 8.4 µJ delivered directly during release. Energy balances exactly.</p>
 
 </div>
 
-Doubling the on-time doubles Ipk and quadruples the energy per cycle: 1.62 W. The output voltage does not appear in the stored energy at all. In discontinuous mode, the inductor delivers a fixed parcel of energy each cycle, and the output voltage rises until the load consumes that power. With no load and no feedback, the output keeps rising—exactly the overvoltage hazard of Chapter 17. Practical converters measure the output and adjust the on-time.
+Doubling the on-time doubles $I_{\mathrm{pk}}$ and quadruples the energy per cycle: 1.62 W. The output voltage does not appear in the stored energy at all. In discontinuous mode, the inductor delivers a fixed parcel of energy each cycle, and the output voltage rises until the load consumes that power. With no load and no feedback, the output keeps rising—exactly the overvoltage hazard of Chapter 17. Practical converters measure the output and adjust the on-time.
 
 The same physics drives a car’s ignition coil (a transformer with a large turns ratio on the release), a camera flash charger and the inductor-based switching regulators treated later in the course. The diode is what turns a destructive kick into a controlled delivery: it gives the inductor current a defined path to a defined voltage.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>For every fault, ask:<br/>which path does the current take,<br/><em>and what absorbs the energy?</em></p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. A 5 V, 500 mA circuit is protected by a series silicon diode dropping 0.8 V. Why might this be a poor choice?</summary>
+<div>
+
+It costs 16% of the supply (4.2 V left), which may push a downstream regulator into dropout, and wastes 0.4 W. A Schottky (about 0.4 V) or a P-MOSFET (millivolts) would be better at 5 V.
+
+</div>
+</details>
+
+<details>
+<summary>2. A shunt-diode-and-fuse protects a board powered from a 500 mA current-limited bench supply, and the fuse is rated 1 A. What happens if the supply is connected backwards?</summary>
+<div>
+
+The supply limits at 500 mA, so the 1 A fuse never blows. The diode carries 500 mA indefinitely at about 1 V, dissipating 0.5 W; the load is protected, but the diode may overheat. The scheme relies on a source strong enough to blow the fuse.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does a larger inrush resistor not reduce the energy it dissipates while charging a capacitor?</summary>
+<div>
+
+The source delivers $CV^2$ at constant voltage and the capacitor stores $\tfrac12CV^2$ regardless of $R$. The other half is lost in the resistance whatever its value; $R$ only sets the peak current and the duration.
+
+</div>
+</details>
+
+<details>
+<summary>4. A 24 V input filter has 22 µH and 47 µF. What peak voltage might a hot-plug produce, and what is $Z_0$?</summary>
+<div>
+
+$Z_0 = \sqrt{22\ \mu\text{H}/47\ \mu\text{F}} = 0.68\ \Omega$. Lightly damped, the output can ring toward 48 V, twice the input. Damping, a TVS or a bypass diode across the inductor is needed if downstream parts are rated near 24 V.
+
+</div>
+</details>
+
+<details>
+<summary>5. Steering diodes clamp a protected input to the 3.3 V rail. Why can that be dangerous when the board is asleep?</summary>
+<div>
+
+The fault current is injected into the 3.3 V rail. If the board draws less than that current, a regulator that cannot sink current lets the rail rise, possibly beyond what other parts tolerate. The rail needs a guaranteed load or clamp.
+
+</div>
+</details>
 
 <p className="reference-note">Coverage: The Art of Electronics §§1.6.6–1.6.8, extended with protection practice. For component-level choices, manufacturer application notes on reverse-battery protection, hot-plug overshoot and TVS selection are the next step; the <a href="https://www.nexperia.com/applications/interactive-app-notes/IAN50001_automotive-reverse-battery-protection">Nexperia reverse-battery note</a> linked in Chapter 16 compares several topologies. The models here use fixed drops, ideal switches and lumped elements.</p>
 

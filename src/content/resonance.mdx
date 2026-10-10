@@ -1,6 +1,6 @@
 import Equation from '../components/Equation.astro';
 import {ResonanceLab,LCFilterLab} from '../components/AcLabs';
-import {TankFigure,RCLocusFigure} from '../components/Figures';
+import {TankFigure,RCLocusFigure,ResonanceWidthFigure,RingingFigure} from '../components/AcFigures';
 
 <div className="chapter-hero" id="overview">
 
@@ -30,7 +30,7 @@ That cancellation is **resonance**. It escapes the RC limit of Chapter 23, givin
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Series resonance and Q → Phasor diagrams → Explore resonance → Parallel resonance → LC filters → Ringing, damping and real parts.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Series resonance and Q → Phasor diagrams → Explore resonance → Parallel resonance → LC filters → Ringing, damping and real parts → Check your understanding.</p>
 
 </div>
 
@@ -46,7 +46,7 @@ The reactance is zero when ωL = 1/(ωC):
 
 <Equation tex="\omega_0=\frac{1}{\sqrt{LC}},\qquad f_0=\frac{1}{2\pi\sqrt{LC}}" label="RESONANT FREQUENCY"/>
 
-At f₀ the impedance is just R, the current is V/R, and it is in phase with the source. Below f₀ the capacitor’s reactance dominates and the circuit is capacitive; above, the inductor’s dominates and it is inductive.
+At $f_0$ the impedance is just R, the current is V/R, and it is in phase with the source. Below $f_0$ the capacitor’s reactance dominates and the circuit is capacitive; above, the inductor’s dominates and it is inductive.
 
 ### The characteristic impedance and Q
 
@@ -60,23 +60,25 @@ The **quality factor** Q compares that reactance with the resistance:
 
 Q has three equivalent meanings, each useful in a different situation:
 
-- **Voltage magnification.** At resonance the current is V/R, so the voltage across L is I·Z₀ = Q·V. The capacitor has the same magnitude in the opposite direction. They cancel each other in the loop sum, but each is real and measurable.
-- **Selectivity.** The current falls to 1/√2 of its peak (half power) when the net reactance equals R. These two frequencies are separated by a bandwidth B = R/(2πL), so B = f₀/Q.
+- **Voltage magnification.** At resonance the current is V/R, so the voltage across L is I·$Z_0$ = Q·V. The capacitor has the same magnitude in the opposite direction. They cancel each other in the loop sum, but each is real and measurable.
+- **Selectivity.** The current falls to 1/√2 of its peak (half power) when the net reactance equals R. These two frequencies are separated by a bandwidth B = R/(2πL), so B = $f_0$/Q.
 - **Energy.** Q = 2π × (energy stored) / (energy dissipated per cycle). A high-Q circuit stores much more energy than it loses each cycle, so it keeps ringing after the drive stops.
 
 <div className="worked-example">
 
 <span className="tiny-label">WORKED EXAMPLE / THE OPENING QUESTION</span><h3>10 mH, 100 nF and 10 Ω, driven by 1 V</h3>
 
-<p>f₀ = 1/(2π√(10 mH × 100 nF)) = <strong>5.03 kHz</strong>. Z₀ = √(10 mH/100 nF) = 316 Ω, so Q = 316/10 = <strong>31.6</strong> and the bandwidth is 5.03 kHz/31.6 = <strong>159 Hz</strong>.</p>
+<p>$f_0$ = 1/(2π√(10 mH × 100 nF)) = <strong>5.03 kHz</strong>. $Z_0$ = √(10 mH/100 nF) = 316 Ω, so Q = 316/10 = <strong>31.6</strong> and the bandwidth is 5.03 kHz/31.6 = <strong>159 Hz</strong>.</p>
 
-<p>At resonance I = 1 V/10 Ω = 100 mA, and |V_C| = |V_L| = 100 mA × 316 Ω = <strong>31.6 V</strong>. A capacitor rated for 25 V because “the supply is only 1 V” would be overstressed.</p>
+<p>At resonance I = 1 V/10 Ω = 100 mA, and |$V_C$| = |$V_L$| = 100 mA × 316 Ω = <strong>31.6 V</strong>. A capacitor rated for 25 V because “the supply is only 1 V” would be overstressed.</p>
 
-<p>Detuned to 4.5 kHz, the current falls to 14.0 mA, leads the source by 82°, and V_C falls to 4.9 V. Just 10% away from f₀, nearly 90% of the current has gone.</p>
+<p>Detuned to 4.5 kHz, the current falls to 14.0 mA, leads the source by 82°, and $V_C$ falls to 4.9 V. Just 10% away from $f_0$, nearly 90% of the current has gone.</p>
 
 </div>
 
 </section>
+
+<ResonanceWidthFigure/>
 
 <section id="phasors">
 
@@ -84,22 +86,22 @@ Q has three equivalent meanings, each useful in a different situation:
 
 A phasor diagram draws all the voltages and currents of a circuit as arrows at one frequency. Pick the quantity common to every element as the reference. In a series circuit that is the current, so draw I along the real axis. Then:
 
-- V_R is parallel to I;
-- V_L points 90° ahead of I;
-- V_C points 90° behind I;
+- $V_R$ is parallel to I;
+- $V_L$ points 90° ahead of I;
+- $V_C$ points 90° behind I;
 - placed tip to tail, the three sum to the source phasor.
 
-At resonance V_L and V_C are equal and opposite, leaving V_R equal to the source. Below resonance V_C is longer and the sum tips below the current: the source voltage lags the current, a capacitive circuit. Above resonance it tips the other way.
+At resonance $V_L$ and $V_C$ are equal and opposite, leaving $V_R$ equal to the source. Below resonance $V_C$ is longer and the sum tips below the current: the source voltage lags the current, a capacitive circuit. Above resonance it tips the other way.
 
 ### A circle hidden in the RC filter
 
-Phasor diagrams also reveal geometry that algebra hides. In a series RC circuit, V_R and V_C are always perpendicular and always sum to Vin.
+Phasor diagrams also reveal geometry that algebra hides. In a series RC circuit, $V_R$ and $V_C$ are always perpendicular and always sum to Vin.
 
 <RCLocusFigure/>
 
-Every point on that semicircle corresponds to one frequency. At the corner frequency the tip sits at the bottom of the circle, where V_C and V_R are equal and the phase is −45°. This is the same low-pass response as Chapter 22, now as a picture.
+Every point on that semicircle corresponds to one frequency. At the corner frequency the tip sits at the bottom of the circle, where $V_C$ and $V_R$ are equal and the phase is −45°. This is the same low-pass response as Chapter 22, now as a picture.
 
-For a parallel circuit, the shared quantity is voltage, so draw V along the real axis and add the branch currents: I_R in phase, I_C leading by 90°, I_L lagging by 90°.
+For a parallel circuit, the shared quantity is voltage, so draw V along the real axis and add the branch currents: $I_R$ in phase, $I_C$ leading by 90°, $I_L$ lagging by 90°.
 
 </section>
 
@@ -109,9 +111,9 @@ For a parallel circuit, the shared quantity is voltage, so draw V along the real
 
 <ResonanceLab client:load/>
 
-<p className="caption">Figure 1. Series RLC driven by 1 V. Left: voltage phasors with the loop current along the real axis; V_L and V_C start at the tip of V_R, and their dashed net plus V_R is the source. Right: current magnitude across four decades, with the half-power level dashed.</p>
+<p className="caption">Figure 1. Series RLC driven by 1 V. Left: voltage phasors with the loop current along the real axis; $V_L$ and $V_C$ start at the tip of $V_R$, and their dashed net plus $V_R$ is the source. Right: current magnitude across four decades, with the half-power level dashed.</p>
 
-The lab opens at R = 47 Ω (Q ≈ 6.7), slightly below resonance, so all four arrows are visible. Set R = 10 Ω and the drive to 5.03 kHz to reproduce the worked example: V_R becomes equal to the source voltage while V_L and V_C grow to 31.6 V. Watch the bandwidth as you change R alone: f₀ does not move, but the peak rises and narrows in proportion. Changing L at fixed Q (adjust R with it) moves the peak without changing its relative width.
+The lab opens at R = 47 Ω (Q ≈ 6.7), slightly below resonance, so all four arrows are visible. Set R = 10 Ω and the drive to 5.03 kHz to reproduce the worked example: $V_R$ becomes equal to the source voltage while $V_L$ and $V_C$ grow to 31.6 V. Watch the bandwidth as you change R alone: $f_0$ does not move, but the peak rises and narrows in proportion. Changing L at fixed Q (adjust R with it) moves the peak without changing its relative width.
 
 </section>
 
@@ -119,9 +121,9 @@ The lab opens at R = 47 Ω (Q ≈ 6.7), slightly below resonance, so all four ar
 
 <div className="section-heading"><span>04</span><h2>Parallel resonance</h2></div>
 
-Put L and C in parallel. Their admittances add: Y = j(ωC − 1/(ωL)). At ω₀ the susceptances cancel and the ideal parallel impedance is infinite. The tank draws no net current from the source, yet current circulates between L and C.
+Put L and C in parallel. Their admittances add: Y = j(ωC − 1/(ωL)). At $\omega_0$ the susceptances cancel and the ideal parallel impedance is infinite. The tank draws no net current from the source, yet current circulates between L and C.
 
-A real tank is limited by its losses, usually the inductor’s winding resistance r in series with L. Using the series-to-parallel conversion of Chapter 20, at resonance the inductor looks like a parallel resistance R_p = r(1 + Q²) ≈ Q²r, and the tank impedance is:
+A real tank is limited by its losses, usually the inductor’s winding resistance r in series with L. Using the series-to-parallel conversion of Chapter 20, at resonance the inductor looks like a parallel resistance $R_p$ = r(1 + Q²) ≈ Q²r, and the tank impedance is:
 
 <Equation tex="Z_{\mathrm{tank}}(f_0)\approx Q^2r=QZ_0=\frac{L}{rC},\qquad Q=\frac{\omega_0L}{r}"/>
 
@@ -131,13 +133,21 @@ A real tank is limited by its losses, usually the inductor’s winding resistanc
 
 <span className="tiny-label">WORKED EXAMPLE / A RADIO-FREQUENCY TANK</span><h3>100 µH, 1 nF, 5 Ω winding resistance</h3>
 
-<p>f₀ = <strong>503 kHz</strong>, Z₀ = 316 Ω, Q = 316/5 = 63.2. At resonance the tank looks like L/(rC) = <strong>20 kΩ</strong> of pure resistance, built from components whose largest impedance is 316 Ω.</p>
+<p>$f_0$ = <strong>503 kHz</strong>, $Z_0$ = 316 Ω, Q = 316/5 = 63.2. Near resonance the tank looks like L/(rC) = <strong>20 kΩ</strong> of approximately pure resistance, built from components whose largest impedance is 316 Ω.</p>
 
-<p>Feed it 1 mA at f₀ and the tank develops 20 V. The capacitor then carries 20 V/316 Ω = 63 mA: the circulating current is Q times the current supplied. Connect a 20 kΩ load across the tank and the total parallel resistance halves to 10 kΩ, halving Q to 31.6 and doubling the bandwidth. A tank’s selectivity depends on what loads it.</p>
+<p>Feed it 1 mA at $f_0$ and the tank develops 20 V. The capacitor then carries 20 V/316 Ω = 63 mA: the circulating current is Q times the current supplied. Connect a 20 kΩ load across the tank and the total parallel resistance halves to 10 kΩ, halving Q to 31.6 and doubling the bandwidth. A tank’s selectivity depends on what loads it.</p>
 
 </div>
 
-Parallel tanks appear as the collector or drain load of tuned amplifiers, which then have high gain only near f₀; as the frequency-setting element of oscillators; and as the selecting element in radio receivers (Chapter 25). A series LC from a node to ground, conversely, is a **trap**: a near-short at one frequency, removing it like a notch.
+### Winding resistance shifts parallel resonance
+
+The high-Q approximation uses $\omega_0=1/\sqrt{LC}$. With r in series with L, the exact parallel admittance is:
+
+<Equation tex="Y=\frac{r}{r^2+\omega^2L^2}+j\left(\omega C-\frac{\omega L}{r^2+\omega^2L^2}\right)" />
+
+The phase crosses zero at $\omega_r=\sqrt{1/(LC)-(r/L)^2}$, provided $r<\sqrt{L/C}$. At that frequency the impedance is exactly $L/(rC)$. The frequency of maximum magnitude is slightly different. For Q ≈ 63 these shifts are tiny; for a lossy winding, blindly using the ideal frequency can be misleading.
+
+Parallel tanks appear as the collector or drain load of tuned amplifiers, which then have high gain only near $f_0$; as the frequency-setting element of oscillators; and as the selecting element in radio receivers (Chapter 25). A series LC from a node to ground, conversely, is a **trap**: a near-short at one frequency, removing it like a notch.
 
 </section>
 
@@ -145,25 +155,25 @@ Parallel tanks appear as the collector or drain load of tuned amplifiers, which 
 
 <div className="section-heading"><span>05</span><h2>LC filters</h2></div>
 
-A series inductor followed by a shunt capacitor is a **second-order low-pass**. Including source resistance R_s and load R_L, the divider gives:
+A series inductor followed by a shunt capacitor is a **second-order low-pass**. Including source resistance $R_s$ and load $R_L$, the divider gives:
 
 <Equation tex="H=\frac{1}{1+\dfrac{R_s}{R_L}-\omega^2LC+j\omega\left(R_sC+\dfrac{L}{R_L}\right)}"/>
 
-At low frequency H approaches the resistive divider R_L/(R_s + R_L). Far above f₀ = 1/(2π√LC) the ω²LC term dominates and the response falls at **−40 dB/decade** (12 dB/octave): two reactive elements, two poles. Unlike an RC low-pass, an ideal LC filter dissipates nothing in its series element, which is why LC filters smooth power supplies: the DC passes without a resistive drop.
+At low frequency H approaches the resistive divider $R_L$/($R_s$ + $R_L$). Far above $f_0$ = 1/(2π√LC) the $\omega$²LC term dominates and the response falls at **−40 dB/decade** (12 dB/octave): two reactive elements, two poles. Unlike an RC low-pass, an ideal LC filter dissipates nothing in its series element, which is why LC filters smooth power supplies: the DC passes without a resistive drop.
 
 ### Terminations set the Q
 
-With R_s ≈ 0, the damping comes only from the load, and
+With $R_s$ ≈ 0, the damping comes only from the load, and
 
 <Equation tex="Q=\frac{R_L}{Z_0}"/>
 
-A lightly loaded filter (R_L much greater than Z₀) has high Q and a resonant **peak** near f₀. For a second-order low-pass the peak gain is Q/√(1 − 1/(4Q²)) once Q exceeds 1/√2. Q = 1/√2 gives the maximally flat (**Butterworth**) response with no peak.
+A lightly loaded filter ($R_L$ much greater than $Z_0$) has high Q and a resonant **peak** near $f_0$. For a second-order low-pass the peak gain is Q/√(1 − 1/(4Q²)) once Q exceeds 1/√2. Q = 1/√2 gives the maximally flat (**Butterworth**) response with no peak.
 
 <div className="worked-example">
 
 <span className="tiny-label">WORKED EXAMPLE / A SUPPLY RIPPLE FILTER</span><h3>100 µH and 10 µF</h3>
 
-<p>f₀ = <strong>5.03 kHz</strong>, Z₀ = 3.16 Ω. Into a 3.16 Ω load (Q = 1) the peak is only 1.25 dB. A 2.24 Ω load (Q = 0.707) gives a flat, Butterworth response.</p>
+<p>$f_0$ = <strong>5.03 kHz</strong>, $Z_0$ = 3.16 Ω. Into a 3.16 Ω load (Q = 1) the peak is only 1.25 dB. A 2.24 Ω load (Q = 0.707) gives a flat, Butterworth response.</p>
 
 <p>Into a 10 Ω load with 0.1 Ω of source resistance, Q ≈ 2.9 and the response peaks by about 9.3 dB. At 100 Ω, Q ≈ 16 and the peak is about 24 dB: noise near 5 kHz is <em>amplified</em> sixteen-fold.</p>
 
@@ -174,6 +184,14 @@ A lightly loaded filter (R_L much greater than Z₀) has high Q and a resonant *
 <LCFilterLab client:load/>
 
 <p className="caption">Figure 2. Ideal LC low-pass with source and load resistance, compared with a single RC pole at the same corner and with the −40 dB/decade asymptote.</p>
+
+### Normalize before quoting Q
+
+For finite source resistance, write the denominator as $a_0+j\omega a_1-\omega^2LC$, where $a_0=1+R_s/R_L$ and $a_1=R_sC+L/R_L$. Then:
+
+<Equation tex="H_0=\frac{1}{a_0},\qquad \omega_n=\sqrt{\frac{a_0}{LC}},\qquad Q=\frac{\sqrt{a_0LC}}{a_1}" />
+
+The natural frequency is no longer exactly $1/\sqrt{LC}$, and a peak above DC gain need not exceed unity gain from the source. When $Q>1/\sqrt2$, the peak occurs at $\omega_{peak}=\omega_n\sqrt{1-1/(2Q^2)}$. This is different from the natural frequency and the −3 dB frequency. Labeling all three as "the corner" hides useful distinctions.
 
 High-pass LC filters swap the positions of L and C. Band-pass and band-stop LC filters use series and parallel resonators as their arms. Higher-order LC filters chain several sections; their component values come from tables (Butterworth, Chebyshev and others) normalized to a 1 Ω, 1 rad/s prototype and then impedance- and frequency-scaled exactly as in Chapter 20.
 
@@ -195,16 +213,81 @@ The step response of a second-order circuit is set by the same Q. With damping r
 
 The overshoot is e^(−πζ/√(1 − ζ²)). The hot-plug circuit of Chapter 18, with Q ≈ 12, overshot by nearly 90%. A peak in the frequency response and ringing in the time response are two views of one property.
 
+<RingingFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED DESIGN / VOLTAGE GAIN AND STEP OVERSHOOT</span><h3>100 µH, 10 µF, 10 Ω load, negligible source resistance</h3>
+
+<p>$Z_0=3.16\ \Omega$, $f_n=5.03$ kHz and $Q=10/3.16=3.16$. The frequency response peaks at $f_{peak}=4.90$ kHz with gain 3.20, about 10.1 dB.</p>
+
+<p>For a step from zero, $ζ=1/(2Q)=0.158$ and overshoot is $e^{-πζ/\sqrt{1-ζ^2}}=0.605$. A 12 V input step can therefore reach 19.3 V in this linear model, even though the final output is 12 V.</p>
+
+<p>A flat frequency response needs Q ≈ 0.707; a monotonic step needs Q ≤ 0.5. These are different design requirements. Extra loss or a damping network can lower Q, but changing a load solely to damp the filter also changes its DC power consumption.</p>
+
+</div>
+
 ### Components are not ideal
 
-- **Inductor loss.** Winding resistance, core loss and skin effect limit Q, usually to tens or low hundreds. Iron or ferrite cores can saturate (Chapter 10), shifting f₀ with current.
+- **Inductor loss.** Winding resistance, core loss and skin effect limit Q, usually to tens or low hundreds. Iron or ferrite cores can saturate (Chapter 10), shifting $f_0$ with current.
 - **Self-resonance.** An inductor’s winding capacitance makes it a parallel tank with a self-resonant frequency; a capacitor’s lead inductance makes it a series resonator (Chapter 9). Each works as intended only well below its self-resonance.
-- **Tolerance.** f₀ depends on √(LC), so 5% tolerance on each component shifts f₀ by up to about 5%. A narrow filter (high Q) can be pushed entirely off its target; tunable components or trimming are common in selective circuits.
-- **Voltage and current stress.** The magnified voltages and circulating currents are real. Rate capacitors for Q times the drive, and inductors for the circulating current.
+- **Tolerance.** $f_0$ depends on √(LC), so 5% tolerance on each component shifts $f_0$ by up to about 5%. A narrow filter (high Q) can be pushed entirely off its target; tunable components or trimming are common in selective circuits.
+- **Voltage and current stress.** The magnified voltages and circulating currents are real. For series resonance, calculate capacitor and inductor peak voltages from the circulating current; a drive specified in RMS needs a √2 conversion for peak stress. Check winding current, saturation and loss at the operating frequency.
 
-<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>At resonance the reactances cancel, so <em>resistance alone</em> sets the response. Q = Z₀/R tells you how sharp, how magnified and how long the ringing will be.</p></div>
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>At resonance the reactances cancel, so <em>resistance alone</em> sets the response. For a series resonator, $Q=Z_0/R$ tells you how sharp, how magnified and how long the ringing will be. A loaded LC low-pass has a different Q set by its terminations.</p></div>
 
 <p className="reference-note">Coverage: The Art of Electronics §§1.7.12, 1.7.14 and 1.7.15. Chapter 25 uses a tank as the tuning element of a simple radio receiver.</p>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why can a 1 V drive produce 31.6 V across the resonant capacitor?</summary>
+<div>
+
+With Q = 31.6 the large opposing L and C voltage phasors cancel in KVL. The source replaces losses; circulating energy produces the individual voltages.
+
+</div>
+</details>
+
+<details>
+<summary>2. Is the half-power current half of the peak current?</summary>
+<div>
+
+No. Resistive power is proportional to current squared, so half power corresponds to $1/\sqrt2$ of the peak current.
+
+</div>
+</details>
+
+<details>
+<summary>3. How does a resistor across a parallel tank affect selectivity?</summary>
+<div>
+
+It reduces the effective parallel resistance and loaded Q, broadening the response. The winding’s unloaded Q alone does not describe the connected circuit.
+
+</div>
+</details>
+
+<details>
+<summary>4. Does Butterworth mean zero step overshoot?</summary>
+<div>
+
+No. Q = $1/\sqrt2$ has no frequency-response peak but about 4.3% step overshoot. Q ≤ 0.5 gives a monotonic step for the all-pole second-order model.
+
+</div>
+</details>
+
+<details>
+<summary>5. When is Q = Z₀/R the correct formula?</summary>
+<div>
+
+For a series resonator with R representing the total series loss. For a loaded LC low-pass, normalize its full denominator and include source and load damping.
+
+</div>
+</details>
 
 </section>
 

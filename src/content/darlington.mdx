@@ -1,3 +1,4 @@
+import {CompoundPairsFigure} from '../components/StageFigures';
 import Equation from '../components/Equation.astro';
 import {DarlingtonLab} from '../components/StageLabs';
 
@@ -5,7 +6,7 @@ import {DarlingtonLab} from '../components/StageLabs';
 
 <div className="eyebrow"><span>CHAPTER 38</span><span className="hairline"/>FOUNDATIONS / AMPLIFIER BUILDING BLOCKS</div>
 
-<h1>The Darlington connection<br/><em>Two transistors acting as one with β².</em></h1>
+<h1>The Darlington connection<br/><em>Two transistors acting as one with $\beta$².</em></h1>
 
 <p className="dek">Derive the Darlington and Sziklai pairs’ current gain, measure what the extra transistor costs in voltage, speed and dissipation, and choose when to use each.</p>
 
@@ -15,11 +16,11 @@ import {DarlingtonLab} from '../components/StageLabs';
 
 <div className="opening-grid">
 
-<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">A power transistor with β = 50 must switch 1 A, but the controller can supply only a milliamp or two. Where does the extra current gain come from?</p></div>
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">A power transistor with $\beta$ = 50 must switch 1 A, but the controller can supply only a milliamp or two. Where does the extra current gain come from?</p></div>
 
 <div>
 
-Power transistors have low β, often 20–80, so they need large base currents. The obvious fix is to drive the power transistor’s base from another transistor’s emitter: a follower driving a follower. The pair behaves like a single transistor whose current gain is roughly the product of the two.
+Power transistors have low $\beta$, often 20–80, so they need large base currents. The obvious fix is to drive the power transistor’s base from another transistor’s emitter: a follower driving a follower. The pair behaves like a single transistor whose current gain is roughly the product of the two.
 
 That combination, the **Darlington connection**, is everywhere: in power switches, in output stages, in arrays that drive relays and solenoids from logic. Its complementary cousin, the **Sziklai pair**, offers the same gain with different tradeoffs. Neither is free: both cost a base–emitter drop that a single transistor does not pay.
 
@@ -29,7 +30,7 @@ That combination, the **Darlington connection**, is everywhere: in power switche
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The connection and its current gain → What it costs → The Sziklai complementary pair → Explore three switches → Uses → A design example.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The connection and its current gain → What it costs → The Sziklai complementary pair → Explore three switches → Uses → A design example → Check your understanding.</p>
 
 </div>
 
@@ -37,13 +38,15 @@ That combination, the **Darlington connection**, is everywhere: in power switche
 
 <div className="section-heading"><span>01</span><h2>The connection and its current gain</h2></div>
 
-Connect the emitter of Q₁ to the base of Q₂ and tie the two collectors together. The composite has a base (Q₁’s), an emitter (Q₂’s) and a collector (both). Follow a base current I_B:
+<CompoundPairsFigure/>
+
+Connect the emitter of $Q_1$ to the base of $Q_2$ and tie the two collectors together. The composite has a base ($Q_1$’s), an emitter ($Q_2$’s) and a collector (both). Follow a base current $I_B$:
 
 <Equation tex="I_{E1}=(\beta_1+1)I_B=I_{B2},\qquad I_C=\beta_1I_B+\beta_2(\beta_1+1)I_B\quad\Rightarrow\quad \beta_{\mathrm{Darl}}=\beta_1\beta_2+\beta_1+\beta_2\approx\beta_1\beta_2" label="DARLINGTON CURRENT GAIN"/>
 
-With β₁ = 150 and β₂ = 50 the composite gain is 7700; the lab’s Ebers–Moll model gives exactly that in the active region. As a follower, the pair presents an input impedance of about β₁β₂ times its emitter load: 8 Ω looks like 60 kΩ.
+With $\beta$₁ = 150 and $\beta$₂ = 50 the composite gain is 7700; the lab’s Ebers–Moll model gives exactly that in the active region. As a follower, the pair presents an input impedance of about $\beta_1\beta_2$ times its emitter load: 8 Ω looks like 60 kΩ.
 
-The composite’s base–emitter voltage is the sum of two: **V_BE ≈ 1.2–1.5 V**. In the lab, switching 1 A takes about 1.45 V between base and emitter, because the power transistor runs at high current.
+The composite’s base–emitter voltage is the sum of two: **$V_{BE}$ ≈ 1.2–1.5 V**. In the lab, switching 1 A takes about 1.45 V between base and emitter, because the power transistor runs at high current.
 
 </section>
 
@@ -53,7 +56,7 @@ The composite’s base–emitter voltage is the sum of two: **V_BE ≈ 1.2–1.5
 
 ### Saturation voltage
 
-Q₂ can saturate only if its base is held above its emitter by V_BE2, and its base is Q₁’s emitter. Q₁ cannot pull its own emitter above its collector by more than V_CE(sat). So the composite’s collector cannot fall below
+$Q_2$ can saturate only if its base is held above its emitter by $V_{BE2}$, and its base is $Q_1$’s emitter. $Q_1$ cannot pull its own emitter above its collector by more than $V_{CE(\mathrm{sat})}$. So the composite’s collector cannot fall below
 
 <Equation tex="V_{CE,\min}\approx V_{BE2}+V_{CE(\mathrm{sat})1}\approx0.7\text{–}1\ \mathrm V"/>
 
@@ -61,11 +64,11 @@ In the lab, the Darlington bottoms out at 0.76 V at about 1 A, against 0.09 V fo
 
 ### Speed
 
-When a Darlington turns off, Q₁ stops conducting first, and Q₂’s base is left with no path to remove its stored charge except through leakage. Turn-off can take many microseconds. A **bleeder resistor** from Q₂’s base to emitter (a few hundred ohms for power devices, often built into Darlington packages) provides the path. It also stops Q₁’s leakage current, multiplied by β₂, from partly turning on Q₂ when hot.
+When a Darlington turns off, $Q_1$ stops conducting first, and $Q_2$’s base is left with no path to remove its stored charge except through leakage. Turn-off can take many microseconds. A **bleeder resistor** from $Q_2$’s base to emitter (a few hundred ohms for power devices, often built into Darlington packages) provides the path. It also stops $Q_1$’s leakage current, multiplied by $\beta$₂, from partly turning on $Q_2$ when hot.
 
 ### Leakage and temperature
 
-Q₁’s collector-to-base leakage is amplified by both transistors, and the two V_BEs both fall about 2 mV/°C, so the composite’s V_BE falls about 4 mV/°C—twice the thermal sensitivity of a single transistor in bias circuits.
+$Q_1$’s collector-to-base leakage is amplified by both transistors, and the two $V_{BE}$ values both fall about 2 mV/°C, so the composite’s $V_{BE}$ falls about 4 mV/°C—twice the thermal sensitivity of a single transistor in bias circuits.
 
 </section>
 
@@ -73,13 +76,13 @@ Q₁’s collector-to-base leakage is amplified by both transistors, and the two
 
 <div className="section-heading"><span>03</span><h2>The Sziklai complementary pair</h2></div>
 
-The **Sziklai** or **complementary-feedback pair** uses an NPN driver Q₁ and a PNP output Q₂. Q₁’s collector pulls down on Q₂’s base; Q₂’s emitter is the composite’s collector terminal, and Q₂’s collector returns to Q₁’s emitter, the composite’s emitter. The pair behaves as a single NPN transistor:
+The **Sziklai** or **complementary-feedback pair** uses an NPN driver $Q_1$ and a PNP output $Q_2$. $Q_1$’s collector pulls down on $Q_2$’s base; $Q_2$’s emitter is the composite’s collector terminal, and $Q_2$’s collector returns to $Q_1$’s emitter, the composite’s emitter. The pair behaves as a single NPN transistor:
 
-- **Current gain** ≈ β₁β₂, as for the Darlington: Q₁’s collector current is Q₂’s base current.
-- **Input V_BE is one junction** (about 0.74 V in the lab), because only Q₁’s base–emitter is between the input and output terminals. The pair is also more thermally stable: only Q₁’s V_BE sets the input voltage, and Q₁ is a small transistor that does not heat itself.
-- **Saturation is no better.** The output can fall only to Q₂’s emitter–base voltage plus Q₁’s saturation voltage—about 0.76 V in the lab, the same as the Darlington. A common belief that the Sziklai pair “saturates like a single transistor” is not correct.
+- **Current gain** ≈ $\beta_1\beta_2$, as for the Darlington: $Q_1$’s collector current is $Q_2$’s base current.
+- **Input $V_{BE}$ is one junction** (about 0.74 V in the lab), because only $Q_1$’s base–emitter is between the input and output terminals. The pair is also more thermally stable: only $Q_1$’s $V_{BE}$ sets the input voltage, and $Q_1$ is a small transistor that does not heat itself.
+- **Saturation is no better.** The output can fall only to $Q_2$’s emitter–base voltage plus $Q_1$’s saturation voltage—about 0.76 V in the lab, the same as the Darlington. A common belief that the Sziklai pair “saturates like a single transistor” is not correct.
 
-The Sziklai pair also has an internal feedback loop through Q₂, which makes it faster to respond but more prone to oscillation; small capacitors or resistors are sometimes needed to keep it stable. It is popular in audio output stages, where an NPN Darlington on one side and an NPN-equivalent Sziklai pair on the other (the “quasi-complementary” output) allowed designers to use only NPN power transistors.
+The Sziklai pair also has an internal feedback loop through $Q_2$, which makes it faster to respond but more prone to oscillation; small capacitors or resistors are sometimes needed to keep it stable. It is popular in audio output stages, where an NPN Darlington on the upper side and a PNP-equivalent Sziklai pair (PNP driver, NPN power output) on the lower side formed a “quasi-complementary” stage using NPN power transistors on both sides.
 
 </section>
 
@@ -99,13 +102,13 @@ Read the plot from left to right. The compound pairs pull the collector down wit
 
 <div className="section-heading"><span>05</span><h2>Uses</h2></div>
 
-**High-impedance followers.** A Darlington follower presents β₁β₂ times its load at its input. That lets a weak source drive a loudspeaker or motor, and it is the standard driver in push–pull output stages (Chapter 37).
+**High-impedance followers.** A Darlington follower presents $\beta_1\beta_2$ times its load at its input. That lets a weak source drive a loudspeaker or motor, and it is the standard driver in push–pull output stages (Chapter 37).
 
 **Logic-driven loads.** Darlington arrays, such as the ULN2003 family of seven channels with built-in flyback diodes, switch relays, solenoids, lamps and stepper motors directly from logic outputs. Their ~1 V on-voltage is acceptable at a few hundred milliamps.
 
-**Current sources and regulators.** A Darlington pass transistor reduces the base current a regulator’s control circuit must provide. The extra V_BE raises the regulator’s dropout voltage; low-dropout regulators use a PNP or MOSFET pass device instead.
+**Current sources and regulators.** A Darlington pass transistor reduces the base current a regulator’s control circuit must provide. The extra $V_{BE}$ raises the regulator’s dropout voltage; low-dropout regulators use a PNP or MOSFET pass device instead.
 
-**Alternatives.** Superbeta transistors (β of thousands at low current) serve low-current applications. At higher currents, a logic-level MOSFET often beats both: no steady gate current, and an on-voltage set by I × R_DS(on) that can be millivolts. MOSFETs come later in the course.
+**Alternatives.** Superbeta transistors ($\beta$ of thousands at low current) serve low-current applications. At higher currents, a logic-level MOSFET often beats both: no steady gate current, and an on-voltage set by I × $R_{DS(\mathrm{on})}$ that can be millivolts. MOSFETs come later in the course.
 
 </section>
 
@@ -119,15 +122,82 @@ Read the plot from left to right. The compound pairs pull the collector down wit
 
 <p>Chapter 27’s practice problem found that a single transistor would need 25 mA of base drive. With a Darlington whose worst-case composite gain is 1000, the minimum base current is 0.25 mA; with fourfold overdrive, <strong>1 mA</strong>.</p>
 
-<p>The input needs about 1.4 V, so R_B = (3.3 − 1.4) V/1 mA ≈ <strong>1.8 kΩ</strong>. Add a bleeder of a few kilohms on Q₁’s base if the logic pin can float, and keep the flyback diode across the solenoid.</p>
+<p>The input needs about 1.4 V, so $R_B$ = (3.3 − 1.4) V/1 mA ≈ <strong>1.8 kΩ</strong>. Add a bleeder of a few kilohms on $Q_1$’s base if the logic pin can float, and keep the flyback diode across the solenoid.</p>
 
-<p>On-voltage is about 0.8 V, so the solenoid sees 23.2 V and the Darlington dissipates 0.8 × 0.25 = <strong>0.2 W</strong>, comfortable in a TO-92 or small surface-mount package. A MOSFET with 0.1 Ω on-resistance would dissipate 6 mW, but needs a gate threshold compatible with 3.3 V drive.</p>
+<p>On-voltage is about 0.8 V, so the solenoid sees 23.2 V and the Darlington dissipates 0.8 × 0.25 = <strong>0.2 W</strong>, a power level whose acceptability depends on package thermal resistance and ambient temperature. A MOSFET with 0.1 Ω on-resistance would dissipate 6 mW, but needs an on-resistance specified at a gate drive no greater than 3.3 V; threshold voltage alone does not establish that.</p>
 
 </div>
 
-<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A compound pair multiplies β, so a weak drive controls a heavy load. Both the Darlington and the Sziklai pay for it with <em>an extra base–emitter drop in their on-voltage</em>; the Sziklai saves the drop at the input.</p></div>
+### Give stored charge a way out
+
+A floating base does not guarantee a fast off state. A base–emitter bleeder on the power transistor drains leakage and stored charge, but also takes part of the driver current while on. At a 0.7 V junction voltage, a 1 kΩ bleeder consumes 0.7 mA. If the power transistor needs 5 mA of base drive, its driver must now supply about 5.7 mA.
+
+A first estimate of charge-removal time is $t\approx Q_{stored}/I_{reverse}$. For an illustrative 20 nC and 2 mA reverse base current, the charge-removal contribution is 10 µs. This is a charge budget, not a universal transistor delay: saturation depth, previous collector current and the drive circuit determine the stored charge.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / CHECK THE ENTIRE INPUT BUDGET</span><h3>One milliamp from a 3.3 V output</h3>
+
+<p>If two base–emitter drops total 1.4 V and the logic output may fall to 3.0 V under load, a 1.8 kΩ resistor supplies only $(3.0-1.4)/1800=0.889$ mA. To guarantee 1 mA under those assumptions, choose at most 1.6 kΩ, then check the maximum current at the highest logic voltage and lowest junction drops.</p>
+
+<p>Use the composite device’s specified collector-current and saturation-voltage conditions to choose base drive. Multiplying typical small-signal β values does not guarantee saturated switching. Finally check on-state power, pulse duration, package thermal resistance and the turn-off clamp.</p>
+
+</div>
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A compound pair multiplies $\beta$, so a weak drive controls a heavy load. Both the Darlington and the Sziklai pay for it with <em>an extra base–emitter drop in their on-voltage</em>; the Sziklai saves the drop at the input.</p></div>
 
 <p className="reference-note">Coverage: The Art of Electronics §2.4.2. The saturation comparison uses the Ebers–Moll model of Chapter 34.</p>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Which current drives the second Darlington transistor?</summary>
+<div>
+
+The first transistor’s emitter current, which is its collector current plus its base current.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why can a Darlington have a larger on-voltage than a single saturated transistor?</summary>
+<div>
+
+The power transistor’s base needs one forward junction drop, and the driver still needs collector–emitter headroom above it.
+
+</div>
+</details>
+
+<details>
+<summary>3. Does this Sziklai connection put the PNP collector at the load?</summary>
+<div>
+
+No. The PNP emitter is at the composite collector/load port; its collector returns to the NPN driver emitter at ground.
+
+</div>
+</details>
+
+<details>
+<summary>4. What tradeoff does an output base–emitter bleeder introduce?</summary>
+<div>
+
+It improves leakage control and charge removal, but diverts some on-state driver current away from the power transistor’s base.
+
+</div>
+</details>
+
+<details>
+<summary>5. Is a large typical composite β enough to choose a switch’s base resistor?</summary>
+<div>
+
+No. Use guaranteed drive and saturation conditions at the intended current and temperature, then budget logic-output voltage and resistor tolerance.
+
+</div>
+</details>
 
 </section>
 

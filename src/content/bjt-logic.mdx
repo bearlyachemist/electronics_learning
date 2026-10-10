@@ -1,3 +1,4 @@
+import {LogicRiseFigure} from '../components/FeedbackTeachingFigures';
 import Equation from '../components/Equation.astro';
 import {FeedbackGainLab,LoopStabilityLab,DegenerationLab,SupplyControlLab,TemperatureLab,LogicLab} from '../components/FeedbackLabs';
 import {FeedbackBlock,FeedbackAmpFigure,SupplyFigure,ThermalFigure,LogicFigure} from '../components/FeedbackFigures';
@@ -14,22 +15,34 @@ import {FeedbackBlock,FeedbackAmpFigure,SupplyFigure,ThermalFigure,LogicFigure} 
 
 </div>
 
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">A truth table says LOW—who supplies the current that makes it LOW?</p></div>
+
+<div>
+
+A logic gate is an analog current-steering circuit with voltage ranges assigned to Boolean states. Its truth table describes the intended function; base drive, pull-up current, loading and stored charge determine whether the circuit delivers that function at the required speed.
+
+</div>
+
+</div>
+
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Diode AND and OR → The transistor restores levels → RTL NOR and DTL NAND → Check truth and current together → Noise margin and fan-out → Speed, memory and practical uses.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Diode AND and OR → The transistor restores levels → RTL NOR and DTL NAND → Check truth and current together → Noise margin and fan-out → Speed, memory and practical uses → Check your understanding.</p>
 
 </div>
 
 
 <section id="diodes">
 
-## 01 / Diode AND and OR
+<div className="section-heading"><span>01</span><h2>Diode AND and OR</h2></div>
 
 A digital signal is a voltage interpreted as belonging to a LOW range or a HIGH range. Circuits still carry continuous currents, capacitances still charge, and transistor junctions still follow analog laws. A truth table describes intended decisions; it does not establish voltage margins or speed.
 
 For **positive logic**, a higher voltage represents logical 1. A diode OR gate has one diode from each input to a common output: each input connects to an anode, all cathodes join the output, and a resistor pulls output to ground. Any sufficiently high input can supply current and raise output.
 
-With fixed diode drop Vꜰ and high-impedance load:
+With fixed diode drop $V_F$ and high-impedance load:
 
 <Equation tex="V_{\mathrm{OR}}\approx\max(0,V_A-V_F,V_B-V_F)" />
 
@@ -56,7 +69,7 @@ Cascading many passive diode gates accumulates voltage errors and loading. They 
 
 <section id="inverter">
 
-## 02 / The transistor restores levels
+<div className="section-heading"><span>02</span><h2>The transistor restores levels</h2></div>
 
 An NPN inverter uses an emitter at ground, collector resistor to +5 V, output at collector, and a resistor from input to base. A LOW input leaves it off; the collector pull-up raises output. A HIGH input drives collector current and pulls output LOW.
 
@@ -68,7 +81,7 @@ With an assumed base drop of 0.7 V and an 18 kΩ input resistor, a 5 V input pro
 
 <Equation tex="I_B\approx\frac{5-0.7}{18\ \mathrm{k\Omega}}=0.239\ \mathrm{mA},\qquad \beta_{\mathrm{forced}}=\frac{I_C}{I_B}\approx9.13" />
 
-The phrase **forced β** describes the collector/base current ratio demanded by the external circuit. It is not the transistor's forward-active β parameter. Designing with a lower forced ratio can help obtain a low saturation voltage, but the device's guaranteed test conditions still govern.
+The phrase **forced $\beta$** describes the collector/base current ratio demanded by the external circuit. It is not the transistor's forward-active $\beta$ parameter. Designing with a lower forced ratio can help obtain a low saturation voltage, but the device's guaranteed test conditions still govern.
 
 When the transistor turns off, output is not an actively driven 5 V source. It is a pull-up resistor to 5 V. A resistive load can form a divider and lower the HIGH level; capacitance slows the rise.
 
@@ -78,7 +91,7 @@ During the transition, the transistor can be forward-active and output can take 
 
 <section id="gates">
 
-## 03 / RTL NOR and DTL NAND
+<div className="section-heading"><span>03</span><h2>RTL NOR and DTL NAND</h2></div>
 
 ### RTL NOR: either transistor can pull down
 
@@ -119,13 +132,13 @@ The fixed-drop assumptions are for tracing current and first-pass sizing. Diode 
 
 <section id="explore">
 
-## 04 / Check truth and current together
+<div className="section-heading"><span>04</span><h2>Check truth and current together</h2></div>
 
 <LogicLab client:load />
 
 Toggle inputs to verify the intended truth tables. Then increase the number of following DTL inputs. When this output is LOW, each downstream diode-AND node sends current into it. That extra current must be sunk along with its own collector-resistor current.
 
-The experiment separates a Boolean result from a verified electrical assumption. When its chosen forced-β budget fails, it stops presenting 0.2 V as an assured output level. The circuit may still work with a particular transistor, but the stated conservative calculation no longer proves it.
+The experiment separates a Boolean result from a verified electrical assumption. When its chosen forced-$\beta$ budget fails, it stops presenting 0.2 V as an assured output level. The circuit may still work with a particular transistor, but the stated conservative calculation no longer proves it.
 
 These nominal component choices are useful for exposing loading, not optimized logic-family designs. Larger available base current, a weaker collector pull-up or lower downstream loading can improve the budget, with speed and power tradeoffs.
 
@@ -133,15 +146,15 @@ These nominal component choices are useful for exposing loading, not optimized l
 
 <section id="margins">
 
-## 05 / Noise margin and fan-out
+<div className="section-heading"><span>05</span><h2>Noise margin and fan-out</h2></div>
 
-A compatible driver and receiver need their guaranteed voltage ranges to overlap correctly. Define Vᴏʜ(min) as the lowest guaranteed HIGH output, Vɪʜ(min) as the lowest recognized HIGH input, Vᴏʟ(max) as the highest guaranteed LOW output, and Vɪʟ(max) as the highest recognized LOW input.
+A compatible driver and receiver need their guaranteed voltage ranges to overlap correctly. Define $V_{OH(\mathrm{min})}$ as the lowest guaranteed HIGH output, $V_{IH(\mathrm{min})}$ as the lowest recognized HIGH input, $V_{OL(\mathrm{max})}$ as the highest guaranteed LOW output, and $V_{IL(\mathrm{max})}$ as the highest recognized LOW input.
 
 <Equation tex="NM_H=V_{OH,\min}-V_{IH,\min},\qquad NM_L=V_{IL,\max}-V_{OL,\max}" />
 
 If a hypothetical driver guarantees HIGH above 4.0 V and LOW below 0.3 V, while its receiver accepts HIGH above 2.8 V and LOW below 1.0 V, the nominal guaranteed margins are 1.2 V and 0.7 V. These are illustrative interface specifications, not claims for every BJT logic gate.
 
-Fan-out must satisfy both HIGH- and LOW-state loading. For the DTL example, each LOW input draws about 0.41 mA. At a forced-β target of ten, 0.257 mA base current supports about 2.57 mA collector current. Its own pull-up already requires 2.18 mA, leaving only about 0.39 mA—slightly less than one additional nominal DTL input.
+Fan-out must satisfy both HIGH- and LOW-state loading. For the DTL example, each LOW input draws about 0.41 mA. At a forced-$\beta$ target of ten, 0.257 mA base current supports about 2.57 mA collector current. Its own pull-up already requires 2.18 mA, leaving only about 0.39 mA—slightly less than one additional nominal DTL input.
 
 That result is not a paradox. The selected component values do not demonstrate a guaranteed one-gate fan-out under that particular conservative target. Redesign the current budget rather than hiding the result behind the truth table.
 
@@ -149,17 +162,25 @@ For example, raising the output pull-up to 4.7 kΩ reduces its LOW current to ab
 
 Actual HIGH-state loading, leakage, component tolerances, supply variation and temperature must be included before claiming guaranteed margins.
 
+### Close the fan-out and speed budget together
+
+With a 4.7 kΩ collector pull-up, the nominal LOW pull-up current is $(5-0.2)/4700=1.02$ mA. The DTL base path supplies about 0.257 mA, allowing 2.57 mA collector current at the chosen forced gain of ten. Three following inputs at 0.41 mA each bring the total to about 2.25 mA; four bring it to about 2.66 mA and exceed that budget.
+
+At LOW, pull-up dissipation is approximately $4.8^2/4700=4.90$ mW. At HIGH, an illustrative 20 µA total leakage causes a 94 mV sag. The weaker resistor improves LOW-state fan-out while worsening HIGH-state loading and rise time. Check both states and the threshold-crossing time before calling it a compatible interface.
+
 </section>
 
 <section id="timing">
 
-## 06 / Speed, memory and practical uses
+<div className="section-heading"><span>06</span><h2>Speed, memory and practical uses</h2></div>
+
+<LogicRiseFigure/>
 
 When the transistor switches off, the collector pull-up charges output capacitance. A first approximation is:
 
 <Equation tex="v_o(t)=V_{CC}-(V_{CC}-V_{OL})e^{-t/(R_CC_L)}" />
 
-For 4.7 kΩ and 100 pF, τ = 470 ns. Starting from 0.2 V, reaching a 2.8 V HIGH threshold with a 5 V supply takes approximately:
+For 4.7 kΩ and 100 pF, $\tau$ = 470 ns. Starting from 0.2 V, reaching a 2.8 V HIGH threshold with a 5 V supply takes approximately:
 
 <Equation tex="t=-R_CC_L\ln\!\left(\frac{5-2.8}{5-0.2}\right)\approx367\ \mathrm{ns}" />
 
@@ -176,7 +197,58 @@ Keep the analog questions beside the Boolean ones: who supplies or sinks current
 </section>
 
 
-<div className="practice-home">
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why must a NOR LOW budget work with just one transistor conducting?</summary>
+<div>
+
+One HIGH input must be sufficient to produce LOW, independently of the other input.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why add level-shifting diodes to the DTL base path?</summary>
+<div>
+
+They prevent a LOW-clamped input node from supplying enough voltage for unintended base conduction.
+
+</div>
+</details>
+
+<details>
+<summary>3. Does a valid Boolean state guarantee a valid voltage?</summary>
+<div>
+
+No. Loading can defeat the assumed LOW or HIGH level even when the intended truth table is unchanged.
+
+</div>
+</details>
+
+<details>
+<summary>4. What is the cost of a larger collector pull-up resistor?</summary>
+<div>
+
+Less LOW-state current, but slower charging and greater HIGH-state sag under leakage or load.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why can more base overdrive slow turn-off?</summary>
+<div>
+
+Deep saturation stores charge that must be removed before collector current ceases.
+
+</div>
+</details>
+
+</section>
+
+<div className="chapter-end">
 
 <span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and complete worked solutions.</p><a className="primary-link" href="/bjt-logic/practice/">Open practice →</a>
 

@@ -1,20 +1,20 @@
+import {htmlSub} from './MathText';
 import {useState} from 'react';
 import {junction,diodePoint,rectifier,zener,regulator,limiter,flyback} from '../engine/diodes.mjs';
 import Plot from './Plot';
 import {Control,Readouts,f} from './LabControls';
-const green='var(--accent)',orange='var(--orange)';
+import {Schematic,Wire,Res,Cap,Ind,Diode,Source,CurrentSource,Switch,Ground,Rail,Dot,Terminal,Text,CurrentArrow,green,orange,ink,type Pt} from './Schematic';
 const pts=(fn:(x:number)=>number,a:number,b:number):[number,number][]=>Array.from({length:201},(_,k)=>{const x=a+(b-a)*k/200;return [x,fn(x)]});
-function Head({title,reset}:{title:string;reset:()=>void}){return <div className="lab-heading"><span className="tiny-label">{title}</span><button onClick={reset}>Reset ↺</button></div>}
-function Diode({x,y,rotate=0}:{x:number;y:number;rotate?:number}){return <g transform={'translate('+x+' '+y+') rotate('+rotate+')'}><path d="M-30 0 H-13 M13 0 H30 M-13 -13 L13 0 L-13 13 Z M13 -15 V15"/></g>}
-function SeriesFigure({source,resistor,output,mode='diode'}:{source:string;resistor:string;output:string;mode?:'diode'|'zener'|'limiter'}){
-return <svg className="wide-circuit" viewBox="0 0 640 260" role="img" aria-label={source+' through '+resistor+'. '+output+(mode==='limiter'?'. Upper diode anode at output, cathode at 3.3 V; lower diode anode at ground, cathode at output.':'')}>
-<g fill="none" stroke="var(--ink)" strokeWidth="1.8"><circle cx="80" cy="125" r="25"/><path d="M80 100 V55 H200 M260 55 H380 M80 150 V220 H490 M80 220 v10 m-12 0 h24 m-19 6 h14 M75 115 h10 m-5 -5 v10 M75 137 h10"/><rect x="200" y="45" width="60" height="20"/>
-{mode==='diode'?<><path d="M380 55 V100 M380 160 V220"/><Diode x={380} y={130} rotate={90}/></>:mode==='zener'?<><path d="M380 55 V100 M380 160 V220 M365 117 v-5 h15 M395 117 v5"/><Diode x={380} y={130} rotate={-90}/><path d="M380 55 H490 V100 M490 160 V220"/><circle cx="490" cy="130" r="30"/><path d="M490 112 v35 m-6 -8 l6 8 l6 -8"/></>:<><path d="M380 55 H440 V100 M440 160 V220 M380 55 V100 M380 160 V220"/><Diode x={380} y={130} rotate={-90}/><Diode x={440} y={130} rotate={90}/><path d="M440 220 H540"/><path d="M380 220 H80" stroke="var(--paper)" strokeWidth="5"/></>}
-</g><text x="115" y="130" className="symbol-label">{source}</text><text x="197" y="30" className="symbol-label">{resistor}</text><text x="392" y="47" className="output-label">{output}</text>
-{mode==='diode'&&<><text x="409" y="113" className="symbol-label">A</text><text x="409" y="158" className="symbol-label">K</text></>}
-{mode==='zener'&&<><text x="350" y="178" textAnchor="end" className="symbol-label">5.1 V zener</text><text x="526" y="133" className="symbol-label">load</text></>}
-{mode==='limiter'&&<text x="510" y="215" className="symbol-label">3.3 V</text>}
-</svg>}
+function Head({title,reset}:{title:string;reset:()=>void}){return <div className="lab-heading"><span className="tiny-label">{htmlSub(title)}</span><button onClick={reset}>Reset ↺</button></div>}
+function SeriesFigure({source,resistor,output,mode='diode'}:{source:string;resistor:string;output:string;mode?:'diode'|'zener'}){
+ const n:Pt=[380,55];
+ return <Schematic height={260} description={source+' through '+resistor+'. '+output+(mode==='zener'?'. A 5.1 volt zener from the output to ground, cathode at the output, and a load current sink in parallel.':'. A diode from the output to ground, anode at the output.')}>
+  <Source a={[80,200]} b={[80,110]} label={source}/><Wire pts={[[80,110],[80,55],[200,55]]}/><Res a={[200,55]} b={[300,55]} label={resistor}/><Wire pts={[[300,55],n]}/>
+  {mode==='diode'?<Diode a={n} b={[380,220]} label="D" value="anode at top"/>:<><Diode kind="zener" a={[380,220]} b={n} label="5.1 V zener" flipLabel/><Wire pts={[n,[490,55]]}/><CurrentSource a={[490,55]} b={[490,220]} label="load"/><Wire pts={[[490,220],[380,220]]}/><Dot at={[380,220]}/></>}
+  <Wire pts={[[380,220],[80,220],[80,200]]}/><Ground at={[230,220]}/><Dot at={n} color={green}/>
+  <Text x={392} y={42} kind="output">{output}</Text>
+ </Schematic>;
+}
 export function JunctionLab(){
  const [reverse,setReverse]=useState(0),[ratio,setRatio]=useState(1);const d=junction({na:1e22,nd:ratio*1e22,bias:-reverse});
  const left=300-d.xp/d.width*260,right=300+d.xn/d.width*260;
@@ -41,7 +41,13 @@ export function RectifierLab(){
  const d=rectifier({c:uf*1e-6,rl,bridge});
  return <div className="lab" aria-label="Rectifier reservoir experiment"><Head title="RECHARGE PULSES · LOAD DISCHARGE" reset={()=>{setUf(470);setRl(500);setBridge(true)}}/>
  <div className="view-buttons"><button aria-pressed={bridge} onClick={()=>setBridge(true)}>Full-wave bridge</button><button aria-pressed={!bridge} onClick={()=>setBridge(false)}>Half-wave</button></div>
- <svg className="wide-circuit" viewBox="0 0 640 220" role="img" aria-label="Isolated 9 V RMS 50 Hz source with 10 ohms total series resistance feeds selected rectifier, then parallel capacitor and load. Rectifier is shown as a functional block."><g stroke="var(--ink)" fill="none" strokeWidth="1.8"><circle cx="65" cy="105" r="24"/><path d="M65 81 V55 H135 M185 55 H220 M65 129 V170 H220"/><rect x="135" y="45" width="50" height="20"/><rect x="220" y="30" width="150" height="155"/><path d="M370 55 H530 V85 M530 140 V170 H370 M430 55 V100 M415 100 H445 M415 115 H445 M430 115 V170"/><rect x="520" y="85" width="20" height="55"/></g><text x="46" y="112" className="symbol-label">~</text><text x="123" y="27" className="symbol-label">10 Ω</text><text x="295" y="100" textAnchor="middle" className="symbol-label">{bridge?'Bridge':'Half-wave'}</text><text x="295" y="124" textAnchor="middle" className="symbol-label">{bridge?'2 × 0.7 V':'1 × 0.7 V'}</text><text x="403" y="203" className="symbol-label">Reservoir C</text><text x="555" y="117" className="symbol-label">Load</text></svg>
+ <Schematic height={220} description="Isolated 9 V RMS 50 Hz source with 10 ohms total series resistance feeds the selected rectifier, then a parallel capacitor and load. The rectifier is shown as a functional block.">
+  <Source kind="ac" a={[65,170]} b={[65,90]} label="9 V RMS"/><Wire pts={[[65,90],[65,55],[110,55]]}/><Res a={[110,55]} b={[190,55]} label="10 Ω"/><Wire pts={[[190,55],[220,55]]}/>
+  <g data-pins="220,55 220,170 370,55 370,170"><rect x="220" y="30" width="150" height="155" fill="var(--white)" stroke={ink} strokeWidth="1.8"/>
+   <Text x={295} y={100} anchor="middle">{bridge?'Bridge':'Half-wave'}</Text><Text x={295} y={124} anchor="middle" kind="value">{bridge?'2 × 0.7 V':'1 × 0.7 V'}</Text></g>
+  <Wire pts={[[65,170],[220,170]]}/><Wire pts={[[370,55],[530,55]]}/><Wire pts={[[370,170],[530,170]]}/>
+  <Cap polar a={[440,170]} b={[440,55]} label="C" value="reservoir"/><Res a={[530,55]} b={[530,170]} label="load"/><Dot at={[440,55]}/><Dot at={[440,170]}/>
+ </Schematic>
  <div className="horizontal-controls"><Control label="Reservoir capacitance" value={uf} onChange={setUf} min={100} max={2200} step={50} unit="µF"/><Control label="Load resistance" value={rl} onChange={setRl} min={100} max={1000} step={25} unit="Ω"/></div>
  <Readouts values={[['MEAN OUTPUT',f(d.mean),'V'],['RIPPLE',f(d.ripple,3),'V p-p'],['PEAK RECHARGE',f(d.peakCurrent*1000),'mA']]}/>
  <div className="plot-area"><Plot curves={[{name:'Available rectified voltage',color:orange,points:d.points.map(p=>[p.t*1000,p.drive])},{name:'Reservoir voltage',color:green,points:d.points.map(p=>[p.t*1000,p.v])}]} xRange={[0,40]} yRange={[0,13]} xLabel="TIME / ms" yLabel="VOLTAGE / V" description="Two source periods after settling: capacitor recharges near peaks and supplies the resistor between them."/><Plot curves={[{name:'Recharge current',color:orange,points:d.points.map(p=>[p.t*1000,p.current*1000])}]} xRange={[0,40]} yRange={[0,Math.max(1,d.peakCurrent*1100)]} xLabel="TIME / ms" yLabel="SOURCE CURRENT MAGNITUDE / mA" description="Source current is concentrated in recharge pulses, rather than equal to load current at every instant."/><p className="plot-summary">9 V RMS, 50 Hz isolated source; 10 Ω total source resistance. Fixed diode drops, resistor load, ideal capacitor. Backward-Euler steps of 20 µs after 38 settling cycles. Winding inductance, recovery, capacitor ESR and startup surge are omitted from the displayed steady-state window.</p></div></div>;
@@ -57,7 +63,11 @@ export function RegulatorLab(){
 export function LimiterLab(){
  const [amp,setAmp]=useState(5),[r,setR]=useState(1000);const d=limiter({vin:amp,r});
  return <div className="lab" aria-label="Diode limiter experiment"><Head title="A CLAMP NEEDS A CURRENT PATH" reset={()=>{setAmp(5);setR(1000)}}/>
- <svg className="wide-circuit" viewBox="0 0 640 250" role="img" aria-label="Input through series resistor to output. Upper diode from output anode to 3.3 volt cathode; lower diode from ground anode to output cathode."><g stroke="var(--ink)" strokeWidth="1.8" fill="none"><path d="M65 125 H160 M220 125 H400 M400 40 V65 M400 185 V215"/><rect x="160" y="115" width="60" height="20"/><Diode x={400} y={95} rotate={-90}/><Diode x={400} y={155} rotate={-90}/><path d="M386 215 H414 m-23 6 h18 m-12 6 h6"/></g><text x="50" y="100" className="symbol-label">Vin</text><text x="155" y="100" className="symbol-label">{f(r,0)} Ω</text><text x="425" y="132" className="output-label">Vout</text><text x="373" y="30" className="symbol-label">3.3 V</text></svg>
+ <Schematic height={250} description="Input through series resistor to output. Upper diode from output anode to 3.3 volt cathode; lower diode from ground anode to output cathode.">
+  <Terminal at={[65,125]} label="V_in" side="above"/><Wire pts={[[65,125],[150,125]]}/><Res a={[150,125]} b={[250,125]} label={f(r,0)+' Ω'}/><Wire pts={[[250,125],[400,125]]}/>
+  <Rail at={[400,40]} label="3.3 V"/><Diode a={[400,125]} b={[400,40]} label="to 3.3 V"/><Diode a={[400,215]} b={[400,125]} label="from ground"/><Ground at={[400,215]}/>
+  <Wire pts={[[400,125],[500,125]]} color={green}/><Terminal at={[500,125]} label="V_out" side="right"/><Dot at={[400,125]} color={green}/>
+ </Schematic>
  <div className="horizontal-controls"><Control label="Input amplitude" value={amp} onChange={setAmp} min={1} max={10} step={.1} unit="V peak"/><Control label="Limiting resistance" value={r} onChange={setR} min={2} max={4} step={.05} log unit="Ω"/></div>
  <Readouts values={[['UPPER CLIP LEVEL','3.60','V'],['POSITIVE PEAK CURRENT',f(d.current*1000),'mA'],['NEGATIVE PEAK MAGNITUDE',f(Math.max(0,amp-.3)/r*1000),'mA']]}/>
  <div className="plot-area"><Plot curves={[{name:'Input',color:orange,points:pts(t=>amp*Math.sin(2*Math.PI*t),0,2)},{name:'Clamped output',color:green,points:pts(t=>limiter({vin:amp*Math.sin(2*Math.PI*t),r}).out,0,2)}]} xRange={[0,2]} yRange={[-amp-1,amp+1]} xLabel="TIME / PERIODS" yLabel="VOLTAGE / V" description="Ideal 0.3 V diode clamps limit the output to minus 0.3 V and plus 3.6 V."/><p className="plot-summary">Fixed 0.3 V drops, no output load, ideal rails that can accept injected current. Resistance sets current, not the ideal clipping levels. Actual clamps depend on current, temperature, rail impedance, and the protected input's ratings.</p></div></div>;
@@ -65,7 +75,13 @@ export function LimiterLab(){
 export function ProtectionLab(){
  const [clamp,setClamp]=useState(.7),[ms,setMs]=useState(1);const d=flyback({clamp,t:ms/1000}),base=flyback({clamp:.7});
  return <div className="lab" aria-label="Inductive load protection experiment"><Head title="SAME INITIAL ENERGY · DIFFERENT RELEASE TIME" reset={()=>{setClamp(.7);setMs(1)}}/>
- <svg className="wide-circuit" viewBox="0 0 640 290" role="img" aria-label="12 volt rail feeds a 120 ohm winding resistance and 100 millihenry coil above a low-side switch. Clamp across the whole winding returns switch-node current to the supply rail during turn-off."><g stroke="var(--ink)" strokeWidth="1.8" fill="none"><path d="M160 40 H460 V85 M270 40 V60 M270 105 V120 c-30 0 -30 16 0 16 c-30 0 -30 16 0 16 c-30 0 -30 16 0 16 M270 168 V200 H460 V145 M270 200 V220 l18 22 M270 250 V270 m-12 0 h24"/><rect x="260" y="60" width="20" height="45"/><rect x="410" y="85" width="100" height="60"/></g><text x="104" y="44" className="symbol-label">+12 V</text><text x="300" y="87" className="symbol-label">120 Ω</text><text x="300" y="148" className="symbol-label">100 mH</text><text x="460" y="110" textAnchor="middle" className="symbol-label">Clamp ↑</text><text x="460" y="132" textAnchor="middle" className="symbol-label">{f(clamp)} V</text><text x="309" y="225" className="output-label">Vswitch ≤ {f(d.switchVoltage)} V</text></svg>
+ <Schematic height={290} description="12 volt rail feeds a 120 ohm winding resistance and 100 millihenry coil above a low-side switch. A clamp across the whole winding returns switch-node current to the supply rail during turn-off.">
+  <Rail at={[270,30]} label="+12 V"/><Wire pts={[[270,30],[270,45]]}/><Res a={[270,45]} b={[270,115]} label="120 Ω" value="winding R" flipLabel/><Ind a={[270,115]} b={[270,200]} label="100 mH" flipLabel/>
+  <Switch a={[270,200]} b={[270,260]}/><Ground at={[270,260]}/>
+  <Wire pts={[[270,45],[460,45],[460,85]]}/><Wire pts={[[270,200],[460,200],[460,145]]}/><Dot at={[270,45]}/><Dot at={[270,200]} color={green}/>
+  <g data-pins="460,85 460,145"><rect x="410" y="85" width="100" height="60" fill="var(--white)" stroke={ink} strokeWidth="1.8"/><Text x={460} y={110} anchor="middle">clamp ↑</Text><Text x={460} y={132} anchor="middle" kind="value">{f(clamp)} V</Text></g>
+  <Text x={290} y={228} kind="output">V_switch ≤ {f(d.switchVoltage)} V</Text>
+ </Schematic>
  <div className="horizontal-controls"><Control label="Opposing clamp voltage" value={clamp} onChange={setClamp} min={.7} max={36} step={.1} unit="V"/><Control label="Time after opening" value={ms} onChange={setMs} min={0} max={3} step={.01} unit="ms"/></div>
  <Readouts values={[['CURRENT',f(d.current*1000),'mA'],['TIME TO ZERO',f(d.stop*1000,3),'ms'],['CLAMP ENERGY',f(d.clampEnergy*1000,3),'mJ']]}/>
  <div className="plot-area"><Plot curves={[{name:'Selected clamp',color:green,points:pts(t=>flyback({clamp,t:t/1000}).current*1000,0,3)},{name:'0.7 V flywheel diode',color:orange,dashed:true,points:pts(t=>flyback({clamp:.7,t:t/1000}).current*1000,0,3)}]} xRange={[0,3]} yRange={[0,110]} xLabel="TIME AFTER OPENING / ms" yLabel="COIL CURRENT / mA" point={[ms,d.current*1000]} description="A larger opposing clamp voltage makes current decay faster. The fixed comparison is a 0.7 volt diode."/><p className="plot-summary">Initially 100 mA and 0.5 mJ. Selected clamp absorbs {f(d.clampEnergy*1000,3)} mJ; winding resistance absorbs {f(d.copperEnergy*1000,3)} mJ. The 0.7 V comparison reaches zero in {f(base.stop*1000,3)} ms. Clamp is across the entire winding: switch stress is supply plus clamp voltage. Fixed clamp voltage, linear L and R, ideal opening switch; wiring overshoot, recovery and mechanical motion omitted.</p></div></div>;
@@ -76,14 +92,16 @@ export function ProtectionLab(){
 
 export function BridgePaths(){
  const [positive,setPositive]=useState(true);
- const sides=[{x:250,y:90,angle:-35.5377,active:positive},{x:390,y:90,angle:-144.4623,active:!positive},{x:250,y:190,angle:-144.4623,active:!positive},{x:390,y:190,angle:-35.5377,active:positive}];
+ const A:Pt=[180,140],B:Pt=[460,140],T:Pt=[320,40],Bt:Pt=[320,240];
  return <div className="lab" aria-label="Bridge current paths"><Head title="FOLLOW TWO DIODES AT A TIME" reset={()=>setPositive(true)}/><div className="view-buttons"><button aria-pressed={positive} onClick={()=>setPositive(true)}>A higher than B</button><button aria-pressed={!positive} onClick={()=>setPositive(false)}>B higher than A</button></div>
- <svg className="wide-circuit" viewBox="0 0 640 300" role="img" aria-label={positive?'Current goes from A through upper-left diode, through the load from plus to minus, and through lower-right diode to B.':'Current goes from B through upper-right diode, through the load from plus to minus, and through lower-left diode to A.'}>
- <g stroke="var(--ink)" strokeWidth="1.8" fill="none"><path d="M320 40 H560 V115 M560 165 V240 H320 M140 140 H180 M460 140 H500"/><rect x="548" y="115" width="24" height="50"/>
- {sides.map((s,i)=><g key={i} transform={'translate('+s.x+' '+s.y+') rotate('+s.angle+')'} stroke={s.active?green:'var(--muted)'} strokeWidth={s.active?3:1.5} strokeDasharray={s.active?undefined:'4 3'}><path d="M-86 0 H-30 M30 0 H86"/><Diode x={0} y={0}/></g>)}
- <path d="M585 110 V171 l-5 -8 m5 8 l5 -8" stroke={green}/></g>
- <text x="90" y="146" className="symbol-label">AC A</text><text x="467" y="169" className="symbol-label">AC B</text><text x="310" y="25" className="output-label">DC +</text><text x="310" y="273" className="output-label">DC −</text><text x="540" y="95" className="symbol-label">Load</text>
- </svg><div className="lab-prompt">Solid green branches conduct; dashed branches block. Load current stays downward in either half-cycle. Resistive load, ideal diodes; the reservoir experiment below adds capacitor memory.</div></div>;
+ <Schematic height={300} description={positive?'Current goes from A through upper-left diode, through the load from plus to minus, and through lower-right diode to B.':'Current goes from B through upper-right diode, through the load from plus to minus, and through lower-left diode to A.'}>
+  {[{a:A,b:T,on:positive},{a:B,b:T,on:!positive},{a:Bt,b:A,on:!positive},{a:Bt,b:B,on:positive}].map((s,i)=><Diode key={i} a={s.a} b={s.b} color={s.on?green:'var(--line)'}/>)}
+  <Terminal at={[120,140]} label="AC A"/><Wire pts={[[120,140],A]}/><Terminal at={[520,140]} label="AC B" side="right"/><Wire pts={[B,[520,140]]}/>
+  <Wire pts={[T,[580,40],[580,115]]} color={green}/><Res a={[580,115]} b={[580,165]} label="load"/><Wire pts={[[580,165],[580,240],Bt]} color={green}/>
+  <CurrentArrow at={[580,80]} dir="down" color={green}/><Dot at={A}/><Dot at={B}/><Dot at={T}/><Dot at={Bt}/>
+  <Text x={320} y={25} anchor="middle" kind="output">DC +</Text><Text x={320} y={268} anchor="middle" kind="output">DC −</Text>
+ </Schematic>
+ <div className="lab-prompt">Solid green branches conduct; dashed branches block. Load current stays downward in either half-cycle. Resistive load, ideal diodes; the reservoir experiment below adds capacitor memory.</div></div>;
 }
 
 

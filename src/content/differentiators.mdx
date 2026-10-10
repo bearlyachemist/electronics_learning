@@ -1,63 +1,30 @@
 import Equation from '../components/Equation.astro';
-import {CapacitorLab,RCLab,FilterLab,RealCapLab,InductorLab,TransformerLab} from '../components/PassiveLabs';
-
-
+import {FilterLab} from '../components/PassiveLabs';
+import {TriangleToSquareFigure,EdgePulseFigure,DifferentiatorBandFigure,ActiveDifferentiatorFigure,EdgeDetectorFigure} from '../components/PassiveFigures';
 
 <div className="chapter-hero" id="overview">
 
-
-
-
-<div className="eyebrow">
-
-<span>CHAPTER 07</span><span className="hairline"/>FOUNDATIONS / ENERGY & SIGNALS
-
-</div>
-
+<div className="eyebrow"><span>CHAPTER 07</span><span className="hairline"/>FOUNDATIONS / ENERGY & SIGNALS</div>
 
 <h1>Differentiators<br/><em>Respond to change.</em></h1>
+
 <p className="dek">See how a high-pass RC network approximates a derivative, why pulses appear at edges, and why the approximation has a limited band.</p>
 
-
-<div className="chapter-meta">
-
-<span>25–35 min + exploration</span><span>RC response · slopes · sinusoids</span>
+<div className="chapter-meta"><span>35–45 min + exploration</span><span>RC response · slopes · sinusoids</span></div>
 
 </div>
-
-
-
-
-</div>
-
-
-
-
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>From high-pass to derivative → Compare exact and approximate → Steps, pulses, and ramps → An active differentiator → Noise and bandwidth.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>From high-pass to derivative → Compare exact and approximate → Steps, pulses, and ramps → An active differentiator → Noise and bandwidth → Check your understanding.</p>
 
 </div>
-
-
-
-
 
 <section id="derive">
 
+<div className="section-heading"><span>01</span><h2>From high-pass to derivative</h2></div>
 
-
-
-<div className="section-heading">
-
-<span>01</span><h2>From high-pass to derivative</h2>
-
-</div>
-
-
-
-Put a capacitor in series with the input, connect a resistor from output to ground, and measure across the resistor. Assume an ideal voltage source and no external load. The capacitor voltage is vᵢₙ − vₒᵤₜ, so:
+Put a capacitor in series with the input, connect a resistor from output to ground, and measure across the resistor. Assume an ideal voltage source and no external load. The capacitor voltage is $v_{\mathrm{in}} - v_{\mathrm{out}}$, so:
 
 <Equation tex="i=C\frac{d(v_{\mathrm{in}}-v_{\mathrm{out}})}{dt},\qquad v_{\mathrm{out}}=Ri"/>
 <Equation tex="RC\frac{dv_{\mathrm{out}}}{dt}+v_{\mathrm{out}}=RC\frac{dv_{\mathrm{in}}}{dt}"/>
@@ -68,47 +35,37 @@ If the output-derivative term on the left is small compared with the output itse
 
 The output represents rate of change rather than the input’s absolute level. A constant input eventually gives zero output. A rising ramp produces a positive output; a falling ramp produces a negative output.
 
-### Turn “small” into a frequency condition
+**The physical picture.** The approximation holds when the output stays small, so almost the whole input voltage appears across the capacitor. Then the capacitor voltage tracks the input, and the current needed to make it do so is $C\,dv_{\mathrm{in}}/dt$. That current, flowing through $R$, *is* the output. The resistor acts as a current meter on the capacitor. It works only while that meter's own voltage drop is negligible, which is why a good differentiator always has a small output.
+
+<TriangleToSquareFigure/>
+
+### Turn "small" into a frequency condition
 
 Using capacitor impedance in the divider gives the exact sinusoidal response:
 
 <Equation tex="H(j\omega)=\frac{j\omega RC}{1+j\omega RC}"/>
 
-Let x = ωRC = f/f_c. If x ≪ 1, the denominator is close to one and H ≈ jωRC. Thus the **low-frequency region of a high-pass circuit** behaves like a differentiator.
+Let $x = \omega RC = f/f_c$. If $x \ll 1$, the denominator is close to one and $H \approx j\omega RC$. Thus the **low-frequency region of a high-pass circuit** behaves like a differentiator.
 
-That phrase is not a contradiction. “High-pass” describes the entire response. “Differentiator” describes its rising low-frequency portion, where gain is proportional to frequency and output is small.
+That phrase is not a contradiction. "High-pass" describes the entire response. "Differentiator" describes its rising low-frequency portion, where gain is proportional to frequency and output is small.
 
 <Equation tex="|H|=\frac{x}{\sqrt{1+x^2}},\qquad \phi=90^\circ-\tan^{-1}x"/>
 
 The exact passive network approaches unity gain at high frequency. An ideal differentiator would grow without bound. Confusing those models predicts behavior the passive circuit cannot provide.
 
-
 </section>
-
-
-
-
 
 <section id="explore">
 
+<div className="section-heading"><span>02</span><h2>Compare exact and approximate</h2></div>
 
+For a sine input $A\sin(\omega t)$, an ideal derivative is $A\omega\cos(\omega t)$: it leads the sine by 90°. The RC approximation multiplies this derivative by $RC$.
 
-
-<div className="section-heading">
-
-<span>02</span><h2>Compare exact and approximate</h2>
-
-</div>
-
-
-
-For a sine input A sin(ωt), an ideal derivative is Aω cos(ωt): it leads the sine by 90°. The RC approximation multiplies this derivative by RC.
-
-The figure computes the exact steady-state response and the approximation independently. Output-detail mode hides the 1 V peak input so small output waveforms remain visible; use “Include input” to compare their timing.
+The figure computes the exact steady-state response and the approximation independently. Output-detail mode hides the 1 V peak input so small output waveforms remain visible; use "Include input" to compare their timing.
 
 <FilterLab client:load kind="highpass"/>
 
-<p className="caption">Figure 1. A passive high-pass RC network, not an active amplifier. The approximation can predict impossible large outputs when used outside its valid band.</p>
+<p className="caption">A passive high-pass RC network, not an active amplifier. The approximation can predict impossible large outputs when used outside its valid band.</p>
 
 ### A precise error measure
 
@@ -116,148 +73,167 @@ The relative complex-response error, including both magnitude and phase, is part
 
 <Equation tex="\frac{H_{\mathrm{approx}}-H}{H}=jx,\qquad \left|\frac{H_{\mathrm{approx}}-H}{H}\right|=x"/>
 
-At f/f_c = 0.1 this error is 10%. The amplitude approximation alone is only about 0.5% high, but exact phase is 84.29°, not 90°. “Only half a percent error” would conceal the phase error if the waveform shape or timing matters.
+At $f/f_c = 0.1$ this error is 10%. The amplitude approximation alone is only about 0.5% high, but exact phase is 84.29°, not 90°. "Only half a percent error" would conceal the phase error if the waveform shape or timing matters.
 
-For a 1% complex-response-error target, require f/f_c ≤ 0.01. This is a specification for the sinusoidal transfer-function approximation; it is not a universal component-accuracy guarantee.
+For a 1% complex-response-error target, require $f/f_c \le 0.01$. This is a specification for the sinusoidal transfer-function approximation; it is not a universal component-accuracy guarantee.
 
+There is a built-in tension here. Accuracy needs $f \ll f_c$, but the output amplitude is $x$ times the input, so accuracy and output size trade one for one: a 1%-accurate passive differentiator delivers at most about 1% of its input. This is the main reason active differentiators exist.
 
 </section>
 
-
-
-
-
 <section id="pulses">
 
+<div className="section-heading"><span>03</span><h2>Steps, pulses, and ramps</h2></div>
 
-
-
-<div className="section-heading">
-
-<span>03</span><h2>Steps, pulses, and ramps</h2>
-
-</div>
-
-
-
-A fast input step initially appears at the output because the capacitor voltage cannot jump under finite current. For an ideal step of amplitude A at t = 0, starting with an uncharged capacitor:
+A fast input step initially appears at the output because the capacitor voltage cannot jump under finite current. For an ideal step of amplitude $A$ at $t = 0$, starting with an uncharged capacitor:
 
 <Equation tex="v_{\mathrm{out}}(t)=Ae^{-t/\tau},\qquad \tau=RC,\quad t\geq0"/>
 
 The output then returns to zero as the capacitor charges. This is the **exact high-pass step response**. Calling it a derivative of an ideal step is an informal shortcut: a mathematical ideal derivative would be an impulse, while this circuit gives a finite-height exponential.
 
-
-
 <div className="worked-example">
 
-
 <span className="tiny-label">WORKED EXAMPLE / EDGE PULSE</span><h3>A 3 V rising edge</h3>
-<p>Let R = 10 kΩ and C = 10 nF, giving τ = 100 µs. An ideal 0-to-3 V step initially produces 3 V at the output. After 100 µs it is <strong>1.104 V</strong>; after 300 µs, <strong>0.1494 V</strong>.</p>
+<p>Let $R = 10$ kΩ and $C = 10$ nF, giving $\tau = 100$ µs. An ideal 0-to-3 V step initially produces 3 V at the output. After 100 µs it is <strong>1.104 V</strong>; after 300 µs, <strong>0.1494 V</strong>.</p>
 <p>A falling edge produces the opposite polarity, with a magnitude influenced by the charge already on the capacitor. The output may go below ground even when the input is never negative.</p>
-
 
 </div>
 
+<EdgePulseFigure/>
 
-
-For a pulse that rises by A at zero and falls by A after a duration Tₚ, superpose the responses to both edges. After the falling edge:
+For a pulse that rises by $A$ at zero and falls by $A$ after a duration $T_p$, superpose the responses to both edges. After the falling edge:
 
 <Equation tex="v_{\mathrm{out}}(t)=Ae^{-t/\tau}-Ae^{-(t-T_p)/\tau},\qquad t\geq T_p"/>
 
-Immediately after that edge, output is −A(1 − e⁻ᵀᵖᐟᵗᵃᵘ). If the pulse was short compared with τ, the capacitor did not fully charge and the negative pulse is smaller than A. Initial conditions matter.
+Immediately after that edge, output is $-A(1 - e^{-T_p/\tau})$. If the pulse was short compared with $\tau$, the capacitor did not fully charge and the negative pulse is smaller than $A$. Initial conditions matter.
 
 ### A finite ramp is a cleaner derivative example
 
-For a ramp vᵢₙ = st beginning at zero, with zero initial state:
+For a ramp $v_{\mathrm{in}} = st$ beginning at zero, with zero initial state:
 
 <Equation tex="v_{\mathrm{out}}(t)=s\tau(1-e^{-t/\tau})"/>
 
-Away from the ramp’s starting and ending edges, the output approaches sτ. A 1 V/ms slope with τ = 100 µs gives approximately **0.1 V**. The exponential startup explains why the approximation is not exact at a sudden change of slope.
+Away from the ramp’s starting and ending edges, the output approaches $s\tau$. A 1 V/ms slope with $\tau = 100$ µs gives approximately **0.1 V**. The exponential startup explains why the approximation is not exact at a sudden change of slope.
 
+<EdgeDetectorFigure/>
 
-</section>
+<div className="worked-example">
 
-
-
-
-
-<section id="active">
-
-
-
-
-<div className="section-heading">
-
-<span>04</span><h2>An active differentiator</h2>
+<span className="tiny-label">WORKED DESIGN / TURN EDGES INTO PULSES</span><h3>A trigger pulse from each rising edge</h3>
+<p>A slow 0/5 V control signal must produce a brief pulse at each rising edge. With $C = 1$ nF and $R = 10$ kΩ, $\tau = 10$ µs. A logic input with a 2.5 V threshold sees the decaying edge pulse as high until $5e^{-t/\tau} = 2.5$, so for $\tau\ln2 =$ <strong>6.9 µs</strong>.</p>
+<p>Each falling edge produces a −5 V spike. Most logic inputs are rated only a few tenths of a volt below ground, so the clamp diode conducts and holds the node near −0.6 V while the capacitor recharges through it. (Many logic inputs have such a diode internally; relying on it is risky because of the current it must carry.)</p>
+<p>The pulse width depends on the input edge being fast compared with $\tau$. A rising edge that takes 20 µs would produce a much smaller, wider bump, possibly never crossing the threshold. Edge detectors need sharp inputs.</p>
 
 </div>
 
+</section>
 
+<section id="active">
 
-An ideal inverting op-amp differentiator uses an input capacitor and a feedback resistor. If negative feedback keeps the summing node approximately at zero volts, input current is C dvᵢₙ/dt. That current flows through the feedback resistor, producing:
+<div className="section-heading"><span>04</span><h2>An active differentiator</h2></div>
+
+An ideal inverting op-amp differentiator uses an input capacitor and a feedback resistor. If negative feedback keeps the summing node approximately at zero volts, input current is $C\,dv_{\mathrm{in}}/dt$. That current flows through the feedback resistor, producing:
 
 <Equation tex="v_{\mathrm{out}}=-R_fC\frac{dv_{\mathrm{in}}}{dt}"/>
 
 The minus sign is from inversion. Unlike the passive circuit, the output can have gain greater than one, powered by the amplifier’s supplies. This equation assumes adequate amplifier bandwidth, stable negative feedback, and an output within voltage and current limits.
 
-A practical differentiator limits the operating band. Adding a series input resistor Rᵢ and a feedback capacitor C_f in parallel with R_f gives, for an otherwise ideal op-amp:
+Notice how it removes the passive circuit's compromise. The op-amp holds the capacitor's right-hand end at 0 V no matter how large the output becomes, so the capacitor voltage equals the input exactly, and the "small output" condition is no longer needed.
+
+<ActiveDifferentiatorFigure/>
+
+A practical differentiator limits the operating band. Adding a series input resistor $R_i$ and a feedback capacitor $C_f$ in parallel with $R_f$ gives, for an otherwise ideal op-amp:
 
 <Equation tex="H(s)=-\frac{sR_fC}{(1+sR_iC)(1+sR_fC_f)}"/>
 
 Below the added pole frequencies, the numerator gives the differentiating behavior. At higher frequencies the denominator restrains the gain. Actual amplifier stability and noise gain still require analysis; adding components is not a substitute for that check.
 
-This is a preview of op-amp design, not a claim that an unlimited ideal derivative can be built.
+<DifferentiatorBandFigure/>
 
+This is a preview of op-amp design, not a claim that an unlimited ideal derivative can be built.
 
 </section>
 
-
-
-
-
 <section id="limits">
 
-
-
-
-<div className="section-heading">
-
-<span>05</span><h2>Noise and bandwidth</h2>
-
-</div>
-
-
+<div className="section-heading"><span>05</span><h2>Noise and bandwidth</h2></div>
 
 Differentiation weights fast variation more strongly than slow variation. A small high-frequency disturbance can therefore compete with a larger slow signal. An ideal derivative has no high-frequency bound; the passive high-pass circuit instead levels off at unity gain, but still emphasizes fast content relative to slow content.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / WHY DIFFERENTIATORS ARE NOISY</span><h3>A clean-looking signal, a noisy derivative</h3>
+<p>A position sensor gives a 1 V peak, 10 Hz sine, with 10 mV of 10 kHz interference riding on it: noise 1% of the signal, barely visible on a scope.</p>
+<p>Differentiate both. The signal's peak slope is $2\pi \times 10 \times 1 = 63$ V/s; the interference's is $2\pi \times 10^4 \times 0.01 = 630$ V/s. After an ideal differentiator, the interference is <strong>ten times larger</strong> than the signal. Every factor of ten in frequency separation multiplies the noise's relative size by ten.</p>
+<p>The fixes all limit high-frequency gain: filter before differentiating, cap the gain as in the practical circuit, or compute the rate from samples over a deliberately long interval. A velocity derived from a position sensor almost always needs one of them.</p>
+
+</div>
 
 A square wave has many harmonics. It is not enough to put only its fundamental well inside an approximate band if those harmonics matter to the desired waveform. Rounded edges, finite source impedance, and load capacitance all modify the response.
 
 Source resistance effectively joins the network. A finite load changes the resistor seen by the capacitor and can change the high-frequency gain. Derive the actual circuit before using a memorized RC value.
 
-A differentiator is useful when the intended measurement is rate of change, edge timing, or a band-limited approximation to a derivative. State the input bandwidth and acceptable error first; choose RC and any additional filtering afterward.
-
-<p className="reference-note">Coverage: The Art of Electronics §1.4.3 and the associated frequency-domain treatment. The active version is an idealized preview; device bandwidth and stability are developed in amplifier topics.</p>
-
+A differentiator is useful when the intended measurement is rate of change, edge timing, or a band-limited approximation to a derivative. State the input bandwidth and acceptable error first; choose $RC$ and any additional filtering afterward.
 
 </section>
 
+<section id="check">
 
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
 
+<details>
+<summary>1. A CR network has $f_c$ = 1 kHz. Is it a good differentiator for a 50 Hz sine? For a 5 kHz sine?</summary>
+<div>
 
+At 50 Hz, $x = 0.05$: the complex error is 5% and the output is about 5% of the input. Reasonable. At 5 kHz, $x = 5$: the circuit passes the signal almost unchanged (gain 0.98) and does not differentiate at all.
+
+</div>
+</details>
+
+<details>
+<summary>2. What output does an ideal-step input of 2 V give after 2τ?</summary>
+<div>
+
+$2e^{-2} = 0.27$ V. The output starts at the full 2 V and decays as the capacitor charges.
+
+</div>
+</details>
+
+<details>
+<summary>3. A 5 V/ms ramp drives a CR network with τ = 20 µs. What steady output do you expect, and how long until it is within 1%?</summary>
+<div>
+
+$s\tau = 5000\text{ V/s} \times 20\ \mu\text{s} = 0.1$ V, reached within 1% after $4.6\tau \approx 92$ µs.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why does an active differentiator need $R_i$ and $C_f$?</summary>
+<div>
+
+Without them its gain rises with frequency until the op-amp runs out of bandwidth, amplifying high-frequency noise enormously, and the feedback loop tends to oscillate. $R_i$ and $C_f$ add poles that flatten and then reduce the gain above the useful band.
+
+</div>
+</details>
+
+<details>
+<summary>5. A coupling capacitor passes a 100 Hz square wave into a 10 kΩ input. How large must it be for less than 5% tilt?</summary>
+<div>
+
+Over a 5 ms half-period the output decays by about $t/\tau$ for small tilt, so $5\text{ ms}/\tau \le 0.05$ gives $\tau \ge 100$ ms and $C \ge 10$ µF. A "differentiator" is just a coupling network asked to work at the wrong end of its band.
+
+</div>
+</details>
+
+<p className="reference-note">Coverage: The Art of Electronics §1.4.3 and the associated frequency-domain treatment. The active version is an idealized preview; device bandwidth and stability are developed in amplifier topics.</p>
+
+</section>
 
 <div className="chapter-end">
 
-
-
-<div>
-
-<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent practice with hints and fully worked solutions.</p>
-
-</div>
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent practice with hints and fully worked solutions.</p></div>
 
 <a className="primary-link" href="/differentiators/practice/">Open practice →</a>
 
 </div>
-
-
-

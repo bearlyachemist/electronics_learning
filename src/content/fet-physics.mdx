@@ -1,3 +1,4 @@
+import {ChannelChargeFigure} from '../components/FetTeachingFigures';
 import Equation from '../components/Equation.astro';
 import {FetCurves,JfetBiasLab,FetGainLab,VariableFetLab,FetOscillatorLab,AnalogSwitchLab,GateChargeLab,PowerFetLab,ParallelFetLab} from '../components/FetLabs';
 import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
@@ -15,13 +16,31 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 </div>
 
 
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">Why does a pinched-off channel continue to carry current?</p></div>
+
+<div>
+
+The gate’s electric field controls available channel charge, while the drain supply drives carrier motion. That distinction leads to the channel equations and explains why a nearly current-free control terminal can regulate current. The operating-region boundary then connects those equations to a real circuit.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>A field controls charge → Existing channels and induced channels → Derive the long-channel MOS equation → Pinch-off is not cutoff → Linearize the curves → See both views of the same device → What this model leaves out → Check your understanding.</p>
+
+</div>
+
 <section id="field">
 
-## 01 / A field controls charge
+<div className="section-heading"><span>01</span><h2>A field controls charge</h2></div>
 
 A resistor carries more current when the electric field along it increases. A field-effect transistor adds a second control: an electric field across the conducting path changes how much mobile charge that path contains. The gate changes the channel's conductance; the drain supply provides the energy delivered to the load. A gate with almost no steady current can therefore control a substantial drain current without violating energy conservation.
 
-For an n-channel device, mobile electrons move predominantly from source toward drain. Conventional positive drain current points into the drain and out of the source. We define both terminal voltages relative to the source: gate-source voltage VGS and drain-source voltage VDS. A p-channel device reverses voltage and current polarities. Do not silently reuse n-channel numerical signs for it.
+For an n-channel device, mobile electrons move predominantly from source toward drain. Conventional positive drain current points into the drain and out of the source. We define both terminal voltages relative to the source: gate-source voltage $V_{GS}$ and drain-source voltage $V_{DS}$. A p-channel device reverses voltage and current polarities. Do not silently reuse n-channel numerical signs for it.
 
 In drift transport, current density equals charge density times drift velocity, and velocity is approximately mobility times electric field. If a channel has width W and mobile sheet charge magnitude Qn, the current at a position x is:
 
@@ -33,7 +52,7 @@ A large sheet charge means many carriers are available; large mobility means the
 
 <section id="families">
 
-## 02 / Existing channels and induced channels
+<div className="section-heading"><span>02</span><h2>Existing channels and induced channels</h2></div>
 
 <FetStructure />
 
@@ -49,18 +68,18 @@ A useful classification has two independent axes: n versus p channel, and enhanc
 
 <section id="derive">
 
-## 03 / Derive the long-channel MOS equation
+<div className="section-heading"><span>03</span><h2>Derive the long-channel MOS equation</h2></div>
 
-Take a long, uniform n-channel MOSFET above threshold, with body effects temporarily ignored. Let the channel potential measured from the source be V(x). The gate's effective attraction at that location is reduced by V(x). With oxide capacitance per area Cox and threshold VT:
+Take a long, uniform n-channel MOSFET above threshold, with body effects temporarily ignored. Let the channel potential measured from the source be V(x). The gate's effective attraction at that location is reduced by V(x). With oxide capacitance per area $C_{ox}$ and threshold $V_T$:
 
 <Equation tex="|Q_n(x)|=C_{ox}[V_{GS}-V_T-V(x)]" />
 
-Define overdrive u = VGS − VT. Substitute the charge expression into the drift equation, separate variables and integrate from source to drain. Current is the same through each channel slice in steady state:
+Define overdrive u = $V_{GS}$ − $V_T$. Substitute the charge expression into the drift equation, separate variables and integrate from source to drain. Current is the same through each channel slice in steady state:
 
 <Equation tex="I_D\int_0^L dx=\mu_n C_{ox}W\int_0^{V_{DS}}(u-V)\,dV" />
 <Equation tex="I_D=k\left(uV_{DS}-\frac{V_{DS}^2}{2}\right),\qquad k=\mu_nC_{ox}\frac WL" />
 
-Units provide a useful check: k has units A/V²; the bracket has units V². This is the **triode or ohmic-region equation**, valid while the channel exists all the way to the drain. At very small VDS, its quadratic term is negligible:
+Units provide a useful check: k has units A/V²; the bracket has units V². This is the **triode or ohmic-region equation**, valid while the channel exists all the way to the drain. At very small $V_{DS}$, its quadratic term is negligible:
 
 <Equation tex="I_D\approx kuV_{DS},\qquad R_{\mathrm{channel}}\approx\frac1{ku}" />
 
@@ -70,38 +89,50 @@ As drain voltage reaches u, the inversion charge at the drain end approaches zer
 
 This derivation assumes gradual variation along a long channel, constant mobility, strong inversion and negligible series resistance. It is a foundation for reasoning, not an accurate universal fit to modern power MOSFETs.
 
+### Current efficiency of transconductance
+
+In the square-law saturation model, divide $g_m=ku$ by $I_D=ku^2/2$:
+
+<Equation tex="\frac{g_m}{I_D}=\frac{2}{u}"/>
+
+At overdrive 1 V, 2 mA gives 4 mS. Halving overdrive at the same k quarters current and halves transconductance, while doubling transconductance per ampere. Holding current fixed while reducing overdrive instead requires a larger k, usually involving geometry and capacitance tradeoffs.
+
+For comparison, an ideal BJT at 300 K has $g_m/I_C\approx1/V_T=38.7$ V⁻¹. This compares controlling-voltage slopes at a specified bias; it does not choose a winner for input current, noise, capacitance, output swing or switching loss. Very small MOS overdrive also leaves the reliable strong-inversion square-law regime.
+
 </section>
 
 <section id="regions">
 
-## 04 / Pinch-off is not cutoff
+<div className="section-heading"><span>04</span><h2>Pinch-off is not cutoff</h2></div>
+
+<ChannelChargeFigure/>
 
 **Cutoff** means insufficient gate bias for the modeled conducting channel. **Pinch-off at the drain end** means the drain-end charge has collapsed while carriers still travel through the channel and are swept through the high-field region. Current does not stop. Increasing drain voltage then produces much less current change than it did in the ohmic region.
 
 FET **saturation** is the approximately current-source region used for voltage amplification. BJT saturation is the strongly driven state with both junctions forward biased, usually associated with switching. The same word describes different physics. A MOSFET used as a low-loss on-switch should generally be well into its ohmic region, not sitting at a large drain voltage in FET saturation.
 
-For example, let k = 2 mA/V² and VT = 2 V. At VGS = 4 V, u = 2 V. At VDS = 0.1 V the current is 0.39 mA; at 1 V it is 3 mA; at 2 V it reaches 4 mA. The ideal model stays at 4 mA for larger drain voltage. A current of 4 mA does not identify the region by itself: both terminal voltages matter.
+For example, let k = 2 mA/V² and $V_T$ = 2 V. At $V_{GS}$ = 4 V, u = 2 V. At $V_{DS}$ = 0.1 V the current is 0.39 mA; at 1 V it is 3 mA; at 2 V it reaches 4 mA. The ideal model stays at 4 mA for larger drain voltage. A current of 4 mA does not identify the region by itself: both terminal voltages matter.
 
 </section>
 
 <section id="small">
 
-## 05 / Linearize the curves
+<div className="section-heading"><span>05</span><h2>Linearize the curves</h2></div>
 
 At a chosen bias point, small changes obey:
 
 <Equation tex="i_d=g_m v_{gs}+g_{ds}v_{ds},\qquad g_m=\left.\frac{\partial I_D}{\partial V_{GS}}\right|_{V_{DS}},\qquad r_o=\frac1{g_{ds}}" />
 <Equation tex="g_m=ku=\frac{2I_D}{u}=\sqrt{2kI_D}\quad\text{in ideal saturation}" />
 
-The ideal flat drain curves imply infinite output resistance. Real curves slope because the effective channel changes with drain voltage, among other effects. A simple empirical extension multiplies the current by (1 + λVDS). Its exact local output conductance is λ times the unmodified current; the common estimate ro ≈ 1/(λID) assumes λVDS is small.
+The ideal flat drain curves imply infinite output resistance. Real curves slope because the effective channel changes with drain voltage, among other effects. A simple empirical extension multiplies the current by $(1+\lambda V_{DS})$. Its exact local output conductance is $\lambda$ times the unmodified current; the common estimate $r_o$ ≈ $1/(\lambda I_D)$ assumes $\lambda V_{DS}$ is small.
 
-For ID = 2 mA and u = 1 V, gm = 4 mS: a 10 mV gate-source perturbation produces approximately 40 μA drain-current change. A 5 kΩ drain load converts that into about −0.2 V. The minus sign comes from the increased voltage drop across the load, not from a negative transconductance.
+For $I_D$ = 2 mA and u = 1 V, $g_m$ = 4 mS: a 10 mV gate-source perturbation produces approximately 40 μA drain-current change. A 5 kΩ drain load converts that into about −0.2 V. The minus sign comes from the increased voltage drop across the load, not from a negative transconductance.
 
 </section>
 
 <section id="explore">
 
-## 06 / See both views of the same device
+<div className="section-heading"><span>06</span><h2>See both views of the same device</h2></div>
 
 <FetCurves client:load />
 
@@ -111,7 +142,7 @@ Predict the knee voltage before moving a control. Next set modulation to zero an
 
 <section id="choose">
 
-## 07 / What this model leaves out
+<div className="section-heading"><span>07</span><h2>What this model leaves out</h2></div>
 
 Below threshold, real MOSFET current decreases approximately exponentially rather than becoming exactly zero. Near threshold, the square-law model is particularly unreliable. At large fields, mobility degradation and velocity saturation change the law; drain and source resistances add voltage drops. Leakage, breakdown and self-heating create additional limits.
 
@@ -122,7 +153,58 @@ The charge-control derivation follows the framework taught in [MIT's gradual-cha
 </section>
 
 
-<div className="practice-home">
+<section id="check">
+
+<div className="section-heading"><span>08</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Which field changes channel charge and which drives motion?</summary>
+<div>
+
+The gate’s transverse field changes available mobile charge; the longitudinal source-to-drain field drives carrier transport.
+
+</div>
+</details>
+
+<details>
+<summary>2. Does pinch-off mean the drain current is zero?</summary>
+<div>
+
+No. It marks loss of channel charge at the drain end; carriers still traverse the high-field region to the drain.
+
+</div>
+</details>
+
+<details>
+<summary>3. What is the ideal saturation boundary?</summary>
+<div>
+
+$V_{DS}=V_{GS}-V_T$ for the stated n-channel long-channel model.
+
+</div>
+</details>
+
+<details>
+<summary>4. What must accompany a transfer-curve bias calculation?</summary>
+<div>
+
+A drain-voltage and operating-region check using the actual supply and resistor circuit.
+
+</div>
+</details>
+
+<details>
+<summary>5. Does a MOS gate with no DC current need no drive current?</summary>
+<div>
+
+It still requires charging current when gate or drain voltage changes.
+
+</div>
+</details>
+
+</section>
+
+<div className="chapter-end">
 
 <span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems, hints and complete worked solutions.</p><a className="primary-link" href="/fet-physics/practice/">Open practice →</a>
 

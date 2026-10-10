@@ -54,8 +54,10 @@ export function simpleSwitch({vin,rb,vcc,rc,beta=100,vbe=.65,vsat=.2}){
 // Emitter follower with emitter resistor to -vee and resistive load to ground (Thévenin-combined).
 export function follower({vin,re=1000,rl=Infinity,vee=10,vbe=.65,beta=100,rs=0,ic=undefined}){
  positive(re,vee,beta);if(!(rl>0))throw new RangeError('Load must be positive');finite(vin);
+ if(!Number.isFinite(rs)||rs<0)throw new RangeError('Source resistance must be nonnegative');
  const rp=rl===Infinity?re:re*rl/(re+rl),floor=rl===Infinity?-vee:-vee*rl/(re+rl);
- const out=Math.max(vin-vbe,floor),iout=(out-floor)/rp,on=vin-vbe>floor;const ice=ic??Math.max(1e-9,(0-floor)/rp);
+ const loading=rs/((beta+1)*rp),out=Math.max((vin-vbe+loading*floor)/(1+loading),floor),iout=(out-floor)/rp,on=vin-vbe>floor;
+ const ice=ic??Math.max(1e-9,iout*beta/(beta+1));
  const reSmall=VT300/ice;return {out,on,floor,iout,zin:(beta+1)*(reSmall+rp),zout:reSmall+rs/(beta+1),gain:rp/(rp+reSmall)};
 }
 // Fixed-V_BE bias calculations: divider + emitter resistor, with temperature drift of V_BE.

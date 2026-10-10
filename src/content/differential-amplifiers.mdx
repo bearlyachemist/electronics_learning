@@ -1,6 +1,6 @@
+import {DiffPairFigure,DifferentialLinearityFigure,ActiveLoadFigure} from '../components/StageFigures';
 import Equation from '../components/Equation.astro';
 import {DiffPairLab} from '../components/StageLabs';
-import {ActiveLoadFigure} from '../components/Figures';
 
 <div className="chapter-hero" id="overview">
 
@@ -30,7 +30,7 @@ The **differential amplifier** responds to the difference between two inputs and
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Differential and common-mode signals → The large-signal tanh law → Small-signal gains and CMRR → Explore the long-tailed pair → Current-mirror active load → Offsets, bias currents and limits.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Differential and common-mode signals → The large-signal tanh law → Small-signal gains and CMRR → Explore the long-tailed pair → Current-mirror active load → Offsets, bias currents and limits → Check your understanding.</p>
 
 </div>
 
@@ -38,7 +38,7 @@ The **differential amplifier** responds to the difference between two inputs and
 
 <div className="section-heading"><span>01</span><h2>Differential and common-mode signals</h2></div>
 
-Any pair of input voltages v₁ and v₂ can be rewritten as a **differential** part and a **common-mode** part:
+Any pair of input voltages $v_1$ and $v_2$ can be rewritten as a **differential** part and a **common-mode** part:
 
 <Equation tex="v_d=v_1-v_2,\qquad v_{cm}=\frac{v_1+v_2}{2},\qquad v_1=v_{cm}+\frac{v_d}{2},\ \ v_2=v_{cm}-\frac{v_d}{2}"/>
 
@@ -54,9 +54,11 @@ The **common-mode rejection ratio** measures how well the amplifier ignores what
 
 <div className="section-heading"><span>02</span><h2>The large-signal tanh law</h2></div>
 
-The **long-tailed pair** is two matched transistors with their emitters joined and fed from a common “tail” current I_T (a resistor to a negative supply, or a current source). Each collector has a load resistor R_C. The inputs go to the two bases.
+The **long-tailed pair** is two matched transistors with their emitters joined and fed from a common “tail” current $I_T$ (a resistor to a negative supply, or a current source). Each collector has a load resistor $R_C$. The inputs go to the two bases.
 
-The emitters share one node, so the difference in base voltages appears entirely as a difference in base–emitter voltages: V_BE1 − V_BE2 = v_d. Applying Ebers–Moll to each transistor:
+<DiffPairFigure/>
+
+The emitters share one node, so the difference in base voltages appears entirely as a difference in base–emitter voltages: $V_{BE1}$ − $V_{BE2}$ = $v_d$. Applying Ebers–Moll to each transistor:
 
 <Equation tex="\frac{I_{C1}}{I_{C2}}=\frac{I_Se^{V_{BE1}/V_T}}{I_Se^{V_{BE2}/V_T}}=e^{v_d/V_T},\qquad I_{C1}+I_{C2}=I_T"/>
 
@@ -68,11 +70,21 @@ The tail current is **steered** from one side to the other by the input differen
 
 <div className="table-wrap">
 
-<table><thead><tr><th>v_d</th><th>I_C1 / I_T</th><th>Comment</th></tr></thead><tbody><tr><td>0</td><td>0.500</td><td>Balanced</td></tr><tr><td>10 mV</td><td>0.596</td><td>Nearly linear</td></tr><tr><td>26 mV (V_T)</td><td>0.732</td><td>Visibly compressing</td></tr><tr><td>50 mV</td><td>0.874</td><td>Strongly nonlinear</td></tr><tr><td>100 mV</td><td>0.980</td><td>Fully switched</td></tr></tbody></table>
+<table><thead><tr><th>$v_d$</th><th>$I_{C1}$ / $I_T$</th><th>Comment</th></tr></thead><tbody><tr><td>0</td><td>0.500</td><td>Balanced</td></tr><tr><td>10 mV</td><td>0.596</td><td>Nearly linear</td></tr><tr><td>26 mV ($V_T$)</td><td>0.732</td><td>Visibly compressing</td></tr><tr><td>50 mV</td><td>0.874</td><td>Strongly nonlinear</td></tr><tr><td>100 mV</td><td>0.980</td><td>Fully switched</td></tr></tbody></table>
 
 </div>
 
-The slope has fallen by 10% from its center value at only ±17 mV. A plain pair is linear only for a few tens of millivolts; beyond ±100 mV it is a switch, which is what a comparator wants. **Emitter degeneration** (a resistor R_E in each emitter) widens the linear range: v_d = V_T ln(I_C1/I_C2) + (I_C1 − I_C2)R_E. With R_E = 500 Ω at 1 mA tail, 100 mV of input steers only 59% of the current to one side.
+The slope has fallen by 10% from its center value at only ±17 mV. A plain pair is linear only for a few tens of millivolts; beyond ±100 mV it is a switch, which is what a comparator wants. **Emitter degeneration** (a resistor $R_E$ in each emitter) widens the linear range: $v_d$ = $V_T$ ln($I_{C1}$/$I_{C2}$) + ($I_{C1}$ − $I_{C2}$)$R_E$. With $R_E$ = 500 Ω at 1 mA tail, 100 mV of input steers only 59% of the current to one side.
+
+### A quantitative linear range
+
+The current difference is $I_T\tanh(v_d/(2V_T))$. For $x=v_d/(2V_T)$, the expansion $\tanh x=x-x^3/3+\cdots$ gives a fractional gain compression of about $x^2/3$.
+
+<Equation tex="\frac{\text{departure from the linear current difference}}{\text{linear prediction}}\approx\frac{v_d^2}{12V_T^2}"/>
+
+A 1% departure corresponds to $|v_d|\approx\sqrt{0.12}V_T=8.95$ mV at 300 K. This is a peak transfer-curve error, not a 1% harmonic-distortion specification. With emitter resistors, the exact relationship becomes $v_d=V_T\ln(I_1/I_2)+(I_1-I_2)R_E$: degeneration spends some input voltage on resistors instead of junction exponentials.
+
+<DifferentialLinearityFigure/>
 
 </section>
 
@@ -82,19 +94,19 @@ The slope has fallen by 10% from its center value at only ±17 mV. A plain pair 
 
 ### Differential gain: the half circuit
 
-For a small differential input, v₁ rises by v_d/2 and v₂ falls by v_d/2. By symmetry the shared emitter node does not move: it is a virtual AC ground for differential signals. Each half is then a common-emitter stage with input v_d/2:
+For a small differential input, $v_1$ rises by $v_d$/2 and $v_2$ falls by $v_d$/2. By symmetry the shared emitter node does not move: it is a virtual AC ground for differential signals. Each half is then a common-emitter stage with input $v_d$/2:
 
 <Equation tex="i_{c1}=-i_{c2}=\frac{v_d/2}{r_e+R_E},\qquad A_d=\frac{v_{c2}}{v_d}=\frac{R_C}{2(r_e+R_E)}\ \ (\text{single-ended}),\qquad A_{d,\mathrm{diff}}=\frac{R_C}{r_e+R_E}"/>
 
-Taking the output from one collector gives half the gain of taking it between the two collectors. With a 1 mA tail, each side runs at 0.5 mA, r_e = 51.7 Ω, and with R_C = 10 kΩ the single-ended gain is 10 000/(2 × 51.7) = **96.7**.
+Taking the output from one collector gives half the gain of taking it between the two collectors. With a 1 mA tail, each side runs at 0.5 mA, $r_e$ = 51.7 Ω, and with $R_C$ = 10 kΩ the single-ended gain is 10 000/(2 × 51.7) = **96.7**.
 
 ### Common-mode gain: the other half circuit
 
-For a common-mode input both bases rise together and both collector currents change equally. Split the tail resistance R_T into two resistors 2R_T in parallel, one for each half. Each half is now a common-emitter stage with 2R_T of degeneration:
+For a common-mode input both bases rise together and both collector currents change equally. Split the tail resistance $R_T$ into two resistors $2R_T$ in parallel, one for each half. Each half is now a common-emitter stage with $2R_T$ of degeneration:
 
 <Equation tex="A_{cm}=-\frac{R_C}{2R_T+r_e+R_E}\approx-\frac{R_C}{2R_T},\qquad \mathrm{CMRR}=\left|\frac{A_d}{A_{cm}}\right|\approx\frac{R_T}{r_e+R_E}"/>
 
-A 14.3 kΩ tail from −15 V (giving 1 mA) yields A_cm = −10 000/28 650 = −0.349 and CMRR = 277, or **49 dB**. Replacing the tail resistor with a transistor current source whose output resistance is several megohms raises CMRR to about 10⁵, nearly **100 dB**. That is the main reason the tail is almost always a current source.
+A 14.3 kΩ tail from −15 V (giving 1 mA) yields $A_{\mathrm{cm}}$ = −10 000/28 650 = −0.349 and CMRR = 277, or **49 dB**. Replacing the tail resistor with a transistor current source whose output resistance is several megohms raises CMRR to about 10⁵, nearly **100 dB**. That is the main reason the tail is almost always a current source.
 
 <div className="worked-example">
 
@@ -122,17 +134,17 @@ A 14.3 kΩ tail from −15 V (giving 1 mA) yields A_cm = −10 000/28 650 = −0
 
 <div className="section-heading"><span>05</span><h2>Current-mirror active load</h2></div>
 
-Taking the output from one collector wastes half the signal: the other collector’s current change is simply dumped into its resistor. And high gain needs a large R_C, which needs a large supply voltage to carry the bias current.
+Taking the output from one collector wastes half the signal: the other collector’s current change is simply dumped into its resistor. And high gain needs a large $R_C$, which needs a large supply voltage to carry the bias current.
 
-Replace both collector resistors with a PNP current mirror. Q₃ (diode-connected) senses Q₁’s collector current; Q₄ copies it into the output node, where it meets Q₂’s collector current.
+Replace both collector resistors with a PNP current mirror. $Q_3$ (diode-connected) senses $Q_1$’s collector current; $Q_4$ copies it into the output node, where it meets $Q_2$’s collector current.
 
 <ActiveLoadFigure/>
 
-For a differential input, Q₁’s current rises by i and Q₂’s falls by i. The mirror copies Q₁’s increase to the output node, so the output node receives +i from Q₄ while Q₂ draws i less: the net current into the output is 2i. Both halves now contribute. And the node sees only transistor output resistances, r_o of Q₂ in parallel with r_o of Q₄:
+For a differential input, $Q_1$’s current rises by i and $Q_2$’s falls by i. The mirror copies $Q_1$’s increase to the output node, so the output node receives +i from $Q_4$ while $Q_2$ draws i less: the net current into the output is 2i. Both halves now contribute. And the node sees only transistor output resistances, $r_o$ of $Q_2$ in parallel with $r_o$ of $Q_4$:
 
 <Equation tex="A_d=G_m\,(r_{o2}\parallel r_{o4})=\frac{1}{r_e+R_E}\cdot\frac{V_A}{I_T},\qquad A_d=\frac{V_A}{2V_T}\ \ (R_E=0)" label="ACTIVE-LOAD GAIN"/>
 
-The gain depends only on the Early voltage. For V_A = 100 V it is 100/(2 × 0.02585) ≈ **1930** from one stage—with a single-ended output and no large resistors. With 100 Ω of degeneration it falls to about 660 but becomes more linear. This is the input stage of most bipolar op-amps; its high output impedance also means it must drive a high-impedance next stage, usually a follower or another gain stage.
+The gain depends only on the Early voltage. For $V_A$ = 100 V it is 100/(2 × 0.02585) ≈ **1930** from one stage—with a single-ended output and no large resistors. With 100 Ω of degeneration it falls to about 660 but becomes more linear. This is the input stage of most bipolar op-amps; its high output impedance also means it must drive a high-impedance next stage, usually a follower or another gain stage.
 
 </section>
 
@@ -140,9 +152,9 @@ The gain depends only on the Early voltage. For V_A = 100 V it is 100/(2 × 0.02
 
 <div className="section-heading"><span>06</span><h2>Offsets, bias currents and limits</h2></div>
 
-**Input offset voltage.** If the transistors’ V_BEs differ by 1 mV at equal currents, the pair behaves as if 1 mV were applied between its inputs: the output is balanced only when v_d = −1 mV. A 5% I_S mismatch gives V_T ln 1.05 ≈ 1.3 mV; collector-resistor mismatch adds more. Discrete pairs offset by millivolts; monolithic matched pairs by a fraction of a millivolt. Offset also drifts, roughly by (V_OS/T), about 3.3 µV/°C for each millivolt of offset.
+**Input offset voltage.** If the transistors’ $V_{BE}$ values differ by 1 mV at equal currents, the pair behaves as if 1 mV were applied between its inputs: the output is balanced only when $v_d$ = −1 mV. A 5% $I_S$ mismatch gives $V_T$ ln 1.05 ≈ 1.3 mV; collector-resistor mismatch adds more. Discrete pairs offset by millivolts; monolithic matched pairs by a fraction of a millivolt. Offset also drifts, roughly by ($V_{OS}$/T), about 3.3 µV/°C for each millivolt of offset.
 
-**Input bias and offset currents.** Each base draws I_T/(2β): 5 µA for a 1 mA tail and β = 100. That current flows through whatever source resistance drives each input, producing an extra offset voltage. Matching the source resistances at the two inputs cancels the bias current’s effect, leaving only the *difference* between base currents, the input offset current.
+**Input bias and offset currents.** Each base draws $I_T$/(2β): 5 µA for a 1 mA tail and $\beta$ = 100. That current flows through whatever source resistance drives each input, producing an extra offset voltage. Matching the source resistances at the two inputs cancels the bias current’s effect, leaving only the *difference* between base currents, the input offset current.
 
 **Mismatch limits CMRR.** If the two halves are not identical, a common-mode change produces unequal collector currents, which look like a differential signal. In practice, mismatch rather than the tail impedance often sets CMRR, which is why precision differential amplifiers use matched pairs or laser-trimmed resistors.
 
@@ -150,9 +162,72 @@ The gain depends only on the Early voltage. For V_A = 100 V it is 100/(2 × 0.02
 
 **Uses.** Besides op-amp inputs, the pair is a comparator (driven well past ±100 mV), a voltage-controlled amplifier (the gain is proportional to the tail current), and the core of analog multipliers and mixers.
 
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / INPUT RESISTANCE AND OFFSET</span><h3>A 1 mA tail with β = 100</h3>
+
+<p>At balance, each transistor has 0.5 mA collector current, $g_m=19.34$ mS and $r_π=5.17$ kΩ. A floating differential source sees approximately $2r_π=10.34$ kΩ between the bases. With 100 Ω in each emitter, this rises to $2[r_π+(β+1)R_E]=30.54$ kΩ.</p>
+
+<p>Each input also draws about 5 µA of DC bias current. A 10 kΩ difference between source resistances creates about 50 mV of differential input error—far larger than the 9 mV linear range without degeneration. Equal source resistances cancel the effect of equal bias currents, while input offset current and transistor mismatch remain.</p>
+
+<p>Check the DC input range separately. With 10 kΩ collector resistors and 0.5 mA per side on +15 V, both collectors sit near 10 V. Forward active operation requires bases below those collector voltages. At the other end, the tail source must retain its own headroom above −15 V. Small-signal CMRR does not promise rejection outside that range.</p>
+
+</div>
+
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A long-tailed pair <em>steers a fixed tail current</em>: the difference of the inputs decides how it divides, and their common level does not. A current-source tail gives high CMRR; a mirror load gives high gain.</p></div>
 
-<p className="reference-note">Coverage: The Art of Electronics §2.3.8, with the active-load stage of integrated op-amps.</p>
+<p className="reference-note">Coverage: The Art of Electronics §2.3.8, with the active-load stage of integrated op-amps. For further circuit analysis, see the [MIT 6.012 lecture notes](https://ocw.mit.edu/courses/6-012-microelectronic-devices-and-circuits-fall-2009/pages/lecture-notes/).</p>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. What happens to the sum of the two currents when differential input increases?</summary>
+<div>
+
+In the ideal fixed-tail model it stays at the tail current. The input steers the split rather than increasing the sum.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why is single-ended resistive gain half the differential-output gain?</summary>
+<div>
+
+Each side responds to half the differential input, and the two collector voltage changes have opposite signs. Subtracting the outputs adds their magnitudes.
+
+</div>
+</details>
+
+<details>
+<summary>3. Does emitter degeneration increase gain?</summary>
+<div>
+
+It lowers transconductance and gain, while increasing input resistance and the useful linear input range.
+
+</div>
+</details>
+
+<details>
+<summary>4. Can an ideal tail current source remove input mismatch?</summary>
+<div>
+
+It removes the tail’s common-mode current variation in the ideal model, but cannot eliminate unequal devices, unequal loads or unequal source-resistance drops.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why does a current-mirror load recover both signal currents at one output?</summary>
+<div>
+
+It copies the left current change into the right output node, where it adds to the opposite change in the right transistor’s current.
+
+</div>
+</details>
 
 </section>
 

@@ -1,6 +1,6 @@
 import Equation from '../components/Equation.astro';
 import {SwitchLab} from '../components/BjtLabs';
-import {TerminalsFigure} from '../components/Figures';
+import {TerminalsFigure,BetaSpreadFigure,SwitchSweepFigure,LampDriverFigure,LedDriverFigure,RelayDriverFigure,InverterFigure,HighSideFigure,DriveComparisonFigure} from '../components/BjtFigures';
 
 <div className="chapter-hero" id="overview">
 
@@ -10,7 +10,7 @@ import {TerminalsFigure} from '../components/Figures';
 
 <p className="dek">State the four rules that govern a BJT, use the current-amplifier model to analyze any operating region, and design reliable saturated switches for lamps, LEDs, relays and logic.</p>
 
-<div className="chapter-meta"><span>50–60 min + exploration</span><span>Transistor physics · Diodes · Inductive loads</span></div>
+<div className="chapter-meta"><span>60–75 min + exploration</span><span>Transistor physics · Diodes · Inductive loads</span></div>
 
 </div>
 
@@ -20,9 +20,9 @@ import {TerminalsFigure} from '../components/Figures';
 
 <div>
 
-Chapter 26 showed that the base–emitter junction controls a collector current β times larger than the base current. That makes the transistor a current-controlled valve: a few milliamps into the base can control a hundred milliamps through the collector.
+Chapter 26 showed that the base–emitter junction controls a collector current $\beta$ times larger than the base current. That makes the transistor a current-controlled valve: a few milliamps into the base can control a hundred milliamps through the collector.
 
-This chapter treats the transistor at its simplest level—the model used by working designers for a first pass through almost every circuit. It is accurate enough for switches and bias calculations, and its shortcomings point directly to the refinements of later chapters.
+This chapter treats the transistor at its simplest level, the model working designers use for a first pass through almost every circuit. It is accurate enough for switches and bias calculations, and its shortcomings point directly to the refinements of later chapters.
 
 </div>
 
@@ -30,7 +30,7 @@ This chapter treats the transistor at its simplest level—the model used by wor
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Symbols and the four rules → The current-amplifier model → The saturated switch → Explore a switch → Switching circuits that work → Ratings, limits and β.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Symbols and the four rules → The current-amplifier model → The saturated switch → Explore a switch → Switching circuits that work → Mistakes that destroy switches → Ratings, limits and $\beta$ → Check your understanding.</p>
 
 </div>
 
@@ -40,18 +40,28 @@ This chapter treats the transistor at its simplest level—the model used by wor
 
 <TerminalsFigure/>
 
-For an NPN transistor, and with every polarity reversed for a PNP, the following rules describe normal operation:
+For an NPN transistor (reverse every polarity for a PNP), the following rules describe normal operation:
 
 1. **Polarity.** The collector must be more positive than the emitter.
-2. **Junctions.** The base–emitter and base–collector circuits behave like diodes. Normally the base–emitter diode conducts and the base–collector diode is reverse-biased. A conducting base–emitter junction sits at V_BE ≈ 0.6–0.7 V; V_B ≈ V_E + 0.65 V is a good working value.
+2. **Junctions.** The base–emitter and base–collector circuits behave like diodes. Normally the base–emitter diode conducts and the base–collector diode is reverse-biased. A conducting base–emitter junction sits at $V_{BE} \approx 0.6$–$0.7$ V, so $V_B \approx V_E + 0.65$ V is a good working value.
 3. **Ratings.** Every transistor has maximum values of collector current, base current, collector–emitter voltage, reverse emitter–base voltage and power dissipation that must not be exceeded.
 4. **Current gain.** When rules 1–3 are obeyed, the collector current is roughly proportional to the base current:
 
 <Equation tex="I_C=h_{FE}I_B=\beta I_B,\qquad I_E=I_C+I_B=(\beta+1)I_B,\qquad \alpha=\frac{I_C}{I_E}=\frac{\beta}{\beta+1}"/>
 
-Two warnings belong with rule 4. First, β (written h_FE on datasheets) is typically 100 but can be anywhere from about 50 to 500 for transistors of the same type, and it changes with current and temperature. A good circuit works for any β above some minimum. Second, rule 2 means the base–emitter junction must never be forward-biased by a voltage source without something to limit its current: it is a diode, and 0.9 V across it can mean amperes.
+Two warnings belong with rule 4. First, $\beta$ (written $h_{FE}$ on datasheets) is typically 100 but can be anywhere from about 50 to 500 for transistors of the same type, and it changes with current and temperature. A good circuit works for any $\beta$ above some minimum. Second, rule 2 means the base–emitter junction must never be forward-biased by a voltage source without something to limit its current. It is a diode, and 0.9 V across it can mean amperes.
 
-Rule 4 also says what the transistor does *not* do. It does not make the collector current flow through a fixed resistance, and it does not create current: it lets the collector circuit draw up to β times the base current, provided the collector circuit can supply it.
+### A mental picture: a valve, not a pump
+
+Picture the collector–emitter path as a valve in a pipe, with the base current turning the handle. Each microamp of base current opens the valve far enough to pass $\beta$ microamps, but only if something upstream is pushing. The energy comes from the collector supply, never from the base. The transistor can only *restrict* collector current; it cannot force current through a circuit that cannot supply it.
+
+That is what rule 4 does *not* say. It does not make the collector current flow through a fixed resistance, and it does not create current. It lets the collector circuit draw *up to* $\beta I_B$, provided the collector circuit can deliver it. Hold on to that word "up to": it is the whole theory of the saturated switch.
+
+<div className="margin-note">
+
+**Not two diodes back to back.** Rule 2 says the transistor's junctions behave like diodes, and an ohmmeter will indeed find two diodes between base and the other terminals. But two discrete diodes wired anode-to-anode do not make a transistor. Transistor action needs a base so thin (Chapter 26) that electrons injected by the emitter diffuse across it and are collected before they recombine. Two separate diodes have a "base" kilometres wide by comparison, and the current gain is zero.
+
+</div>
 
 </section>
 
@@ -59,23 +69,47 @@ Rule 4 also says what the transistor does *not* do. It does not make the collect
 
 <div className="section-heading"><span>02</span><h2>The current-amplifier model</h2></div>
 
-Analyze any single-transistor circuit with three questions. Is the base–emitter junction on? If so, what base current flows? Can the collector circuit actually carry β times that current?
+Analyze any single-transistor circuit with three questions. Is the base–emitter junction on? If so, what base current flows? Can the collector circuit actually carry $\beta$ times that current?
 
-Suppose a transistor with β = 150 carries 3 mA of emitter current. Then I_B = 3 mA/151 = 19.9 µA, I_C = 2.98 mA and α = 0.9934. In most calculations I_C ≈ I_E within 1%.
+Suppose a transistor with $\beta = 150$ carries 3 mA of emitter current. Then $I_B = 3\text{ mA}/151 = 19.9\ \mu\text{A}$, $I_C = 2.98$ mA and $\alpha = 0.9934$. In most calculations $I_C \approx I_E$ within 1%.
 
 ### The three regions in circuit terms
 
 - **Cutoff.** If the base–emitter voltage is below about 0.5 V, essentially no base current flows and no collector current flows. The transistor is an open switch.
-- **Active.** With the base–emitter junction conducting and the collector circuit able to supply βI_B while keeping V_C above V_B, I_C = βI_B. The collector behaves like a current source controlled by the base.
-- **Saturation.** If βI_B is more than the collector circuit can deliver, the collector voltage falls until the base–collector junction also conducts. The collector current is then set by the external circuit, not by β, and V_CE falls to a small value, V_CE(sat), typically 0.05–0.2 V for a small transistor. The transistor is a closed switch.
+- **Active.** The base–emitter junction conducts, and the collector circuit can supply $\beta I_B$ while keeping $V_C$ above $V_B$. Then $I_C = \beta I_B$, and the collector behaves like a current source controlled by the base.
+- **Saturation.** If $\beta I_B$ is more than the collector circuit can deliver, the collector voltage falls until the base–collector junction also conducts. The collector current is then set by the external circuit, not by $\beta$, and $V_{CE}$ falls to a small value $V_{CE(\mathrm{sat})}$, typically 0.05–0.2 V for a small transistor. The transistor is a closed switch.
+
+The test for which region you are in is a single comparison. With a collector resistor $R_C$ to a supply $V_{CC}$, the most current the collector circuit can deliver is
+
+<Equation label="THE SATURATION TEST" tex="I_{C(\mathrm{max})}=\frac{V_{CC}-V_{CE(\mathrm{sat})}}{R_C}\qquad\begin{cases}\beta I_B < I_{C(\max)} & \text{active: } I_C=\beta I_B,\ V_{CE}=V_{CC}-\beta I_BR_C\\[4pt] \beta I_B \ge I_{C(\max)} & \text{saturated: } I_C=I_{C(\max)},\ V_{CE}=V_{CE(\mathrm{sat})}\end{cases}"/>
+
+<BetaSpreadFigure/>
+
+The plot shows why the saturated region is so valuable. On the sloped lines the collector current depends on $\beta$, which you do not know to better than a factor of three or so. On the flat ceiling it depends only on $V_{CC}$ and $R_C$, which you chose. A switch lives on the ceiling.
 
 <div className="worked-example">
 
 <span className="tiny-label">WORKED EXAMPLE / WHICH REGION?</span><h3>A collector resistor of 1 kΩ to 10 V</h3>
 
-<p>The most the collector circuit can deliver is about (10 − 0.2)/1 kΩ = 9.8 mA. With β = 100 and I_B = 50 µA, βI_B = 5 mA is less than that, so the transistor is active: V_CE = 10 − 5 = 5 V.</p>
+<p>The most the collector circuit can deliver is about $(10 - 0.2)\text{ V}/1\text{ k}\Omega = 9.8$ mA. With $\beta = 100$ and $I_B = 50\ \mu\text{A}$, $\beta I_B = 5$ mA is less than that, so the transistor is active: $V_{CE} = 10 - 5\text{ mA}\times 1\text{ k}\Omega = 5$ V.</p>
 
-<p>With I_B = 200 µA, βI_B = 20 mA exceeds 9.8 mA. The transistor saturates; I_C ≈ 9.8 mA and V_CE ≈ 0.2 V. The ratio of available βI_B to actual I_C—here about 2—is the <strong>overdrive</strong>. The “forced β” I_C/I_B = 49 is less than the transistor’s β.</p>
+<p>With $I_B = 200\ \mu\text{A}$, $\beta I_B = 20$ mA exceeds 9.8 mA. The transistor saturates; $I_C \approx 9.8$ mA and $V_{CE} \approx 0.2$ V. The ratio of available $\beta I_B$ to actual $I_C$, here about 2, is the <strong>overdrive</strong>. The "forced $\beta$" $I_C/I_B = 49$ is less than the transistor's own $\beta$; a forced $\beta$ well below the minimum $\beta$ is the signature of a solidly saturated switch.</p>
+
+</div>
+
+<DriveComparisonFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / WHY DESIGNERS AVOID FIXED BASE CURRENT</span><h3>Same transistor, two ways to drive it</h3>
+
+<p><strong>Left circuit, fixed base current.</strong> The 1 MΩ resistor from 15 V sets $I_B = (15 - 0.65)\text{ V}/1\text{ M}\Omega = 14.35\ \mu\text{A}$ whatever the transistor does. With $\beta = 100$, $I_C = 1.44$ mA and $V_C = 15 - 1.44\text{ mA}\times3.3\text{ k}\Omega = 10.3$ V. Swap in another transistor from the same bag:</p>
+
+<div className="table-wrap"><table><thead><tr><th>$\beta$</th><th>Fixed base current: $V_C$</th><th>Fixed base voltage: $V_C$</th></tr></thead><tbody><tr><td>50</td><td>12.6 V</td><td>10.63 V</td></tr><tr><td>100</td><td>10.3 V</td><td>10.59 V</td></tr><tr><td>300</td><td>0.79 V (nearly saturated)</td><td>10.56 V</td></tr></tbody></table></div>
+
+<p><strong>Right circuit, fixed base voltage.</strong> The 2.0 V source fixes the base, so the emitter sits one diode drop lower: $V_E = 1.35$ V. The emitter resistor then fixes $I_E = 1.35\text{ V}/1\text{ k}\Omega = 1.35$ mA, and $I_C = \alpha I_E$ changes only from 1.32 mA to 1.35 mA as $\beta$ goes from 50 to 300. The base current still varies with $\beta$, but the circuit no longer cares.</p>
+
+<p>The lesson is the same as the $\beta$-spread plot's, from the other side. In the active region, never let a design depend on $\beta$; let it depend on resistors and on $V_{BE}$, which is predictable. For switches, saturate. For amplifiers, use the emitter-resistor idea, developed in Chapters 28 and 29.</p>
 
 </div>
 
@@ -85,23 +119,35 @@ Suppose a transistor with β = 150 carries 3 mA of emitter current. Then I_B = 3
 
 <div className="section-heading"><span>03</span><h2>The saturated switch</h2></div>
 
-In a switch the transistor should be either fully off (cutoff) or fully on (saturation). In between, both the voltage across it and the current through it are significant and it dissipates power.
+In a switch the transistor should be either fully off (cutoff) or fully on (saturation). In between, both the voltage across it and the current through it are significant, and it dissipates power. The design reduces to three equations:
+
+<Equation label="SWITCH DESIGN" tex="I_{C(\mathrm{sat})}=\frac{V_{CC}-V_{CE(\mathrm{sat})}-V_{\mathrm{load}}}{R_C},\qquad I_B=N\,\frac{I_{C(\mathrm{sat})}}{\beta_{\min}},\qquad R_B=\frac{V_{\mathrm{in}}-V_{BE}}{I_B}"/>
+
+Here $N$ is the overdrive factor, typically 2 to 10. Choose it by asking how certain you are of $\beta_{\min}$ and of the load current; a common rule of thumb simply sets $I_B = I_C/10$, a forced $\beta$ of 10, which is also the condition at which datasheets specify $V_{CE(\mathrm{sat})}$.
+
+<LampDriverFigure/>
 
 <div className="worked-example">
 
 <span className="tiny-label">WORKED EXAMPLE / THE OPENING QUESTION</span><h3>A 12 V, 100 mA lamp from a 5 V logic output</h3>
 
-<p>The collector current will be 100 mA, set by the lamp. Design for saturation with generous overdrive: aim for a base current of one tenth of the collector current, 10 mA, which works for any transistor with β above 10 (and quickly, see below).</p>
+<p>The collector current will be 100 mA, set by the lamp. Design for saturation with generous overdrive: aim for a base current of one tenth of the collector current, 10 mA, which works for any transistor with $\beta$ above 10.</p>
 
-<p>The base resistor drops 5 − 0.7 = 4.3 V at 10 mA: R_B = <strong>430 Ω</strong>. In saturation the transistor dissipates about 0.2 V × 100 mA = <strong>20 mW</strong>, while the lamp receives 1.18 W. Off, a pulled-down base passes only leakage.</p>
+<p>The base resistor drops $5 - 0.7 = 4.3$ V at 10 mA, so $R_B = 4.3\text{ V}/10\text{ mA} =$ <strong>430 Ω</strong>. In saturation the transistor dissipates about $0.2\text{ V}\times100\text{ mA} =$ <strong>20 mW</strong>, while the lamp receives 1.18 W. Off, the pulled-down base passes only leakage.</p>
+
+<p><strong>Check the part.</strong> A cold tungsten filament has roughly a tenth of its hot resistance, so at switch-on this lamp tries to draw about 1 A for tens of milliseconds. With 10 mA of base drive and a $\beta$ that has fallen to perhaps 40 at high current, the transistor limits the inrush to about 0.4 A. For that moment it is active rather than saturated, with roughly 7 V across it: nearly 3 W. A 2N3904 (200 mA maximum) is the wrong part here. Choose one rated for at least 0.5–1 A, such as a BC337 or 2N4401. Also check that the logic pin can actually source 10 mA; many microcontrollers are specified at a few milliamps for a valid logic high.</p>
 
 </div>
 
-Why overdrive by a factor of five to ten rather than just enough? β has a wide spread and falls at high current and low temperature. A tungsten filament draws several times its rated current when cold, so the switch must stay saturated during that inrush. Extra base charge also turns the transistor on faster. The price is a slower turn-off—the excess stored charge must be removed (Chapter 26)—and wasted base current.
+Why overdrive by a factor of five to ten rather than just enough? $\beta$ has a wide spread and falls at high current and low temperature. Loads such as lamps and motors draw several times their rated current when starting, and the switch should stay saturated through that. Extra base charge also turns the transistor on faster. The price is a slower turn-off (the excess stored charge must be removed, Chapter 26) and wasted base current.
 
-**Turn-off and the base pull-down.** A resistor from base to emitter (a few kilohms to tens of kilohms) gives stored charge and leakage a path out of the base and keeps the transistor off if the driver goes high-impedance. A small capacitor across R_B, a “speed-up capacitor,” delivers a burst of base current at each edge for faster switching.
+<SwitchSweepFigure/>
 
-**Inductive loads.** A relay or solenoid in the collector will produce a large voltage when the switch opens. A flywheel diode across the winding (Chapter 17) is not optional: without it, the collector voltage can exceed V_CEO and destroy the transistor.
+The sweep shows what happens if the drive is too weak, or the input changes slowly. Between cutoff and saturation the transistor passes through a region where it dissipates 15 times more than when fully on. A switch that lingers there, driven by a slowly rising RC voltage or a weak pull-up, can overheat even though both its steady states are cool.
+
+**Turn-off and the base pull-down.** A resistor from base to emitter (a few kilohms to tens of kilohms) gives stored charge and leakage a path out of the base. It also keeps the transistor off if the driver goes high-impedance. A small capacitor across $R_B$, a "speed-up capacitor," delivers a burst of base current at each edge for faster switching.
+
+**Inductive loads.** A relay or solenoid in the collector will produce a large voltage when the switch opens. A flywheel diode across the winding (Chapter 17) is not optional: without it, the collector voltage can exceed $V_{CEO}$ and destroy the transistor.
 
 </section>
 
@@ -109,11 +155,13 @@ Why overdrive by a factor of five to ten rather than just enough? β has a wide 
 
 <div className="section-heading"><span>04</span><h2>Explore a switch</h2></div>
 
-The lab draws the transistor’s output characteristics in the first model: horizontal lines I_C = βI_B, each ending in a vertical drop at V_CE(sat). The resistor’s current must lie on the **load line**, from V_CC/R_C at V_CE = 0 to zero current at V_CE = V_CC. The operating point is where the transistor curve for the present base current crosses the load line.
+The lab draws the transistor's output characteristics in the first model: horizontal lines $I_C = \beta I_B$, each ending in a vertical drop at $V_{CE(\mathrm{sat})}$. The resistor's current must lie on the **load line**, from $V_{CC}/R_C$ at $V_{CE} = 0$ to zero current at $V_{CE} = V_{CC}$. The operating point is where the transistor curve for the present base current crosses the load line.
+
+Before you move anything, predict: with the default 1 kΩ base resistor and a 5 V input, how much overdrive is there? (Base current $\approx 4.35$ mA; $\beta I_B = 435$ mA against a ceiling of about 98 mA, so roughly 4.4.)
 
 <SwitchLab client:load/>
 
-<p className="caption">Figure 1. A saturated switch in the first transistor model. Saturation occurs when the horizontal line for the present base current lies above the load line’s top end.</p>
+<p className="caption">A saturated switch in the first transistor model. Saturation occurs when the horizontal line for the present base current lies above the load line's top end.</p>
 
 </section>
 
@@ -123,37 +171,129 @@ The lab draws the transistor’s output characteristics in the first model: hori
 
 ### An LED from a logic pin
 
-A 2.0 V LED at 15 mA from 5 V with V_CE(sat) = 0.15 V needs R_C = (5 − 2 − 0.15)/15 mA = 190 Ω; a standard 180 Ω gives 15.8 mA. For a transistor with minimum β of 100 and fivefold overdrive, the base current is 0.75 mA and R_B = (5 − 0.7)/0.75 mA ≈ 5.7 kΩ: a 5.6 kΩ part. The logic pin supplies under a milliamp.
+<LedDriverFigure/>
+
+A 2.0 V LED at 15 mA from 5 V, with $V_{CE(\mathrm{sat})} = 0.15$ V, needs $R_C = (5 - 2 - 0.15)\text{ V}/15\text{ mA} = 190\ \Omega$; a standard 180 Ω gives 15.8 mA. For a transistor with minimum $\beta$ of 100 and fivefold overdrive, the base current is 0.75 mA and $R_B = (5 - 0.7)\text{ V}/0.75\text{ mA} \approx 5.7$ kΩ, so use a 5.6 kΩ part. The logic pin supplies under a milliamp, well within any microcontroller's rating.
+
+Notice where the LED is: in the collector, not the emitter. Put it in the emitter and the circuit becomes an emitter follower (Chapter 28). The emitter can rise only to $V_{\mathrm{in}} - 0.65$ V, so the LED and its resistor would see just 4.35 V, and the current would depend on the logic-high voltage.
 
 ### A relay driver
 
-The relay coil sits in the collector with a diode across it, cathode to the supply. Size the base current for the coil current with overdrive, and add a base–emitter pull-down. If the relay must release quickly, use a diode in series with a zener as the clamp (Chapter 17).
+<RelayDriverFigure/>
+
+A 12 V relay coil drawing 60 mA (200 Ω) needs, with $\beta_{\min} = 100$ and fivefold overdrive, $I_B = 3$ mA, so $R_B = 4.3\text{ V}/3\text{ mA} \approx 1.5$ kΩ. The diode carries nothing while the transistor is on. At turn-off the coil keeps its 60 mA flowing for a moment, and the diode gives it a loop to circulate in. The collector then rises only to $12 + 0.7$ V instead of hundreds of volts.
+
+The diode slows the relay's release, because the stored energy decays slowly through a 0.7 V clamp. If fast release matters, put a zener in series with the diode (Chapter 17). The collector then rises to $12 + V_Z + 0.7$ V, and the current dies $V_Z/0.7$ times faster. Keep that total below $V_{CEO}$.
 
 ### A transistor inverter
 
-With a 10 kΩ collector resistor to 5 V and a 22 kΩ base resistor, a low input leaves the transistor off and the output high (through 10 kΩ); a high input saturates it and pulls the output to about 0.1 V. Early logic families were built this way. The output is weak when high—it can supply only (5 − V)/10 kΩ—and the stored charge makes it slow to rise.
+<InverterFigure/>
+
+With a 10 kΩ collector resistor to 5 V and a 22 kΩ base resistor, a low input leaves the transistor off and the output high through 10 kΩ; a high input saturates it and pulls the output to about 0.1 V. Early logic families (Chapter 46) were built this way. The output is weak when high. If it drives the 22 kΩ input of an identical stage, the two resistors form a divider with the next base: $(5 - V)/10\text{ k}\Omega = (V - 0.65)/22\text{ k}\Omega$ gives $V = 3.64$ V, not 5 V. Each additional load pulls it lower, which limits fan-out. The output is also slow to rise, because stored charge must leave the base and the 10 kΩ resistor must charge any wiring capacitance.
 
 ### Switching the high side with a PNP
 
-To switch a grounded load from a positive supply, put a PNP transistor between the supply and the load, emitter at the supply. It turns on when its base is pulled about 0.7 V below the emitter, and off when the base is pulled up to the emitter. A small NPN with its collector on the PNP’s base does the level translation from logic. A resistor from PNP base to emitter guarantees turn-off. For a 0.5 A load and minimum β of 50 with twofold overdrive, the PNP needs 20 mA of base current, so the base resistor is (12 − 0.8 − 0.1)/20 mA ≈ 560 Ω—and dissipates 0.22 W, a reminder to check resistor power ratings in drive circuits.
+<HighSideFigure/>
+
+To switch a grounded load from a positive supply, put a PNP transistor between the supply and the load, emitter at the supply. It turns on when its base is pulled about 0.7 V below the emitter, and off when the base is pulled up to the emitter. A small NPN with its collector on the PNP's base does the level translation from logic. A resistor from PNP base to emitter guarantees turn-off.
+
+For a 0.5 A load and minimum $\beta$ of 50 with twofold overdrive, the PNP needs 20 mA of base current. The base resistor is $(12 - 0.8 - 0.1)\text{ V}/20\text{ mA} \approx 560\ \Omega$, and it dissipates $(20\text{ mA})^2\times560\ \Omega = 0.22$ W, a reminder to check resistor power ratings in drive circuits. The NPN must sink that 20 mA; 0.9 mA of base current through 4.7 kΩ gives it a forced $\beta$ of about 22.
+
+</section>
+
+<section id="pitfalls">
+
+<div className="section-heading"><span>06</span><h2>Mistakes that destroy switches</h2></div>
+
+Each of these circuits looks reasonable on paper, and each fails in a predictable way. Recognizing them is half of transistor design.
+
+- **No base resistor.** Connecting a logic output or a supply straight to the base forward-biases a diode with a voltage source. The base current is then limited only by the driver's output resistance and the junction's exponential law. Either the driver or the transistor fails. Every base needs something that sets its current.
+- **Driving a high-side PNP straight from logic.** With the PNP's emitter at 12 V, a 5 V logic high still pulls the base 7 V below the emitter, so the transistor stays fully on. It can never turn off. Whenever the emitter of a PNP sits above the logic supply, use a level shifter such as the NPN in the high-side circuit of section 05.
+- **Relying on $\beta$ to set a current.** A switch designed for exactly $I_B = I_C/\beta_{\mathrm{typ}}$ works on the bench with a high-gain sample, then sits in the active region and overheats in production when a low-gain part arrives. Design with $\beta_{\min}$ and overdrive.
+- **Forgetting the flywheel diode.** The transistor survives the first few turn-offs, then avalanches, and $\beta$ degrades a little each time until it fails. The diode costs a cent.
+- **Reverse-biasing the base–emitter junction.** Driving the base of an NPN several volts below its emitter (from a ±12 V signal, for example) exceeds $V_{EBO}$, often only 6 V, and permanently reduces $\beta$. A diode from emitter to base, or a base–emitter clamp, prevents it.
+- **Reading the wrong $V_{CE(\mathrm{sat})}$.** Datasheets quote saturation voltage at a forced $\beta$ of 10, for instance 0.2 V at $I_C = 10$ mA, $I_B = 1$ mA for a 2N3904. With only twofold overdrive, or at currents near the maximum rating, expect considerably more.
 
 </section>
 
 <section id="limits">
 
-<div className="section-heading"><span>06</span><h2>Ratings, limits and β</h2></div>
+<div className="section-heading"><span>07</span><h2>Ratings, limits and $\beta$</h2></div>
 
 A datasheet for a small-signal NPN such as the 2N3904 lists maxima that are easy to violate:
 
-- **V_CEO**, the collector–emitter breakdown with the base open (40 V for that part). With a base–emitter resistor the usable voltage is somewhat higher, but inductive spikes ignore such subtleties.
-- **V_EBO**, the reverse emitter–base breakdown, often only about **6 V**. Reverse-biasing the base–emitter junction beyond it causes avalanche current that permanently degrades β even if the transistor survives. It is easy to do by accident, for example when an emitter follower drives a large capacitor and its base is suddenly pulled down (Chapter 28).
-- **I_C** maximum (200 mA) and **power dissipation**, which depends on the package and copper. In a switch that spends time in the active region during each transition, or in a linear stage, compute V_CE × I_C.
+- **$V_{CEO}$**, the collector–emitter breakdown with the base open (40 V for that part). With a base–emitter resistor the usable voltage is somewhat higher, but inductive spikes ignore such subtleties.
+- **$V_{EBO}$**, the reverse emitter–base breakdown, often only about **6 V**. Reverse-biasing the base–emitter junction beyond it causes avalanche current that permanently degrades $\beta$ even if the transistor survives. It is easy to do by accident, for example when an emitter follower drives a large capacitor and its base is suddenly pulled down (Chapter 28).
+- **$I_C$ maximum** (200 mA) and **power dissipation**, which depends on the package and copper. In a switch that spends time in the active region during each transition, or in a linear stage, compute $V_{CE}\times I_C$.
 
-Datasheets give h_FE as a range at stated conditions (100–300 at 10 mA for the 2N3904). The small-signal current gain h_fe is the slope dI_C/dI_B, slightly different from the ratio h_FE; for design purposes treat both as “large, uncertain β.”
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / HOW HOT DOES IT GET?</span><h3>Junction temperature from dissipation</h3>
+
+<p>The 2N3904 in its TO-92 package is rated 625 mW at 25 °C ambient with a 150 °C maximum junction temperature. That implies a thermal resistance of $(150 - 25)\text{ °C}/0.625\text{ W} = 200$ °C/W from junction to air (Chapter 4).</p>
+
+<p>Saturated at 50 mA with $V_{CE(\mathrm{sat})} = 0.3$ V, it dissipates 15 mW and runs 3 °C above ambient. Stuck halfway, at 6 V and 50 mA, it dissipates 300 mW and runs 60 °C above ambient: survivable, but uncomfortably close to the limit in a warm enclosure. The same transistor, the same current, a factor of 20 in temperature rise. Saturation is what makes small transistors able to switch large loads.</p>
+
+</div>
+
+Datasheets give $h_{FE}$ as a range at stated conditions (100–300 at 10 mA for the 2N3904). The small-signal current gain $h_{fe}$ is the slope $dI_C/dI_B$, slightly different from the ratio $h_{FE}$. For design purposes treat both as "large, uncertain $\beta$."
 
 Finally, a common misconception: a saturated transistor is not a resistor whose value is set by the base current, and an active transistor is not a variable resistor. In the active region it is a current source; in saturation its voltage, not its resistance, is approximately fixed.
 
-<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Ask three questions: is the base–emitter junction on, how much base current flows, and can the collector circuit take β times that? <em>Design switches with overdrive</em>, so the answer never depends on β.</p></div>
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Ask three questions: is the base–emitter junction on, how much base current flows, and can the collector circuit take $\beta$ times that? <em>Design switches with overdrive</em>, so the answer never depends on $\beta$.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>08</span><h2>Check your understanding</h2></div>
+
+Answer each question before opening it. They test the reasoning in this chapter, not arithmetic; the practice page has full design problems.
+
+<details>
+<summary>1. A transistor with $\beta = 100$ has 1 mA of base current and a 1 kΩ collector resistor to 5 V. Is the collector current 100 mA?</summary>
+<div>
+
+No. The collector circuit can deliver at most $(5 - 0.2)\text{ V}/1\text{ k}\Omega = 4.8$ mA. The transistor is deeply saturated, with a forced $\beta$ of 4.8 and an overdrive of about 21. Rule 4 sets an upper limit, not a demand.
+
+</div>
+</details>
+
+<details>
+<summary>2. A "switch" driving a 200 mA motor measures $V_{CE}$ = 4 V when on. What does that tell you, and what will happen?</summary>
+<div>
+
+The transistor is in the active region, not saturated: the base drive is too small for this transistor's $\beta$ at 200 mA, or the motor draws more than expected. It dissipates $4\text{ V}\times0.2\text{ A} = 0.8$ W and will overheat. Increase the base current (smaller $R_B$, or a Darlington or MOSFET, Chapters 38 and 54) until $V_{CE}$ falls to a few tenths of a volt.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does doubling the base current of a saturated switch barely change the load current?</summary>
+<div>
+
+In saturation the load current is set by the collector circuit, $(V_{CC} - V_{CE(\mathrm{sat})})/R_C$. Extra base current only pushes $V_{CE(\mathrm{sat})}$ down slightly, from perhaps 0.2 V to 0.1 V, a tiny fraction of $V_{CC}$. It does add stored charge, which slows turn-off.
+
+</div>
+</details>
+
+<details>
+<summary>4. Two transistors of the same type have $\beta$ = 80 and $\beta$ = 250. In which circuit of the drive comparison (section 02) could you swap them without noticing?</summary>
+<div>
+
+In the right-hand, fixed-base-voltage circuit: the emitter resistor fixes the current. The same is true of any properly overdriven switch. In the fixed-base-current circuit the collector current would change by a factor of three.
+
+</div>
+</details>
+
+<details>
+<summary>5. A PNP's emitter is at 12 V. Its base is pulled to 11.3 V through a resistor. Is it on?</summary>
+<div>
+
+Yes: the base is 0.7 V below the emitter, so the emitter–base junction conducts. For a PNP, measure everything from the emitter downward. "Base low" means *below the emitter*, not near ground.
+
+</div>
+</details>
 
 <p className="reference-note">Coverage: The Art of Electronics §§2.1–2.2.2. The first model ignores the Ebers–Moll exponential law and the Early effect; Chapters 30 and 34 restore them.</p>
 

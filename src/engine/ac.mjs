@@ -66,3 +66,22 @@ export function tank({l=100e-6,c=1e-9,rw=5,hz=1e5}={}){
  pos(l,c,rw,hz);const w=2*Math.PI*hz,z=parallel(C(rw,w*l),C(0,-1/(w*c)));
  const f0=1/(2*Math.PI*Math.sqrt(l*c)),q=2*Math.PI*f0*l/rw;return {z,f0,q,rd:l/(c*rw)};
 }
+
+// Two directly connected RC low-pass sections, unloaded at the final output.
+// R2 = k R1 and C2 = C1/k: both time constants are tau, but their impedances differ.
+export function rcCascade({hz=1000,tau=1e-3,k=1,buffered=false}={}){
+ pos(hz,tau,k);const x=2*Math.PI*hz*tau;
+ return div(C(1),C(1-x*x,(2+(buffered?0:1/k))*x));
+}
+
+// Unit step of H(s) = 1/(1 + s/(Q wn) + (s/wn)^2), initially at rest.
+// Use normalized time u = wn t. Covers under-, critical-, and overdamping.
+export function secondOrderStep({u=0,q=1}={}){
+ pos(q);if(!Number.isFinite(u)||u<0)throw new RangeError('Nonnegative normalized time required');
+ const z=1/(2*q);
+ if(Math.abs(z-1)<1e-8)return 1-(1+u)*Math.exp(-u);
+ if(z<1){const b=Math.sqrt(1-z*z);return 1-Math.exp(-z*u)*(Math.cos(b*u)+z/b*Math.sin(b*u));}
+ // Separate negative exponentials avoid overflow in cosh at long times.
+ const b=Math.sqrt(z*z-1),slow=-1/(z+b),fast=-(z+b);
+ return 1-((z+b)*Math.exp(slow*u)-(z-b)*Math.exp(fast*u))/(2*b);
+}

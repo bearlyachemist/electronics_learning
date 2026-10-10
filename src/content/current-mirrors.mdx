@@ -1,6 +1,6 @@
+import {MirrorFigure,MirrorErrorFigure,ImprovedMirrorsFigure} from '../components/StageFigures';
 import Equation from '../components/Equation.astro';
 import {MirrorLab} from '../components/StageLabs';
-import {MirrorFigure} from '../components/Figures';
 
 <div className="chapter-hero" id="overview">
 
@@ -8,7 +8,7 @@ import {MirrorFigure} from '../components/Figures';
 
 <h1>Current mirrors<br/><em>Copy a current with a matched transistor.</em></h1>
 
-<p className="dek">Derive the basic mirror and every one of its errors, then fix them one at a time: emitter degeneration, ratios, the β-helper, the Wilson mirror and the Widlar source.</p>
+<p className="dek">Derive the basic mirror and every one of its errors, then fix them one at a time: emitter degeneration, ratios, the $\beta$-helper, the Wilson mirror and the Widlar source.</p>
 
 <div className="chapter-meta"><span>55–70 min + exploration</span><span>Ebers–Moll · Current sources · Small-signal model</span></div>
 
@@ -20,9 +20,9 @@ import {MirrorFigure} from '../components/Figures';
 
 <div>
 
-Chapter 34 introduced the idea: two transistors with the same I_S and the same V_BE carry the same collector current. Let one transistor *measure* a reference current by developing the V_BE it needs, and let others *reuse* that V_BE. The result is the current mirror, the most common circuit inside analog integrated circuits.
+Chapter 34 introduced the idea: two transistors with the same $I_S$ and the same $V_{BE}$ carry the same collector current. Let one transistor *measure* a reference current by developing the $V_{BE}$ it needs, and let others *reuse* that $V_{BE}$. The result is the current mirror, the most common circuit inside analog integrated circuits.
 
-The basic mirror is two transistors and a resistor. Its imperfections are small but instructive, because each one comes from a different line of the Ebers–Moll model: finite β, the Early effect, V_BE mismatch, temperature. This chapter treats each error quantitatively and then shows the circuit fix that removes it.
+The basic mirror is two transistors and a resistor. Its imperfections are small but instructive, because each one comes from a different line of the Ebers–Moll model: finite $\beta$, the Early effect, $V_{BE}$ mismatch, temperature. This chapter treats each error quantitatively and then shows the circuit fix that removes it.
 
 </div>
 
@@ -30,7 +30,7 @@ The basic mirror is two transistors and a resistor. Its imperfections are small 
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Why mirrors → The basic mirror, derived → Its errors, one by one → Explore five mirrors → β-helper and Wilson → Widlar sources, ratios and active loads.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Why mirrors → The basic mirror, derived → Its errors, one by one → Explore five mirrors → $\beta$-helper and Wilson → Widlar sources, ratios and active loads → Check your understanding.</p>
 
 </div>
 
@@ -43,8 +43,8 @@ The emitter-degenerated current source of Chapter 31 sets its current with a bas
 Mirrors have three properties that make them valuable:
 
 - **Programmability.** All outputs track the reference. Change one resistor, or drive the reference from another circuit, and every copy follows.
-- **Compliance.** The output transistor works with its collector down to a few tenths of a volt above its emitter, because there is no emitter resistor in the basic mirror.
-- **Matching rather than accuracy.** The absolute value of V_BE never appears. Only the *difference* between two transistors matters, and transistors made side by side on one chip match to a fraction of a millivolt.
+- **Compliance.** The basic mirror needs no emitter-resistor voltage. It conducts down toward a few tenths of a volt, but accuracy degrades as the collector–base junction becomes forward-biased; specify compliance at an allowed current error.
+- **Matching rather than accuracy.** The absolute value of $V_{BE}$ never appears. Only the *difference* between two transistors matters, and transistors made side by side on one chip match to a fraction of a millivolt.
 
 </section>
 
@@ -54,19 +54,27 @@ Mirrors have three properties that make them valuable:
 
 <MirrorFigure/>
 
-Q₁ is diode-connected: collector tied to base, so V_CB = 0 and it stays in the active region. A resistor R from V_CC delivers the reference current:
+$Q_1$ is diode-connected: collector tied to base, so $V_{CB}$ = 0 and it stays in the active region. A resistor R from $V_{CC}$ delivers the reference current:
 
 <Equation tex="I_{\mathrm{ref}}=\frac{V_{CC}-V_{BE}}{R}"/>
 
-Q₁ settles at whatever V_BE makes its collector current, plus the two base currents, equal to I_ref. Q₂ shares the same V_BE. With matched saturation currents and ignoring the Early effect for the moment, Q₂ carries the same collector current I_C as Q₁. Counting currents at the collector of Q₁:
+$Q_1$ settles at whatever $V_{BE}$ makes its collector current, plus the two base currents, equal to $I_{\mathrm{ref}}$. $Q_2$ shares the same $V_{BE}$. With matched saturation currents and ignoring the Early effect for the moment, $Q_2$ carries the same collector current $I_C$ as $Q_1$. Counting currents at the collector of $Q_1$:
 
 <Equation tex="I_{\mathrm{ref}}=I_C+\frac{I_C}{\beta}+\frac{I_C}{\beta}\qquad\Rightarrow\qquad I_{\mathrm{out}}=I_C=\frac{I_{\mathrm{ref}}}{1+2/\beta}" label="BASIC MIRROR"/>
 
-On 15 V, R = 14.3 kΩ gives I_ref ≈ 1.00 mA. With β = 100 the output is 0.980 mA, a 2% error; with β = 30 it is 6% low.
+On 15 V, R = 14.3 kΩ gives $I_{\mathrm{ref}}$ ≈ 1.00 mA. With $\beta$ = 100 the output is 0.980 mA, a 2% error; with $\beta$ = 30 it is 6% low.
 
 ### Ratios and multiple outputs
 
-On a chip, an output transistor with n times the emitter area has n times I_S and carries n times the current at the same V_BE: a **ratioed mirror**. Several output transistors can share one reference; each adds a base current, so with N outputs the error becomes (N + 1)/β. Discrete designs obtain ratios with unequal emitter resistors instead (section 05).
+On a chip, an output transistor with n times the emitter area has n times $I_S$ and carries n times the current at the same $V_{BE}$: a **ratioed mirror**. Several output transistors can share one reference; each adds a base current, so with N outputs the error becomes (N + 1)/$\beta$. Discrete designs obtain ratios with unequal emitter resistors instead (section 05).
+
+### Count base current when the copies have unequal sizes
+
+For N output devices with area ratios $n_1,\ldots,n_N$, each collector carries $n_k I_{C1}$ in the matched, infinite-Early-voltage model. Kirchhoff’s law at the shared node gives:
+
+<Equation tex="I_{ref}=I_{C1}\left[1+\frac{1+\sum_k n_k}{\beta}\right],\qquad I_k=\frac{n_k I_{ref}}{1+(1+\sum_j n_j)/\beta}"/>
+
+Ten unity copies at β = 100 each deliver 90.1% of the reference. A single 10× copy has the same total base-current burden. The familiar 2/β error belongs specifically to two equal transistors; count total output area when designing a mirror bank.
 
 </section>
 
@@ -76,21 +84,23 @@ On a chip, an output transistor with n times the emitter area has n times I_S an
 
 <div className="table-wrap">
 
-<table><thead><tr><th>Error</th><th>Size in the basic mirror</th><th>Origin</th><th>Cure</th></tr></thead><tbody><tr><td>Base current</td><td>2/β (2% at β = 100)</td><td>Finite β</td><td>β-helper, Wilson</td></tr><tr><td>Early effect</td><td>(V_out − V_BE)/V_A (+7% at 10 V, V_A = 100 V)</td><td>Q₂ at higher V_CE than Q₁</td><td>Degeneration, Wilson, cascode</td></tr><tr><td>V_BE mismatch</td><td>4% per millivolt</td><td>Unequal I_S or geometry</td><td>Degeneration, matched pairs</td></tr><tr><td>Temperature difference</td><td>≈ 8% per °C</td><td>V_BE falls 2.1 mV/°C</td><td>Thermal coupling, degeneration</td></tr></tbody></table>
+<table><thead><tr><th>Error</th><th>Size in the basic mirror</th><th>Origin</th><th>Cure</th></tr></thead><tbody><tr><td>Base current</td><td>2/$\beta$ (2% at $\beta$ = 100)</td><td>Finite $\beta$</td><td>$\beta$-helper, Wilson</td></tr><tr><td>Early effect</td><td>($V_{\mathrm{out}}$ − $V_{BE}$)/$V_A$ (+7% at 10 V, $V_A$ = 100 V)</td><td>$Q_2$ at higher $V_{CE}$ than $Q_1$</td><td>Degeneration, Wilson, cascode</td></tr><tr><td>$V_{BE}$ mismatch</td><td>4% per millivolt</td><td>Unequal $I_S$ or geometry</td><td>Degeneration, matched pairs</td></tr><tr><td>Temperature difference</td><td>≈ 8% per °C</td><td>$V_{BE}$ falls 2.1 mV/°C</td><td>Thermal coupling, degeneration</td></tr></tbody></table>
 
 </div>
 
+<MirrorErrorFigure/>
+
 ### The Early effect
 
-Q₁ always sits at V_CE = V_BE ≈ 0.65 V. Q₂’s collector sits wherever the load puts it. From Ebers–Moll, collector current scales as (1 + V_CE/V_A), so
+$Q_1$ always sits at $V_{CE}$ = $V_{BE}$ ≈ 0.65 V. $Q_2$’s collector sits wherever the load puts it. From Ebers–Moll, collector current scales as (1 + $V_{CE}$/$V_A$), so
 
 <Equation tex="\frac{I_{\mathrm{out}}}{I_{C1}}\approx\frac{1+V_{\mathrm{out}}/V_A}{1+V_{BE}/V_A}\approx1+\frac{V_{\mathrm{out}}-V_{BE}}{V_A},\qquad R_{\mathrm{out}}=r_o=\frac{V_A}{I_{\mathrm{out}}}"/>
 
-In the lab’s Ebers–Moll model with V_A = 100 V, the ratio I_out/I_ref is 0.984 at 1 V, 1.023 at 5 V and 1.072 at 10 V; the output resistance is about 100 kΩ. A mirror is a *current source*, but a modest one.
+In the lab’s Ebers–Moll model with $V_A$ = 100 V, the ratio $I_{\mathrm{out}}$/$I_{\mathrm{ref}}$ is 0.984 at 1 V, 1.023 at 5 V and 1.072 at 10 V; the output resistance is about 100 kΩ. A mirror is a *current source*, but a modest one.
 
 ### Mismatch and emitter degeneration
 
-A V_BE difference ΔV between Q₁ and Q₂ (from unequal I_S, or a temperature difference of ΔV/2.1 mV degrees) changes the output by e<sup>ΔV/V_T</sup>: 3.9% for 1 mV. Adding equal emitter resistors R_E to both transistors changes that. If the voltage across each resistor is V_RE, a mismatch ΔV must now be absorbed by the resistors as well as the junctions:
+A $V_{BE}$ difference ΔV between $Q_1$ and $Q_2$ (from unequal $I_S$, or a temperature difference of ΔV/2.1 mV degrees) changes the output by $e^{ΔV/V_T}$: 3.9% for 1 mV. Adding equal emitter resistors $R_E$ to both transistors changes that. If the voltage across each resistor is $V_{RE}$, a mismatch ΔV must now be absorbed by the resistors as well as the junctions:
 
 <Equation tex="\frac{\Delta I}{I}\approx\frac{\Delta V}{V_{RE}+V_T}"/>
 
@@ -112,25 +122,27 @@ The flatness of each curve is its output resistance; its height relative to the 
 
 <section id="improved">
 
-<div className="section-heading"><span>05</span><h2>β-helper and Wilson</h2></div>
+<div className="section-heading"><span>05</span><h2>$\beta$-helper and Wilson</h2></div>
 
-### The β-helper
+### The $\beta$-helper
 
-Replace Q₁’s collector-to-base wire with a third transistor, an emitter follower Q₃ whose base is driven from Q₁’s collector and whose emitter supplies both bases. The reference resistor now has to supply only Q₃’s base current, which is the two base currents divided by β + 1:
+Replace $Q_1$’s collector-to-base wire with a third transistor, an emitter follower $Q_3$ whose base is driven from $Q_1$’s collector and whose emitter supplies both bases. The reference resistor now has to supply only $Q_3$’s base current, which is the two base currents divided by $\beta$ + 1:
 
 <Equation tex="I_{\mathrm{out}}=\frac{I_{\mathrm{ref}}}{1+\dfrac{2}{\beta(\beta+1)}}"/>
 
-At β = 100 the base-current error drops from 2% to 0.02%. Q₁’s collector now sits at 2V_BE instead of V_BE, which slightly changes the Early-effect mismatch but does not remove it; the output resistance is still about r_o.
+At $\beta$ = 100 the base-current error drops from 2% to 0.02%. $Q_1$’s collector now sits at $2V_{BE}$ instead of $V_{BE}$, which slightly changes the Early-effect mismatch but does not remove it; the output resistance is still about $r_o$.
+
+<ImprovedMirrorsFigure/>
 
 ### The Wilson mirror
 
-The Wilson mirror uses three transistors in a feedback loop. Q₂ is diode-connected and sets the V_BE for Q₁. Q₃ carries the output current through Q₂. Q₁’s collector, fed by the reference, drives Q₃’s base.
+The Wilson mirror uses three transistors in a feedback loop. $Q_2$ is diode-connected and sets the $V_{BE}$ for $Q_1$. $Q_3$ carries the output current through $Q_2$. $Q_1$’s collector, fed by the reference, drives $Q_3$’s base.
 
-Follow a disturbance. If the output current tries to rise (say, because the output voltage rose), Q₂’s current rises, raising V_BE, so Q₁ draws more of the reference current, pulling Q₃’s base down and reducing the output current. The loop holds the output equal to the reference. Two consequences follow from the analysis:
+Follow a disturbance. If the output current tries to rise (say, because the output voltage rose), $Q_2$’s current rises, raising $V_{BE}$, so $Q_1$ draws more of the reference current, pulling $Q_3$’s base down and reducing the output current. The loop holds the output equal to the reference. Two consequences follow from the analysis:
 
 <Equation tex="\frac{I_{\mathrm{out}}}{I_{\mathrm{ref}}}=1-\frac{2}{\beta^2+2\beta+2},\qquad R_{\mathrm{out}}\approx\frac{\beta r_o}{2}"/>
 
-The base-current error is second order in 1/β (0.02% at β = 100), and the output resistance is β/2 times larger than a single transistor’s: in the lab, about 5.2 MΩ against 102 kΩ for the basic mirror. Q₁ and Q₂ also operate at different collector voltages (2V_BE and V_BE); an **improved Wilson** adds a fourth, diode-connected transistor to equalize them.
+The base-current error is second order in 1/$\beta$ (0.02% at $\beta$ = 100), and the output resistance is $\beta$/2 times larger than a single transistor’s: in the lab, about 5.2 MΩ against 102 kΩ for the basic mirror. $Q_1$ and $Q_2$ also operate at different collector voltages ($2V_{BE}$ and $V_{BE}$); an **improved Wilson** adds a fourth, diode-connected transistor to equalize them.
 
 </section>
 
@@ -140,23 +152,92 @@ The base-current error is second order in 1/β (0.02% at β = 100), and the outp
 
 ### Small currents from small resistors
 
-Suppose a chip needs 10 µA from a 15 V supply. A basic mirror would need R = 14.35 V/10 µA ≈ 1.4 MΩ, an enormous resistor on silicon. Bob Widlar’s solution keeps a 1 mA reference and puts a resistor R_E only in the emitter of the output transistor. The two transistors now have different V_BE, and the difference appears across R_E:
+Suppose a chip needs 10 µA from a 15 V supply. A basic mirror would need R = 14.35 V/10 µA ≈ 1.4 MΩ, an enormous resistor on silicon. Bob Widlar’s solution keeps a 1 mA reference and puts a resistor $R_E$ only in the emitter of the output transistor. The two transistors now have different $V_{BE}$, and the difference appears across $R_E$:
 
 <Equation tex="V_{BE1}-V_{BE2}=V_T\ln\frac{I_{C1}}{I_{C2}}=I_{C2}R_E\qquad\Rightarrow\qquad R_E=\frac{V_T}{I_{\mathrm{out}}}\ln\frac{I_{\mathrm{ref}}}{I_{\mathrm{out}}}" label="WIDLAR CURRENT SOURCE"/>
 
-For 10 µA from 1 mA: R_E = (25.85 mV/10 µA) × ln 100 = **11.9 kΩ**, a hundred times smaller than the brute-force resistor. The output is very insensitive to the reference: multiplying I_ref by e (2.7 times) changes I_out by only V_T/(R_E + r_e) ≈ 1.8 µA and its output resistance is very high because of the emitter degeneration: about 25 MΩ for the lab’s 20 µA example.
+For 10 µA from 1 mA: $R_E$ = (25.85 mV/10 µA) × ln 100 = **11.9 kΩ**, a hundred times smaller than the brute-force resistor. The output is very insensitive to the reference: a small change in ln $I_{\mathrm{ref}}$ changes $I_{\mathrm{out}}$ at a local slope $V_T$/($R_E$ + $r_e$) ≈ 1.8 µA per unit of log-reference change and its output resistance is very high because of the emitter degeneration: about 25 MΩ for the lab’s 20 µA example.
 
 ### Ratios with emitter resistors
 
-In discrete circuits, emitter areas cannot be chosen, but emitter resistors can. With degeneration large compared with V_T, the currents divide in the inverse ratio of the resistors: 1 kΩ under Q₁ and 500 Ω under Q₂ gives roughly twice the current, plus a small V_T ln 2 correction.
+In discrete circuits, emitter areas cannot be chosen, but emitter resistors can. With degeneration large compared with $V_T$, the currents divide in the inverse ratio of the resistors: 1 kΩ under $Q_1$ and 500 Ω under $Q_2$ gives roughly twice the current, plus a small $V_T$ ln 2 correction.
 
 ### PNP mirrors and active loads
 
 A PNP mirror, with emitters at the positive supply, sources currents into loads returned to ground. The most important use of mirrors, however, is as the collector load of an amplifier. A transistor collector looks like a large resistance, so a mirror in place of a collector resistor gives enormous voltage gain without a large supply voltage. Chapter 36 uses exactly this to turn a differential pair into a single high-gain stage.
 
-<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A mirror copies a current by copying a voltage. Its errors are <em>base current, Early effect and mismatch</em>; the β-helper fixes the first, degeneration and the Wilson the others, and the Widlar trades a log law for a small resistor.</p></div>
+### A Widlar sensitivity calculation
 
-<p className="reference-note">Coverage: The Art of Electronics §2.3.7, extended with the β-helper, Wilson and Widlar circuits used throughout integrated-circuit design.</p>
+Ignoring base currents and the Early effect, write $I_{out}R_E=V_T\ln(I_{ref}/I_{out})$. Differentiate while temperature and resistor stay fixed:
+
+<Equation tex="\frac{d\ln I_{out}}{d\ln I_{ref}}=\frac{V_T}{V_T+I_{out}R_E},\qquad \frac{d\ln I_{out}}{d\ln R_E}=-\frac{I_{out}R_E}{V_T+I_{out}R_E}"/>
+
+For the 1 mA-to-10 µA design, $I_{out}R_E=119$ mV. Reference sensitivity is 0.179: a small 10% reference change makes about 1.8% output change. Resistor sensitivity is −0.821: a 1% larger emitter resistor makes about 0.82% less current. Suppressing one sensitivity does not suppress every source of error.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / ACCURACY AND COMPLIANCE</span><h3>A 1 mA mirror across a 2–10 V output range</h3>
+
+<p>At β = 100 and $V_A=100$ V, take the reference collector voltage as 0.65 V. The collector ratio is $k=(1+V_{out}/V_A)/(1+0.65/V_A)$, and exact base-current counting gives $I_{out}/I_{ref}=k/[1+(1+k)/β]$. At 2 V this is 0.9934; at 10 V it is 1.0705. Early effect can outweigh the nominal 2% base-current deficit.</p>
+
+<p>A Wilson mirror improves flatness but needs roughly one junction voltage plus the output transistor’s saturation margin at its output. An emitter-degenerated mirror needs its emitter-resistor voltage as well. Compare each topology over the required output range, then budget mismatch, reference tolerance and temperature separately.</p>
+
+</div>
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A mirror copies a current by copying a voltage. Its errors are <em>base current, Early effect and mismatch</em>; the $\beta$-helper fixes the first, degeneration and the Wilson the others, and the Widlar trades a log law for a small resistor.</p></div>
+
+<p className="reference-note">Coverage: The Art of Electronics §2.3.7, extended with the β-helper, Wilson and Widlar circuits used throughout integrated-circuit design. For further circuit analysis, see the [MIT 6.012 lecture notes](https://ocw.mit.edu/courses/6-012-microelectronic-devices-and-circuits-fall-2009/pages/lecture-notes/).</p>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Does a basic mirror output exactly the reference current?</summary>
+<div>
+
+Only in an ideal limit. With equal collectors and finite β, $I_{out}=I_{ref}/(1+2/β)$; unequal collector voltages add Early-effect error.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why does adding ten outputs worsen the base-current error?</summary>
+<div>
+
+The reference node supplies all eleven base currents. At equal device size, the denominator becomes $1+11/β$.
+
+</div>
+</details>
+
+<details>
+<summary>3. Which connection distinguishes the helper from the Wilson?</summary>
+<div>
+
+The helper’s third collector goes to the positive rail and its emitter supplies both bases. In the Wilson, the third collector is the output, while its emitter returns to the diode-connected second transistor.
+
+</div>
+</details>
+
+<details>
+<summary>4. Does a Wilson retain the basic mirror’s low compliance voltage?</summary>
+<div>
+
+No. Its output transistor sits above another transistor’s junction voltage, so additional output headroom is required.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why is a Widlar source useful for microamp currents?</summary>
+<div>
+
+Its output emitter resistor absorbs a logarithmic junction-voltage difference. A modest resistor can generate a small current from a much larger reference, avoiding a very large reference resistor.
+
+</div>
+</details>
 
 </section>
 

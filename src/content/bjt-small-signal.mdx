@@ -1,6 +1,6 @@
+import {HybridPiFigure,IntrinsicParametersFigure} from '../components/BjtTheoryFigures';
 import Equation from '../components/Equation.astro';
 import {SmallSignalLab} from '../components/BjtLabs';
-import {HybridPiFigure} from '../components/Figures';
 
 <div className="chapter-hero" id="overview">
 
@@ -8,7 +8,7 @@ import {HybridPiFigure} from '../components/Figures';
 
 <h1>The small-signal model<br/><em>Linearize the exponential at the bias point.</em></h1>
 
-<p className="dek">Separate bias from signal, derive g_m, r_e, r_π and r_o from the transistor’s exponential law, and use them to find the impedance looking into any terminal.</p>
+<p className="dek">Separate bias from signal, derive $g_m$, $r_e$, $r_π$ and $r_o$ from the transistor’s exponential law, and use them to find the impedance looking into any terminal.</p>
 
 <div className="chapter-meta"><span>50–60 min + exploration</span><span>Small-signal resistance · Biasing · Transistor physics</span></div>
 
@@ -20,7 +20,7 @@ import {HybridPiFigure} from '../components/Figures';
 
 <div>
 
-Chapter 3 introduced small-signal resistance: the slope of a nonlinear curve at an operating point, valid for changes small enough that the curve looks straight. The diode’s small-signal resistance was nV_T/I.
+Chapter 3 introduced small-signal resistance: the slope of a nonlinear curve at an operating point, valid for changes small enough that the curve looks straight. The diode’s small-signal resistance was $nV_T/I$.
 
 The transistor gets the same treatment. Around its bias point, every change of base–emitter voltage produces a proportional change of collector current, with a slope set only by the bias current. That slope, and three resistances derived from it, form the **small-signal model**: a linear circuit you can analyze with Ohm’s law, superposition and Thévenin equivalents. It answers the opening question and predicts the gain of every amplifier in the following chapters.
 
@@ -30,7 +30,7 @@ The transistor gets the same treatment. Around its bias point, every change of b
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Separate bias from signal → Derive g_m and r_e → The hybrid-π model → Explore the tangent → Looking into each terminal → How small is small?</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Separate bias from signal → Derive $g_m$ and $r_e$ → The hybrid-π model → Explore the tangent → Looking into each terminal → How small is small? → Check your understanding.</p>
 
 </div>
 
@@ -38,7 +38,7 @@ The transistor gets the same treatment. Around its bias point, every change of b
 
 <div className="section-heading"><span>01</span><h2>Separate bias from signal</h2></div>
 
-Every voltage and current in an amplifier is a sum of a steady part and a small changing part: v_BE = V_BE + v_be, i_C = I_C + i_c (capitals for bias, lowercase for signal). Chapter 29 found the bias with DC analysis. For the signal, build an **incremental circuit**:
+Every voltage and current in an amplifier is a sum of a steady part and a small changing part: $v_{BE}$ = $V_{BE}$ + $v_{be}$, $i_C$ = $I_C$ + $i_c$ (capitals for bias, lowercase for signal). Chapter 29 found the bias with DC analysis. For the signal, build an **incremental circuit**:
 
 1. **DC supplies become AC ground.** A fixed voltage has no change, so for signals it is equivalent to ground.
 2. **Large capacitors become shorts** at signal frequencies, and blocking/coupling effects are handled separately (Chapter 22).
@@ -51,37 +51,39 @@ This separation is legitimate because the small-signal model is linear: superpos
 
 <section id="gm">
 
-<div className="section-heading"><span>02</span><h2>Derive g_m and r_e</h2></div>
+<div className="section-heading"><span>02</span><h2>Derive $g_m$ and $r_e$</h2></div>
 
-From Chapter 26, the collector current depends exponentially on V_BE: I_C = I_S e<sup>V_BE/V_T</sup>. Its slope is the **transconductance**:
+From Chapter 26, the collector current depends exponentially on $V_{BE}$: $I_C$ = $I_S$ $e^{V_{BE}/V_T}$. Its slope is the **transconductance**:
 
 <Equation tex="g_m=\frac{dI_C}{dV_{BE}}=\frac{I_S}{V_T}e^{V_{BE}/V_T}=\frac{I_C}{V_T}" label="TRANSCONDUCTANCE"/>
 
-Every transistor of every type and size has the same g_m at the same collector current. At 1 mA and 300 K, g_m = 1 mA/25.85 mV = **38.7 mS**: each millivolt of base–emitter change moves the collector current by 38.7 µA.
+In this ideal forward-active BJT model, transistors have the same $g_m$ at the same collector current and temperature, regardless of area or current gain. At 1 mA and 300 K, $g_m$ = 1 mA/25.85 mV = **38.7 mS**: each millivolt of base–emitter change moves the collector current by 38.7 µA.
 
 The inverse, seen from the emitter, is the **intrinsic emitter resistance**:
 
 <Equation tex="r_e=\frac{1}{g_m}\approx\frac{V_T}{I_C}\approx\frac{25\ \Omega}{I_C/\mathrm{mA}}"/>
 
-At 1 mA, r_e = 25.9 Ω; at 10 µA, 2.6 kΩ; at 100 mA, 0.26 Ω. It behaves as a small resistor inside the emitter lead, in series with anything outside. It is the answer to the opening question: even with a perfect source, the follower’s output impedance cannot be lower than r_e.
+At 1 mA, $r_e$ = 25.9 Ω; at 10 µA, 2.6 kΩ; at 100 mA, 0.26 Ω. It behaves as a small resistor inside the emitter lead, in series with anything outside. It is the answer to the opening question: even with a perfect source, the follower’s output impedance cannot be lower than $r_e$.
 
 ### Seen from the base
 
-A change i_b in base current accompanies a change β i_b in collector current. The base–emitter voltage change needed is v_be = i_c/g_m, so the base sees a resistance
+A change $i_b$ in base current accompanies a change $\beta$ $i_b$ in collector current. The base–emitter voltage change needed is $v_{be}$ = $i_c$/$g_m$, so the base sees a resistance
 
 <Equation tex="r_\pi=\frac{v_{be}}{i_b}=\frac{\beta}{g_m}=\beta r_e"/>
 
-At 1 mA with β = 100, r_π = 2.59 kΩ. (Strictly the emitter current is (β + 1)i_b, so the input resistance of a transistor with a grounded emitter is (β + 1)r_e; the difference is negligible for large β.)
+At 1 mA with $\beta$ = 100, $r_π$ = 2.59 kΩ. (The exact emitter-resistance convention is discussed below; the grounded-emitter hybrid-π input resistance is $r_π$.)
 
 ### Seen from the collector
 
-The Early effect (Chapter 26) makes the collector current rise slightly with V_CE. The corresponding small-signal **output resistance** is
+The Early effect (Chapter 26) makes the collector current rise slightly with $V_{CE}$. The corresponding small-signal **output resistance** is
 
 <Equation tex="r_o=\frac{V_A}{I_C}"/>
 
-With V_A = 100 V at 1 mA, r_o = 100 kΩ. Often large enough to ignore, it limits the gain of high-gain stages and the quality of current sources.
+With $V_A$ = 100 V at 1 mA, $r_o$ = 100 kΩ. Often large enough to ignore, it limits the gain of high-gain stages and the quality of current sources.
 
 </section>
+
+<IntrinsicParametersFigure/>
 
 <section id="hybrid">
 
@@ -89,9 +91,9 @@ With V_A = 100 V at 1 mA, r_o = 100 kΩ. Often large enough to ignore, it limits
 
 <HybridPiFigure/>
 
-The three elements assemble into the **hybrid-π model**: r_π between base and emitter, a voltage-controlled current source g_m v_be from collector to emitter, and r_o in parallel with it. Some designers prefer the equivalent **T model**: r_e in the emitter lead and a current source αi_e (or βi_b) in the collector. They give identical results; the T model is faster when there is an emitter resistor, the hybrid-π when the emitter is grounded.
+The three elements assemble into the **hybrid-π model**: $r_π$ between base and emitter, a voltage-controlled current source $g_m$ $v_{be}$ from collector to emitter, and $r_o$ in parallel with it. Some designers prefer the equivalent **T model**: $r_e$ in the emitter lead and a current source $\alpha i_e$ (or $\beta i_b$) in the collector. They give identical results; the T model is faster when there is an emitter resistor, the hybrid-π when the emitter is grounded.
 
-Two cautions. The model is valid only for small signals around the bias point, and only for the bias current used to compute it. And it describes changes only: a small-signal model never includes V_BE = 0.65 V or the supply voltages.
+Two cautions. The model is valid only for small signals around the bias point, and only for the bias current used to compute it. And it describes changes only: a small-signal model never includes $V_{BE}$ = 0.65 V or the supply voltages.
 
 </section>
 
@@ -103,7 +105,7 @@ Two cautions. The model is valid only for small signals around the bias point, a
 
 <p className="caption">Figure 1. The exponential collector characteristic and its tangent at the bias point; below, the current change produced by a sinusoidal base–emitter change, compared with the linear prediction.</p>
 
-The tangent’s slope is g_m. Its intercept with the voltage axis is always V_T below the bias point—an exponential’s tangent always crosses zero one “scale length” back—so the steepness of the tangent is proportional to the bias current.
+The tangent’s slope is $g_m$. Its intercept with the voltage axis is always $V_T$ below the bias point—an exponential’s tangent always crosses zero one “scale length” back—so the steepness of the tangent is proportional to the bias current.
 
 </section>
 
@@ -111,32 +113,32 @@ The tangent’s slope is g_m. Its intercept with the voltage axis is always V_T 
 
 <div className="section-heading"><span>05</span><h2>Looking into each terminal</h2></div>
 
-Three results cover most transistor circuits. They are the first-model impedances of Chapter 28 with r_e added.
+Three results cover most transistor circuits. They are the first-model impedances of Chapter 28 with $r_e$ added.
 
 <div className="table-wrap">
 
-<table><thead><tr><th>Looking into</th><th>Conditions</th><th>Small-signal impedance</th></tr></thead><tbody><tr><td>Base</td><td>Resistance R_E (to AC ground) in the emitter</td><td>(β + 1)(r_e + R_E)</td></tr><tr><td>Emitter</td><td>Resistance R_B (to AC ground) in the base</td><td>r_e + R_B/(β + 1)</td></tr><tr><td>Collector</td><td>Emitter resistance R_E, base stiffly held</td><td>≈ r_o(1 + g_m(R_E ∥ r_π)), very large</td></tr></tbody></table>
+<table><thead><tr><th>Looking into</th><th>Conditions</th><th>Small-signal impedance</th></tr></thead><tbody><tr><td>Base</td><td>Resistance $R_E$ (to AC ground) in the emitter</td><td>($\beta$ + 1)($r_e$ + $R_E$)</td></tr><tr><td>Emitter</td><td>Resistance $R_B$ (to AC ground) in the base</td><td>$r_e$ + $R_B$/($\beta$ + 1)</td></tr><tr><td>Collector</td><td>Emitter resistance $R_E$, base stiffly held</td><td>≈ $r_o$(1 + $g_m$($R_E$ ∥ $r_π$)), very large</td></tr></tbody></table>
 
 </div>
 
-The first two are the same rule: resistance in the emitter circuit is multiplied by β + 1 when seen from the base, and resistance in the base circuit is divided by β + 1 when seen from the emitter, with r_e counted as part of the emitter circuit. The third says the collector is a good current source, especially with emitter degeneration (Chapter 31).
+The first two are the same rule: resistance in the emitter circuit is multiplied by $\beta$ + 1 when seen from the base, and resistance in the base circuit is divided by $\beta$ + 1 when seen from the emitter, with $r_e$ counted as part of the emitter circuit. The third says the collector is a good current source, especially with emitter degeneration (Chapter 31).
 
 <div className="worked-example">
 
-<span className="tiny-label">WORKED EXAMPLE / A FOLLOWER, PROPERLY</span><h3>1 mA, R_E = 1 kΩ, source 10 kΩ, β = 100</h3>
+<span className="tiny-label">WORKED EXAMPLE / A FOLLOWER, PROPERLY</span><h3>1 mA, $R_E$ = 1 kΩ, source 10 kΩ, $\beta$ = 100</h3>
 
-<p>r_e = 25.9 Ω. Looking into the base: 101 × (25.9 + 1000) = <strong>103.6 kΩ</strong>.</p>
+<p>$r_e$ = 25.9 Ω. Looking into the base: 101 × (25.9 + 1000) = <strong>103.6 kΩ</strong>.</p>
 
-<p>Looking into the emitter: 25.9 + 10 000/101 = <strong>124.9 Ω</strong>; in parallel with the 1 kΩ emitter resistor, the stage’s output impedance is 111 Ω. The first model’s 99 Ω missed r_e.</p>
+<p>Looking into the emitter: 25.9 + 10 000/101 = <strong>124.9 Ω</strong>; in parallel with the 1 kΩ emitter resistor, the stage’s output impedance is 111 Ω. The first model’s 99 Ω missed $r_e$.</p>
 
-<p>Unloaded voltage gain R_E/(R_E + r_e) = 1000/1025.9 = <strong>0.975</strong>, slightly less than 1 because r_e and R_E form a divider for the emitter signal.</p>
+<p>Unloaded voltage gain $R_E$/($R_E$ + $r_e$) = 1000/1025.9 = <strong>0.975</strong>, slightly less than 1 because $r_e$ and $R_E$ form a divider for the emitter signal.</p>
 
 </div>
 
 ### A procedure
 
 1. Find the bias current (Chapter 29).
-2. Compute r_e = V_T/I_C, and r_π, r_o if needed.
+2. Compute $r_e$ = $V_T$/$I_C$, and $r_π$, $r_o$ if needed.
 3. Draw the incremental circuit: supplies to ground, capacitors shorted, transistor replaced by its model.
 4. Use the three impedance rules to collapse the circuit, then solve.
 
@@ -146,20 +148,87 @@ The first two are the same rule: resistance in the emitter circuit is multiplied
 
 <div className="section-heading"><span>06</span><h2>How small is small?</h2></div>
 
-The model replaces e<sup>v/V_T</sup> by 1 + v/V_T. The next term of the series, (v/V_T)²/2, measures the error. Relative to the linear term it is v/(2V_T):
+The model replaces $e^{v/V_T}$ by 1 + v/$V_T$. The next term of the series, (v/$V_T$)²/2, measures the error. Relative to the linear term it is $v/(2V_T)$:
 
 - 1 mV of base–emitter signal: error about **2%**.
 - 10 mV: the positive current peak is **22%** larger and the negative peak **17%** smaller than predicted.
 
-So “small” means a base–emitter signal of a few millivolts or less. That sounds restrictive, but in circuits with an emitter resistor the transistor’s v_be is only a small fraction of the input: the rest appears across R_E. Emitter degeneration is what makes larger signals linear (Chapter 32).
+So “small” means a base–emitter signal of a few millivolts or less. That sounds restrictive, but in circuits with an emitter resistor the transistor’s $v_{be}$ is only a small fraction of the input: the rest appears across $R_E$. Emitter degeneration is what makes larger signals linear (Chapter 32).
 
-The model also has a frequency limit. Junction and diffusion capacitances (Chapter 26) appear between base and emitter (C_π) and between base and collector (C_μ). Below the transistor’s transition frequency they can often be ignored; above it they dominate, and C_μ in particular is magnified in amplifiers by the Miller effect, a later topic.
+The model also has a frequency limit. Junction and diffusion capacitances (Chapter 26) appear between base and emitter ($C_π$) and between base and collector ($C_μ$). Their importance depends on the surrounding impedances and stage gain; they can dominate well below the transistor’s transition frequency, and $C_μ$ in particular is magnified in amplifiers by the Miller effect, a later topic.
 
-Finally, keep h_fe (the small-signal β, a slope) and h_FE (the DC ratio) distinct on datasheets, though for most designs they are interchangeable within their large tolerances.
+Finally, keep $h_{fe}$ (the small-signal $\beta$, a slope) and $h_{FE}$ (the DC ratio) distinct on datasheets, though for most designs they are interchangeable within their large tolerances.
 
-<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>At bias current I_C, the transistor’s small-signal behavior is <em>g_m = I_C/V_T</em>, regardless of type or size. r_e, r_π and r_o follow from it, and three impedance rules do the rest.</p></div>
+### Distinguish the two definitions of intrinsic emitter resistance
+
+If $r_e$ is defined exactly as $V_T/I_E$, then $r_e=\alpha/g_m$ and $r_π=(\beta+1)r_e$. If it is approximated as $1/g_m=V_T/I_C$, then $r_π=\beta r_e$. Both conventions appear in texts. They agree to about $1/\beta$, but mixing their exact formulas creates an unnecessary inconsistency.
+
+For a grounded emitter, the exact hybrid-π input resistance is $r_π$; there is no extra emitter resistor to add. With external emitter resistance R, the exact input is $r_π+(\beta+1)R$. The convenient approximation $(\beta+1)(R+1/g_m)$ differs only in its intrinsic term.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / CHOOSE THE SIGNAL SCALE</span><h3>1 mA bias and a 1 mV base–emitter sine</h3>
+
+<p>At 300 K, $g_m=38.7$ mS and the linear peak current change is 38.7 µA. The exact positive change is $1\ \mathrm{mA}(e^{1/25.85}-1)=39.4$ µA; the negative magnitude is $1\ \mathrm{mA}(1-e^{-1/25.85})=37.9$ µA. The roughly 2% peak errors are small but observable.</p>
+
+<p>Multiply the bias current by ten and all three current changes grow by ten. Their percentage errors stay the same because they depend on $v_{be}/V_T$, not on the bias current. An emitter resistor reduces the junction’s signal fraction and therefore improves linearity.</p>
+
+</div>
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>At bias current $I_C$, the transistor’s small-signal behavior is <em>$g_m$ = $I_C$/$V_T$</em>, regardless of type or size. $r_e$, $r_π$ and $r_o$ follow from it, and three impedance rules do the rest.</p></div>
 
 <p className="reference-note">Coverage: The Art of Electronics §§2.3.1–2.3.3 in small-signal form, building on the small-signal resistance of §1.2.6 (Chapter 3).</p>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Where do the small-signal element values come from?</summary>
+<div>
+
+First solve the DC operating point, then differentiate the device law there. A model at a different bias current describes a different tangent.
+
+</div>
+</details>
+
+<details>
+<summary>2. What replaces a fixed DC voltage source in an incremental circuit?</summary>
+<div>
+
+A short circuit, usually to AC ground. Independent DC current sources are opened; dependent sources remain active.
+
+</div>
+</details>
+
+<details>
+<summary>3. Is $r_e$ a physical resistor that dissipates I²$r_e$ bias power?</summary>
+<div>
+
+No. It represents an incremental slope. Apply the device’s actual voltage and current to calculate power, not a fictitious DC resistor drop.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why does 1 mV give similar percentage curvature at 0.1 mA and 1 mA?</summary>
+<div>
+
+The exponential expansion depends on $v_{be}/V_T$. Bias scales the absolute current response, not that normalized error.
+
+</div>
+</details>
+
+<details>
+<summary>5. Can capacitance be ignored whenever frequency is below $f_T$?</summary>
+<div>
+
+No. Source resistance, current gain and Miller multiplication can create poles far below the device transition frequency. Compute the circuit poles.
+
+</div>
+</details>
 
 </section>
 

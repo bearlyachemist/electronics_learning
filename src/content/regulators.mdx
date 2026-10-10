@@ -1,5 +1,6 @@
 import Equation from '../components/Equation.astro';
-import {JunctionLab,DiodeLab,RectifierLab,RegulatorLab,LimiterLab,ProtectionLab} from '../components/DiodeLabs';
+import {RegulatorLab} from '../components/DiodeLabs';
+import {ZenerCurveFigure,ZenerBudgetFigure,SeriesRegulatorFigure,ZenerFollowerFigure,DropoutFigure,LinearEfficiencyFigure} from '../components/DiodeFigures';
 
 <div className="chapter-hero" id="overview">
 
@@ -9,46 +10,63 @@ import {JunctionLab,DiodeLab,RectifierLab,RegulatorLab,LimiterLab,ProtectionLab}
 
 <p className="dek">Build a zener shunt regulator, then connect series feedback, dropout, ripple rejection, and heating.</p>
 
-<div className="chapter-meta"><span>35–45 min + exploration</span><span>Original explanations · Models stated</span></div>
+<div className="chapter-meta"><span>45–55 min + exploration</span><span>Diodes · Rectifiers · Power</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">THE QUESTION</span><p className="opening-question">The rectifier gives 10–12 V with ripple. The circuit needs exactly 5 V. What sits in between?</p></div>
+
+<div>
+
+A regulator: a circuit that holds its output steady while its input wanders and its load changes. Every regulator needs two things, a *reference* that knows what 5 V is, and a *control element* that adjusts current to keep the output there.
+
+The simplest uses a zener diode as both: it is a shunt that soaks up whatever current the load does not need. Its limits lead directly to the series feedback regulator inside almost every three-terminal regulator chip.
+
+</div>
 
 </div>
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>A zener and a current budget → Design for both extremes → Watch regulation run out → Series regulation and feedback → Headroom, heat, and stability.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>A zener and a current budget → Design for both extremes → Watch regulation run out → Series regulation and feedback → Headroom, heat, and stability → Check your understanding.</p>
 
 </div>
 
-
 <section id="zener">
 
-## 01 / A zener and a current budget
+<div className="section-heading"><span>01</span><h2>A zener and a current budget</h2></div>
 
 A reservoir capacitor reduces ripple but does not hold voltage constant as the source or load changes. A regulator uses a reference and a way to redirect or control current.
 
 The simplest shunt regulator uses a resistor from the supply to the output and a reverse-biased zener from output to ground: cathode at output, anode at ground. The load is in parallel with the zener. When the zener operates in its useful reverse region, it absorbs current the load does not need.
 
-Start with an ideal constant zener voltage Vz. Kirchhoff's laws give:
+<ZenerCurveFigure/>
+
+Start with an ideal constant zener voltage $V_Z$. Kirchhoff's laws give:
 
 <Equation tex="I_R=\frac{V_{\mathrm{in}}-V_Z}{R},\qquad I_Z=I_R-I_L" />
 
-An equation giving negative Iᴢ is telling you the assumed regulation state cannot exist. The zener cannot manufacture missing load current. It turns off; then output follows the resistor and load instead of staying at Vz.
+The resistor current is set by the input voltage alone: the zener pins the output, so the resistor sees a fixed $V_{\mathrm{in}} - V_Z$. That current is then *shared*: the load takes what it needs and the zener takes the rest. A shunt regulator is a current budget.
 
-For a resistor load, the off-state result is the ordinary divider Vout = Vin Rᴸ/(R + Rᴸ). For an ideal current-sink load, it is Vin − RIᴸ while that voltage stays positive. The lab uses the latter and explicitly stops at zero when the requested load cannot be supplied.
+An equation giving negative $I_Z$ is telling you the assumed regulation state cannot exist. The zener cannot manufacture missing load current. It turns off; then output follows the resistor and load instead of staying at $V_Z$.
+
+For a resistor load, the off-state result is the ordinary divider $V_{\mathrm{out}} = V_{\mathrm{in}}R_L/(R + R_L)$. For an ideal current-sink load, it is $V_{\mathrm{in}} - RI_L$ while that voltage stays positive. The lab uses the latter and explicitly stops at zero when the requested load cannot be supplied.
 
 A real zener has a rounded knee and nonzero differential resistance. Near a specified operating point:
 
 <Equation tex="v_Z\approx V_{Z0}+r_z(i_Z-I_{Z0})" />
 
-That is a local straight-line model, not a global law. Its reference current matters. Ignoring the load's changing current, the small-signal input-to-output ratio is approximately rᴢ/(R + rᴢ). With a resistor load use rᴢ ∥ Rᴸ in place of rᴢ. Finite slope means finite ripple rejection.
+That is a local straight-line model, not a global law. Its reference current matters. Ignoring the load's changing current, the small-signal input-to-output ratio is approximately $r_z/(R + r_z)$. With a resistor load use $r_z \parallel R_L$ in place of $r_z$. Finite slope means finite ripple rejection.
 
 </section>
 
 <section id="design">
 
-## 02 / Design for both extremes
+<div className="section-heading"><span>02</span><h2>Design for both extremes</h2></div>
 
-Suppose Vin spans 9–15 V, the desired zener voltage is 5.1 V, load current is 0–10 mA, and the chosen model requires at least 2 mA zener current to remain in its intended region.
+Suppose $V_{\mathrm{in}}$ spans 9–15 V, the desired zener voltage is 5.1 V, load current is 0–10 mA, and the chosen model requires at least 2 mA zener current to remain in its intended region.
 
 At minimum input and maximum load, enough feed current must remain for the zener:
 
@@ -56,19 +74,21 @@ At minimum input and maximum load, enough feed current must remain for the zener
 
 Choose 300 Ω for this nominal calculation. At 9 V and 10 mA load, feed current is 13 mA, leaving 3 mA for the zener.
 
-Now reverse the corner: 15 V input and no load gives 33 mA through the zener. Its dissipation is 5.1 × 0.033 = 0.168 W; resistor dissipation is 9.9²/300 = 0.327 W. Ratings, temperature derating and tolerances must be added before selecting real components.
+Now reverse the corner: 15 V input and no load gives 33 mA through the zener. Its dissipation is $5.1 \times 0.033 = 0.168$ W; resistor dissipation is $9.9^2/300 = 0.327$ W. Ratings, temperature derating and tolerances must be added before selecting real components.
+
+<ZenerBudgetFigure/>
 
 The maximum zener power often occurs at **minimum load**, because the zener absorbs all available current. The series resistor wastes power even when the useful load is off. These facts make a simple shunt regulator useful for some low-current references and biases but unattractive for many power supplies.
 
-**Local-slope example.** At rᴢ = 10 Ω and R = 300 Ω, a small 1 V input change produces about 32 mV output change with a high-impedance load. A 1 mA increase in load current causes roughly (R ∥ rᴢ) × 1 mA = 9.68 mV output decrease while the same local model remains valid.
+**Local-slope example.** At $r_z = 10\ \Omega$ and $R = 300\ \Omega$, a small 1 V input change produces about 32 mV output change with a high-impedance load. A 1 mA increase in load current causes roughly $(R \parallel r_z) \times 1\text{ mA} = 9.68$ mV output decrease while the same local model remains valid.
 
-Zener voltage tolerance, temperature coefficient and noise remain even with adequate current. A zener is not automatically a precision reference.
+Zener voltage tolerance, temperature coefficient and noise remain even with adequate current. A zener is not automatically a precision reference. Zeners near 5–6 V have the smallest temperature coefficient, because two breakdown mechanisms with opposite drifts happen to balance there.
 
 </section>
 
 <section id="explore">
 
-## 03 / Watch regulation run out
+<div className="section-heading"><span>03</span><h2>Watch regulation run out</h2></div>
 
 <RegulatorLab client:load />
 
@@ -82,25 +102,42 @@ The diagram shows the zener circuit. The orange curve is a separate idealized se
 
 <section id="series">
 
-## 04 / Series regulation and feedback
+<div className="section-heading"><span>04</span><h2>Series regulation and feedback</h2></div>
 
 A series regulator places a controllable pass device between input and output. An error amplifier compares a fraction of the output with a reference and adjusts the pass device. Negative feedback drives the sensed voltage toward the reference.
 
-If the feedback divider has Rtop from output to sense and Rbottom from sense to ground, an ideal loop gives:
+<SeriesRegulatorFigure/>
+
+If the feedback divider has $R_{\mathrm{top}}$ from output to sense and $R_{\mathrm{bottom}}$ from sense to ground, an ideal loop gives:
 
 <Equation tex="V_{\mathrm{out}}=V_{\mathrm{ref}}\left(1+\frac{R_{\mathrm{top}}}{R_{\mathrm{bottom}}}\right)" />
 
-A 1.25 V reference, 30 kΩ top resistor and 10 kΩ bottom resistor imply 5 V. Finite loop gain, reference accuracy and input bias currents add error. Internal transistor details will come later; the key idea here is that the loop continuously changes the pass device rather than relying on a fixed diode drop.
+A 1.25 V reference, 30 kΩ top resistor and 10 kΩ bottom resistor imply 5 V. Finite loop gain, reference accuracy and input bias currents add error. Internal transistor details will come later (Chapter 44); the key idea here is that the loop continuously changes the pass device rather than relying on a fixed diode drop.
+
+The contrast with the shunt regulator is worth stating plainly. The shunt wastes current: it draws its full budget all the time and dumps the unused part in the zener. The series regulator wastes voltage: it draws only what the load needs and drops the excess voltage across the pass device. For anything more than a few milliamps, wasting voltage is far cheaper.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / AN ADJUSTABLE REGULATOR</span><h3>Make 3.3 V from a 1.25 V reference</h3>
+<p>Many adjustable regulators hold 1.25 V between their output and adjust pins. With $R_1$ = 240 Ω from output to adjust and $R_2$ from adjust to ground, $V_{\mathrm{out}} = 1.25(1 + R_2/R_1)$.</p>
+<p>For 3.3 V, $R_2 = 240 \times (3.3/1.25 - 1) = 394\ \Omega$. The standard 390 Ω gives $1.25 \times (1 + 390/240) = 3.28$ V. The adjust pin also sinks a small current, around 50 µA, through $R_2$, adding about 20 mV: close to 3.30 V by luck. With 1% resistors and a ±1% reference, expect about ±2.5% overall.</p>
+<p>Why such a low $R_1$? Its 5.2 mA ($1.25\text{ V}/240\ \Omega$) also serves as the minimum load such regulators need to stay in regulation with no external load connected.</p>
+
+</div>
+
+<ZenerFollowerFigure/>
 
 A transistor emitter follower driven by a zener can provide more load current, but its output contains a base–emitter drop and associated variation. It is a useful bridge to transistor circuits, not equivalent to a precision feedback regulator.
 
-**Dropout** is insufficient input-to-output voltage for the specified regulation performance. A simple teaching model is Vout = min(Vtarget, Vin − Vdropout), clipped at zero. Actual dropout depends on device architecture, current and temperature. Once the loop runs out of adjustment range, ripple passes through much more strongly.
+**Dropout** is insufficient input-to-output voltage for the specified regulation performance. A simple teaching model is $V_{\mathrm{out}} = \min(V_{\mathrm{target}}, V_{\mathrm{in}} - V_{\mathrm{dropout}})$, clipped at zero. Actual dropout depends on device architecture, current and temperature. Once the loop runs out of adjustment range, ripple passes through much more strongly.
+
+<DropoutFigure/>
 
 </section>
 
 <section id="thermal">
 
-## 05 / Headroom, heat, and stability
+<div className="section-heading"><span>05</span><h2>Headroom, heat, and stability</h2></div>
 
 For a series linear regulator, ignoring quiescent current:
 
@@ -108,28 +145,83 @@ For a series linear regulator, ignoring quiescent current:
 
 Dropping 12 V to 5 V at 200 mA dissipates 1.4 W and gives about 42% efficiency. With an applicable 60 °C/W thermal resistance, the estimated rise is 84 °C. At 40 °C ambient that is 124 °C junction temperature. A package's current rating alone does not establish that this operating point is thermally acceptable.
 
-With quiescent current Iq drawn from the input, approximate dissipation becomes (Vin − Vout)Iᴸ + Vin Iq. At tiny loads that second term may dominate the efficiency calculation.
+<LinearEfficiencyFigure/>
+
+With quiescent current $I_q$ drawn from the input, approximate dissipation becomes $(V_{\mathrm{in}} - V_{\mathrm{out}})I_L + V_{\mathrm{in}}I_q$. At tiny loads that second term may dominate the efficiency calculation.
 
 ### Connect back to rectification
 
 If a reservoir ranges from 6.0 V to 7.0 V and a 5 V regulator needs at most 0.5 V dropout under the actual conditions, the trough leaves 0.5 V extra headroom. If the trough instead reaches 5.3 V, regulation cannot persist throughout the cycle. A high mean input does not fix a low trough.
 
-Ripple rejection is frequency-dependent. If PSRR is defined as 20log₁₀(ripple-in/ripple-out), 40 dB means a factor of 100: 200 mV input ripple corresponds to 2 mV output ripple in that specified operating regime. It is not a promise during dropout.
+Ripple rejection is frequency-dependent. If PSRR is defined as $20\log_{10}(\text{ripple in}/\text{ripple out})$, 40 dB means a factor of 100: 200 mV input ripple corresponds to 2 mV output ripple in that specified operating regime. It is not a promise during dropout.
 
 ### The output capacitor is part of the circuit
 
-A feedback loop has dynamics. Some regulators require particular capacitance and ESR ranges for stability; others permit a broad range. Use effective capacitance at bias and temperature. A large ceramic marked “10 µF” is not automatically an acceptable substitute for every required 10 µF network.
+A feedback loop has dynamics. Some regulators require particular capacitance and ESR ranges for stability; others permit a broad range. Use effective capacitance at bias and temperature. A large ceramic marked "10 µF" is not automatically an acceptable substitute for every required 10 µF network.
 
-Also check current limit, startup, minimum load, discharge behavior, and reverse-current behavior when input collapses while output remains charged. Thermal shutdown is a protection feature, not a normal operating target.
+Also check current limit, startup, minimum load, discharge behavior, and reverse-current behavior when input collapses while output remains charged (Chapter 18). Thermal shutdown is a protection feature, not a normal operating target.
 
-Coverage: AoE §1.6.5, with a preview of later power-supply chapters. [TI's LDO Basics](https://www.ti.com/product-category/power-management/ldo-basics-ebook.html) covers dropout, capacitor selection and thermal design. The interactive models intentionally omit loop stability and device-specific limits.
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A shunt regulator wastes current;<br/>a series regulator wastes voltage.<br/><em>Both need headroom at the worst-case corner.</em></p></div>
 
 </section>
 
+<section id="check">
 
-<div className="practice-home">
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
 
-<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p><a className="primary-link" href="/regulators/practice/">Open practice →</a>
+<details>
+<summary>1. A zener shunt regulator with a 470 Ω resistor runs from 12 V, with a 6.2 V zener. What is the largest load it can supply while keeping 1 mA in the zener?</summary>
+<div>
+
+The resistor supplies $(12 - 6.2)/470 = 12.3$ mA, so the load can take 11.3 mA.
 
 </div>
+</details>
 
+<details>
+<summary>2. When does a zener shunt regulator's zener dissipate the most power?</summary>
+<div>
+
+At maximum input voltage and minimum load: the resistor current is largest and the zener absorbs all of it.
+
+</div>
+</details>
+
+<details>
+<summary>3. A 5 V regulator with 1 V dropout is fed from a supply whose trough is 5.8 V and peak 7 V. What happens to the output?</summary>
+<div>
+
+Below 6 V of input it drops out, so near each trough the output falls to about 4.8 V and follows the input ripple. The output dips 120 times a second (on 60 Hz mains) even though the average input is well above 6 V.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why is an emitter follower after a zener better than the zener alone, and what does it cost?</summary>
+<div>
+
+The zener now supplies only the base current, $I_L/\beta$, so its current budget covers a load $\beta$ times larger. The cost is an output one $V_{BE}$ below the zener, and that $V_{BE}$ varies with load current and temperature.
+
+</div>
+</details>
+
+<details>
+<summary>5. A linear regulator drops 24 V to 3.3 V at 0.5 A. How much power must it dissipate, and what would you consider instead?</summary>
+<div>
+
+$(24 - 3.3) \times 0.5 = 10.4$ W, at 14% efficiency: a large heatsink. A switching regulator, perhaps followed by a small linear regulator for low noise, would be far better.
+
+</div>
+</details>
+
+<p className="reference-note">Coverage: AoE §1.6.5, with a preview of later power-supply chapters. <a href="https://www.ti.com/product-category/power-management/ldo-basics-ebook.html">TI's LDO Basics</a> covers dropout, capacitor selection and thermal design. The interactive models intentionally omit loop stability and device-specific limits.</p>
+
+</section>
+
+<div className="chapter-end">
+
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p></div>
+
+<a className="primary-link" href="/regulators/practice/">Open practice →</a>
+
+</div>

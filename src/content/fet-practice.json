@@ -31,14 +31,14 @@
     {
       "tag": "OUTPUT RESISTANCE",
       "title": "A sloping current source",
-      "prompt": "The unmodulated saturation current is 2 mA and λ = 0.02/V. Find current and ro at VDS = 5 V in the multiplicative model.",
+      "prompt": "The unmodulated saturation current is 2 mA and $\\lambda$ = 0.02/V. Find current and ro at VDS = 5 V in the multiplicative model.",
       "hint": "Differentiate with respect to drain voltage; keep gate voltage fixed.",
       "solution": [
         {
           "tex": "I_D=2(1+0.02\\cdot5)=2.2\\ \\mathrm{mA},\\quad r_o=\\frac1{0.02(0.002)}=25\\ \\mathrm{k\\Omega}"
         },
         {
-          "text": "Using 1/(λ times the modulated current) would give 22.7 kΩ, only an approximation. The exact derivative in this model uses the unmodulated current."
+          "text": "Using 1/($\\lambda$ times the modulated current) would give 22.7 kΩ, only an approximation. The exact derivative in this model uses the unmodulated current."
         }
       ]
     },
@@ -363,7 +363,7 @@
     {
       "tag": "BODY EFFECT",
       "title": "A source that moves above the body",
-      "prompt": "VT0 = 1 V, γ = 0.5 √V, 2φF = 0.6 V and VSB = 2 V. Find threshold.",
+      "prompt": "VT0 = 1 V, $\\gamma$ = 0.5 √V, 2φF = 0.6 V and VSB = 2 V. Find threshold.",
       "hint": "Use the difference of square roots.",
       "solution": [
         {
@@ -665,7 +665,7 @@
     {
       "tag": "TEMPERATURE",
       "title": "Heat one branch",
-      "prompt": "The 20 mΩ device warms from 25 to 100°C with α = 0.004/°C. The other stays at 30 mΩ. Recalculate sharing at 20 A.",
+      "prompt": "The 20 mΩ device warms from 25 to 100°C with $\\alpha$ = 0.004/°C. The other stays at 30 mΩ. Recalculate sharing at 20 A.",
       "hint": "Update resistance before dividing current.",
       "solution": [
         {

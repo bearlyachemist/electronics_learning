@@ -50,3 +50,14 @@ test('saturation voltage matches the closed-form Ebers–Moll expression',()=>{
   assert.equal(d.region,'saturation');near(d.vce,VT300*Math.log((1/ar+fb/2)/(1-fb/150)),1e-4);
  }
 });
+
+test('follower with source resistance conserves emitter current and base-drive voltage',()=>{
+ for(const vin of [-12,-3,0,5])for(const rs of [0,1e3,10e3]){
+  const re=1e3,rl=2e3,vee=10,beta=100,d=follower({vin,re,rl,vee,beta,rs});
+  const ie=(d.out+vee)/re+d.out/rl;
+  near(d.iout,ie,1e-9);
+  if(d.on)near(vin-ie/(beta+1)*rs-d.out,.65,1e-9);
+  else near(ie,0,1e-9);
+ }
+ assert.ok(follower({vin:3,rs:10e3}).out<follower({vin:3,rs:0}).out);
+});

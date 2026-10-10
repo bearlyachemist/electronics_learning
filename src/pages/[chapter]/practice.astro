@@ -5,6 +5,10 @@ import problems from '../../content/practice.json';
 import fetProblems from '../../content/fet-practice.json';
 import feedbackProblems from '../../content/feedback-practice.json';
 import {chapters} from '../../curriculum/chapters';
+import {texToHtml} from '../../components/MathText';
+import {sitePath} from '../../lib/site-path';
+const esc=(s:string)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const rich=(s:string)=>texToHtml(esc(s));
 export function getStaticPaths(){return Object.keys({...problems,...feedbackProblems,...fetProblems}).map(chapter=>({params:{chapter}}));}
 const allProblems={...problems,...feedbackProblems,...fetProblems};
 const chapter=Astro.params.chapter as keyof typeof allProblems;
@@ -13,8 +17,7 @@ const current=chapters.find(c=>c.id===chapter)!;
 <Book chapter={chapter} practice title={'Practice · '+current.title}>
 <div class="chapter-hero"><div class="eyebrow"><span>CHAPTER {current.number}</span><span class="hairline"/>THE PRACTICE NOTEBOOK</div><h1>Make the ideas<br/><em>your own.</em></h1><p class="dek">{current.title}: {allProblems[chapter].length} independent problems with hints and fully worked solutions.</p><div class="chapter-meta"><span>30–45 min</span><span>Self-assessed · Work on paper</span></div></div>
 <p class="practice-intro">Practice is separate from the illustrative circuits. Choose a problem, draw the connections, state your assumptions, and estimate a plausible answer before opening the solution.</p>
-{allProblems[chapter].map((p,i)=><article class="problem" id={'problem-'+(i+1)}><span class="tiny-label">{String(i+1).padStart(2,'0')} / {p.tag}</span><h2>{p.title}</h2><p>{p.prompt}</p><details><summary>Show a hint</summary><div><p>{p.hint}</p></div></details><details><summary>Read the worked solution</summary><div>{p.solution.map(s=>'tex' in s?<Equation tex={s.tex}/>:<p set:html={s.text}/>)}</div></details></article>)}
-<div class="practice-home"><a class="primary-link" href={current.href}>← Return to the chapter</a></div>
+{allProblems[chapter].map((p,i)=><article class="problem" id={'problem-'+(i+1)}><span class="tiny-label">{String(i+1).padStart(2,'0')} / {p.tag}</span><h2>{p.title}</h2><p set:html={rich(p.prompt)}/><details><summary>Show a hint</summary><div><p set:html={rich(p.hint)}/></div></details><details><summary>Read the worked solution</summary><div>{p.solution.map(s=>'tex' in s?<Equation tex={s.tex}/>:<p set:html={texToHtml(s.text)}/>)}</div></details></article>)}
+<div class="practice-home"><a class="primary-link" href={sitePath(current.href)}>← Return to the chapter</a></div>
 </Book>
-
 

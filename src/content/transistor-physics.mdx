@@ -1,3 +1,4 @@
+import {CarrierProfileFigure,TransportStructureFigure,BaseWidthFigure,EarlyProfileFigure,JunctionTemperatureFigure} from '../components/BjtTheoryFigures';
 import Equation from '../components/Equation.astro';
 import {BaseTransportLab} from '../components/BjtLabs';
 
@@ -7,7 +8,7 @@ import {BaseTransportLab} from '../components/BjtLabs';
 
 <h1>Transistor physics<br/><em>A junction that hands its current to another.</em></h1>
 
-<p className="dek">Extend the PN-junction picture to minority-carrier diffusion, then follow electrons through a thin base to see where collector current, β, the Early effect and V_BE’s temperature coefficient come from.</p>
+<p className="dek">Extend the PN-junction picture to minority-carrier diffusion, then follow electrons through a thin base to see where collector current, $\beta$, the Early effect and $V_{BE}$’s temperature coefficient come from.</p>
 
 <div className="chapter-meta"><span>55–70 min + exploration</span><span>Semiconductor physics · Diodes · Calculus</span></div>
 
@@ -21,7 +22,7 @@ import {BaseTransportLab} from '../components/BjtLabs';
 
 Chapter 12 built a PN junction and Chapter 13 derived the diode law from carriers that diffuse away from it. A bipolar transistor adds one idea: put a second junction so close to the first that the carriers injected by one are collected by the other before they can recombine.
 
-The consequences are the transistor rules used in every later chapter. Collector current is set by the base–emitter voltage, almost independent of the collector voltage. Only a small base current is needed to supply the losses, so the current gain β is large. And the same physics predicts the transistor’s imperfections: a slight dependence on collector voltage, a speed limit, and a strong temperature dependence. This chapter derives them in a deliberately simple one-dimensional model.
+The consequences are the transistor rules used in every later chapter. Collector current is set by the base–emitter voltage, almost independent of the collector voltage. Only a small base current is needed to supply the losses, so the current gain $\beta$ is large. And the same physics predicts the transistor’s imperfections: a slight dependence on collector voltage, a speed limit, and a strong temperature dependence. This chapter derives them in a deliberately simple one-dimensional model.
 
 </div>
 
@@ -29,7 +30,7 @@ The consequences are the transistor rules used in every later chapter. Collector
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Minority carriers diffuse and recombine → Two junctions, very close together → Follow an electron through the base → Where β comes from → Explore base transport → Early effect, transit time and temperature.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Minority carriers diffuse and recombine → Two junctions, very close together → Follow an electron through the base → Where $\beta$ comes from → Explore base transport → Early effect, transit time and temperature → Check your understanding.</p>
 
 </div>
 
@@ -37,9 +38,9 @@ The consequences are the transistor rules used in every later chapter. Collector
 
 <div className="section-heading"><span>01</span><h2>Minority carriers diffuse and recombine</h2></div>
 
-Inject extra electrons into p-type silicon, where they are minority carriers. Two things happen. They spread out by diffusion, because random thermal motion carries more of them from crowded regions to sparse ones. And they disappear by recombination with the plentiful holes, on average after a **lifetime** τ.
+Inject extra electrons into p-type silicon, where they are minority carriers. Two things happen. They spread out by diffusion, because random thermal motion carries more of them from crowded regions to sparse ones. And they disappear by recombination with the plentiful holes, on average after a **lifetime** $\tau$.
 
-Keep track of the excess electron density Δn(x) in a thin slice between x and x + dx. The diffusion flux is −D dΔn/dx (Chapter 12); more flux entering than leaving accumulates carriers, and recombination removes Δn/τ per unit volume per second:
+Keep track of the excess electron density Δn(x) in a thin slice between x and x + dx. The diffusion flux is −D dΔn/dx (Chapter 12); more flux entering than leaving accumulates carriers, and recombination removes Δn/$\tau$ per unit volume per second:
 
 <Equation tex="\frac{\partial\,\Delta n}{\partial t}=D_n\frac{\partial^2\Delta n}{\partial x^2}-\frac{\Delta n}{\tau_n}" label="MINORITY-CARRIER CONTINUITY"/>
 
@@ -47,17 +48,27 @@ In steady state the left side is zero, leaving an ordinary differential equation
 
 <Equation tex="\frac{d^2\Delta n}{dx^2}=\frac{\Delta n}{L_n^2},\qquad L_n=\sqrt{D_n\tau_n}"/>
 
-The **diffusion length** L_n is how far a typical carrier wanders before recombining. For electrons in moderately doped p-type silicon, D_n ≈ 20 cm²/s and τ_n ≈ 0.1 µs give L_n ≈ 14 µm.
+The **diffusion length** $L_n$ is how far a typical carrier wanders before recombining. For electrons in moderately doped p-type silicon, $D_n$ ≈ 20 cm²/s and $\tau_n$ ≈ 0.1 µs give $L_n$ ≈ 14 µm.
 
 ### Long and short regions
 
-If the p region is much longer than L_n, the excess decays as e<sup>−x/L_n</sup>: almost every injected electron recombines inside it. That was the “long diode” of Chapter 13.
+If the p region is much longer than $L_n$, the excess decays as $e^{-x/L_n}$: almost every injected electron recombines inside it. That was the “long diode” of Chapter 13.
 
-If the region is much **shorter** than L_n—say 1 µm—and its far end is held at Δn = 0 by a contact or by a collecting junction, recombination hardly has time to act. Then d²Δn/dx² ≈ 0 and the profile is a straight line from its edge value Δn(0) to zero:
+If the region is much **shorter** than $L_n$—say 1 µm—and its far end is held at Δn = 0 by a contact or by a collecting junction, recombination hardly has time to act. Then d²Δn/dx² ≈ 0 and the profile is a straight line from its edge value Δn(0) to zero:
 
 <Equation tex="\Delta n(x)\approx\Delta n(0)\left(1-\frac{x}{W}\right),\qquad J_n=qD_n\frac{\Delta n(0)}{W}"/>
 
 The current is set by the slope of that line. A shorter region gives a steeper slope and therefore more current for the same edge density. This short-region case is the heart of the transistor.
+
+### What the straight-line approximation leaves out
+
+With excess carrier density $\Delta n(0)=n_0$ and an ideal collecting boundary $\Delta n(W)=0$, the steady continuity equation gives:
+
+<Equation tex="\Delta n(x)=n_0\frac{\sinh((W-x)/L_n)}{\sinh(W/L_n)},\qquad \alpha_T=\frac{J_C}{J_E}=\frac{1}{\cosh(W/L_n)}" />
+
+For $W/L_n\ll1$, $\sinh u\approx u$ and $\cosh u\approx1+u^2/2$. The profile becomes a triangle and $\alpha_T\approx1-W^2/(2L_n^2)$. At $W/L_n=0.1$, the exact survival fraction is 0.9950; at 1 it is only 0.648. A "thin" base means thin relative to the diffusion length, not merely small on a ruler. In forward active operation, reverse bias changes the far-edge equilibrium condition slightly; at substantial injection it is negligible beside the injected density.
+
+<CarrierProfileFigure/>
 
 </section>
 
@@ -71,11 +82,13 @@ An NPN transistor is a thin p-type **base** sandwiched between an n-type **emitt
 - The **base** is thin—well under a micrometre in modern devices—and only moderately doped, so that injected electrons cross it before recombining.
 - The **collector** is more lightly doped and large. Its junction with the base is reverse-biased in normal operation, so its depletion region has a strong field that sweeps any electron arriving at its edge into the collector.
 
-Two discrete diodes wired back to back share the junction types but not the geometry. The “base” between them is a metal wire, kilometres long in diffusion-length units, where every injected carrier recombines. No current is handed from one junction to the other.
+Two discrete diodes wired back to back share the junction types but not the geometry. Their metal interconnection does not preserve a minority-carrier distribution across a shared thin semiconductor base. Each junction behaves independently rather than handing injected carriers to the other.
+
+<TransportStructureFigure/>
 
 <div className="table-wrap">
 
-<table><thead><tr><th>Base–emitter junction</th><th>Base–collector junction</th><th>Region</th><th>Behavior</th></tr></thead><tbody><tr><td>Forward</td><td>Reverse</td><td>Forward active</td><td>Amplifier: I_C set by V_BE</td></tr><tr><td>Forward</td><td>Forward</td><td>Saturation</td><td>Closed switch: small V_CE</td></tr><tr><td>Reverse (or off)</td><td>Reverse</td><td>Cutoff</td><td>Open switch: leakage only</td></tr><tr><td>Reverse</td><td>Forward</td><td>Reverse active</td><td>Poor transistor with roles swapped</td></tr></tbody></table>
+<table><thead><tr><th>Base–emitter junction</th><th>Base–collector junction</th><th>Region</th><th>Behavior</th></tr></thead><tbody><tr><td>Forward</td><td>Reverse</td><td>Forward active</td><td>Amplifier: $I_C$ set by $V_{BE}$</td></tr><tr><td>Forward</td><td>Forward</td><td>Saturation</td><td>Closed switch: small $V_{CE}$</td></tr><tr><td>Reverse (or off)</td><td>Reverse</td><td>Cutoff</td><td>Open switch: leakage only</td></tr><tr><td>Reverse</td><td>Forward</td><td>Reverse active</td><td>Poor transistor with roles swapped</td></tr></tbody></table>
 
 </div>
 
@@ -85,7 +98,7 @@ Two discrete diodes wired back to back share the junction types but not the geom
 
 <div className="section-heading"><span>03</span><h2>Follow an electron through the base</h2></div>
 
-Forward-bias the base–emitter junction by V_BE. Just as in the diode, the electron density at the base edge of the emitter junction rises above its equilibrium value n_p0 = n_i²/N_A by the Boltzmann factor:
+Forward-bias the base–emitter junction by $V_{BE}$. Just as in the diode, the electron density at the base edge of the emitter junction rises above its equilibrium value $n_{p0}$ = $n_i$²/$N_A$ by the Boltzmann factor:
 
 <Equation tex="n(0)=n_{p0}\,e^{V_{BE}/V_T}=\frac{n_i^2}{N_A}e^{V_{BE}/V_T}"/>
 
@@ -95,17 +108,17 @@ At the other side of the base, the reverse-biased collector junction removes eve
 
 Three conclusions follow, each one a later rule of thumb.
 
-1. **V_BE controls I_C exponentially**: every factor of ten in current needs V_T ln 10 ≈ 60 mV more base–emitter voltage at room temperature.
+1. **$V_{BE}$ controls $I_C$ exponentially**: every factor of ten in current needs $V_T$ ln 10 ≈ 60 mV more base–emitter voltage at room temperature.
 2. **The collector voltage barely appears.** As long as the collector junction is reverse-biased, it collects everything regardless of how strongly. This is why the collector behaves like a current source.
-3. **I_S depends on geometry and doping**: area A, base width W and base doping N_A. It also contains n_i², which depends very strongly on temperature (section 06).
+3. **$I_S$ depends on geometry and doping**: area A, base width W and base doping $N_A$. It also contains $n_i$², which depends very strongly on temperature (section 06).
 
 <div className="worked-example">
 
 <span className="tiny-label">WORKED EXAMPLE / SIZE THE NUMBERS</span><h3>A small NPN in this model</h3>
 
-<p>Base doping 10¹⁷ cm⁻³ makes n_p0 = (10¹⁰)²/10¹⁷ = 10³ electrons per cm³. At V_BE = 0.65 V the edge density is 10³ × e<sup>0.65/0.02585</sup> ≈ <strong>8.3 × 10¹³ cm⁻³</strong>, still a million times smaller than the hole density, so “low-level injection” holds.</p>
+<p>Base doping 10¹⁷ cm⁻³ makes $n_{p0}$ = (10¹⁰)²/10¹⁷ = 10³ electrons per cm³. At $V_{BE}$ = 0.65 V the edge density is 10³ × $e^{0.65/0.02585}$ ≈ <strong>8.3 × 10¹³ cm⁻³</strong>, about 1200 times smaller than the hole density, so “low-level injection” holds.</p>
 
-<p>With A = 1000 µm², D_n = 20 cm²/s and a neutral base 0.655 µm wide, I_S = qAD_n n_i²/(N_A W) ≈ <strong>4.9 × 10⁻¹⁶ A</strong>, and I_C = 40.6 µA at 0.65 V. At 0.70 V it is 279 µA, almost seven times more for 50 mV.</p>
+<p>With A = 1000 µm², $D_n$ = 20 cm²/s and a neutral base 0.655 µm wide, $I_S$ = $q A D_n n_i^2/(N_A W)$ ≈ <strong>4.9 × 10⁻¹⁶ A</strong>, and $I_C$ = 40.6 µA at 0.65 V. At 0.70 V it is 279 µA, almost seven times more for 50 mV.</p>
 
 </div>
 
@@ -113,15 +126,15 @@ Three conclusions follow, each one a later rule of thumb.
 
 <section id="beta">
 
-<div className="section-heading"><span>04</span><h2>Where β comes from</h2></div>
+<div className="section-heading"><span>04</span><h2>Where $\beta$ comes from</h2></div>
 
 If the emitter injected only electrons and none recombined, there would be no base current at all. Two loss mechanisms require the base terminal to supply holes:
 
-**Back-injection into the emitter.** The forward-biased junction also injects holes from the base into the emitter, exactly as in a diode. Their current has the same form as the electron current, with the emitter’s doping and width. The **emitter injection efficiency** γ is the fraction of emitter current carried by electrons.
+**Back-injection into the emitter.** The forward-biased junction also injects holes from the base into the emitter, exactly as in a diode. Their current has the same form as the electron current, with the emitter’s doping and width. The **emitter injection efficiency** $\gamma$ is the fraction of emitter current carried by electrons.
 
-**Recombination in the base.** The stored electrons in the base, a triangle of total charge Q_B = qA n(0) W/2, recombine at rate Q_B/τ_n. The **base transport factor** α_T is the fraction of injected electrons that survive the crossing.
+**Recombination in the base.** The stored electrons in the base, a triangle of total charge $Q_B$ = qA n(0) W/2, recombine at rate $Q_B$/$\tau_n$. The **base transport factor** $\alpha_T$ is the fraction of injected electrons that survive the crossing.
 
-Dividing each base-current component by I_C gives a compact result for a thin emitter of width W_E and doping N_E:
+Dividing each base-current component by $I_C$ gives a compact result for a thin emitter of width $W_E$ and doping $N_E$:
 
 <Equation tex="\frac{1}{\beta}=\frac{I_B}{I_C}\approx\underbrace{\frac{D_pN_AW}{D_nN_EW_E}}_{\text{back-injection}}+\underbrace{\frac{W^2}{2L_n^2}}_{\text{recombination}},\qquad \alpha=\frac{I_C}{I_E}=\gamma\,\alpha_T=\frac{\beta}{\beta+1}" label="CURRENT GAIN"/>
 
@@ -129,15 +142,17 @@ Dividing each base-current component by I_C gives a compact result for a thin em
 
 <span className="tiny-label">WORKED EXAMPLE / THE TWO LOSSES</span><h3>Emitter 10¹⁹ cm⁻³ and 0.3 µm, base 10¹⁷ cm⁻³ and 0.655 µm</h3>
 
-<p>Back-injection: (2.6 × 10¹⁷ × 0.655)/(20 × 10¹⁹ × 0.3) = <strong>0.00284</strong>. Recombination: 0.655²/(2 × 14²) = <strong>0.00110</strong>. Their sum is 0.00394, so β ≈ <strong>254</strong>.</p>
+<p>Back-injection: (2.6 × 10¹⁷ × 0.655)/(20 × 10¹⁹ × 0.3) = <strong>0.00284</strong>. Recombination: 0.655²/(2 × 14²) = <strong>0.00110</strong>. Their sum is 0.00394, so $\beta$ ≈ <strong>254</strong>.</p>
 
-<p>The fractions are γ = 0.99717 and α_T = 0.99890, giving α = 0.99607. A collector current that is 99.6% of the emitter current becomes a gain of 254 because β = α/(1 − α) magnifies the small remainder.</p>
+<p>The fractions are $\gamma$ = 0.99717 and $\alpha_T$ = 0.99890, giving $\alpha$ = 0.99607. A collector current that is 99.6% of the emitter current becomes a gain of 254 because $\beta$ = $\alpha$/(1 − $\alpha$) magnifies the small remainder.</p>
 
 </div>
 
-The formula shows the designer’s levers and their costs. A heavier, thicker emitter improves γ. A thinner base improves both terms: narrowing the metallurgical base from 0.8 µm to 0.5 µm more than doubles β in this model (to about 540). Lighter base doping improves γ—but a lightly doped, thin base has high lateral resistance and is easily “punched through” by the collector depletion region. Doping it three times more heavily drops β to about 92. Real devices also use a narrower bandgap in the base or emitter engineering to beat these tradeoffs.
+The formula shows the designer’s levers and their costs. A heavier, thicker emitter improves $\gamma$. A thinner base improves both terms: narrowing the metallurgical base from 0.8 µm to 0.5 µm more than doubles $\beta$ in this model (to about 540). Lighter base doping improves $\gamma$—but a lightly doped, thin base has high lateral resistance and is easily “punched through” by the collector depletion region. Doping it three times more heavily drops $\beta$ to about 92. Real devices also use a narrower bandgap in the base or emitter engineering to beat these tradeoffs.
 
-Because β is a ratio of two small loss terms, it varies a great deal between transistors of the same type, with temperature (it rises), and with current (it falls at low current, where depletion-region recombination adds base current, and at high current, where the injected electrons become comparable to the base doping). **β is a poor quantity to design around.** The next chapters build circuits that work whatever β is, provided it is large.
+<BaseWidthFigure/>
+
+Because $\beta$ is a ratio of two small loss terms, it varies a great deal between transistors of the same type, with temperature (often rising over part of the operating range), and with current (it falls at low current, where depletion-region recombination adds base current, and at high current, where the injected electrons become comparable to the base doping). **$\beta$ is a poor quantity to design around.** The next chapters build circuits that work whatever $\beta$ is, provided it is large.
 
 </section>
 
@@ -149,7 +164,7 @@ Because β is a ratio of two small loss terms, it varies a great deal between tr
 
 <p className="caption">Figure 1. One-dimensional NPN model. The sketch shows the doped regions to scale across the base, with depletion regions pale; the green line is the injected electron profile. The upper plot is the same profile in absolute units.</p>
 
-The straight line is the transistor. Its height at the emitter end is set by V_BE alone (and temperature); its length is the neutral base width; its slope is the collector current. Everything that changes β or I_C changes one of those three things.
+The straight line is the transistor. Its height at the emitter end is set by $V_{BE}$ alone (and temperature); its length is the neutral base width; its slope is the collector current. Everything that changes $\beta$ or $I_C$ changes one of those three things.
 
 </section>
 
@@ -159,33 +174,100 @@ The straight line is the transistor. Its height at the emitter end is set by V_B
 
 ### Base-width modulation
 
-The collector depletion region extends partly into the base. Raising the collector–base reverse voltage widens it, which narrows the neutral base W. The edge density n(0) is unchanged, so the profile gets steeper and I_C rises. In the model, the neutral base shrinks from 0.708 µm at V_CB = 0 to 0.655 µm at 5 V and 0.582 µm at 20 V, raising I_C from 37.6 µA to 40.6 µA and 45.8 µA.
+The collector depletion region extends partly into the base. Raising the collector–base reverse voltage widens it, which narrows the neutral base W. The edge density n(0) is unchanged, so the profile gets steeper and $I_C$ rises. In the model, the neutral base shrinks from 0.708 µm at $V_{CB}$ = 0 to 0.655 µm at 5 V and 0.582 µm at 20 V, raising $I_C$ from 37.6 µA to 40.6 µA and 45.8 µA.
 
-Extended backward on a graph of I_C against V_CE, these slightly sloping lines meet near a common point on the negative voltage axis, −V_A. The **Early voltage** V_A (here about 87 V) summarizes the effect:
+Extended backward on a graph of $I_C$ against $V_{CE}$, these slightly sloping lines meet near a common point on the negative voltage axis, −$V_A$. The **Early voltage** $V_A$ (here about 87 V) summarizes the effect:
 
 <Equation tex="I_C\approx I_Se^{V_{BE}/V_T}\left(1+\frac{V_{CE}}{V_A}\right),\qquad r_o=\frac{V_A}{I_C}"/>
 
-The collector’s small-signal output resistance r_o is finite. It limits the gain of a single amplifier stage and the quality of a current source (Chapters 31 and 34). If the collector voltage rises far enough that the depletion region reaches the emitter, the base vanishes: **punch-through**, a breakdown mechanism.
+The collector’s small-signal output resistance $r_o$ is finite. It limits the gain of a single amplifier stage and the quality of a current source (Chapters 31 and 34). If the collector voltage rises far enough that the depletion region reaches the emitter, the base vanishes: **punch-through**, a breakdown mechanism.
+
+<EarlyProfileFigure/>
 
 ### Stored charge and speed
 
-The electron triangle is stored charge, Q_B = qA n(0) W/2. Dividing by the current gives the average time an electron spends crossing the base, the **base transit time**:
+The electron triangle is stored charge, $Q_B$ = qA n(0) W/2. Dividing by the current gives the average time an electron spends crossing the base, the **base transit time**:
 
 <Equation tex="\tau_F=\frac{Q_B}{I_C}=\frac{W^2}{2D_n},\qquad f_T\lesssim\frac{1}{2\pi\tau_F}"/>
 
-For W = 0.655 µm, τ_F ≈ 0.11 ns, which limits this structure to a transition frequency of no more than about 1.5 GHz; junction capacitances lower it further in practice. Changing I_C requires changing Q_B, which is why a change in V_BE acts as if it charges a capacitance g_mτ_F (the “diffusion capacitance”) in addition to the depletion capacitances. In saturation the collector junction is forward-biased too and injects its own carriers; the extra stored charge must be removed before the transistor can turn off, which is why saturated switches are slow to release.
+For W = 0.655 µm, $\tau_F$ ≈ 0.11 ns, which limits this structure to a transition frequency of no more than about 1.5 GHz; junction capacitances lower it further in practice. Changing $I_C$ requires changing $Q_B$, which is why a change in $V_{BE}$ acts as if it charges a capacitance $g_m\tau_F$ (the “diffusion capacitance”) in addition to the depletion capacitances. In saturation the collector junction is forward-biased too and injects its own carriers; the extra stored charge must be removed before the transistor can turn off, which is why saturated switches are slow to release.
 
 ### Temperature
 
-I_S contains n_i², which behaves roughly as T³e<sup>−E_g/kT</sup>. Holding I_C fixed while temperature changes, the exponential must be compensated by V_BE. Writing V_BE at temperature T in terms of its value V_BE0 at T₀ and the extrapolated bandgap voltage V_G0 ≈ 1.21 V:
+$I_S$ contains $n_i$², which behaves roughly as $T^3e^{-E_g/(kT)}$. Holding $I_C$ fixed while temperature changes, the exponential must be compensated by $V_{BE}$. Writing $V_{BE}$ at temperature T in terms of its value $V_{BE0}$ at $T_0$ and the extrapolated bandgap voltage $V_{G0}$ ≈ 1.21 V:
 
 <Equation tex="V_{BE}(T)\approx V_{G0}+\frac{T}{T_0}\left(V_{BE0}-V_{G0}\right)+\frac{3kT}{q}\ln\frac{T_0}{T},\qquad \frac{dV_{BE}}{dT}\approx\frac{V_{BE0}-V_{G0}-3V_T}{T_0}"/>
 
-With V_BE0 = 0.65 V at 300 K this gives **−2.1 mV/°C**: the famous rule that a forward-biased silicon junction’s voltage falls about 2 mV per degree at constant current. Conversely, at constant V_BE the collector current rises about 8% per degree—a factor of nearly 60 over 60 °C. Chapter 29 designs bias circuits that survive this, and Chapter 34 collects these results as the Ebers–Moll rules of thumb.
+With $V_{BE0}$ = 0.65 V at 300 K this gives **−2.1 mV/°C**: the famous rule that a forward-biased silicon junction’s voltage falls about 2 mV per degree at constant current. Conversely, at constant $V_{BE}$ the collector current rises about 8% per degree—a factor of about 64 from 300 K to 360 K in this temperature law. Chapter 29 designs bias circuits that survive this, and Chapter 34 collects these results as the Ebers–Moll rules of thumb.
+
+<JunctionTemperatureFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / WIDTH, CHARGE AND SPEED</span><h3>Halve the neutral base width at fixed injection</h3>
+
+<p>In the short-base model, $I_C\propto1/W$, stored base charge $Q_B\propto W$, and transit time $τ_F\propto W^2$. Halving W therefore doubles collector current, halves stored charge, and quarters transit time. These are simultaneous consequences of the same density triangle.</p>
+
+<p>For $W=0.655$ µm and $D_n=20$ cm²/s, convert units before calculating: $D_n=0.002$ m²/s and $τ_F=(0.655\times10^{-6})^2/(2\times0.002)=0.107$ ns. The transit-only frequency bound is 1.48 GHz. With a 40.6 µA collector current, stored charge is $I_Cτ_F=4.35$ fC.</p>
+
+<p>This is a device-physics estimate, not a guarantee of circuit bandwidth. Junction capacitance, base resistance, wiring and the amplifier’s gain can impose much lower poles.</p>
+
+</div>
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>The emitter junction sets the electron density at one end of a thin base; the collector removes it at the other. The <em>slope of that line</em> is the collector current, and every transistor rule follows from it.</p></div>
 
 <p className="reference-note">Coverage: supporting physics for The Art of Electronics §§2.1 and 2.3. The model assumes uniform doping, one dimension, low-level injection and no bandgap narrowing; real profiles are graded and need numerical device simulation. For a fuller derivation, see <a href="https://ocw.mit.edu/courses/6-012-microelectronic-devices-and-circuits-fall-2005/">MIT 6.012, Microelectronic Devices and Circuits</a>.</p>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why do two separate diodes fail to behave as a transistor?</summary>
+<div>
+
+They do not share a thin neutral semiconductor base in which minority carriers injected at one junction can diffuse to the other. A metal interconnection supplies ordinary terminal current but does not provide that transport path.
+
+</div>
+</details>
+
+<details>
+<summary>2. What does making the base shorter do to current and transit time?</summary>
+<div>
+
+At fixed injected edge density, $I_C\propto1/W$ and $τ_F\propto W^2$. A shorter base gives more current and shorter transit time, at the cost of reduced punch-through margin.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why is β large even though collector current is slightly less than emitter current?</summary>
+<div>
+
+$\beta=\alpha/(1-\alpha)$. With α = 0.996, the small difference becomes base current and β is about 249.
+
+</div>
+</details>
+
+<details>
+<summary>4. Does increasing collector voltage normally increase the emitter-edge density?</summary>
+<div>
+
+At fixed base–emitter voltage and temperature, not appreciably in this model. It narrows the neutral base, steepens the profile and increases collector current.
+
+</div>
+</details>
+
+<details>
+<summary>5. Does −2.1 mV/°C describe fixed voltage or fixed current?</summary>
+<div>
+
+Fixed current. If base–emitter voltage is held fixed instead, the increasing saturation current causes a steep rise in collector current.
+
+</div>
+</details>
 
 </section>
 

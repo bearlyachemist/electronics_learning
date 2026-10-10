@@ -48,7 +48,7 @@
     {
       "tag": "GAIN–BANDWIDTH",
       "title": "A single-pole calculation",
-      "prompt": "An amplifier has A₀ = 5000 and its only pole at 20 Hz. With b = 0.02, find closed-loop DC gain and pole frequency.",
+      "prompt": "An amplifier has $A_0$ = 5000 and its only pole at 20 Hz. With b = 0.02, find closed-loop DC gain and pole frequency.",
       "hint": "The denominator factor is 1 + A₀b.",
       "solution": [
         {
@@ -78,7 +78,7 @@
     {
       "tag": "DEGENERATION",
       "title": "Include the junction resistance",
-      "prompt": "At IC = 1 mA, VT = 25.85 mV, β = 100, RC = 2.2 kΩ and RE = 100 Ω, find midband base-to-collector gain and base input resistance. Ignore Early effect and loading.",
+      "prompt": "At IC = 1 mA, VT = 25.85 mV, $\\beta$ = 100, RC = 2.2 kΩ and RE = 100 Ω, find midband base-to-collector gain and base input resistance. Ignore Early effect and loading.",
       "hint": "Use gm = IC/VT and keep the finite denominator.",
       "solution": [
         {
@@ -95,7 +95,7 @@
     {
       "tag": "GAIN DESIGN",
       "title": "Choose the unbypassed resistor",
-      "prompt": "For the same 1 mA, β = 100 transistor and effective collector resistance 2.2 kΩ, calculate RE for a base-to-collector gain of −10.",
+      "prompt": "For the same 1 mA, $\\beta$ = 100 transistor and effective collector resistance 2.2 kΩ, calculate RE for a base-to-collector gain of −10.",
       "hint": "Rearrange the exact degeneration gain expression.",
       "solution": [
         {
@@ -109,8 +109,8 @@
     {
       "tag": "FOLLOWER",
       "title": "A unity target with finite loop gain",
-      "prompt": "At IC = 1 mA and β = 100, an emitter follower has an effective emitter load of 1 kΩ. Find its base-to-emitter gain. With source resistance 1 kΩ and an actual 1 kΩ emitter resistor, estimate unloaded output resistance.",
-      "hint": "Use ge = gm(1 + 1/β), then reflect the source/base resistance into the emitter.",
+      "prompt": "At IC = 1 mA and $\\beta$ = 100, an emitter follower has an effective emitter load of 1 kΩ. Find its base-to-emitter gain. With source resistance 1 kΩ and an actual 1 kΩ emitter resistor, estimate unloaded output resistance.",
+      "hint": "Use ge = gm(1 + 1/$\\beta$), then reflect the source/base resistance into the emitter.",
       "solution": [
         {
           "tex": "A_v=39.0716/(1+39.0716)=0.97504"
@@ -126,7 +126,7 @@
     {
       "tag": "COLLECTOR BIAS",
       "title": "Do not forget base current in RC",
-      "prompt": "A collector-to-base bias circuit has VCC = 12 V, VBE = 0.7 V, RC = 2.2 kΩ, RF = 220 kΩ and β = 100. No external DC base current flows. Find IB, IC and VC.",
+      "prompt": "A collector-to-base bias circuit has VCC = 12 V, VBE = 0.7 V, RC = 2.2 kΩ, RF = 220 kΩ and $\\beta$ = 100. No external DC base current flows. Find IB, IC and VC.",
       "hint": "The collector resistor supplies IC + IB.",
       "solution": [
         {
@@ -173,7 +173,7 @@
     {
       "tag": "DRIVE & LIMIT",
       "title": "A transistor current limiter",
-      "prompt": "Design a nominal 250 mA current limiter using an assumed sensing VBE of 0.6 V. Find sense resistance and its dissipation at the limit. A pass transistor has β = 40 at that load; estimate required base current.",
+      "prompt": "Design a nominal 250 mA current limiter using an assumed sensing VBE of 0.6 V. Find sense resistance and its dissipation at the limit. A pass transistor has $\\beta$ = 40 at that load; estimate required base current.",
       "hint": "The sense resistor is part of the voltage and power budget.",
       "solution": [
         {
@@ -231,7 +231,7 @@
     {
       "tag": "THERMAL PLANT",
       "title": "Power and time are different budgets",
-      "prompt": "A body has θ = 8 °C/W and Cth = 25 J/°C. Ambient is 20 °C and target is 60 °C. Find required holding power and time constant. Is a 4 W heater sufficient?",
+      "prompt": "A body has $\\theta$ = 8 °C/W and Cth = 25 J/°C. Ambient is 20 °C and target is 60 °C. Find required holding power and time constant. Is a 4 W heater sufficient?",
       "hint": "Use equilibrium heat loss and thermal energy storage separately.",
       "solution": [
         {
@@ -245,7 +245,7 @@
     {
       "tag": "PROPORTIONAL OFFSET",
       "title": "The error commands the holding power",
-      "prompt": "A proportional temperature controller has Kp = 0.5 W/°C, θ = 10 °C/W, target 50 °C and ambient 20 °C. Find equilibrium temperature, error and power.",
+      "prompt": "A proportional temperature controller has Kp = 0.5 W/°C, $\\theta$ = 10 °C/W, target 50 °C and ambient 20 °C. Find equilibrium temperature, error and power.",
       "hint": "Equate commanded power to heat loss.",
       "solution": [
         {
@@ -276,8 +276,8 @@
     {
       "tag": "PI & LAG",
       "title": "Check the cubic condition",
-      "prompt": "A thermal plant has τ = 200 s, θ = 10 °C/W, sensor lag τs = 50 s and Kp = 0.5 W/°C. In the unsaturated linear model, what upper bound on positive Ki follows from the cubic Routh condition?",
-      "hint": "Compare (τ + τs)(1 + θKp) with ττsθKi.",
+      "prompt": "A thermal plant has $\\tau$ = 200 s, $\\theta$ = 10 °C/W, sensor lag τs = 50 s and Kp = 0.5 W/°C. In the unsaturated linear model, what upper bound on positive Ki follows from the cubic Routh condition?",
+      "hint": "Compare ($\\tau$ + τs)(1 + θKp) with ττsθKi.",
       "solution": [
         {
           "tex": "K_i<\\frac{(200+50)(1+10(0.5))}{200(50)(10)}=0.015\\ \\mathrm{W/(^\\circ C\\,s)}"
@@ -320,21 +320,21 @@
     {
       "tag": "TRANSISTOR INVERTER",
       "title": "Size the base resistor",
-      "prompt": "A 5 V NPN inverter has RC = 2.2 kΩ. Assume VOL = 0.2 V, VBE = 0.7 V and choose a forced-β target no greater than 10. Find the maximum base resistor with a 5 V input.",
+      "prompt": "A 5 V NPN inverter has RC = 2.2 kΩ. Assume VOL = 0.2 V, VBE = 0.7 V and choose a forced-$\\beta$ target no greater than 10. Find the maximum base resistor with a 5 V input.",
       "hint": "Calculate required collector current before base drive.",
       "solution": [
         {
           "tex": "I_C=4.8/2200=2.182\\ \\mathrm{mA},\\quad I_B\\geq0.2182\\ \\mathrm{mA},\\quad R_B\\leq4.3/0.2182\\ \\mathrm{mA}=19.71\\ \\mathrm{k\\Omega}"
         },
         {
-          "text": "An 18 kΩ nominal choice supplies about 0.239 mA and gives forced β ≈ 9.13 without additional collector loading. Add tolerances and actual device saturation specifications."
+          "text": "An 18 kΩ nominal choice supplies about 0.239 mA and gives forced $\\beta$ ≈ 9.13 without additional collector loading. Add tolerances and actual device saturation specifications."
         }
       ]
     },
     {
       "tag": "FAN-OUT",
       "title": "Why one following gate can fail the budget",
-      "prompt": "A DTL NAND output has 0.257 mA base current, a 2.2 kΩ collector pull-up to 5 V and assumed 0.2 V LOW. Each following input requires 0.41 mA when LOW. Under a forced-β ≤ 10 target, is even one following input supported?",
+      "prompt": "A DTL NAND output has 0.257 mA base current, a 2.2 kΩ collector pull-up to 5 V and assumed 0.2 V LOW. Each following input requires 0.41 mA when LOW. Under a forced-$\\beta$ ≤ 10 target, is even one following input supported?",
       "hint": "Subtract the gate’s own pull-up current from the allowed collector current.",
       "solution": [
         {

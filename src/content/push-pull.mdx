@@ -1,6 +1,6 @@
+import {PushPullFigure,ClassBPowerFigure,VbeMultiplierFigure} from '../components/StageFigures';
 import Equation from '../components/Equation.astro';
 import {PushPullLab} from '../components/StageLabs';
-import {ClassBPowerFigure,VbeMultiplierFigure} from '../components/Figures';
 
 <div className="chapter-hero" id="overview">
 
@@ -30,7 +30,7 @@ The cure is to give the circuit a transistor for each direction: an NPN follower
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Why class A wastes power → Class B: efficiency and dissipation → Crossover distortion → Explore three output stages → Class AB bias and thermal stability → Feedback, protection and practical design.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Why class A wastes power → Class B: efficiency and dissipation → Crossover distortion → Explore three output stages → Class AB bias and thermal stability → Feedback, protection and practical design → Check your understanding.</p>
 
 </div>
 
@@ -38,9 +38,9 @@ The cure is to give the circuit a transistor for each direction: an NPN follower
 
 <div className="section-heading"><span>01</span><h2>Why class A wastes power</h2></div>
 
-A single NPN follower with its emitter resistor returned to −V_CC conducts over the whole cycle: **class A**. To pull an 8 Ω load to −10 V, the emitter resistor must sink 1.25 A at that moment, so the quiescent current must be at least 1.25 A. From ±15 V supplies that is 37.5 W of continuous supply power to deliver at most 6.25 W of sine-wave power.
+A single NPN follower with its emitter resistor returned to −$V_{CC}$ conducts over the whole cycle: **class A**. To pull an 8 Ω load to −10 V, the emitter resistor must sink 1.25 A at that moment, so the quiescent current must be at least 1.25 A. From ±15 V supplies that is 37.5 W of continuous supply power to deliver at most 6.25 W of sine-wave power.
 
-In general, with the quiescent current set just high enough for full swing, the supply delivers 2V_CC I_Q continuously while the load receives at most V_CC²/(2R_L) with I_Q = V_CC/R_L:
+In general, with the quiescent current set just high enough for full swing, the supply delivers $2V_{CC}I_Q$ continuously while the load receives at most $V_{CC}^2/(2R_L)$ with $I_Q$ = $V_{CC}$/$R_L$:
 
 <Equation tex="\eta_{\max}=\frac{V_{CC}^2/2R_L}{2V_{CC}^2/R_L}=25\%\qquad(\text{resistor-loaded class A})"/>
 
@@ -52,19 +52,21 @@ And the 25% is reached only at full output. At idle, everything is wasted. Class
 
 <div className="section-heading"><span>02</span><h2>Class B: efficiency and dissipation</h2></div>
 
-Join the emitters of an NPN follower (collector to +V_CC) and a PNP follower (collector to −V_CC), drive both bases from the input, and connect the load from the joined emitters to ground. On positive half-cycles the NPN conducts and the PNP is off; on negative half-cycles the reverse. With no signal, neither conducts. Each transistor carries a half-sine of current, which is **class B**.
+Join the emitters of an NPN follower (collector to +$V_{CC}$) and a PNP follower (collector to −$V_{CC}$), drive both bases from the input, and connect the load from the joined emitters to ground. On positive half-cycles the NPN conducts and the PNP is off; on negative half-cycles the reverse. With no signal, neither conducts. Each transistor carries a half-sine of current, which is **class B**.
 
-For a sinusoidal output of peak V_p into R_L, each supply delivers current only on its half-cycle, with average value V_p/(πR_L). The total supply power and the load power are
+<PushPullFigure/>
+
+For a sinusoidal output of peak $V_p$ into $R_L$, each supply delivers current only on its half-cycle, with average value $V_p$/($\pi R_L$). The total supply power and the load power are
 
 <Equation tex="P_S=2V_{CC}\frac{V_p}{\pi R_L},\qquad P_L=\frac{V_p^2}{2R_L},\qquad \eta=\frac{P_L}{P_S}=\frac{\pi}{4}\frac{V_p}{V_{CC}}\le78.5\%" label="CLASS B"/>
 
 <ClassBPowerFigure/>
 
-The transistors dissipate the difference, P_S − P_L. It is zero with no signal—the great advantage of class B—and it is *not* greatest at full output. Differentiating with respect to V_p and setting the result to zero:
+The transistors dissipate the difference, $P_S$ − $P_L$. It is zero with no signal—the great advantage of class B—and it is *not* greatest at full output. Differentiating with respect to $V_p$ and setting the result to zero:
 
 <Equation tex="\frac{d}{dV_p}\left(\frac{2V_{CC}V_p}{\pi R_L}-\frac{V_p^2}{2R_L}\right)=0\ \Rightarrow\ V_p=\frac{2V_{CC}}{\pi},\qquad P_{D,\max}=\frac{2V_{CC}^2}{\pi^2R_L}"/>
 
-For ±15 V and 8 Ω: maximum sine output 14.1 W (ideal), but the transistors run hottest at about 9.5 V peak, where together they dissipate **5.7 W**. Size heat sinks for that, not for full output or idle. Real stages lose another volt or two to V_BE and saturation, so practical efficiency at full output is closer to 60–70%.
+For ±15 V and 8 Ω: maximum sine output 14.1 W (ideal), but the transistors run hottest at about 9.5 V peak, where together they dissipate **5.7 W**. Size heat sinks for that, not for full output or idle. Real stages lose another volt or two to $V_{BE}$ and saturation, so practical efficiency at full output is closer to 60–70%.
 
 </section>
 
@@ -94,25 +96,25 @@ Unlike clipping, crossover distortion is worst for *small* signals. A 1 V-peak s
 
 ### Biasing out the dead zone
 
-Separate the two bases by about 2V_BE so that both transistors are already slightly conducting at zero input. Two diodes in series, fed from current sources or resistors, provide that voltage; the input drives the midpoint. Now there is no dead zone: as one transistor takes over, the other is still conducting. This is **class AB**: each transistor conducts for slightly more than half the cycle.
+Separate the two bases by about $2V_{BE}$ so that both transistors are already slightly conducting at zero input. Two diodes in series, fed from current sources or resistors, provide that voltage; the input drives the midpoint. Now there is no dead zone: as one transistor takes over, the other is still conducting. This is **class AB**: each transistor conducts for slightly more than half the cycle.
 
-In the lab, two 0.65 V diode drops with 0.47 Ω emitter resistors set a quiescent current of about 40 mA and bring THD at 1 V from 44% to about 0.05%. The cost is 2V_CC I_Q = 1.2 W of standing dissipation, much less than class A’s.
+In the lab, two 0.65 V diode drops with 0.47 Ω emitter resistors set a quiescent current of about 40 mA and bring THD at 1 V from 44% to about 0.05%. The cost is $2V_{CC}I_Q$ = 1.2 W of standing dissipation, much less than class A’s.
 
 ### The thermal problem
 
-The quiescent current depends exponentially on the difference between the bias voltage and the transistors’ V_BEs. As the output transistors warm, their V_BE falls about 2.1 mV/°C; with a fixed bias voltage the current rises, which heats them further.
+The quiescent current depends exponentially on the difference between the bias voltage and the transistors’ $V_{BE}$ values. As the output transistors warm, their $V_{BE}$ falls about 2.1 mV/°C; with a fixed bias voltage the current rises, which heats them further.
 
-Suppose the heat sink rises 30 °C. Each output V_BE falls 63 mV, so the bias now exceeds the transistors’ needs by 126 mV. Without emitter resistors the quiescent current would rise by e<sup>63/26</sup> ≈ 11 times. With 0.47 Ω emitter resistors, the extra 126 mV must also drop across 2 × 0.47 Ω and the two r_e, roughly 2.2 Ω in total, so the current rises by about 56 mA: from 40 mA to nearly 100 mA. Better, but still a large change that would increase heating.
+Suppose the heat sink rises 30 °C. Each output $V_{BE}$ falls 63 mV, so the bias now exceeds the transistors’ needs by 126 mV. Without emitter resistors the quiescent current would rise by $e^{63/26}$ ≈ 11 times. With 0.47 Ω emitter resistors, the extra 126 mV must also drop across 2 × 0.47 Ω and the two $r_e$, roughly 2.2 Ω in total, so the current rises by about 56 mA: from 40 mA to nearly 100 mA. Better, but still a large change that would increase heating.
 
 The complete fix has three parts:
 
 - **Emitter resistors** (0.1–0.5 Ω) provide local negative feedback against current increases and help paralleled devices share (Chapter 40).
-- **Thermal tracking**: the bias diodes, or better a transistor, are mounted on the output transistors’ heat sink, so the bias voltage falls as the output V_BEs fall.
-- **An adjustable bias generator**: the V_BE multiplier.
+- **Thermal tracking**: the bias diodes, or better a transistor, are mounted on the output transistors’ heat sink, so the bias voltage falls as the output $V_{BE}$ values fall.
+- **An adjustable bias generator**: the $V_{BE}$ multiplier.
 
 <VbeMultiplierFigure/>
 
-The V_BE multiplier is a transistor with a divider from collector to emitter whose tap drives its base. It conducts whatever current flows, while holding its collector–emitter voltage at V_BE(1 + R₂/R₁). The resistor ratio sets the bias; its V_BE, on the heat sink, makes the bias fall with temperature at a rate (1 + R₂/R₁) × 2.1 mV/°C, matching the two (or more) output junctions it compensates.
+The $V_{BE}$ multiplier is a transistor with a divider from collector to emitter whose tap drives its base. It conducts whatever current flows, while holding its collector–emitter voltage at $V_BE$(1 + $R_2$/$R_1$). The resistor ratio sets the bias; its $V_{BE}$, on the heat sink, makes the bias fall with temperature at a rate (1 + $R_2$/$R_1$) × 2.1 mV/°C, matching the two (or more) output junctions it compensates.
 
 </section>
 
@@ -126,15 +128,86 @@ Put the class B stage inside a negative feedback loop, as an op-amp output stage
 
 ### Protection
 
-A short circuit on the output turns a follower into a dissipator of V_CC times whatever current it can deliver. A common protection adds a small resistor in each emitter and a sensing transistor across it: when the voltage across the resistor reaches about 0.6 V, the sensing transistor steals base drive and limits the current. With 0.33 Ω, the limit is about 1.8 A. Output transistors must also stay inside their **safe operating area**, which shrinks at high voltage because of second breakdown (Chapter 40).
+A short circuit on the output turns a follower into a dissipator of $V_{CC}$ times whatever current it can deliver. A common protection adds a small resistor in each emitter and a sensing transistor across it: when the voltage across the resistor reaches about 0.6 V, the sensing transistor steals base drive and limits the current. With 0.33 Ω, the limit is about 1.8 A. Output transistors must also stay inside their **safe operating area**, which shrinks at high voltage because of second breakdown (Chapter 40).
 
 ### A design outline
 
-For 10 W into 8 Ω: V_p = √(2 × 10 × 8) = 12.6 V, I_p = 1.6 A. Allow about 2 V for V_BE, emitter-resistor drop and driver headroom: ±15 V supplies. Expect up to about 5.7 W of transistor dissipation at the worst amplitude. Choose output transistors rated for at least 2–3 A, 40 V and the dissipation with margin at the heat-sink temperature; drive them from Darlingtons or driver transistors (Chapter 38), because 1.6 A at β = 50 needs 32 mA of base current; bias with a V_BE multiplier for 20–50 mA quiescent; add emitter resistors and current limiting; and close a feedback loop around the whole amplifier.
+For 10 W into 8 Ω: $V_p$ = √(2 × 10 × 8) = 12.6 V, $I_p$ = 1.6 A. Allow about 2 V for $V_{BE}$, emitter-resistor drop and driver headroom: ±15 V supplies. Expect up to about 5.7 W of transistor dissipation at the worst amplitude. Choose output transistors rated for at least 2–3 A, 40 V and the dissipation with margin at the heat-sink temperature; drive them from Darlingtons or driver transistors (Chapter 38), because 1.6 A at $\beta$ = 50 needs 32 mA of base current; bias with a $V_{BE}$ multiplier for 20–50 mA quiescent; add emitter resistors and current limiting; and close a feedback loop around the whole amplifier.
+
+### Class AB bias is a current budget
+
+At zero output, equal emitter resistors carry the standing current $I_Q$. The required base separation is approximately:
+
+<Equation tex="V_{bias}=V_{BE,N}(I_Q)+|V_{BE,P}(I_Q)|+2I_QR_E"/>
+
+For 30 mA and two 0.47 Ω resistors, the resistor contribution is only 28.2 mV. Small changes in junction temperature or bias voltage therefore matter. The incremental sensitivity is $dI_Q/dV_{bias}\approx1/[2(V_T/I_Q+R_E)]$, about 0.375 A/V here. A 10 mV extra bias can raise standing current by roughly 3.8 mA locally.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A THERMAL CHECK</span><h3>±15 V, 8 Ω and 30 mA standing current</h3>
+
+<p>Idle supply power is about $2V_{CC}I_Q=0.90$ W. Ideal class B worst-case dissipation is 5.70 W for the pair, or 2.85 W each by symmetry. As an initial heat budget, allow at least about 3.3 W per transistor; exact class AB dissipation also includes resistor losses and depends on bias.</p>
+
+<p>For a 40 °C ambient and an illustrative 100 °C junction target, 3.3 W allows a total junction-to-ambient thermal resistance of about 18 °C/W per device. Subtract junction-to-case and interface resistance to find the heat-sink allowance. A shared sink must carry both devices’ heat; its temperature rise depends on their combined power.</p>
+
+<p>These average powers do not replace the safe operating area check. During each cycle, a transistor can carry substantial current while retaining substantial collector–emitter voltage. Also check shorts, reactive loads and the current limiter’s behavior.</p>
+
+</div>
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Class B wastes nothing at idle and at most 21.5% at full swing, but <em>leaves a dead zone</em>. Bias it into class AB, make the bias track temperature, and let feedback clean up the rest.</p></div>
 
 <p className="reference-note">Coverage: The Art of Electronics §2.4.1, with the efficiency and dissipation derivations expanded.</p>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why does plain class B distort small signals most severely?</summary>
+<div>
+
+The crossover region occupies a larger fraction of a small waveform, so the output loses much of the signal near zero.
+
+</div>
+</details>
+
+<details>
+<summary>2. Where does ideal class B transistor heating peak?</summary>
+<div>
+
+At $V_p=2V_{CC}/π$, about 64% of rail amplitude, rather than at maximum load power.
+
+</div>
+</details>
+
+<details>
+<summary>3. What is the idle power cost of class AB bias?</summary>
+<div>
+
+Approximately $2V_{CC}I_Q$ on symmetric rails, before including driver and bias-network power.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why mount the bias-sensing transistor near the output devices?</summary>
+<div>
+
+Their junction voltages fall as they warm. Thermal tracking reduces the bias voltage along with them and restrains the standing-current increase.
+
+</div>
+</details>
+
+<details>
+<summary>5. Does feedback repair crossover distortion at every frequency?</summary>
+<div>
+
+Only while the loop has sufficient gain, bandwidth and stable response. A static high-gain model does not predict slew limits or transient recovery.
+
+</div>
+</details>
 
 </section>
 

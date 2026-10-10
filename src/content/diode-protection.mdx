@@ -1,5 +1,6 @@
 import Equation from '../components/Equation.astro';
-import {JunctionLab,DiodeLab,RectifierLab,RegulatorLab,LimiterLab,ProtectionLab} from '../components/DiodeLabs';
+import {ProtectionLab} from '../components/DiodeLabs';
+import {FlybackLoopsFigure,SwitchNodeFigure,ClampTradeFigure,ClampPlacementFigure,PwmFreewheelFigure} from '../components/DiodeFigures';
 
 <div className="chapter-hero" id="overview">
 
@@ -9,28 +10,43 @@ import {JunctionLab,DiodeLab,RectifierLab,RegulatorLab,LimiterLab,ProtectionLab}
 
 <p className="dek">Trace flyback current, derive release time with winding resistance, and budget clamp voltage, energy, and switch stress.</p>
 
-<div className="chapter-meta"><span>35–45 min + exploration</span><span>Original explanations · Models stated</span></div>
+<div className="chapter-meta"><span>40–50 min + exploration</span><span>Inductors · Diodes · Transistor switches</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">THE QUESTION</span><p className="opening-question">A transistor switching a relay works for a week, then dies. What killed it?</p></div>
+
+<div>
+
+Almost certainly the relay's own coil. Every time the transistor turned off, the coil's stored energy had nowhere to go, and the voltage at the transistor's collector rose until something broke down. Each event did a little damage.
+
+Chapter 10 showed why the spike happens. This chapter is about where to send the energy instead: how fast it can be removed, what voltage that costs, and which component absorbs it.
+
+</div>
 
 </div>
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Where the current goes → Derive the current decay → Trade release time for voltage → Choose a clamp topology → Close the protection budget.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Where the current goes → Derive the current decay → Trade release time for voltage → Choose a clamp topology → Close the protection budget → Check your understanding.</p>
 
 </div>
 
-
 <section id="paths">
 
-## 01 / Where the current goes
+<div className="section-heading"><span>01</span><h2>Where the current goes</h2></div>
 
 Consider a relay winding fed from +12 V, with a transistor switch between the winding's lower end and ground. When the switch is on, current flows down through the winding. After settling, a 120 Ω winding carries 100 mA.
 
 Open the switch. Inductor current cannot change instantaneously, so it still tries to flow down through the winding and into the switch node. Without a deliberate path, that current charges parasitic capacitance and drives the node upward until some path conducts: a clamp, transistor avalanche, an arc, or another unintended mechanism.
 
-The voltage is whatever the circuit requires to maintain current while it changes; “the inductor reverses current” is the wrong picture. Its **voltage polarity reverses**, while current initially keeps its direction.
+The voltage is whatever the circuit requires to maintain current while it changes; "the inductor reverses current" is the wrong picture. Its **voltage polarity reverses**, while current initially keeps its direction.
 
 Place a flywheel diode across the winding, with **cathode at +12 V and anode at the switch node**. During normal operation it is reverse-biased. On opening, the switch node rises slightly above the supply and the diode conducts. Current returns through the diode to the winding's top, forming a local loop.
+
+<FlybackLoopsFigure/>
 
 With a fixed 0.7 V diode, the switch node is about 12.7 V while current flows. The voltage across the entire winding, top minus bottom, is −0.7 V. The ideal inductance inside that winding sees an even more negative voltage because winding resistance also dissipates energy.
 
@@ -38,51 +54,55 @@ With a fixed 0.7 V diode, the switch node is about 12.7 V while current flows. T
 
 <section id="derive">
 
-## 02 / Derive the current decay
+<div className="section-heading"><span>02</span><h2>Derive the current decay</h2></div>
 
-Model the winding as an ideal inductance L in series with resistance R. Let V꜀ be the positive magnitude of the clamp voltage opposing current across the whole winding. During freewheeling, KVL gives:
+Model the winding as an ideal inductance $L$ in series with resistance $R$. Let $V_C$ be the positive magnitude of the clamp voltage opposing current across the whole winding. During freewheeling, KVL gives:
 
 <Equation tex="L\frac{di}{dt}+Ri+V_C=0" />
 
-Move the constant term into a shifted current: j = i + V꜀/R. Then dj/dt = −(R/L)j. Its exponential solution, with initial current I₀, is:
+Move the constant term into a shifted current: $j = i + V_C/R$. Then $dj/dt = -(R/L)j$. Its exponential solution, with initial current $I_0$, is:
 
 <Equation tex="i(t)=\left(I_0+\frac{V_C}{R}\right)e^{-Rt/L}-\frac{V_C}{R}" />
 
-This expression applies only until current first reaches zero. A one-way diode then opens; the expression must not be continued into negative current. Set i = 0 and solve:
+This is the familiar "final value plus decaying difference" form of Chapter 6, with one twist: the final value it heads toward, $-V_C/R$, is negative. The current never gets there. A one-way diode opens the moment the current reaches zero, so the expression must not be continued into negative current. Set $i = 0$ and solve:
 
 <Equation tex="t_{\mathrm{zero}}=\frac{L}{R}\ln\left(1+\frac{RI_0}{V_C}\right)" />
 
-As R approaches zero, ln(1 + x) ≈ x gives the earlier ideal-inductor result LI₀/V꜀. Winding resistance accelerates decay and consumes some of the stored energy.
+As $R$ approaches zero, $\ln(1 + x) \approx x$ gives the earlier ideal-inductor result $LI_0/V_C$. Winding resistance accelerates decay and consumes some of the stored energy.
 
 ### Follow the energy
 
-Initially the magnetic energy is ½LI₀². During decay, power Ri² becomes winding heat and V꜀i goes into the clamp. Integrating current up to the zero crossing gives clamp energy:
+Initially the magnetic energy is $\tfrac12LI_0^2$. During decay, power $Ri^2$ becomes winding heat and $V_Ci$ goes into the clamp. Integrating current up to the zero crossing gives clamp energy:
 
 <Equation tex="E_C=V_C\frac{L}{R}\left[I_0-\frac{V_C}{R}\ln\left(1+\frac{RI_0}{V_C}\right)\right]" />
 
 The remainder is winding heat in this model. This energy balance is specific to the clamp-across-winding topology. A clamp across the switch can also receive energy from the supply during current decay.
 
-**Worked example.** With L = 100 mH, R = 120 Ω and I₀ = 100 mA, initial energy is 0.5 mJ. A 0.7 V clamp gives about 2.415 ms to zero, with only about 0.0485 mJ dissipated in the clamp. Most energy becomes copper heat. A 24 V clamp shortens decay to about 0.338 ms and absorbs about 0.378 mJ, leaving less time for copper loss.
+**Worked example.** With $L = 100$ mH, $R = 120\ \Omega$ and $I_0 = 100$ mA, initial energy is 0.5 mJ. A 0.7 V clamp gives about 2.415 ms to zero, with only about 0.0485 mJ dissipated in the clamp. Most energy becomes copper heat. A 24 V clamp shortens decay to about 0.338 ms and absorbs about 0.378 mJ, leaving less time for copper loss.
+
+<ClampTradeFigure/>
 
 </section>
 
 <section id="explore">
 
-## 03 / Trade release time for voltage
+<div className="section-heading"><span>03</span><h2>Trade release time for voltage</h2></div>
 
 <ProtectionLab client:load />
 
 Higher clamp voltage produces a larger opposing voltage across the inductor and faster current decay. With the clamp across this 12 V winding, the 24 V clamp produces approximately **36 V across the open switch**, not 24 V.
 
+<SwitchNodeFigure/>
+
 The displayed switch-voltage bound is an ideal model value. Wiring inductance and finite clamp turn-on can create overshoot beyond it. The current graph stops at zero and the clamp then stops conducting.
 
-Electrical current-decay time is not the same as mechanical relay release time. Magnetic geometry, armature motion, spring forces and residual magnetism also matter. Nevertheless, the slow decay of a plain diode can significantly affect release behavior.
+Electrical current-decay time is not the same as mechanical relay release time. Magnetic geometry, armature motion, spring forces and residual magnetism also matter. Nevertheless, the slow decay of a plain diode can significantly affect release behavior. A relay whose contacts open slowly arcs longer and wears faster, which is why relay manufacturers often recommend a zener in series with the diode.
 
 </section>
 
 <section id="design">
 
-## 04 / Choose a clamp topology
+<div className="section-heading"><span>04</span><h2>Choose a clamp topology</h2></div>
 
 A plain flywheel diode gives low switch stress and relatively slow decay. A diode plus a reverse-operated zener in series across the winding gives a higher opposing clamp: one conducts forward and the other in breakdown during release. Their orientation must block supply current during normal energizing.
 
@@ -90,19 +110,31 @@ For that branch, tracing current from switch node back to supply, the ordinary d
 
 A unidirectional TVS directly across a winding does not automatically give high-voltage release: with its cathode at the positive supply, release current would use its forward direction, like an ordinary diode. To obtain the intended avalanche path, select and analyze the topology deliberately, for example a correctly arranged series diode/zener branch or suitable bidirectional clamp.
 
+<ClampPlacementFigure/>
+
 ### Across the switch is different
 
-With a clamp from switch node to ground, limiting the node to Vsw, the net opposing voltage across the winding is approximately Vsw − Vsupply. It must be positive to drive release. A 36 V switch clamp on a 12 V supply gives about 24 V across the winding.
+With a clamp from switch node to ground, limiting the node to $V_{sw}$, the net opposing voltage across the winding is approximately $V_{sw} - V_{\mathrm{supply}}$. It must be positive to drive release. A 36 V switch clamp on a 12 V supply gives about 24 V across the winding.
 
-In this arrangement current still flows from the supply through the winding into the clamp while decaying. Clamp energy can exceed the initial ½LI² because the supply continues delivering energy. Do not reuse a winding-clamp energy calculation without tracing the complete loop.
+In this arrangement current still flows from the supply through the winding into the clamp while decaying. Clamp energy can exceed the initial $\tfrac12LI^2$ because the supply continues delivering energy. Do not reuse a winding-clamp energy calculation without tracing the complete loop.
 
 An RC snubber limits slew and damps ringing but does not impose a single fixed voltage. Its energy, repetitive heating and initial capacitor voltage need analysis. A switch's avalanche capability is likewise a specified operating condition, not a universal substitute for protection.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED DESIGN / A RELEASE-TIME TARGET</span><h3>Release in under 1 ms with a 30 V transistor</h3>
+<p>The relay is the chapter's 100 mH, 120 Ω coil at 100 mA ($L/R$ = 0.833 ms). The current must reach zero within 1 ms, and the switching transistor is rated 30 V.</p>
+<p><strong>Minimum clamp.</strong> From $t_{\mathrm{zero}} \le 1$ ms: $\ln(1 + 12/V_C) \le 1.2$, so $1 + 12/V_C \le 3.32$ and $V_C \ge 5.2$ V.</p>
+<p><strong>Maximum clamp.</strong> Switch stress is $12 + V_C$ plus overshoot and supply tolerance. Keeping 20% margin under 30 V allows $V_C$ up to about 12 V.</p>
+<p><strong>Choose</strong> a 6.8 V zener with the diode: $V_C \approx 7.5$ V gives $t_{\mathrm{zero}} = 0.833\ln(1 + 12/7.5) = 0.80$ ms and a switch peak near 19.5 V. The clamp absorbs about 0.25 mJ per release, trivial for a small zener even at several events per second.</p>
+
+</div>
 
 </section>
 
 <section id="practice-design">
 
-## 05 / Close the protection budget
+<div className="section-heading"><span>05</span><h2>Close the protection budget</h2></div>
 
 Start with maximum credible initial current and inductance, including tolerances and operating conditions. Calculate energy, then choose a release-time target and the resulting clamp voltage. Add supply maximum to obtain switch stress for a winding clamp, and allow for clamp tolerance and parasitic overshoot.
 
@@ -112,16 +144,71 @@ At 0.378 mJ per event and 100 events/s, average clamp dissipation is only 37.8 m
 
 When a transistor is used for PWM, the diode may conduct every off interval. Its average current, switching recovery and the desired current ripple then matter. A DC relay released occasionally and a rapidly switched motor winding are different use cases. Motors can also generate voltage mechanically, beyond the stored-inductance model.
 
+<PwmFreewheelFigure/>
+
 **Design checkpoint.** State the loop during on-time, the loop immediately after opening, and where each joule goes. If those three descriptions disagree with the schematic, selecting a higher-rated diode will not repair the underlying circuit.
 
-Coverage: AoE §1.6.7 and a bridge to §1.6.8. TI's [inductive-load application brief](https://www.ti.com/document-viewer/lit/html/snvaa45) distinguishes clamp placement and freewheeling behavior. The present lab assumes a fixed supply, linear stationary winding, ideal switch and constant clamp voltage.
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Inductor current keeps flowing.<br/>Decide where it goes before the switch opens:<br/><em>higher clamp voltage, faster release, more switch stress.</em></p></div>
 
 </section>
 
+<section id="check">
 
-<div className="practice-home">
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
 
-<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p><a className="primary-link" href="/diode-protection/practice/">Open practice →</a>
+<details>
+<summary>1. In which direction does current flow through the flywheel diode after the switch opens?</summary>
+<div>
+
+From the switch node up to the supply end of the winding (anode to cathode). The winding's current keeps its original direction, down through the winding, and the diode closes the loop.
 
 </div>
+</details>
 
+<details>
+<summary>2. A 24 V relay coil is protected by a diode plus 33 V zener across the winding. What voltage must the switch withstand?</summary>
+<div>
+
+About $24 + 33 + 0.7 \approx 58$ V, plus margin for supply tolerance and wiring overshoot.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does a plain diode make the relay release slowly, but the winding resistance speed it up?</summary>
+<div>
+
+The decay rate is set by the total voltage opposing the current. A diode contributes only 0.7 V; the winding resistance contributes $Ri$, which is large at first. With a plain diode the resistance does most of the work, and the decay is roughly the $L/R$ exponential.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why can a clamp from the switch node to ground absorb more energy than the coil stored?</summary>
+<div>
+
+During the decay the supply keeps pushing current through the winding into that clamp, adding energy. With a clamp across the winding, the loop excludes the supply.
+
+</div>
+</details>
+
+<details>
+<summary>5. In a PWM motor drive the diode runs warm, although "it only conducts at turn-off." Why?</summary>
+<div>
+
+In PWM the winding current flows through the diode for every off-interval, so the diode carries a large fraction of the motor current continuously. Its average current and forward drop, not just occasional pulses, set its heating.
+
+</div>
+</details>
+
+<p className="reference-note">Coverage: AoE §1.6.7 and a bridge to §1.6.8. TI's <a href="https://www.ti.com/document-viewer/lit/html/snvaa45">inductive-load application brief</a> distinguishes clamp placement and freewheeling behavior. The lab and figures assume a fixed supply, linear stationary winding, ideal switch and constant clamp voltage.</p>
+
+</section>
+
+<div className="chapter-end">
+
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems with hints and worked solutions.</p></div>
+
+<a className="primary-link" href="/diode-protection/practice/">Open practice →</a>
+
+</div>

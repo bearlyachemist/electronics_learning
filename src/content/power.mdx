@@ -1,53 +1,22 @@
-import CircuitFigure from '../components/CircuitFigure.astro';
 import Equation from '../components/Equation.astro';
 import {HeatingLab} from '../components/FoundationLabs';
-
-
+import {ThermalAnalogyFigure,HeldConstantFigure,RmsFigure,PulseHeatingFigure,WarmUpFigure,DeratingFigure,ThermalChainFigure} from '../components/FoundationFigures';
 
 <div className="chapter-hero" id="overview">
 
-
-
-
-<div className="eyebrow">
-
-<span>CHAPTER 04</span><span className="hairline"/>FOUNDATIONS / ENERGY & TEMPERATURE
-
-</div>
-
+<div className="eyebrow"><span>CHAPTER 04</span><span className="hairline"/>FOUNDATIONS / ENERGY & TEMPERATURE</div>
 
 <h1>Power &amp; heating.<br/><em>Every watt goes somewhere.</em></h1>
+
 <p className="dek">A circuit can have exactly the right voltages and still overheat. Connect electrical calculations to energy flow, thermal time constants, and component ratings.</p>
 
-
-<div className="chapter-meta">
-
-<span>35–45 min + exploration</span><span>Ohm’s law · energy · basic algebra</span>
+<div className="chapter-meta"><span>45–55 min + exploration</span><span>Ohm’s law · energy · basic algebra</span></div>
 
 </div>
-
-
-
-
-</div>
-
-
-
-
 
 <div className="opening-grid">
 
-
-
-
-<div>
-
-<span className="tiny-label">THE QUESTION</span><p className="opening-question">The resistor dissipates<br/>a quarter of a watt.<br/>How hot will it get?</p>
-
-</div>
-
-
-
+<div><span className="tiny-label">THE QUESTION</span><p className="opening-question">The resistor dissipates<br/>a quarter of a watt.<br/>How hot will it get?</p></div>
 
 <div>
 
@@ -55,169 +24,111 @@ import {HeatingLab} from '../components/FoundationLabs';
 
 </div>
 
-
-
-
 </div>
-
-
-
-
 
 <section id="power">
 
+<div className="section-heading"><span>01</span><h2>From charge to power</h2></div>
 
-
-
-<div className="section-heading">
-
-<span>01</span><h2>From charge to power</h2>
-
-</div>
-
-
-
-Voltage is energy transferred per unit charge. If a small charge dq passes through a voltage drop V, the transferred energy is dE = V dq. Divide by time to obtain power:
+Voltage is energy transferred per unit charge. If a small charge $dq$ passes through a voltage drop $V$, the transferred energy is $dE = V\,dq$. Divide by time to obtain power:
 
 <Equation tex="P=\frac{dE}{dt}=V\frac{dq}{dt}=VI" label="01 / JOULES PER SECOND = WATTS"/>
 
-More generally, instantaneous power is p(t) = v(t)i(t). With current defined as entering the terminal labeled positive, positive p means the element absorbs electrical energy. Negative p means it delivers energy to the rest of the circuit.
+More generally, instantaneous power is $p(t) = v(t)\,i(t)$. With current defined as entering the terminal labeled positive, positive $p$ means the element absorbs electrical energy. Negative $p$ means it delivers energy to the rest of the circuit.
 
-In a resistor, absorbed electrical energy becomes heat. An ideal capacitor or inductor can instead store energy and return it later. “Power entering a component” and “power irreversibly lost as heat” are not always the same thing.
+In a resistor, absorbed electrical energy becomes heat. An ideal capacitor or inductor can instead store energy and return it later. "Power entering a component" and "power irreversibly lost as heat" are not always the same thing.
 
 ### Three expressions, one resistor
 
-For a linear resistor, substitute V = IR:
+For a linear resistor, substitute $V = IR$:
 
 <Equation tex="P=VI=I^2R=\frac{V^2}{R}"/>
 
 Choose the expression that uses the quantity your circuit holds fixed. Doubling current through a fixed resistor quadruples power. Doubling voltage across that same resistor also quadruples power.
 
-Changing resistance has a different effect depending on the drive: at fixed current, power increases with resistance; at fixed voltage, power decreases with resistance. A formula without its held-constant condition can lead to exactly the wrong intuition.
+<HeldConstantFigure/>
 
-
+Changing resistance has a different effect depending on the drive: at fixed current, power increases with resistance; at fixed voltage, power decreases with resistance. A formula without its held-constant condition can lead to exactly the wrong intuition. A heater element on the mains (fixed voltage) gets hotter if its resistance is *lower*; a current-sense resistor in a fixed-current path gets hotter if its resistance is *higher*.
 
 <div className="worked-example">
 
-
-<span className="tiny-label">WORKED EXAMPLE / CHECK THE COMPONENT, NOT JUST THE SUPPLY</span>
-<h3>A resistor dropping 7 volts</h3>
-<p>A 100 Ω resistor has 7 V across it. Current is 7/100 = <strong>70 mA</strong>, and dissipation is 7²/100 = <strong>0.49 W</strong>.</p>
-<p>A nominal 0.5 W rating leaves almost no margin even at the conditions where that rating applies. If resistance can be 5% low while voltage remains fixed, worst-case dissipation is 49/95 = <strong>0.516 W</strong>.</p>
-<p>Use the voltage across this resistor, not automatically the full supply voltage. In a series circuit, allocate each component’s voltage drop and power separately.</p>
-
+<span className="tiny-label">WORKED EXAMPLE / CHECK THE COMPONENT, NOT JUST THE SUPPLY</span><h3>A resistor dropping 7 volts</h3>
+<p>A 100 Ω resistor has 7 V across it. Current is $7\text{ V}/100\ \Omega =$ <strong>70 mA</strong>, and dissipation is $(7\text{ V})^2/100\ \Omega =$ <strong>0.49 W</strong>.</p>
+<p>A nominal 0.5 W rating leaves almost no margin even at the conditions where that rating applies. If resistance can be 5% low while voltage remains fixed, worst-case dissipation is $49/95 =$ <strong>0.516 W</strong>.</p>
+<p>Use the voltage across this resistor, not automatically the full supply voltage. In a series circuit, allocate each component’s voltage drop and power separately. A common rule of thumb is to keep continuous dissipation below half the rating; here that means a 1 W part.</p>
 
 </div>
-
-
 
 ### Semiconductor losses use the same starting point
 
-A diode with 0.7 V across it at 100 mA dissipates approximately 70 mW. A linear regulator dropping 12 V to 5 V at 200 mA dissipates approximately (12 − 5) × 0.2 = **1.4 W**, neglecting its own operating current.
+A diode with 0.7 V across it at 100 mA dissipates approximately 70 mW. A linear regulator dropping 12 V to 5 V at 200 mA dissipates approximately $(12 - 5)\text{ V} \times 0.2\text{ A} =$ **1.4 W**, neglecting its own operating current.
 
-Do not use a diode’s differential resistance in I²R to calculate its total DC heating. That small-signal resistance describes a slope; the total electrical power is the actual voltage drop times actual current.
+Do not use a diode’s differential resistance in $I^2R$ to calculate its total DC heating. That small-signal resistance describes a slope; the total electrical power is the actual voltage drop times actual current.
 
+### Where the energy goes in a whole circuit
+
+Energy is conserved, so every watt delivered by a source is accounted for somewhere: in a load doing useful work, in components turning it to heat, or in storage. In the regulator above the source delivers $12\text{ V} \times 0.2\text{ A} = 2.4$ W, the load receives 1.0 W and the regulator turns 1.4 W into heat: 42% efficiency. Writing that balance is the quickest check of a power calculation, and the quickest way to see which part needs a heatsink.
 
 </section>
 
-
-
-
-
 <section id="waveforms">
 
+<div className="section-heading"><span>02</span><h2>Time-varying power</h2></div>
 
-
-
-<div className="section-heading">
-
-<span>02</span><h2>Time-varying power</h2>
-
-</div>
-
-
-
-Temperature often responds too slowly to follow every electrical cycle, so average dissipation matters. Average the **instantaneous product**, not the voltage and current separately. Here Tₚ is one full waveform period:
+Temperature often responds too slowly to follow every electrical cycle, so average dissipation matters. Average the **instantaneous product**, not the voltage and current separately. Here $T_p$ is one full waveform period:
 
 <Equation tex="P_{\mathrm{avg}}=\frac{1}{T_p}\int_0^{T_p} v(t)i(t)\,dt"/>
 
-For a fixed resistor, v(t) = Ri(t), so:
+For a fixed resistor, $v(t) = Ri(t)$, so:
 
 <Equation tex="P_{\mathrm{avg}}=R\frac{1}{T_p}\int_0^{T_p} i^2(t)\,dt=I_{\mathrm{rms}}^2R" label="02 / RMS IS THE DC-EQUIVALENT HEATING VALUE"/>
 
 The root-mean-square operation squares the waveform, averages that square, and takes the square root. It produces the DC current that would heat the same fixed resistor by the same average amount.
 
-A sine wave with peak voltage Vₚ has RMS voltage Vₚ/√2. A 5 V RMS sine wave across 100 Ω therefore dissipates 0.25 W, even though its average voltage is zero.
+<RmsFigure/>
 
-
+A sine wave with peak voltage $V_p$ has RMS voltage $V_p/\sqrt2$. A 5 V RMS sine wave across 100 Ω therefore dissipates 0.25 W, even though its average voltage is zero. Mains voltages are quoted as RMS values: "230 V" mains peaks at 325 V, and "120 V" at 170 V.
 
 <details className="derivation">
-
-
 <summary>Derive the sine-wave result</summary>
-
-
 <div>
 
-
-<p>Let v(t) = Vₚ sin(ωt). Squaring gives Vₚ² sin²(ωt). The identity sin²(x) = [1 − cos(2x)]/2 separates a constant term from an oscillating term.</p>
-<p>Over a whole number of cycles, the cosine averages to zero. The mean square is Vₚ²/2, so the RMS value is Vₚ/√2 and average power is Vₚ²/(2R).</p>
-
+<p>Let $v(t) = V_p\sin(\omega t)$. Squaring gives $V_p^2\sin^2(\omega t)$. The identity $\sin^2 x = [1 - \cos(2x)]/2$ separates a constant term from an oscillating term.</p>
+<p>Over a whole number of cycles, the cosine averages to zero. The mean square is $V_p^2/2$, so the RMS value is $V_p/\sqrt2$ and average power is $V_p^2/(2R)$.</p>
 
 </div>
-
-
-
-
 </details>
 
+<div className="table-wrap"><table><thead><tr><th>Waveform (peak $V_p$)</th><th>RMS value</th><th>Average of $|v|$</th></tr></thead><tbody><tr><td>DC</td><td>$V_p$</td><td>$V_p$</td></tr><tr><td>Sine</td><td>$V_p/\sqrt2 = 0.707V_p$</td><td>$0.637V_p$</td></tr><tr><td>Symmetric square</td><td>$V_p$</td><td>$V_p$</td></tr><tr><td>Triangle</td><td>$V_p/\sqrt3 = 0.577V_p$</td><td>$0.5V_p$</td></tr><tr><td>Pulse, duty $D$, 0 to $V_p$</td><td>$V_p\sqrt D$</td><td>$DV_p$</td></tr></tbody></table></div>
 
+The two columns differ, which is why an inexpensive meter that measures the average and scales it "for a sine" reads wrongly on any other waveform. A true-RMS meter computes the heating value directly.
 
 ### DC plus ripple
 
-Let v(t) = VDC + vₐ(t), where the ripple has zero mean. Squaring introduces a cross term 2VDCvₐ whose average is zero. Therefore:
+Let $v(t) = V_{\mathrm{DC}} + v_a(t)$, where the ripple has zero mean. Squaring introduces a cross term $2V_{\mathrm{DC}}v_a$ whose average is zero. Therefore:
 
 <Equation tex="P_{\mathrm{avg}}=\frac{V_{\mathrm{DC}}^2+V_{\mathrm{AC,rms}}^2}{R}"/>
 
-Across 100 Ω, 4 V DC plus a 3 V peak sine ripple dissipates (16 + 9/2)/100 = **0.205 W**. Using only the DC value would predict 0.16 W and miss the ripple contribution.
-
-
+Across 100 Ω, 4 V DC plus a 3 V peak sine ripple dissipates $(16 + 9/2)/100 =$ **0.205 W**. Using only the DC value would predict 0.16 W and miss the ripple contribution.
 
 <div className="worked-example">
 
-
-<span className="tiny-label">WORKED EXAMPLE / PULSES</span>
-<h3>Low average current, substantial heating</h3>
-<p>A 100 Ω resistor carries 200 mA for 1 ms every 10 ms, and zero between pulses. Duty cycle D = 0.1. During each pulse, power is (0.2)² × 100 = <strong>4 W</strong>.</p>
-<p>Average power is D × 4 W = <strong>0.4 W</strong>. RMS current is 200 mA × √0.1 = <strong>63.25 mA</strong>. Average current is only 20 mA; squaring that average would incorrectly predict 0.04 W.</p>
-<p>Energy per pulse is 4 W × 1 ms = <strong>4 mJ</strong>. A continuous power rating alone cannot establish whether the resistor tolerates these pulses. Pulse duration, peak voltage, repetition, and the manufacturer’s pulse limits also matter.</p>
-
+<span className="tiny-label">WORKED EXAMPLE / PULSES</span><h3>Low average current, substantial heating</h3>
+<p>A 100 Ω resistor carries 200 mA for 1 ms every 10 ms, and zero between pulses. Duty cycle $D = 0.1$. During each pulse, power is $(0.2\text{ A})^2 \times 100\ \Omega =$ <strong>4 W</strong>.</p>
+<p>Average power is $D \times 4\text{ W} =$ <strong>0.4 W</strong>. RMS current is $200\text{ mA} \times \sqrt{0.1} =$ <strong>63.25 mA</strong>. Average current is only 20 mA; squaring that average would incorrectly predict 0.04 W.</p>
+<p>Energy per pulse is $4\text{ W} \times 1\text{ ms} =$ <strong>4 mJ</strong>. A continuous power rating alone cannot establish whether the resistor tolerates these pulses. Pulse duration, peak voltage, repetition, and the manufacturer’s pulse limits also matter.</p>
 
 </div>
 
+<PulseHeatingFigure/>
 
-
-If an electrical period is much shorter than the relevant thermal time constants, average power can approximate the slower temperature behavior. It does not erase local peak temperatures or short-pulse limitations.
-
+If an electrical period is much shorter than the relevant thermal time constants, average power can approximate the slower temperature behavior. It does not erase local peak temperatures or short-pulse limitations. The smaller the part, the smaller its thermal mass and the larger the jump each pulse produces.
 
 </section>
 
-
-
-
-
 <section id="thermal">
 
-
-
-
-<div className="section-heading">
-
-<span>03</span><h2>From watts to temperature</h2>
-
-</div>
-
-
+<div className="section-heading"><span>03</span><h2>From watts to temperature</h2></div>
 
 Heat flows from hotter regions toward cooler ones. A simple steady-state model defines **thermal resistance** as temperature rise per watt:
 
@@ -228,71 +139,49 @@ Thermal resistance is measured in °C/W or K/W; a one-degree temperature differe
 
 The value depends on the heat path: package, leads, circuit-board copper, airflow, mounting, and nearby heat sources. For an IC, junction temperature is the internal semiconductor temperature. It is not necessarily equal to the package surface temperature you can measure.
 
-<CircuitFigure kind="thermal"/>
+<ThermalAnalogyFigure/>
+
+<div className="table-wrap"><table><thead><tr><th>Electrical</th><th>Thermal</th><th>Units</th></tr></thead><tbody><tr><td>Current $I$</td><td>Heat flow $P$</td><td>W</td></tr><tr><td>Voltage $V$</td><td>Temperature difference $\Delta T$</td><td>°C (or K)</td></tr><tr><td>Resistance $R$</td><td>Thermal resistance $R_\theta$</td><td>°C/W</td></tr><tr><td>Capacitance $C$</td><td>Heat capacity $C_\theta$</td><td>J/°C</td></tr><tr><td>Ground</td><td>Ambient temperature</td><td>°C</td></tr></tbody></table></div>
+
+The analogy is exact for the equations, so every circuit idea you already have transfers: series thermal resistances add, parallel heat paths combine like parallel resistors, and the warm-up below is an RC charging curve.
 
 ### Why temperature does not jump instantly
 
-Matter stores thermal energy. Define thermal capacitance Cθ as the stored-energy increase per degree, in J/°C. In a single-node model, input power divides between stored heat and heat escaping to ambient:
+Matter stores thermal energy. Define thermal capacitance $C_\theta$ as the stored-energy increase per degree, in J/°C. In a single-node model, input power divides between stored heat and heat escaping to ambient:
 
 <Equation tex="C_\theta\frac{dT}{dt}=P-\frac{T-T_a}{R_\theta}"/>
 
 The left side is the rate of energy storage. The first term on the right is heat generated electrically; the second is heat leaving through the thermal resistance.
 
-For constant P and an initial temperature equal to ambient, the solution is:
+For constant $P$ and an initial temperature equal to ambient, the solution is:
 
 <Equation tex="T(t)=T_a+PR_\theta\left(1-e^{-t/\tau}\right)"/>
 <Equation tex="\tau=R_\theta C_\theta" label="04 / A FIRST-ORDER WARM-UP"/>
 
 At one time constant, the temperature rise has reached about 63.2% of its final value. At three time constants it reaches about 95.0%; at five, about 99.3%. This describes the **rise above ambient**, not a percentage of the Celsius temperature.
 
-
+<WarmUpFigure/>
 
 <details className="derivation">
-
-
 <summary>Follow the exponential solution</summary>
-
-
 <div>
 
-
-<p>Let ΔT = T − Tₐ with fixed ambient. Divide the energy-balance equation by Cθ:</p>
+<p>Let $\Delta T = T - T_a$ with fixed ambient. Divide the energy-balance equation by $C_\theta$:</p>
 <Equation tex="\frac{d\Delta T}{dt}+\frac{\Delta T}{R_\theta C_\theta}=\frac{P}{C_\theta}"/>
-<p>The steady solution is ΔT = PRθ. Subtract that value and call the remaining difference u = ΔT − PRθ. Then du/dt = −u/τ, whose solution is:</p>
+<p>The steady solution is $\Delta T = PR_\theta$. Subtract that value and call the remaining difference $u = \Delta T - PR_\theta$. Then $du/dt = -u/\tau$, whose solution is:</p>
 <Equation tex="u(t)=u(0)e^{-t/\tau}"/>
-<p>Starting at ambient gives ΔT(0) = 0, so u(0) = −PRθ. Substituting back yields the warm-up expression. After power is removed, the same model cools exponentially toward ambient from its current temperature.</p>
-
+<p>Starting at ambient gives $\Delta T(0) = 0$, so $u(0) = -PR_\theta$. Substituting back yields the warm-up expression. After power is removed, the same model cools exponentially toward ambient from its current temperature.</p>
 
 </div>
-
-
-
-
 </details>
 
-
-
-Real components often require several thermal nodes and several time constants. A single-node model is useful for understanding and rough estimates, but it cannot represent every internal hotspot.
-
+Real components often require several thermal nodes and several time constants. A single-node model is useful for understanding and rough estimates, but it cannot represent every internal hotspot. A silicon die heats in microseconds to milliseconds, its package in seconds, a heatsink in minutes: a short overload can destroy a die long before the heatsink notices.
 
 </section>
 
-
-
-
-
 <section id="explore">
 
-
-
-
-<div className="section-heading">
-
-<span>04</span><h2>Watch a resistor warm up</h2>
-
-</div>
-
-
+<div className="section-heading"><span>04</span><h2>Watch a resistor warm up</h2></div>
 
 This illustrative resistor has a fixed electrical resistance of 100 Ω. An ideal current source supplies it. Adjust the current, cooling, ambient temperature, or thermal mass, then inspect the temperature at a chosen number of time constants.
 
@@ -300,57 +189,49 @@ The 125 °C line is a demonstration target, **not a rating for a selected compon
 
 <HeatingLab client:load/>
 
-<p className="caption">Figure 1. A constant-power, single-node thermal model. Increasing thermal mass slows warming; reducing thermal resistance lowers the final temperature. The controls are independent illustrative parameters.</p>
+<p className="caption">A constant-power, single-node thermal model. Increasing thermal mass slows warming; reducing thermal resistance lowers the final temperature. The controls are independent illustrative parameters.</p>
 
-At the default settings, 50 mA through 100 Ω dissipates **0.25 W**. With Rθ = 100 °C/W, the final rise is 25 °C. With Cθ = 2 J/°C, the time constant is 200 seconds. After 400 seconds, the temperature is about **46.62 °C**, on its way from 25 °C to 50 °C.
+At the default settings, 50 mA through 100 Ω dissipates **0.25 W**. With $R_\theta = 100$ °C/W, the final rise is 25 °C. With $C_\theta = 2$ J/°C, the time constant is 200 seconds. After 400 seconds, the temperature is about **46.62 °C**, on its way from 25 °C to 50 °C.
 
-Doubling current to 100 mA produces 1 W and a 100 °C final rise. The time constant stays the same because the model holds Rθ and Cθ fixed. A higher final temperature does not necessarily mean a different exponential time constant.
-
+Doubling current to 100 mA produces 1 W and a 100 °C final rise. The time constant stays the same because the model holds $R_\theta$ and $C_\theta$ fixed. A higher final temperature does not necessarily mean a different exponential time constant.
 
 </section>
 
-
-
-
-
 <section id="design">
 
-
-
-
-<div className="section-heading">
-
-<span>05</span><h2>Design a thermal budget</h2>
-
-</div>
-
-
+<div className="section-heading"><span>05</span><h2>Design a thermal budget</h2></div>
 
 Start with worst-case electrical dissipation, highest expected local ambient temperature, and a chosen temperature target. Solve for the maximum allowed effective thermal resistance:
 
 <Equation tex="R_{\theta,\max}=\frac{T_{\mathrm{target}}-T_{a,\max}}{P_{\max}}"/>
 
-
-
 <div className="worked-example">
 
-
-<span className="tiny-label">WORKED DESIGN / A LINEAR REGULATOR</span>
-<h3>Can the heat escape?</h3>
+<span className="tiny-label">WORKED DESIGN / A LINEAR REGULATOR</span><h3>Can the heat escape?</h3>
 <p>A regulator drops 12 V to 5 V at 200 mA. Neglecting quiescent current, it dissipates 1.4 W. Suppose the maximum local ambient is 50 °C and the design target for junction temperature is 110 °C.</p>
-<p>The thermal path must provide an effective resistance no greater than (110 − 50)/1.4 = <strong>42.86 °C/W</strong>. A justified system value of 65 °C/W would predict 141 °C, above that target.</p>
+<p>The thermal path must provide an effective resistance no greater than $(110 - 50)/1.4 =$ <strong>42.86 °C/W</strong>. A justified system value of 65 °C/W would predict 141 °C, above that target.</p>
 <p>Possible changes include reducing the voltage drop, reducing load current, improving the heat path, or using a different conversion method. Simply choosing a part with the right output-current rating does not answer the thermal question.</p>
-
 
 </div>
 
+<ThermalChainFigure/>
 
+<div className="worked-example">
+
+<span className="tiny-label">WORKED DESIGN / ADD A HEATSINK</span><h3>The same regulator in a TO-220 package</h3>
+<p>Suppose the datasheet gives $R_{\theta JC} = 5$ °C/W, thermal grease adds $R_{\theta CS} = 0.5$ °C/W, and a small clip-on heatsink is rated $R_{\theta SA} = 15$ °C/W in still air. The path totals 20.5 °C/W.</p>
+<p>At 1.4 W the junction rises $1.4 \times 20.5 = 28.7$ °C above the 50 °C ambient: <strong>78.7 °C</strong>, comfortably below 110 °C. Working backward, the budget allows up to $42.86 - 5.5 = 37$ °C/W of heatsink, so a smaller heatsink would also do.</p>
+<p>Notice which term dominates. Halving the grease resistance changes almost nothing; the heatsink is 73% of the total. Spend effort on the largest resistance in the chain.</p>
+
+</div>
 
 ### Read the conditions behind a watt rating
 
 A power rating belongs to specified mounting and temperature conditions. A hypothetical resistor rated 1 W at 70 °C might be derated linearly to zero at 155 °C. Under that stated rule, its allowed continuous dissipation at 100 °C would be:
 
 <Equation tex="P_{\mathrm{allowed}}=1\ \mathrm W\frac{155-100}{155-70}=0.647\ \mathrm W"/>
+
+<DeratingFigure/>
 
 That curve is an example, not a rule for every resistor. Check whether a particular datasheet references ambient, terminal, case, or another temperature. Also check working voltage: meeting a watt limit does not automatically meet a voltage limit.
 
@@ -366,67 +247,81 @@ A published junction-to-ambient value depends on the test board and conditions. 
 
 So far we have held electrical resistance and power fixed while temperature changes. Real component behavior can feed back into dissipation.
 
-For a positive temperature-coefficient resistor, fixed current makes increasing resistance increase power; fixed voltage makes increasing resistance reduce power. Semiconductor feedback can be stronger and depends on the bias circuit.
-
-
+For a positive temperature-coefficient resistor, fixed current makes increasing resistance increase power; fixed voltage makes increasing resistance reduce power. Semiconductor feedback can be stronger and depends on the bias circuit (Chapter 40 shows how it makes parallel transistors fight over current).
 
 <details className="derivation">
-
-
 <summary>Advanced: a local condition for thermal stability</summary>
-
-
 <div>
 
-
-<p>Let electrical dissipation depend on temperature, P(T). At equilibrium, P(T*) = (T* − Tₐ)/Rθ. For a small deviation δT, linearizing the heat balance gives:</p>
+<p>Let electrical dissipation depend on temperature, $P(T)$. At equilibrium, $P(T^*) = (T^* - T_a)/R_\theta$. For a small deviation $\delta T$, linearizing the heat balance gives:</p>
 <Equation tex="C_\theta\frac{d\,\delta T}{dt}=\left(\left.\frac{dP}{dT}\right|_{T^*}-\frac{1}{R_\theta}\right)\delta T"/>
-<p>The perturbation decays if dP/dT is less than 1/Rθ. If power grows with temperature faster than the modeled cooling can respond, the equilibrium is locally unstable. This is one way thermal runaway can arise.</p>
+<p>The perturbation decays if $dP/dT$ is less than $1/R_\theta$. If power grows with temperature faster than the modeled cooling can respond, the equilibrium is locally unstable. This is one way thermal runaway can arise.</p>
 <p>This is a local result for a one-node model. It does not establish stability for a multi-node device, changing operating mode, or temperature-dependent cooling path.</p>
 
-
 </div>
-
-
-
-
 </details>
 
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Calculate the watts.<br/>Follow the heat path.<br/><em>Check the temperature and the rating.</em></p></div>
 
+</section>
 
+<section id="check">
 
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
 
-<div className="takeaway">
+<details>
+<summary>1. A 10 Ω and a 100 Ω resistor are in series across 11 V. Which gets hotter? What if they are in parallel instead?</summary>
+<div>
 
-<span className="tiny-label">THE IDEA TO KEEP</span><p>Calculate the watts.<br/>Follow the heat path.<br/><em>Check the temperature and the rating.</em></p>
+In series they share the same current (0.1 A), so $P = I^2R$ favors the larger resistor: 1 W in the 100 Ω, 0.1 W in the 10 Ω. In parallel they share the same voltage, so $P = V^2/R$ favors the smaller one: 12.1 W in the 10 Ω, 1.21 W in the 100 Ω.
 
 </div>
+</details>
 
+<details>
+<summary>2. A square wave switches between 0 and 10 V with 25% duty across 50 Ω. What is the average power?</summary>
+<div>
 
+During the pulse, $P = 100/50 = 2$ W; on average $0.25 \times 2 = 0.5$ W. Equivalently, $V_{\mathrm{rms}} = 10\sqrt{0.25} = 5$ V and $5^2/50 = 0.5$ W. Using the average voltage (2.5 V) would give 0.125 W, four times too little.
 
-<p className="reference-note">Further reading: <a href="https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/171/4745.TI_5F00_PackageThermalMetrics_5F00_spra953b.pdf">Texas Instruments: Semiconductor and IC Package Thermal Metrics</a> explains thermal-metric limitations. <a href="https://www.vishay.com/docs/28810/pulseloadhandling.pdf">Vishay: Pulse Load Handling for Fixed Linear Resistors</a> discusses pulse qualification. Examples and the thermal demonstration here are original and use illustrative parameters.</p>
+</div>
+</details>
 
+<details>
+<summary>3. After one minute a part is at 60 °C, and after a very long time 85 °C, with 25 °C ambient. What is its thermal time constant?</summary>
+<div>
+
+The rise reached $35/60 = 58\%$ of its final 60 °C in 60 s. Solve $1 - e^{-60/\tau} = 0.583$: $\tau = 60/\ln(1/0.417) \approx 69$ s.
+
+</div>
+</details>
+
+<details>
+<summary>4. A larger heatsink lowers a transistor's steady temperature. Does it also protect against a 1 ms overload?</summary>
+<div>
+
+Hardly. In 1 ms heat barely leaves the silicon die; the heatsink's large thermal mass is far away in time. Short pulses are limited by the die's own small heat capacity, which is why datasheets give separate pulse ratings and safe-operating-area curves.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why is the temperature in the lab's warm-up curve not affected by changing the thermal capacitance, given enough time?</summary>
+<div>
+
+In steady state nothing is being stored, so all the power must leave through $R_\theta$, giving $\Delta T = PR_\theta$ regardless of $C_\theta$. The capacitance sets only how long the journey takes, through $\tau = R_\theta C_\theta$.
+
+</div>
+</details>
+
+<p className="reference-note">Further reading: <a href="https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/171/4745.TI_5F00_PackageThermalMetrics_5F00_spra953b.pdf">Texas Instruments: Semiconductor and IC Package Thermal Metrics</a> explains thermal-metric limitations. <a href="https://www.vishay.com/docs/28810/pulseloadhandling.pdf">Vishay: Pulse Load Handling for Fixed Linear Resistors</a> discusses pulse qualification. Examples and figures here are original and use illustrative parameters.</p>
 
 <div className="chapter-end">
 
-
-
-<div>
-
-<span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Practice power and temperature</h3><p>Four problems covering pulses, warm-up, and thermal design.</p>
-
-</div>
+<div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Practice power and temperature</h3><p>Problems covering pulses, warm-up, and thermal design.</p></div>
 
 <a className="primary-link" href="/power/practice/">Open practice →</a>
 
 </div>
 
-
-
-
 </section>
-
-
-
-
-

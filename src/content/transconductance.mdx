@@ -1,3 +1,4 @@
+import {PhaseSplitterFigure,SplitterLoadingFigure} from '../components/BjtTheoryFigures';
 import Equation from '../components/Equation.astro';
 import {PhaseSplitterLab} from '../components/BjtLabs';
 
@@ -29,7 +30,7 @@ The phase splitter is also a good place to change viewpoint. Every stage so far 
 
 <div className="learning-map">
 
-<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Equal and opposite outputs → Two very different output impedances → Explore the splitter under load → Transconductance → Two views of one transistor → Transconductance at work.</p>
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Equal and opposite outputs → Two very different output impedances → Explore the splitter under load → Transconductance → Two views of one transistor → Transconductance at work → Check your understanding.</p>
 
 </div>
 
@@ -37,15 +38,15 @@ The phase splitter is also a good place to change viewpoint. Every stage so far 
 
 <div className="section-heading"><span>01</span><h2>Equal and opposite outputs</h2></div>
 
-Take a common-emitter stage, set R_C = R_E, and use both the collector and the emitter as outputs. The emitter current i_e = v_in/(R_E + r_e) flows through both resistors (to within α), so
+Take a common-emitter stage, set $R_C$ = $R_E$, and use both the collector and the emitter as outputs. The emitter current $i_e$ = $v_{\mathrm{in}}$/($R_E$ + $r_e$) flows through both resistors (to within $\alpha$), so
 
 <Equation tex="G_E=\frac{R_E}{R_E+r_e}\approx+1,\qquad G_C=-\frac{R_C}{R_E+r_e}\approx-1\qquad(R_C=R_E)" label="UNITY-GAIN PHASE SPLITTER"/>
 
-With R_C = R_E = 4.7 kΩ and the base biased at 5 V on 15 V, the bias current is 0.93 mA, r_e = 28 Ω, and the gains are +0.994 and −0.994: equal and opposite to 0.1%.
+With $R_C$ = $R_E$ = 4.7 kΩ and the base biased at 5 V on 15 V, the bias current is 0.93 mA, $r_e$ = 28 Ω, and the gains are +0.994 and −0.994: equal and opposite to 0.1%.
 
 ### Biasing for swing
 
-Both outputs move, toward each other on positive input swings. At rest, V_E ≈ 4.4 V and V_C ≈ 10.6 V, leaving 6.2 V between them. The transistor saturates when V_CE falls to about 0.2 V, so each output can swing about 3 V on the positive input half-cycle. On the negative half-cycle, the emitter can fall 4.4 V before the transistor cuts off. The symmetric limit is therefore about ±3 V. Splitting the supply evenly among R_C, R_E and V_CE is the general rule.
+Both outputs move, toward each other on positive input swings. At rest, $V_E$ ≈ 4.4 V and $V_C$ ≈ 10.6 V, leaving 6.2 V between them. The transistor saturates when $V_{CE}$ falls to about 0.2 V, so each output can swing about 3 V on the positive input half-cycle. On the negative half-cycle, the emitter can fall 4.4 V before the transistor cuts off. The symmetric limit is therefore about ±3 V. Splitting the supply evenly among $R_C$, $R_E$ and $V_{CE}$ is the general rule.
 
 ### A phase shifter
 
@@ -57,18 +58,22 @@ The amplitude is constant at every frequency while the phase moves from 180° (l
 
 </section>
 
+<PhaseSplitterFigure/>
+
 <section id="impedance">
 
 <div className="section-heading"><span>02</span><h2>Two very different output impedances</h2></div>
 
 The two outputs have the same gain but not the same character:
 
-- The **emitter output** is a follower. Looking back into it, you see r_e plus the base source resistance divided by β + 1, in parallel with R_E: about 28 Ω here.
-- The **collector output** looks into the collector—a current source—in parallel with R_C: about 4.7 kΩ.
+- The **emitter output** is a follower. Looking back into it, you see $r_e$ plus the base source resistance divided by $\beta$ + 1, in parallel with $R_E$: about 28 Ω here.
+- The **collector output** looks into the collector—a current source—in parallel with $R_C$: about 4.7 kΩ.
 
-A load on the collector output forms a divider with 4.7 kΩ. A 10 kΩ load reduces the collector gain from −0.994 to **−0.68**, while the same load on the emitter output reduces its gain only from 0.994 to 0.991. Worse, loading the emitter output changes the *collector* gain: R_E ∥ R_L sets the emitter current, so a 10 kΩ emitter load raises the collector gain to **−1.46**. The outputs are only balanced if both see high-impedance loads, or if R_C is adjusted to compensate a known load.
+A load on the collector output forms a divider with 4.7 kΩ. A 10 kΩ load reduces the collector gain from −0.994 to **−0.68**, while the same load on the emitter output reduces its gain only from 0.994 to 0.991. Worse, loading the emitter output changes the *collector* gain: $R_E$ ∥ $R_L$ sets the emitter current, so a 10 kΩ emitter load raises the collector gain to **−1.46**. The outputs are only balanced if both see high-impedance loads, or if $R_C$ is adjusted to compensate a known load.
 
 </section>
+
+<SplitterLoadingFigure/>
 
 <section id="explore">
 
@@ -88,19 +93,19 @@ A load on the collector output forms a divider with 4.7 kΩ. A 10 kΩ load reduc
 
 <Equation tex="G_m=\frac{\Delta I_{\mathrm{out}}}{\Delta V_{\mathrm{in}}}"/>
 
-For a bare transistor driven at its base with the emitter at signal ground, Chapter 30 found g_m = I_C/V_T: 38.7 mS at 1 mA. With an emitter resistor, the input voltage must also drive R_E, so the stage’s transconductance is smaller and set mainly by the resistor:
+For a bare transistor driven at its base with the emitter at signal ground, Chapter 30 found $g_m$ = $I_C$/$V_T$: 38.7 mS at 1 mA. With an emitter resistor, the input voltage must also drive $R_E$, so the stage’s transconductance is smaller and set mainly by the resistor:
 
 <Equation tex="G_m=\frac{1}{R_E+r_e}=\frac{g_m}{1+g_mR_E}\approx\frac{1}{R_E}\qquad(g_mR_E\gg1)" label="DEGENERATED TRANSCONDUCTANCE"/>
 
-With R_E = 1 kΩ at 1 mA, G_m = 1/1026 Ω = 0.975 mS. The factor 1 + g_mR_E, which reduced the transconductance by 40 times, is the same factor that raised the current source’s output resistance in Chapter 31. Degeneration trades one for the other.
+With $R_E$ = 1 kΩ at 1 mA, $G_m$ = 1/1026 Ω = 0.975 mS. The factor 1 + $g_mR$_E, which reduced the transconductance by 40 times, is the same factor that raised the current source’s output resistance in Chapter 31. Degeneration trades one for the other.
 
-### Every stage as G_m plus a resistor
+### Every stage as $G_m$ plus a resistor
 
 Now every circuit so far has a one-line description:
 
 <div className="table-wrap">
 
-<table><thead><tr><th>Stage</th><th>Voltage → current</th><th>Current → voltage</th><th>Voltage gain</th></tr></thead><tbody><tr><td>Common emitter</td><td>G_m = 1/(R_E + r_e)</td><td>−R_C (∥ R_L)</td><td>−G_m R_C</td></tr><tr><td>Bypassed common emitter</td><td>g_m = I_C/V_T</td><td>−R_C</td><td>−g_m R_C</td></tr><tr><td>Emitter follower</td><td>G_m = 1/(R_E + r_e)</td><td>+R_E</td><td>R_E/(R_E + r_e)</td></tr><tr><td>Current source</td><td>G_m, with fixed input</td><td>load (any)</td><td>— (output is a current)</td></tr><tr><td>Phase splitter</td><td>G_m = 1/(R_E + r_e)</td><td>−R_C and +R_E</td><td>∓1</td></tr></tbody></table>
+<table><thead><tr><th>Stage</th><th>Voltage → current</th><th>Current → voltage</th><th>Voltage gain</th></tr></thead><tbody><tr><td>Common emitter</td><td>$G_m$ = 1/($R_E$ + $r_e$)</td><td>−$R_C$ (∥ $R_L$)</td><td>−$G_m$ $R_C$</td></tr><tr><td>Bypassed common emitter</td><td>$g_m$ = $I_C$/$V_T$</td><td>−$R_C$</td><td>−$g_m$ $R_C$</td></tr><tr><td>Emitter follower</td><td>$G_m$ = 1/($R_E$ + $r_e$)</td><td>+$R_E$</td><td>$R_E$/($R_E$ + $r_e$)</td></tr><tr><td>Current source</td><td>$G_m$, with fixed input</td><td>load (any)</td><td>— (output is a current)</td></tr><tr><td>Phase splitter</td><td>$G_m$ = 1/($R_E$ + $r_e$)</td><td>−$R_C$ and +$R_E$</td><td>∓1</td></tr></tbody></table>
 
 </div>
 
@@ -112,14 +117,14 @@ The gain of a stage is its transconductance times the resistance its output curr
 
 <div className="section-heading"><span>05</span><h2>Two views of one transistor</h2></div>
 
-Chapter 27 described the transistor as a **current amplifier**: I_C = βI_B. This chapter describes it as a **transconductance device**: I_C is set by V_BE. Which is right?
+Chapter 27 described the transistor as a **current amplifier**: $I_C$ = $\beta I_B$. This chapter describes it as a **transconductance device**: $I_C$ is set by $V_{BE}$. Which is right?
 
-Physically, the transconductance view is (Chapter 26). The base–emitter voltage sets the injected electron density, and the collector current follows; the base current is a by-product of losses, roughly I_C/β. The two descriptions are consistent because both I_C and I_B follow V_BE. Each is useful in its place:
+Physically, the transconductance view is (Chapter 26). The base–emitter voltage sets the injected electron density, and the collector current follows; the base current is a by-product of losses, roughly $I_C$/$\beta$. The two descriptions are consistent because both $I_C$ and $I_B$ follow $V_{BE}$. Each is useful in its place:
 
-- Use **β** when the question is about **base current**: loading of a bias divider, input impedance, how much drive a switch needs.
-- Use **g_m** (or 1/(R_E + r_e)) when the question is about **gain**, distortion, temperature effects and anything depending on V_BE.
+- Use **$\beta$** when the question is about **base current**: loading of a bias divider, input impedance, how much drive a switch needs.
+- Use **$g_m$** (or 1/($R_E$ + $r_e$)) when the question is about **gain**, distortion, temperature effects and anything depending on $V_{BE}$.
 
-A designer thinking “the base current controls the collector” tends to design circuits whose behavior depends on β. Thinking “V_BE controls the collector, and an emitter resistor controls V_BE” leads to circuits whose behavior depends on resistors.
+A designer thinking “the base current controls the collector” tends to design circuits whose behavior depends on $\beta$. Thinking “$V_{BE}$ controls the collector, and an emitter resistor controls $V_{BE}$” leads to circuits whose behavior depends on resistors.
 
 </section>
 
@@ -127,15 +132,76 @@ A designer thinking “the base current controls the collector” tends to desig
 
 <div className="section-heading"><span>06</span><h2>Transconductance at work</h2></div>
 
-**A gain set by current.** In a bypassed stage, gain is −g_mR_C = −I_CR_C/V_T. Change the bias current and the gain changes in proportion. Automatic gain control in radio receivers, analog multipliers and voltage-controlled amplifiers exploit exactly this—with care, because the DC collector voltage moves too. The differential pair (a later topic) separates the gain-setting current from the output’s DC level.
+**A gain set by current.** In a bypassed stage, gain is −$g_mR$_C = −$I_CR$_C/$V_T$. Change the bias current and the gain changes in proportion. Automatic gain control in radio receivers, analog multipliers and voltage-controlled amplifiers exploit exactly this—with care, because the DC collector voltage moves too. The differential pair (a later topic) separates the gain-setting current from the output’s DC level.
 
 **A voltage-to-current converter.** A degenerated transistor turns a control voltage into a load current independent of the load: a meter driver, an LED brightness control, a 4–20 mA transmitter. The current source of Chapter 31 is this with a fixed input.
 
-**Why g_m sets fundamental limits.** Because g_m depends only on I_C and temperature, so do the maximum voltage gain of a bypassed stage (V_RC/V_T), the input noise of a transistor at a given current, and the input voltage range over which a stage stays linear (a few V_T). The Ebers–Moll chapter turns these into rules of thumb.
+**Why $g_m$ sets fundamental limits.** Because $g_m$ depends only on $I_C$ and temperature, so do the maximum voltage gain of a bypassed stage ($V_{RC}$/$V_T$), the input noise of a transistor at a given current, and the input voltage range over which a stage stays linear (a few $V_T$). The Ebers–Moll chapter turns these into rules of thumb.
+
+### Compensate a known collector load
+
+The approximate balance condition is $R_C\parallel R_{LC}=R_E\parallel R_{LE}$. With an effectively unloaded emitter output, $R_E=4.7$ kΩ and a 10 kΩ collector load, solve $R_C\parallel10\ \mathrm{k\Omega}=4.7\ \mathrm{k\Omega}$:
+
+<Equation tex="R_C=\frac{4.7\times10}{10-4.7}\ \mathrm{k\Omega}=8.87\ \mathrm{k\Omega}" />
+
+This can restore small-signal gain balance for the specified load, but it changes the DC collector voltage. At about 0.92 mA bias, an 8.87 kΩ resistor drops 8.16 V, leaving roughly 6.84 V on the collector while the emitter is about 4.35 V. The collector now has much less downward headroom. Recalculate bias and signal swing after compensating the gain; AC balance and DC headroom are separate requirements.
+
+The all-pass expression likewise assumes ideal equal-and-opposite drive voltages. Finite and unequal output impedances load its arms differently, so a real one-transistor phase shifter is not perfectly constant-amplitude without including those impedances.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Every stage is a <em>transconductance followed by a resistor</em>. The phase splitter just takes the same current through two resistors—and shows how differently they behave under load.</p></div>
 
 <p className="reference-note">Coverage: The Art of Electronics §§2.2.8 and 2.2.9, with the all-pass phase shifter as a phasor exercise.</p>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Do equal collector and emitter resistors guarantee balanced loaded outputs?</summary>
+<div>
+
+No. Their effective AC resistances, including loads, must be matched. The two outputs have different impedances.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why can loading the emitter change collector gain?</summary>
+<div>
+
+The added emitter load changes the signal emitter current, which also changes the collector current and collector voltage swing.
+
+</div>
+</details>
+
+<details>
+<summary>3. What are the units of transconductance?</summary>
+<div>
+
+Siemens: output current divided by input voltage. Milliamps per volt are millisiemens.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why is degenerated transconductance mostly set by a resistor?</summary>
+<div>
+
+When $g_mR_E\gg1$, $G_m=g_m/(1+g_mR_E)\approx1/R_E$.
+
+</div>
+</details>
+
+<details>
+<summary>5. What must be rechecked after increasing $R_C$ to restore AC balance?</summary>
+<div>
+
+The DC collector voltage, transistor active-region margin, and available signal swing. A correct gain ratio can coexist with insufficient headroom.
+
+</div>
+</details>
 
 </section>
 

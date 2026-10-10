@@ -1,3 +1,4 @@
+import {SampleHoldFigure} from '../components/FetTeachingFigures';
 import Equation from '../components/Equation.astro';
 import {FetCurves,JfetBiasLab,FetGainLab,VariableFetLab,FetOscillatorLab,AnalogSwitchLab,GateChargeLab,PowerFetLab,ParallelFetLab} from '../components/FetLabs';
 import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
@@ -15,17 +16,35 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 </div>
 
 
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">Can one hold capacitor satisfy settling, charge-injection and droop limits?</p></div>
+
+<div>
+
+Closing a channel does not make its resistance vanish, and opening it does not remove capacitance or stored charge. Follow the analog signal during acquisition, turn-off and hold. Those three intervals reveal why switch selection and capacitor selection must be done together.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>What a real switch adds → Turn off a normally-on JFET → Why one MOS pass transistor loses a logic level → Derive a sample-and-hold error budget → Trade settling against hold quality → Multiplexers, gain selection and logic → Check your understanding.</p>
+
+</div>
+
 <section id="ideal">
 
-## 01 / What a real switch adds
+<div className="section-heading"><span>01</span><h2>What a real switch adds</h2></div>
 
 An ideal closed switch has zero resistance; an open switch has zero leakage and capacitance. A FET approximates those conditions over a restricted range of voltage, frequency and current. Its on-resistance varies with signal voltage, its off-state passes displacement current, and moving its gate can inject charge into the signal path.
 
-If a switch with resistance RON feeds a resistive load RL from a stiff voltage source, the attenuation is:
+If a switch with resistance $R_{ON}$ feeds a resistive load $R_L$ from a stiff voltage source, the attenuation is:
 
 <Equation tex="\frac{V_o}{V_i}=\frac{R_L}{R_L+R_{ON}}" />
 
-With RON = 100 Ω and RL = 10 kΩ, the ratio is 0.9901, an error of about 0.99%. Into 1 MΩ the static error becomes only 0.01%, but the higher impedance makes leakage and charge injection more significant. There is no universally “negligible” switch resistance without a load and error budget.
+With $R_{ON}$ = 100 Ω and $R_L$ = 10 kΩ, the ratio is 0.9901, an error of about 0.99%. Into 1 MΩ the static error becomes only 0.01%, but the higher impedance makes leakage and charge injection more significant. There is no universally “negligible” switch resistance without a load and error budget.
 
 A capacitively loaded switch also needs time to settle. Fast digital control does not imply immediate analog accuracy.
 
@@ -33,7 +52,7 @@ A capacitively loaded switch also needs time to settle. Fast digital control doe
 
 <section id="jfet">
 
-## 02 / Turn off a normally-on JFET
+<div className="section-heading"><span>02</span><h2>Turn off a normally-on JFET</h2></div>
 
 A JFET channel conducts at gate-source voltage near zero. A sufficiently negative gate voltage depletes the channel and turns it off. For a bidirectional signal path, compare the gate voltage with **both** channel terminals: the more negative terminal can become the effective source.
 
@@ -47,9 +66,9 @@ A shunt mute is a useful topology: place the JFET channel between a low-amplitud
 
 <section id="mos">
 
-## 03 / Why one MOS pass transistor loses a logic level
+<div className="section-heading"><span>03</span><h2>Why one MOS pass transistor loses a logic level</h2></div>
 
-An n-channel enhancement MOSFET conducts well when its gate is sufficiently above the lower-potential channel terminal. If its gate is fixed at VDD and it tries to charge an output capacitor toward VDD, its available VGS falls as the output rises. The current becomes weak near VDD − VT, with body effect often worsening the limitation. The final result depends on leakage and loading; “VDD − VT” is a useful strong-conduction boundary rather than an exact universal final voltage.
+An n-channel enhancement MOSFET conducts well when its gate is sufficiently above the lower-potential channel terminal. If its gate is fixed at $V_{DD}$ and it tries to charge an output capacitor toward $V_{DD}$, its available $V_{GS}$ falls as the output rises. The current becomes weak near $V_{DD}$ − $V_T$, with body effect often worsening the limitation. The final result depends on leakage and loading; “$V_{DD}$ − $V_T$” is a useful strong-conduction boundary rather than an exact universal final voltage.
 
 A p-channel pass device has the complementary weakness near the low rail. Put n and p devices in parallel with complementary gate controls and obtain a **CMOS transmission gate**. The n device conducts best toward the low end of the signal range; the p device helps toward the high end. The body/well connections must be arranged for the intended supply range.
 
@@ -65,14 +84,16 @@ In the common-source arrangement shown, drive the joined gates relative to the j
 
 <section id="sample">
 
-## 04 / Derive a sample-and-hold error budget
+<div className="section-heading"><span>04</span><h2>Derive a sample-and-hold error budget</h2></div>
 
-During acquisition, a source resistance Rsrc and the switch's on-resistance charge a hold capacitor CH. For a voltage step from zero to V:
+<SampleHoldFigure/>
+
+During acquisition, a source resistance $R_{src}$ and the switch's on-resistance charge a hold capacitor $C_H$. For a voltage step from zero to V:
 
 <Equation tex="V_H(t)=V\left(1-e^{-t/\tau}\right),\qquad \tau=(R_{\mathrm{src}}+R_{ON})C_H" />
 <Equation tex="t_{\mathrm{settle}}\ge\tau\ln\!\left(\frac1\epsilon\right)" />
 
-With Rsrc = 1 kΩ, RON = 100 Ω and CH = 1 nF, τ = 1.1 μs. Settling to 0.1% requires 6.91τ = 7.60 μs. For a full-scale step and a 12-bit converter's half-LSB criterion, ε = 1/8192, requiring 9.01τ = 9.91 μs in this single-pole approximation. The source amplifier may impose further settling limits.
+With $R_{src}$ = 1 kΩ, $R_{ON}$ = 100 Ω and $C_H$ = 1 nF, $\tau$ = 1.1 μs. Settling to 0.1% requires 6.91τ = 7.60 μs. For a full-scale step and a 12-bit converter's half-LSB criterion, $\varepsilon$ = 1/8192, requiring 9.01τ = 9.91 μs in this single-pole approximation. The source amplifier may impose further settling limits.
 
 Opening the switch can place some channel or gate-coupled charge on the capacitor:
 
@@ -84,36 +105,97 @@ During hold, total leakage from the switch, capacitor, board and buffer changes 
 
 <Equation tex="\left|\frac{dV_H}{dt}\right|=\frac{|I_{\mathrm{leak}}|}{C_H}" />
 
-At 10 pA and 1 nF, droop magnitude is 10 mV/s, or 100 μV over 10 ms. Increasing the capacitor helps both charge-injection error and droop, while increasing acquisition time. Thermal sampling noise adds an idealized RMS floor of √(kBT/CH), approximately 2.0 μV at 300 K for 1 nF. It is a random error, unlike a repeatable offset step.
+At 10 pA and 1 nF, droop magnitude is 10 mV/s, or 100 μV over 10 ms. Increasing the capacitor helps both charge-injection error and droop, while increasing acquisition time. Thermal sampling noise adds an idealized RMS floor of √(kBT/$C_H$), approximately 2.0 μV at 300 K for 1 nF. It is a random error, unlike a repeatable offset step.
+
+### Find whether the capacitor requirements overlap
+
+A settling deadline provides an upper bound, while injected charge and hold leakage provide lower bounds:
+
+<Equation tex="C_H\le\frac{t_{acq}}{(R_{src}+R_{ON})\ln(1/\varepsilon)},\qquad C_H\ge\frac{|Q_{inj}|}{\Delta V_{inj}},\qquad C_H\ge\frac{|I_{leak}|t_{hold}}{\Delta V_{hold}}"/>
+
+For 20 µs acquisition, 1100 Ω total resistance and half-LSB settling for 12 bits, the upper bound is 2.02 nF. A 5 pC injection limited to 1 mV needs at least 5 nF. Ten picoamperes over 10 ms with at most 100 µV droop needs at least 1 nF. These three requirements do not overlap.
+
+No capacitor choice alone fixes this example. Reduce injected charge or source resistance, extend acquisition, or alter the accuracy target. Keeping the bounds separate exposes the architectural tradeoff before selecting a component.
 
 </section>
 
 <section id="explore">
 
-## 05 / Trade settling against hold quality
+<div className="section-heading"><span>05</span><h2>Trade settling against hold quality</h2></div>
 
 <AnalogSwitchLab client:load />
 
-Try increasing CH by a factor of ten. Predict which two displayed errors decrease tenfold and which time grows tenfold. Next increase source resistance in your paper calculation: an excellent switch cannot fix a source that cannot charge the capacitor quickly enough.
+Try increasing $C_H$ by a factor of ten. Predict which two displayed errors decrease tenfold and which time grows tenfold. Next increase source resistance in your paper calculation: an excellent switch cannot fix a source that cannot charge the capacitor quickly enough.
 
 </section>
 
 <section id="applications">
 
-## 06 / Multiplexers, gain selection and logic
+<div className="section-heading"><span>06</span><h2>Multiplexers, gain selection and logic</h2></div>
 
 A multiplexer connects one of several analog sources to a common node. Break-before-make timing avoids shorting two sources together, but creates a brief unconnected interval. The next channel must settle from the previous channel's voltage; charge sharing can produce a much larger transient than the desired signal change.
 
-A programmable-gain amplifier can switch resistors in a feedback network. Here switch resistance may directly perturb gain, and off-state capacitance can create a frequency-dependent path around a supposedly disconnected resistor. Put the switch in a low-sensitivity part of the network where possible, then derive the gain including RON rather than assuming it vanishes.
+A programmable-gain amplifier can switch resistors in a feedback network. Here switch resistance may directly perturb gain, and off-state capacitance can create a frequency-dependent path around a supposedly disconnected resistor. Put the switch in a low-sensitivity part of the network where possible, then derive the gain including $R_{ON}$ rather than assuming it vanishes.
 
-CMOS logic uses a p-channel pull-up and n-channel pull-down. At a valid static input, one is off and the other restores the output to a supply rail. Dynamic power is approximately αCLVDD²f, where α counts charging events per clock cycle. During edges, overlap conduction and internal capacitances add loss. This restores voltage levels more effectively than an isolated pass transistor.
+CMOS logic uses a p-channel pull-up and n-channel pull-down. At a valid static input, one is off and the other restores the output to a supply rail. Dynamic power is approximately $\alpha C_L V_{DD}^2 f$, where $\alpha$ counts charging events per clock cycle. During edges, overlap conduction and internal capacitances add loss. This restores voltage levels more effectively than an isolated pass transistor.
 
 For any switch application, follow the signal through all supply states. Off leakage, clamp conduction, diode paths and unpowered inputs are circuit behaviors, not exceptional cases outside the analysis.
 
 </section>
 
 
-<div className="practice-home">
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why does switch on-resistance matter even into an ideal capacitor?</summary>
+<div>
+
+It controls the charging time together with source resistance, even if final DC attenuation is negligible.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why can a single nMOS pass device weaken a HIGH?</summary>
+<div>
+
+As output rises, available gate-source overdrive falls; fixed-body effects can worsen it.
+
+</div>
+</details>
+
+<details>
+<summary>3. What makes two back-to-back power MOSFETs block both directions?</summary>
+<div>
+
+Their opposing body-diode paths prevent an off-state forward path through both devices; gate drive must reference their common source.
+
+</div>
+</details>
+
+<details>
+<summary>4. What three errors compete when choosing a hold capacitor?</summary>
+<div>
+
+Acquisition time, charge-injection step and leakage droop; increasing capacitance helps the latter two but slows acquisition.
+
+</div>
+</details>
+
+<details>
+<summary>5. Does an off switch isolate every frequency?</summary>
+<div>
+
+No. Off-state capacitance and control feedthrough remain paths for changing signals.
+
+</div>
+</details>
+
+</section>
+
+<div className="chapter-end">
 
 <span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems, hints and complete worked solutions.</p><a className="primary-link" href="/fet-switches/practice/">Open practice →</a>
 

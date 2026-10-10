@@ -1,3 +1,4 @@
+import {WienCircuitFigure} from '../components/FetTeachingFigures';
 import Equation from '../components/Equation.astro';
 import {FetCurves,JfetBiasLab,FetGainLab,VariableFetLab,FetOscillatorLab,AnalogSwitchLab,GateChargeLab,PowerFetLab,ParallelFetLab} from '../components/FetLabs';
 import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
@@ -15,9 +16,27 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 </div>
 
 
+<div className="opening-grid">
+
+<div><span className="tiny-label">A PRACTICAL QUESTION</span><p className="opening-question">Can a nearly current-free gate still require a noisy, high-current driver?</p></div>
+
+<div>
+
+A gate can draw very little steady current while loading a fast signal strongly. Leakage, capacitance and noise belong in separate budgets. An oscillator adds another distinction: its signal loop selects a frequency, while a slower nonlinear loop must control amplitude.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>“No gate current” has a frequency and a temperature → The gate sees the motion of the drain → High input resistance is useful, not free → Derive the Wien feedback network → Use a JFET to regulate amplitude → Other FET oscillator roles → Check your understanding.</p>
+
+</div>
+
 <section id="current">
 
-## 01 / “No gate current” has a frequency and a temperature
+<div className="section-heading"><span>01</span><h2>“No gate current” has a frequency and a temperature</h2></div>
 
 An ideal FET gate draws no steady current. A real JFET gate is a reverse-biased junction with leakage; a real MOS gate has finite insulation leakage and may include protection structures. Both also draw displacement current whenever terminal voltages change.
 
@@ -31,18 +50,18 @@ JFET gate-source forward bias injects junction current and invalidates the norma
 
 <section id="capacitance">
 
-## 02 / The gate sees the motion of the drain
+<div className="section-heading"><span>02</span><h2>The gate sees the motion of the drain</h2></div>
 
-Use Cgs between gate and source and Cgd between gate and drain. For a common-source stage whose source is approximately at AC ground, the current through Cgd is:
+Use $C_{gs}$ between gate and source and $C_{gd}$ between gate and drain. For a common-source stage whose source is approximately at AC ground, the current through $C_{gd}$ is:
 
 <Equation tex="i_{gd}=C_{gd}\frac{d(v_g-v_d)}{dt}=C_{gd}(1-A_v)\frac{dv_g}{dt}" />
 <Equation tex="C_{\mathrm{in}}\approx C_{gs}+C_{gd}(1-A_v)" />
 
-For Av = −10, Cgs = 10 pF and Cgd = 3 pF, the input looks like approximately 43 pF. A 100 kΩ signal-source resistance then gives an input pole near 37 kHz. Calling the transistor a “10 pF input” would miss most of the actual loading in this circuit.
+For $A_v$ = −10, $C_{gs}$ = 10 pF and $C_{gd}$ = 3 pF, the input looks like approximately 43 pF. A 100 kΩ signal-source resistance then gives an input pole near 37 kHz. Calling the transistor a “10 pF input” would miss most of the actual loading in this circuit.
 
-The Miller replacement assumes a reasonably defined gain over the frequency range of interest. When gain itself becomes complex and varies rapidly, the equivalent is not simply a fixed physical capacitor. A full nodal AC analysis retains Cgd directly and can reveal additional poles and zeros.
+The Miller replacement assumes a reasonably defined gain over the frequency range of interest. When gain itself becomes complex and varies rapidly, the equivalent is not simply a fixed physical capacitor. A full nodal AC analysis retains $C_{gd}$ directly and can reveal additional poles and zeros.
 
-A source follower reduces the voltage change across Cgs because the source moves with the gate. The approximate input contribution is Cgs(1 − Av), plus the gate-drain capacitance to an AC-grounded drain. This is capacitive bootstrapping. It reduces loading but cannot remove gate leakage or guarantee stability with every capacitive load.
+A source follower reduces the voltage change across $C_{gs}$ because the source moves with the gate. The approximate input contribution is $C_{gs}$(1 − $A_v$), plus the gate-drain capacitance to an AC-grounded drain. This is capacitive bootstrapping. It reduces loading but cannot remove gate leakage or guarantee stability with every capacitive load.
 
 The intrinsic cutoff-frequency estimate is:
 
@@ -54,7 +73,7 @@ This short-circuit current-gain estimate is not the bandwidth of a high-gain vol
 
 <section id="noise">
 
-## 03 / High input resistance is useful, not free
+<div className="section-heading"><span>03</span><h2>High input resistance is useful, not free</h2></div>
 
 A FET input often suits a high-resistance sensor because it does not require BJT-like DC base current. Yet the resistor that defines the gate's bias produces thermal noise:
 
@@ -62,15 +81,27 @@ A FET input often suits a high-resistance sensor because it does not require BJT
 
 At 300 K, 1 MΩ contributes about 129 nV/√Hz as an open-circuit voltage-noise density. Capacitance shapes its bandwidth. A 10 MΩ bias resistor may preserve low-frequency signal amplitude while increasing susceptibility to leakage, interference and slow settling.
 
-For a simple long-channel saturation model, channel thermal current-noise density is approximately 4kBTγgm in A²/Hz, corresponding to input voltage-noise density squared of 4kBTγ/gm. The coefficient and excess low-frequency noise are device dependent. Increasing current can increase gm and reduce this contribution, while also changing power, capacitance and bias requirements.
+For a simple long-channel saturation model, channel thermal current-noise density is approximately $4k_BT\gamma g_m$ in A²/Hz, corresponding to input voltage-noise density squared of $4k_BT\gamma$/$g_m$. The coefficient and excess low-frequency noise are device dependent. Increasing current can increase $g_m$ and reduce this contribution, while also changing power, capacitance and bias requirements.
 
 JFETs are often attractive in low-noise analog inputs, but “JFET is always quieter than MOSFET” is not a design rule. Compare noise at the intended frequency and source impedance, including current noise, voltage noise, leakage, device size and process. Layout cleanliness, shielding and guarding can matter as much as the part number.
+
+### Resistance sets bandwidth; capacitance sets sampled noise
+
+For a resistor feeding a grounded capacitor, integrate its one-sided thermal-noise density after the RC filter:
+
+<Equation tex="\langle v_n^2\rangle=\int_0^\infty\frac{4k_BTR}{1+(2\pi fRC)^2}\,df=\frac{k_BT}{C}"/>
+
+At 300 K and 20 pF, the ideal equilibrium RMS voltage is 14.4 µV. Increasing R raises open-circuit noise density while narrowing bandwidth; the integrated equilibrium result is unchanged for the same C. This does not include transistor noise or establish finite-time settling. A larger capacitor reduces this noise contribution but requires more charging current and slows acquisition.
+
+In an oscillator, amplitude control is another slow state. It must average enough cycles to avoid modulating each sine, yet respond before startup drives the amplifier into sustained clipping. The frequency-selective Wien loop and the envelope-control loop answer different questions.
 
 </section>
 
 <section id="oscillator">
 
-## 04 / Derive the Wien feedback network
+<div className="section-heading"><span>04</span><h2>Derive the Wien feedback network</h2></div>
+
+<WienCircuitFigure/>
 
 An oscillator replaces an external signal with a small fluctuation that recirculates through positive feedback. At a candidate frequency, the complete loop must return the appropriate phase, and initial loop magnitude must exceed one for growth. These conditions identify a possible startup mode; nonlinear amplitude behavior and other modes still need analysis.
 
@@ -78,9 +109,9 @@ A Wien bridge uses a series RC arm from output to the feedback node and a parall
 
 <Equation tex="Z_s=R+\frac1{sC},\qquad Z_p=\frac{R}{1+sRC},\qquad \beta(s)=\frac{Z_p}{Z_s+Z_p}=\frac{sRC}{(sRC)^2+3sRC+1}" />
 
-At ω0 = 1/RC, the real terms in the denominator cancel, leaving β = 1/3 with zero phase. A noninverting amplifier therefore needs gain three for marginal sustained oscillation in the ideal linear model. A gain slightly above three initiates growth from noise or an initial disturbance.
+At $ω_0$ = 1/RC, the real terms in the denominator cancel, leaving $\beta$ = 1/3 with zero phase. A noninverting amplifier therefore needs gain three for marginal sustained oscillation in the ideal linear model. A gain slightly above three initiates growth from noise or an initial disturbance.
 
-For R = 10 kΩ and C = 10 nF, f0 = 1/(2πRC) = 1.592 kHz. A gain of 3.1 gives a loop magnitude of 1.033 at that frequency. Without amplitude regulation, growth continues until some nonlinearity or clipping reduces the effective gain.
+For R = 10 kΩ and C = 10 nF, $f_0$ = 1/(2πRC) = 1.592 kHz. A gain of 3.1 gives a loop magnitude of 1.033 at that frequency. Without amplitude regulation, growth continues until some nonlinearity or clipping reduces the effective gain.
 
 <FetOscillatorLab client:load />
 
@@ -90,11 +121,11 @@ The plotted bridge response shows frequency selection. It intentionally does not
 
 <section id="amplitude">
 
-## 05 / Use a JFET to regulate amplitude
+<div className="section-heading"><span>05</span><h2>Use a JFET to regulate amplitude</h2></div>
 
-Consider a noninverting amplifier with feedback resistor RF and lower resistor RG, so gain is 1 + RF/RG. Put a JFET in series with the lower resistor and keep its channel signal small. A detector rectifies the output; a slow envelope filter creates a control voltage that makes an n-channel JFET gate more negative as amplitude rises. Its channel resistance rises, RG increases, and amplifier gain falls. The sign of that chain is the essential amplitude-stabilizing feedback.
+Consider a noninverting amplifier with feedback resistor $R_F$ and lower resistor $R_G$, so gain is 1 + $R_F$/$R_G$. Put a JFET in series with the lower resistor and keep its channel signal small. A detector rectifies the output; a slow envelope filter creates a control voltage that makes an n-channel JFET gate more negative as amplitude rises. Its channel resistance rises, $R_G$ increases, and amplifier gain falls. The sign of that chain is the essential amplitude-stabilizing feedback.
 
-For RF = 20 kΩ and a lower branch consisting of 9.5 kΩ plus a variable JFET, a 500 Ω channel gives a total RG of 10 kΩ and gain three. At 100 Ω, gain is 3.083, providing startup excess. The channel sees only a small share of the lower-arm voltage, helping reduce distortion. These numbers describe a design target; a real JFET must be selected or adjusted to reach the required resistance within reverse-biased gate operation.
+For $R_F$ = 20 kΩ and a lower branch consisting of 9.5 kΩ plus a variable JFET, a 500 Ω channel gives a total $R_G$ of 10 kΩ and gain three. At 100 Ω, gain is 3.083, providing startup excess. The channel sees only a small share of the lower-arm voltage, helping reduce distortion. These numbers describe a design target; a real JFET must be selected or adjusted to reach the required resistance within reverse-biased gate operation.
 
 The envelope time constant should average many oscillator cycles. Too fast, and gain changes within a cycle, distorting the waveform. Too slow, and startup can overshoot or amplitude recovery can take a long time. Detector thresholds, FET spread and amplifier output limits determine the attainable amplitude. A 100 ms envelope time constant averages roughly 159 cycles at 1.592 kHz, but it is not by itself a proof of amplitude-loop stability.
 
@@ -104,13 +135,13 @@ Half-channel-voltage gate tracking from the previous chapter can reduce the JFET
 
 <section id="lc">
 
-## 06 / Other FET oscillator roles
+<div className="section-heading"><span>06</span><h2>Other FET oscillator roles</h2></div>
 
-A Colpitts oscillator uses an inductor and a capacitive divider. The tank's effective capacitance is C1C2/(C1 + C2), so an unloaded first estimate is:
+A Colpitts oscillator uses an inductor and a capacitive divider. The tank's effective capacitance is C1C2/($C_1$ + $C_2$), so an unloaded first estimate is:
 
 <Equation tex="f_0\approx\frac1{2\pi\sqrt{L\,C_1C_2/(C_1+C_2)}}" />
 
-With L = 100 μH and C1 = C2 = 10 nF, the estimate is 225 kHz. The divider sets feedback fraction, while the transistor topology supplies the required phase and energy to replace tank losses. Reversing a feedback connection or choosing a common-source versus common-gate arrangement changes the sign analysis; a resonant frequency formula alone does not establish oscillation.
+With L = 100 μH and $C_1$ = $C_2$ = 10 nF, the estimate is 225 kHz. The divider sets feedback fraction, while the transistor topology supplies the required phase and energy to replace tank losses. Reversing a feedback connection or choosing a common-source versus common-gate arrangement changes the sign analysis; a resonant frequency formula alone does not establish oscillation.
 
 Tank loading, transistor capacitance and probe capacitance shift the result. A crystal replaces the broad LC resonance with a much sharper electromechanical resonance; its specified load capacitance and drive level become design constraints. FET gates can reduce resistive loading, but their capacitance still participates in the frequency-setting network.
 
@@ -119,7 +150,58 @@ The general workflow is to draw the complete loop, establish its DC bias, derive
 </section>
 
 
-<div className="practice-home">
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. What distinguishes leakage current from charging current?</summary>
+<div>
+
+Leakage persists at fixed bias; charging current follows changing terminal charge and may be much larger during edges.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why can gate-drain capacitance dominate input loading?</summary>
+<div>
+
+An inverting drain amplifies the voltage change across it, producing Miller multiplication.
+
+</div>
+</details>
+
+<details>
+<summary>3. What is the Wien network return at its zero-phase frequency?</summary>
+<div>
+
+One third, so a noninverting gain of three gives a marginal ideal linear loop.
+
+</div>
+</details>
+
+<details>
+<summary>4. Does unity linear loop gain predict sine amplitude?</summary>
+<div>
+
+No. It identifies a marginal mode; nonlinear amplitude regulation or clipping determines the bounded result.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why keep the JFET channel voltage small in amplitude control?</summary>
+<div>
+
+Its resistor-mode nonlinearity otherwise distorts the oscillation; gate-junction bias margins must also hold.
+
+</div>
+</details>
+
+</section>
+
+<div className="chapter-end">
 
 <span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Put the ideas to work</h3><p>Independent problems, hints and complete worked solutions.</p><a className="primary-link" href="/fet-dynamics/practice/">Open practice →</a>
 
