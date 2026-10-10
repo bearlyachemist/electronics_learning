@@ -41,6 +41,7 @@ jobs:
       - name: Verify notebook
         run: |
           npm test
+          npx astro sync
           npx tsc --noEmit
           npm run build:hosted
           npm run check:hosted
