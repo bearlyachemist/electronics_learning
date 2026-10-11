@@ -1,0 +1,21 @@
+import * as S from './Schematic';
+import type {Pt} from './Schematic';
+export function SampleHoldFigure(){
+ const a:Pt=[180,140],b:Pt=[520,140],p=S.opAmpPins({at:a,plusTop:true}),q=S.opAmpPins({at:b,plusTop:true});
+ return <S.Figure caption="Buffered sample-and-hold. TRACK closes the switch and charges CH through the input buffer's impedance and switch resistance. HOLD opens it; the output follower reads the stored voltage. Each amplifier retains its local negative-feedback connection in both states, while the hold capacitor's voltage is free to drift from leakage and injected charge."><S.Schematic width={760} height={350} description="Input follower, track switch, grounded hold capacitor and output follower; local feedback around both op amps.">
+ <S.Terminal at={[50,125]} label="v_i"/><S.Wire pts={[[50,125],p.plus]}/><S.OpAmp at={a} plusTop/><S.Wire pts={[p.out,[310,140]]}/><S.Dot at={[280,140]}/><S.Wire pts={[[280,140],[280,220],[150,220],[150,155],p.minus]}/><S.Switch a={[310,140]} b={[400,140]} closed/><S.Text x={355} y={112} anchor="middle">TRACK</S.Text><S.Wire pts={[[400,140],[450,140],[450,125],q.plus]}/><S.Dot at={[450,140]}/><S.Cap a={[450,140]} b={[450,280]} label="C_H"/><S.Ground at={[450,280]}/><S.OpAmp at={b} plusTop/><S.Wire pts={[q.out,[700,140]]}/><S.Terminal at={[700,140]} label="v_o" side="above"/><S.Dot at={[650,140]}/><S.Wire pts={[[650,140],[650,220],[490,220],[490,155],q.minus]}/>
+ </S.Schematic></S.Figure>;
+}
+export function ActiveClampFigure(){
+ const a:Pt=[410,240],p=S.opAmpPins({at:a,plusTop:true});
+ return <S.Figure caption="Upper active clamp. Below VLIM, the diode is off and the high-impedance load follows the input through RS. Above VLIM, the op amp sinks current through the diode and holds the sensed output near VLIM. The diode's static drop is inside feedback; overload recovery and current capacity are not removed."><S.Schematic width={730} height={370} description="Input through two kilohms to output. Output is diode anode; cathode connects to op amp output. Plus input is clamp reference, minus input senses clamped node.">
+ <S.Terminal at={[50,100]} label="v_i"/><S.Res a={[50,100]} b={[260,100]} label="R_S" value="2 kΩ"/><S.Wire pts={[[260,100],[630,100]]}/><S.Terminal at={[630,100]} label="v_o" side="right"/><S.Dot at={[520,100]}/><S.Diode a={[520,100]} b={[520,200]}/><S.Wire pts={[[520,200],[520,240],p.out]}/><S.OpAmp at={a} plusTop/><S.Terminal at={[240,225]} label="V_LIM"/><S.Wire pts={[[240,225],p.plus]}/><S.Wire pts={[p.minus,[360,255],[360,100]]}/><S.Dot at={[360,100]}/><S.Text x={585} y={300} anchor="middle">high-impedance load</S.Text>
+ </S.Schematic></S.Figure>;
+}
+export function TResetFigure(){
+ const a:Pt=[420,250],p=S.opAmpPins({at:a});
+ return <S.Figure caption="T reset architecture for an integrator. Two series reset switches bridge CF. During HOLD both open, and RM diverts leakage from the output-side switch to the quiet reference. The summing-side switch then sees a much smaller voltage. Ideal switch symbols show connectivity; suitable real MOSFET or analog-switch control, body connections and leakage must be checked separately."><S.Schematic width={750} height={530} description="Inverting integrator with capacitor feedback, two series reset switches in parallel with capacitor and midpoint resistor to ground. Noninverting input grounded.">
+ <S.Terminal at={[50,235]} label="v_i"/><S.Res a={[50,235]} b={[230,235]} label="R_IN"/><S.Wire pts={[[230,235],p.minus]}/><S.Dot at={[280,235]}/><S.OpAmp at={a}/><S.Wire pts={[p.plus,[370,265],[370,320]]}/><S.Ground at={[370,320]}/><S.Wire pts={[p.out,[650,250]]}/><S.Dot at={[560,250]}/><S.Terminal at={[650,250]} label="v_o" side="above"/>
+ <S.Wire pts={[[280,235],[280,100],[350,100]]}/><S.Cap a={[350,100]} b={[490,100]} label="C_F"/><S.Wire pts={[[490,100],[560,100],[560,250]]}/><S.Wire pts={[[280,235],[280,380],[320,380]]}/><S.Switch a={[320,380]} b={[380,380]} closed={false}/><S.Wire pts={[[380,380],[450,380]]}/><S.Dot at={[420,380]}/><S.Switch a={[450,380]} b={[510,380]} closed={false}/><S.Wire pts={[[510,380],[560,380],[560,250]]}/><S.Res a={[420,380]} b={[420,470]} label="R_M" value="100 kΩ"/><S.Ground at={[420,470]}/><S.Text x={350} y={358} anchor="middle">S1</S.Text><S.Text x={480} y={358} anchor="middle">S2</S.Text>
+ </S.Schematic></S.Figure>;
+}

@@ -1,3 +1,4 @@
+import {SampleHoldFigure,ActiveClampFigure,TResetFigure} from '../../components/HoldTeachingFigures';
 import Equation from '../../components/Equation.astro';
 import {OpAmpFigure} from '../../components/OpAmpFigures';
 import {ImprovedHalfWaveCircuit,FullWaveCircuit,RectifierRecoveryFigure,PeakDetectorCircuit} from '../../components/OpAmpStudyFigures';
@@ -153,6 +154,64 @@ Replace the load resistor with a capacitor and the rectifier holds the highest v
 The same reasoning applies to every circuit with a diode or switch inside a feedback loop: active clamps, limiters, sample-and-holds. Analyze each state, then ask what the op amp does while the loop is open, and how long it takes to get back.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Feedback hides a diode's static drop, but while the diode is off the loop is open and the op amp saturates. <em>Keep the op amp in a loop in both states</em>, as the two-diode rectifier does, and budget slew, offset and leakage for the signals you actually have.</p></div>
+
+</section>
+
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Analyze acquisition, clamping and reset leakage by circuit state</h2></div>
+
+<h3>Sample-and-hold separates acquisition from storage</h3>
+
+<SampleHoldFigure/>
+
+In TRACK, the switch connects the buffered source to $C_H$; in HOLD, it opens and the output follower reads the stored voltage. The source buffer lowers charging impedance and the output buffer prevents load current from directly discharging the capacitor. Feedback around those amplifiers remains intact, but it cannot restore charge lost from an isolated hold node.
+
+For a resistance-limited acquisition after a step, error decays as $e^{-t/(R_TC_H)}$. To acquire a full-scale step to half an LSB at N bits requires
+
+<Equation tex={String.raw`t_{acq}\ge R_TC_H(N+1)\ln2`}/>
+
+With total $R_T=500$ Ω and $C_H=10$ nF, a 12-bit target takes at least **45.1 µs** in that model. A 2 V initial step demands 4 mA; the input buffer must supply that current and settle within the same accuracy. Current limiting, switch resistance variation, amplifier settling and dielectric absorption can lengthen acquisition beyond the RC result.
+
+During a 10 ms hold, 10 pA leakage on 10 nF causes 10 µV droop. Opening the switch with 1 pC of injected charge produces a **100 µV pedestal**, independent of hold duration. At 300 K the sampled thermal floor $\sqrt{k_BT/C_H}$ is about 0.644 µV RMS before amplifier and source noise. A 2 pF off-state feedthrough capacitance and a subsequent 2 V source step can disturb the hold voltage by roughly 400 µV. Increasing $C_H$ reduces those voltage errors but increases acquisition demand.
+
+Aperture uncertainty is another independent error: $\Delta v\approx(dv/dt)\Delta t$. A 1 V peak, 100 kHz sine with 10 ns timing uncertainty can have 6.28 mV worst-slope uncertainty. Holding a quiet DC voltage and sampling a fast waveform therefore call for different specifications. Track-to-hold pedestal, droop, aperture delay and aperture jitter are not interchangeable terms.
+
+<h3>An active clamp removes the diode drop while conduction is valid</h3>
+
+<ActiveClampFigure/>
+
+For an upper clamp, the plus input sees $V_{LIM}$ and the minus input senses the clamped node. The diode conducts from that node into the amplifier's output. Below the limit it is off and the output follows the source through $R_S$ if the load is high impedance. Above the limit it closes feedback, pulling the node toward $V_{LIM}$.
+
+With $R_S=2$ kΩ, a 3 V input and 1 V limit require 1 mA sink current and dissipate 2 mW in the resistor. A real finite load causes an ordinary divider error below clamp; a negative-input range also needs to remain valid. While the diode is off, the op amp can reach positive saturation. Recovering from +4 V to roughly $V_{LIM}-0.6=0.4$ V at 0.5 V/µs needs at least 7.2 µs, plus overload delay. A rising input can overshoot the clamp meanwhile. A secondary local feedback or anti-saturation path, analogous to the improved rectifier, limits the unused output excursion; still verify the topology in both states.
+
+<h3>The two-switch T cure diverts leakage away from the integrator</h3>
+
+<TResetFigure/>
+
+An ordinary reset switch directly across the integration capacitor sees the full held output voltage when open. Its leakage flows into the summing node and becomes a ramp. Two series switches with a resistor from their midpoint to the quiet reference change that path. In HOLD, the output-side switch's leakage mostly flows through the midpoint resistor. The summing-side switch sees a midpoint close to the virtual-ground voltage, greatly reducing its drain-source leakage drive.
+
+For 1 nA output-side leakage and 100 kΩ midpoint resistance, the midpoint shifts only 100 µV. If the summing-side switch behaved like 10 GΩ leakage resistance near zero voltage, the resulting current would be 10 fA rather than the 100 pA associated with 1 V across it. Real switch leakage is not necessarily a linear resistance: gate leakage, body-diode paths, offset between summing node and reference, control feedthrough and temperature remain. The book's discrete implementation carefully controls those terminal voltages; blindly placing two ordinary power MOSFETs in series does not reproduce it.
+
+During RESET, both switches close. If each has 100 Ω on-resistance and $C_F=100$ nF, the ideal discharge time constant is 20 µs, or 138 µs to 0.1%. The midpoint resistor also loads the output during reset. Account for switch charge when reopening, capacitor memory and the amplifier's return to its normal state. A T switch is a leakage strategy, not a guarantee of zero drift.
+
+<h3>Peak and absolute-value circuits still need state and range checks</h3>
+
+A peak detector must supply $C_H\,dv/dt$ only while tracking a rising peak and retain charge while its input falls. Near the peak, available tracking time becomes short; sufficient average charging current does not prove correct capture. Keep the detecting amplifier from a long saturated excursion when it is idle, and verify the buffer's input range as well as the stored output.
+
+A full-wave rectifier's two gains must match, and the handover around zero must remain within the allowed offset/recovery error. A sinusoidal peak, an average of absolute value and true RMS are different measurements. The earlier half-cycle analysis and averaging example establish which one is actually being reported.
+
+<details>
+<summary>Worked self-check: which hold error improves by sampling longer?</summary>
+<div>
+
+Incomplete acquisition improves while TRACK remains closed. The opening-switch charge pedestal occurs after acquisition and does not improve by extending TRACK. Droop grows after HOLD begins, while aperture uncertainty depends on the signal slope at the transition. Specify and measure all four separately.
+
+</div>
+</details>
+
+<p className="reference-note">Source connections: TAOE §§4.5.1–4.5.4 and 4.5.6, plus precision holding-component errors in §§5.6.2–5.6.3; Asadi's nonlinear circuit analyses. Schematics and values are original teaching designs.</p>
+
 
 </section>
 

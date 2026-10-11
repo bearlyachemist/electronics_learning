@@ -67,3 +67,5 @@ Completed checkpoint: [87 — Transimpedance amplifiers](https://hebert.phd/elec
 Completed checkpoint: [88 — Practical op-amp integrators](https://hebert.phd/electronics/opamp-integrator/#precision-depth). Added “Compare integration errors and design a calibrated charge measurement” with original analysis and worked examples.
 
 Completed checkpoint: [89 — Band-limited differentiators](https://hebert.phd/electronics/opamp-differentiator/#precision-depth). Added “Specify derivative accuracy, pulse range and noise explicitly” with original analysis and worked examples.
+
+Completed checkpoint: [91 — Precision rectifiers and peak detection](https://hebert.phd/electronics/opamp-precision-rectifier/#precision-depth). Added “Analyze acquisition, clamping and reset leakage by circuit state” with original analysis and worked examples.

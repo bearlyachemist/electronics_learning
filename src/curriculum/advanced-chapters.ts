@@ -1409,6 +1409,10 @@ export const advancedChapters = [
         "Select a recovery-aware topology"
       ],
       [
+        "precision-depth",
+        "Analyze acquisition, clamping and reset leakage by circuit state"
+      ],
+      [
         "check",
         "Check your understanding"
       ]
