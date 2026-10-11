@@ -795,6 +795,10 @@ export const advancedChapters = [
         "Use a repeatable solving order"
       ],
       [
+        "precision-depth",
+        "Use the golden rules within a working feedback loop"
+      ],
+      [
         "check",
         "Check your understanding"
       ]

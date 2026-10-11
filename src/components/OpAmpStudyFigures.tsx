@@ -448,7 +448,7 @@ export function FilterStepFigure(){
 }
 export function UnitySkCircuit(){
  const at:Pt=[480,190],p=S.opAmpPins({at,plusTop:true});
- return <S.Figure caption="A unity-gain Sallen–Key low-pass designed for a Butterworth response at 1 kHz. With equal resistors, $Q = \tfrac12\sqrt{C_1/C_2}$, so Butterworth's $Q$ = 0.707 needs $C_1 = 2C_2$; $f_0 = 1/(2\pi R\sqrt{C_1C_2})$ sets the size. With 10 kΩ, 22 nF and 11 nF, $f_0$ = 1.02 kHz. The follower makes the gain exactly 1, independent of resistor tolerances, which keeps $Q$ insensitive to the amplifier.">
+ return <S.Figure caption="A unity-gain Sallen–Key low-pass designed for a Butterworth response at 1 kHz. With equal resistors, $Q = \tfrac12\sqrt{C_1/C_2}$, so Butterworth's $Q$ = 0.707 needs $C_1 = 2C_2$; $f_0 = 1/(2\pi R\sqrt{C_1C_2})$ sets the size. With 10 kΩ, 22 nF and 11 nF, $f_0$ = 1.02 kHz. The follower makes the gain exactly 1, independent of resistor tolerances, which removes resistor-ratio gain error from $Q$.">
  <S.Schematic width={720} height={340} description="Two ten kilohm resistors in series to the noninverting input of a follower; twenty-two nanofarads from the resistor junction to the output; eleven nanofarads from the noninverting input to ground.">
   <S.Terminal at={[70,175]} label="v_in"/><S.Res a={[70,175]} b={[220,175]} label="R_1" value="10 kΩ"/><S.Res a={[220,175]} b={[370,175]} label="R_2" value="10 kΩ"/><S.Wire pts={[[370,175],p.plus]}/>
   <S.Wire pts={[[220,175],[220,80],[300,80]]}/><S.Cap a={[300,80]} b={[420,80]} label="C_1" value="22 nF"/><S.Wire pts={[[420,80],[600,80],[600,190]]}/><S.Dot at={[220,175]}/>
@@ -459,7 +459,7 @@ export function UnitySkCircuit(){
 }
 export function QSensitivityFigure(){
  const k=xs(1,2.95,200);
- return <S.Figure plot caption="For the equal-R, equal-C Sallen–Key section, $Q = 1/(3 - K)$. Near $K$ = 1.586 (Butterworth) the curve is gentle: a 1% gain error moves $Q$ by about 1.1%. Near $K$ = 2.8 ($Q$ = 5) the same 1% gain error moves $Q$ by about 15%, and at $K$ = 3 the section oscillates. High-Q sections built this way demand tight resistor ratios, or a topology whose $Q$ does not depend on a gain difference.">
+ return <S.Figure plot caption="For the equal-R, equal-C Sallen–Key section, $Q = 1/(3 - K)$. Near $K$ = 1.586 (Butterworth) the curve is gentle: a 1% gain error moves $Q$ by about 1.1%. Near $K$ = 2.8 ($Q$ = 5) the same 1% gain error moves $Q$ by about 15%, and at $K$ = 3 the ideal section is undamped. High-Q sections built this way demand tight resistor ratios, or a topology whose $Q$ does not depend on a gain difference.">
  <Plot curves={[{name:'Q = 1/(3 − K)',color:S.green,points:k.map(x=>[x,1/(3-x)] as [number,number])}]} marks={[{at:[1.586,.707],label:'Butterworth',pos:'nw'},{at:[2.5,2],label:'Q = 2',pos:'nw'}]}
   yScale="log" xRange={[1,3]} yRange={[.3,30]} xLabel="STAGE GAIN K" yLabel="Q" description="Q rising slowly with gain at first and then without limit as gain approaches three."/></S.Figure>;
 }

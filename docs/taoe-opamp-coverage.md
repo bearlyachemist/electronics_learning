@@ -41,3 +41,5 @@ Source coverage: TAOE §4.3.6 and filter context §§6.2–6.3; Van Valkenburg �
 Worked examples and solved self-checks throughout the website supply the source
 chapters' exercise/review role. Coverage means explaining the topic and its limits,
 not copying each historic circuit, part table, exercise or instrument schematic.
+
+Completed checkpoint: [77 — Ideal op amps and feedback](https://hebert.phd/electronics/opamp-ideal/#precision-depth). Added “Use the golden rules within a working feedback loop” with original analysis and worked examples.

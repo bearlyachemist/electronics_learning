@@ -174,6 +174,41 @@ A current-feedback op amp is another practical architecture and should not be id
 
 </section>
 
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Use the golden rules within a working feedback loop</h2></div>
+
+<h3>The virtual short is an accuracy statement</h3>
+
+The ideal rules follow from $v_o=A(v_+-v_-)$: a bounded output and very large gain require a small differential input. For a 2 V output and $A=200000$, that difference is 10 µV, even with both inputs near 3 V. The two input voltages are nearly equal to **each other**, not necessarily to ground. A wire between them would also carry current and destroy the circuit's intended feedback.
+
+With the input held fixed, increase the output slightly and trace the returned signal. If $v_-$ rises relative to $v_+$, the amplifier commands a lower output: restoring feedback. If the error grows instead, the circuit seeks a rail. At higher frequency, propagation delay and internal poles can reverse this restoring action; the DC sign test is necessary but does not establish dynamic stability.
+
+<h3>Feedback controls what you actually measure</h3>
+
+A follower senses output voltage and corrects voltage. A current source senses a resistor's voltage and corrects current. In each case identify the **measured variable**, reference, error amplifier and actuator. A loudspeaker buffer outside the voltage-feedback path can add an uncorrected voltage drop; moving the sense point after it corrects low-frequency error but adds its phase shift to the loop.
+
+<Equation tex={String.raw`v_o=\frac{A}{1+A\beta}v_i+\frac{1}{1+A\beta}d_o`}/>
+
+Here $d_o$ is an additive output disturbance introduced after the forward amplifier, and the feedback senses the disturbed output. With $A=200000$ and $\beta=0.1$, a 100 mV disturbance becomes about 5 µV. The same feedback does not suppress an input offset introduced before $A$; that offset is amplified like an input signal. This distinction explains why feedback can greatly improve output resistance and distortion while leaving an offset error budget essential.
+
+<h3>Five ways the rules stop applying</h3>
+
+Check the amplifier's supply and input common-mode range before solving. Then calculate the requested output swing, output current and slew rate. A unity follower driven outside its common-mode range can give the wrong output polarity in some architectures; a gain-100 stage can clip on only 50 mV input; a supposedly unloaded output can supply substantial capacitive current. During clipping or slewing the differential error is allowed to grow. When the circuit is a comparator or Schmitt trigger, unequal inputs are intentional and the golden rules are the wrong equations.
+
+For AC analysis distinguish a DC operating point from incremental signals. If a circuit is biased at 1.65 V, its “AC ground” means the reference has negligible incremental impedance in the band of interest; it does not mean its DC voltage is zero. Verify that the reference can sink and source the returned currents.
+
+<details><summary>Worked self-check: does a gain-100 circuit establish a virtual short?</summary><div>
+
+Assume $A=200000$, 30 mV input, valid input range and a ±4 V output limit. The actual gain is $100/(1+100/200000)=99.9500$, giving 2.9985 V and 14.99 µV differential error. At 60 mV input the requested output is 5.997 V, beyond the limit; imposing $v_+=v_-$ would conceal the failure. Use the clipped output to calculate the remaining error instead.
+
+</div></details>
+
+<p className="reference-note">Source connections: TAOE §§4.1.1–4.1.3 and 4.2.7; Huijsing, chapter 1, amplifier ports and feedback. Values and explanations are original.</p>
+
+
+</section>
+
 <section id="check">
 
 <div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
