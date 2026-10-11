@@ -1,3 +1,4 @@
+import {MillivoltMeterFigure} from '../../components/PrecisionTeachingFigures';
 import Equation from '../../components/Equation.astro';
 import {OpAmpFigure} from '../../components/OpAmpFigures';
 import {ServoComplianceFigure,ServoDissipationFigure,HighSideSourceCircuit,ServoStepFigure} from '../../components/OpAmpStudyFigures';
@@ -139,6 +140,56 @@ The op amp does not drive a resistor divider; it drives a MOSFET's gate capacita
 Verify command steps with light and heavy loads, start-up, and recovery after the compliance limit. Inductive loads (motors, solenoids) need a path for their current when the servo turns off. Check the sense resistor's temperature rise, which changes its value, and its pulse rating.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A current servo sets $I = V_{SET}/R_S$ with the accuracy of a voltage and a resistor, <em>but only within its compliance</em>. Size the transistor for a shorted load, and include its gate capacitance in the loop's stability.</p></div>
+
+</section>
+
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Build a low-voltage meter and analyze current-loop bandwidth</h2></div>
+
+<h3>A 10 mV meter can be a precision current servo</h3>
+
+<MillivoltMeterFigure/>
+
+Put a calibrated sense resistor on the low side of the meter movement and return its voltage to the minus input. Then $I_M\approx V_{in}/R_S$ while feedback and output compliance remain valid. A 100 Ω shunt maps 0–10 mV into 0–100 µA, independent of coil resistance. The amplifier output must supply the shunt drop, meter drop and series-limiter drop; regulating current does not make that headroom disappear.
+
+For an original 1.8 V-supply design, a 500 Ω coil and 10 kΩ series limiter need 1.06 V output at full scale. Allow actual loaded output headroom and minimum supply. A 20 kΩ coil instead would need 3.01 V, so that movement cannot reach full scale on this supply. At input zero, the desired output is near the lower rail; input common-mode range, output floor and zero-load behavior are crucial. Bipolar readings need a valid reference and bidirectional meter drive or a suitable split supply, rather than simply applying a negative voltage to this unipolar circuit.
+
+<h3>Allocate the 100 µV full-scale accuracy budget</h3>
+
+Assume—not assert for a named part—20 µV maximum offset, 2 pA input current through a 10 MΩ input return, 2 pA total protection/board leakage through the same resistance, and another 0.2 µV from minus-input current through its 100 kΩ feedback-return resistor. These contribute 60.2 µV worst case. A 0.1% sense-resistor error adds 10 µV at 10 mV full scale, totaling **70.2 µV**, or 0.702% of full scale, before movement calibration, drift and noise.
+
+With the input shorted, its source impedance is small; with it open, the 10 MΩ return exposes the full bias/leakage zero error. Test both. At 10 mV the 10 MΩ resistor draws 1 nA; an additional 10 pA protection conductance current changes loading by 1%. Thus protection needs characterization around millivolts, in both polarities and across temperature. A low leakage number at one high reverse voltage does not establish this small-signal input resistance.
+
+A moving coil is inductive and electromechanical. The separate high-frequency feedback capacitor returns the amplifier output directly while the resistor returns the sensed current at low frequency. This splits the loop around the slow load; measure stability with the actual movement and lead capacitance. The capacitor must not defeat the intended low-frequency current regulation.
+
+<h3>Output impedance is a frequency-dependent result of feedback</h3>
+
+For the simple MOS sink, hold the command fixed, perturb the drain voltage, neglect capacitances and body effect, and write $v_s=i_dR_S$, $v_g=-Av_s$. The transistor law $i_d=g_m(v_g-v_s)+(v_d-v_s)/r_o$ gives
+
+<Equation tex={String.raw`Z_{out}=\frac{v_d}{i_d}=r_o[1+g_mR_S(1+A)]+R_S`}/>
+
+Unlike voltage feedback, which lowers output impedance, **current regulation raises it**. With $r_o=20$ kΩ, $g_m=20$ mS, $R_S=50$ Ω and $A_0=100000$, the low-frequency result is about 2 GΩ. For a single-pole 1 MHz gain-bandwidth amplifier, $|A|\approx100$ at 10 kHz, reducing the magnitude to about 2 MΩ and making it largely reactive. A mere 50 pF drain capacitance has 318 kΩ reactance there and can dominate the measured output impedance. Real transistor capacitance, gate drive and load dynamics must be included before promising AC current-source behavior.
+
+The local source-degenerated gate-to-current plant has gain $g_m/[1+g_mR_S+R_S/r_o]$. Its sense transfer multiplies by $R_S$, so the loop gain is $A g_mR_S/[1+g_mR_S+R_S/r_o]$ before extra poles are added. It is not automatically the op amp's open-loop gain.
+
+<h3>Slew and compliance can limit current regulation before small-signal bandwidth</h3>
+
+A direct op-amp current source charging a capacitor needs $dv/dt=I/C$. If it is limited to 0.5 V/µs at 1 mA, its ramp behavior corresponds to at least 2 nF effective capacitance by $C_{eff}=I/SR$. This is a **large-signal rate interpretation**, not a literal shunt capacitor valid at every amplitude. A transistor-assisted current source has different gate and drain trajectories; calculate their required slopes and currents separately.
+
+A floating high-side shunt with an INA allows grounded-load regulation while the small sense difference rides near the supply. A gain-10 INA and 0.1 Ω shunt require a 1 V command for 1 A. A 20 µV input offset gives 0.2 mA error. Its common-mode range must follow both shunt terminals, and its poles and CMRR at the control frequency matter. Source degeneration can reduce excessive transistor gain; compensation must be checked at minimum/maximum load, current and supply.
+
+<details>
+<summary>Worked self-check: what happens when the meter coil opens?</summary>
+<div>
+
+The sensed current falls to zero, so the op amp increases output trying to restore it and can reach a rail. Reconnecting the coil then begins from an overloaded internal state. The series resistor limits current, but accurate recovery still depends on the amplifier, compensation and movement dynamics. Compliance and recovery are separate specifications.
+
+</div>
+</details>
+
+<p className="reference-note">Source connections: TAOE §§4.2.5, 4.4.4, 5.2–5.3 and 5.16.9; Asadi's voltage/current conversion analyses. The millivoltmeter budget and MOS output-impedance derivation use original assumptions.</p>
+
 
 </section>
 

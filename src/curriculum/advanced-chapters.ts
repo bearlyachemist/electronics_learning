@@ -1454,6 +1454,10 @@ export const advancedChapters = [
         "Close the loop around a capacitive gate"
       ],
       [
+        "precision-depth",
+        "Build a low-voltage meter and analyze current-loop bandwidth"
+      ],
+      [
         "check",
         "Check your understanding"
       ]
