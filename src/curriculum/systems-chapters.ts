@@ -150,5 +150,43 @@ export const systemsChapters = [
         "Check your understanding"
       ]
     ]
+  },
+  {
+    "id": "power-buck-converters",
+    "number": "99",
+    "title": "Buck converters from switching states",
+    "href": "/power-buck-converters/",
+    "practice": "/power-buck-converters/practice/",
+    "group": "Power circuits",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "states",
+        "Draw both current paths"
+      ],
+      [
+        "modes",
+        "Derive the boundary instead of hiding negative current"
+      ],
+      [
+        "capacitors",
+        "Size the input and output current reservoirs"
+      ],
+      [
+        "losses",
+        "Compare the complete loss budget"
+      ],
+      [
+        "control",
+        "Connect the plant to the feedback design"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
   }
 ];

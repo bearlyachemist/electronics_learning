@@ -4212,5 +4212,48 @@
       ]
     ],
     "sources": "The Art of Electronics, §§9.3–9.4"
+  },
+  "power-buck-converters": {
+    "title": "One inductor, three load currents",
+    "setup": "Ideal 12-to-5 V buck, 22 μH, 500 kHz. CCM ripple is 0.26515 A. Compare the requested CCM waveform; the diode stage cannot carry negative current.",
+    "equation": "I_{min}=I_o-\\Delta I/2,\\quad I_{max}=I_o+\\Delta I/2",
+    "columns": [
+      "Load",
+      "CCM valley estimate",
+      "Physical interpretation"
+    ],
+    "rows": [
+      [
+        "0.05 A",
+        "−0.08258 A",
+        "DCM model required"
+      ],
+      [
+        "0.2 A",
+        "0.06742 A",
+        "Positive-current CCM"
+      ],
+      [
+        "1 A",
+        "0.86742 A",
+        "Positive-current CCM"
+      ]
+    ],
+    "analysis": [
+      "Ripple is set by voltages, inductance and timing, not by load in this CCM approximation. Changing load shifts the waveform vertically.",
+      "Below the boundary a diode stage gains a zero-current interval; fixed-duty output now depends on load."
+    ],
+    "limits": "Do not use the negative-current CCM estimate to claim an asynchronous stage returns energy to its input.",
+    "connections": [
+      [
+        "/inductors/",
+        "Current ramps"
+      ],
+      [
+        "/power-fet-circuits/",
+        "Switching devices"
+      ]
+    ],
+    "sources": "The Art of Electronics, §9.6.5; TI SLVA477"
   }
 }

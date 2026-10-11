@@ -1,0 +1,107 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot,PowerCircuit} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 99</span><span className="hairline"/>POWER CIRCUITS</div>
+
+<h1>Buck converters from switching states<br/><em>Balance volt-seconds, then check every current.</em></h1>
+
+<p className="dek">Derive CCM and DCM behavior, size the inductor and capacitors, compare synchronous operation, and connect ripple and loss calculations to feedback stability.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="states">
+
+<div className="section-heading"><span>01</span><h2>Draw both current paths</h2></div>
+
+A buck steps down voltage by switching an inductor between two voltage conditions. The inductor stores energy and smooths current; the capacitor stores charge and smooths output voltage. Feedback chooses the duty ratio. Begin with an ideal switch and diode, fixed switching frequency, nearly constant output voltage within one cycle and continuous positive inductor current.
+
+<PowerCircuit kind="buck"/>
+
+With the switch on, inductor voltage from left to right is $V_{in}-V_o$, so current rises with slope $(V_{in}-V_o)/L$. With the switch off, the diode conducts from ground to the switch node, which sits near zero in the ideal model; inductor voltage is $-V_o$ and current falls with slope $-V_o/L$. The current keeps the same direction in both intervals. The diode is required because opening the switch does not instantly eliminate inductor current.
+
+In periodic steady state, current returns to its initial value every cycle. Integrating $L\,di/dt=v_L$ gives zero net volt-seconds:
+
+<Equation tex={String.raw`(V_{in}-V_o)DT_s-V_o(1-D)T_s=0,\quad V_o=DV_{in},\quad\Delta I_L=\frac{(V_{in}-V_o)D}{Lf_s}`}/>
+Charge balance requires average capacitor current to be zero, so average inductor current equals load current. Average input current is $DI_o$ in the ideal CCM model. A 12-to-5 V converter at 1 A therefore draws 0.4167 A average from 12 V while delivering 1 A at 5 V. This is current conversion with conserved power, not energy creation.
+
+<SystemsPlot kind="buck"/>
+For 22 μH and 500 kHz, $D=0.4167$ and ripple is 0.2652 A peak to peak. The valley and peak at 1 A load are 0.8674 and 1.1326 A. The inductor must support the **peak** without unacceptable loss of inductance, while its copper temperature is driven mainly by rms current. Saturation current and thermal current ratings are different specifications.
+
+</section>
+
+<section id="modes">
+
+<div className="section-heading"><span>02</span><h2>Derive the boundary instead of hiding negative current</h2></div>
+
+The ideal CCM waveform is centered on load current. Its valley reaches zero at $I_{crit}=\Delta I_L/2$. Here that is 132.6 mA. At 50 mA, the CCM arithmetic would predict a negative valley. An asynchronous diode cannot support that reversal: a third interval with zero current appears, and duty-to-voltage conversion becomes load dependent.
+
+In DCM let $D$ be the on fraction, $D_2$ the diode-conduction fraction and $1-D-D_2$ the zero-current fraction. The current starts at zero each cycle. With $M=V_o/V_{in}$:
+
+<Equation tex={String.raw`I_{pk}=\frac{(V_{in}-V_o)D}{Lf_s},\quad D_2=\frac{(V_{in}-V_o)D}{V_o},\quad I_o=\frac{I_{pk}}2(D+D_2)`}/><Equation tex={String.raw`K=\frac{2Lf_s}{R},\qquad KM^2=D^2(1-M),\qquad M=\frac{2}{1+\sqrt{1+4K/D^2}}`}/>
+The second relation assumes a resistive load $R$, fixed frequency, ideal components and $D+D_2<1$. A regulator still holds output by changing duty or pulse pattern, but $V_o=DV_{in}$ is no longer the relevant fixed-duty law. At the boundary $M=D$, so $K=1-D$. A model that smoothly predicts negative diode current is describing a different circuit.
+
+A synchronous low-side MOSFET can carry negative current if the controller uses forced continuous conduction. That improves fixed-frequency behavior but can circulate power at light load. Diode emulation turns the low-side device off near zero current, recovering DCM. Pulse skipping and burst mode can reduce light-load consumption while producing low-frequency ripple. Decide whether efficiency, noise spectrum or predictable timing matters most to the application.
+
+<SystemsLab kind="buck" client:load/>
+Use the lab's boundary warning as a model check, not as a DCM output prediction. At high input, minimum on-time may become the limit: a 5 V output from 24 V at 500 kHz needs about 417 ns on-time. Increasing frequency to 2 MHz reduces it to about 104 ns. The controller, driver and switch must resolve that pulse.
+
+</section>
+
+<section id="capacitors">
+
+<div className="section-heading"><span>03</span><h2>Size the input and output current reservoirs</h2></div>
+
+The output capacitor carries the triangular AC part of inductor current. Ignoring ESR, ESL and feedback action, integrating each triangular charge region gives $\Delta V_{pp}\approx\Delta I_L/(8f_sC_o)$. ESR adds an approximately $\Delta I_L\,ESR$ ripple component. These terms do not necessarily peak at the same instant, so summing them is a conservative first budget rather than an exact waveform.
+
+<Equation tex={String.raw`\Delta V_{o,pp}\simeq\frac{\Delta I_L}{8f_sC_o}+\Delta I_L\,ESR,\qquad I_{C_o,rms}=\frac{\Delta I_L}{\sqrt{12}}`}/>
+For 22 μF effective output capacitance, 500 kHz and the preceding ripple, the capacitive term is 3.01 mV. At 10 mΩ ESR the resistive term is 2.65 mV. A 1 A load step can require far more charge than this periodic ripple. Size for transient response as well as steady ripple; verify effective capacitance under bias and temperature.
+
+The input current is pulsed: it is nearly inductor current during the on interval and zero during the off interval. For small inductor ripple, the local input capacitor rms current is approximately $I_o\sqrt{D(1-D)}$. At 1 A and $D=0.4167$, it is 0.493 A. This stresses the input capacitor even though average input current is only 0.417 A. Place input bypass across the actual high-side-switch and low-side-return loop.
+
+<Equation tex={String.raw`I_{C_{in},rms}\simeq I_o\sqrt{D(1-D)},\qquad I_{L,rms}=\sqrt{I_o^2+\Delta I_L^2/12}`}/>
+An upstream supply connected through inductive wiring cannot furnish nanosecond current edges directly. The capacitor supplies those pulses locally and the cable recharges it more slowly. An input filter can interact with the converter's negative incremental input resistance, so adding an LC filter needs impedance and damping checks.
+
+</section>
+
+<section id="losses">
+
+<div className="section-heading"><span>04</span><h2>Compare the complete loss budget</h2></div>
+
+Conduction loss in a MOSFET is current squared times on resistance weighted by conduction fraction. With small ripple, high-side loss is about $I_o^2R_H D$ and synchronous low-side loss about $I_o^2R_L(1-D)$. Use hot on-resistance, not only its 25 °C typical value. Inductor copper loss is $I_{L,rms}^2R_{DCR}$, while core loss depends on ripple flux and frequency.
+
+For an asynchronous stage, diode loss is approximately $V_FI_o(1-D)$. At 0.4 V drop this is 0.233 W for the example. A 40 mΩ low-side MOSFET gives only about 23 mW of ideal conduction loss. Gate drive, dead time, body-diode conduction and switching effects can reduce the advantage at light load.
+
+<Equation tex={String.raw`P_{sw}\approx\tfrac12 V_{in}I_o(t_r+t_f)f_s,\qquad P_{gate}=Q_gV_{drive}f_s`}/>
+These are first estimates. Overlap loss depends on actual drain/current trajectories; output-capacitance energy, diode reverse recovery and driver losses may be separate. At 12 V, 1 A, 20 ns total overlap and 500 kHz, the estimate is 60 mW. Doubling frequency reduces ripple for a fixed inductor but roughly doubles these frequency-proportional losses. Efficiency optimization therefore involves the entire stage, not simply choosing the lowest on-resistance.
+
+</section>
+
+<section id="control">
+
+<div className="section-heading"><span>05</span><h2>Connect the plant to the feedback design</h2></div>
+
+An averaged ideal buck in CCM has $L\,di/dt=dV_{in}-v_o$ and $C\,dv_o/dt=i-v_o/R$. Linearizing at a fixed operating point gives a duty-to-output plant with an LC double pole:
+
+<Equation tex={String.raw`\frac{\hat v_o(s)}{\hat d(s)}=\frac{V_{in}}{LCs^2+(L/R)s+1},\qquad f_0=\frac{1}{2\pi\sqrt{LC}}`}/>
+For 22 μH and 22 μF, the natural frequency is about 7.23 kHz. Load resistance changes damping. The real plant includes ESR, modulator gain, delay and controller behavior. Voltage-mode compensation must account for this double pole; an inner current loop changes the outer plant and often makes compensation easier, while introducing its own sampling and slope-compensation requirements.
+
+Use the regulator's validated component range and compensation method. Check loop response across input and load, then test load steps, startup, pulse-mode transitions and overload. A quiet nominal DC trace does not prove phase margin. Practical sizing reference: [TI, Basic Calculation of a Buck Converter’s Power Stage](https://www.ti.com/lit/an/slva477b/slva477b.pdf). Its component-sizing guidance complements the state and averaged-model derivations here.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/power-buck-converters/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §9.6.5; TI SLVA477 (linked above); original state, charge and averaged-plant derivations. Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>

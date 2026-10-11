@@ -138,5 +138,40 @@
         }
       ]
     }
+  ],
+  "power-buck-converters": [
+    {
+      "tag": "RIPPLE",
+      "title": "Choose the inductor",
+      "prompt": "Design an ideal 24-to-6 V buck at 400 kHz for 0.4 A peak-to-peak ripple. Find L and the CCM boundary.",
+      "hint": "First derive duty, then use the rising ramp.",
+      "solution": [
+        {
+          "text": "D = 0.25; L = (24 − 6) × 0.25 / (400 kHz × 0.4 A) = 28.125 μH. The boundary load is 0.2 A. Verify peak current and controller minimum on-time."
+        }
+      ]
+    },
+    {
+      "tag": "INPUT CURRENT",
+      "title": "Find the capacitor stress",
+      "prompt": "A buck supplies 2 A at duty 0.3 with small inductor ripple. What are average input current and input-capacitor rms current?",
+      "hint": "Average source current and pulsed capacitor current are different.",
+      "solution": [
+        {
+          "text": "Average input is 0.6 A. Capacitor rms is 2√(0.3 × 0.7) = 0.9165 A. Check ripple-current rating, ESR heating and local loop inductance."
+        }
+      ]
+    },
+    {
+      "tag": "MODEL LIMIT",
+      "title": "Test a low-load waveform",
+      "prompt": "A diode buck has 0.6 A ripple and supplies 0.1 A. Is a waveform with −0.2 A valley physical?",
+      "hint": "Check what can conduct reverse current.",
+      "solution": [
+        {
+          "text": "No: the CCM expression gives a negative valley but the diode stage enters DCM when current reaches zero. A forced-continuous synchronous converter can support reversal, but it is a different operating mode."
+        }
+      ]
+    }
   ]
 }

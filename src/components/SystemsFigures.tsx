@@ -1,3 +1,4 @@
+import * as S from './Schematic';
 import Plot from './Plot';
 import {Figure} from './Schematic';
 import {Tx} from './MathText';
@@ -19,4 +20,19 @@ export function SystemsPlot({kind}:{kind:string}){
  delta:{...common,xRange:[.001,.5],yRange:[-70,10],xLabel:'Frequency / modulator rate',yLabel:'Noise-transfer magnitude / dB',curves:[{name:'First order',color:green,points:pts(x=>20*Math.log10(2*Math.sin(Math.PI*x)),.001,.5)},{name:'Second-order ideal NTF',color:orange,points:pts(x=>40*Math.log10(2*Math.sin(Math.PI*x)),.001,.5)}],description:'Ideal noise transfer magnitudes for (1-z^-1) and (1-z^-1)^2. These spectra do not establish high-order loop stability.'}
  };
  const p=configs[kind];return p?<Figure plot caption={p.description}><Plot {...p}/></Figure>:null;
+}
+
+export function PowerCircuit({kind='buck'}:{kind?:'buck'|'boost'}){
+ const isBuck=kind==='buck',caption=isBuck?'Asynchronous buck power stage: switch on applies input minus output across L; switch off returns positive inductor current through the catch diode. Control and input bypass are omitted.':'Boost power stage: switch on stores energy in L while the output capacitor feeds the load; switch off sends inductor current through the diode to the output. Control and input bypass are omitted.';
+ return <Figure caption={caption}><S.Schematic width={660} height={260} description={caption}>
+ <S.Rail at={[80,70]} label="V_in"/>
+ {isBuck?<><S.Switch a={[80,70]} b={[260,70]} label="S"/><S.Ind a={[260,70]} b={[430,70]} label="L"/><S.Diode a={[260,200]} b={[260,70]} label="D" kind="schottky" flipLabel/></>:<><S.Ind a={[80,70]} b={[260,70]} label="L"/><S.Diode a={[260,70]} b={[430,70]} label="D" kind="schottky"/><S.Switch a={[260,70]} b={[260,200]} label="S" flipLabel/></>}
+ <S.Wire pts={[[430,70],[590,70],[620,70]]}/><S.Terminal at={[620,70]} label="V_o" side="right"/>
+ <S.Cap a={[430,70]} b={[430,200]} label="C_o"/>
+ <S.Res a={[590,70]} b={[590,200]} label="R_load" flipLabel/>
+ <S.Wire pts={[[260,200],[430,200],[590,200]]}/><S.Ground at={[430,200]}/>
+ {([[260,70],[430,70],[590,70],[430,200]] as S.Pt[]).map((at,i)=><S.Dot key={i} at={at}/>)}
+ <S.CurrentArrow at={[405,70]} dir="right" label="i_L" side={-1}/>
+ <S.Text x={80} y={238} kind="value">Ideal switch and diode model; capacitor and load share output.</S.Text>
+ </S.Schematic></Figure>;
 }
