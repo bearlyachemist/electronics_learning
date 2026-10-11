@@ -4255,5 +4255,48 @@
       ]
     ],
     "sources": "The Art of Electronics, §9.6.5; TI SLVA477"
+  },
+  "power-boost-isolated": {
+    "title": "Lower input increases boost switch current",
+    "setup": "An ideal boost holds 12 V at 0.5 A, with 22 μH and 500 kHz in CCM. Compute current at three input voltages.",
+    "equation": "D=1-V_{in}/12,\\quad I_{pk}=6/V_{in}+V_{in}D/(2Lf_s)",
+    "columns": [
+      "Input",
+      "Duty",
+      "Peak current"
+    ],
+    "rows": [
+      [
+        "3 V",
+        "0.75",
+        "2.1023 A"
+      ],
+      [
+        "5 V",
+        "0.5833",
+        "1.3326 A"
+      ],
+      [
+        "9 V",
+        "0.25",
+        "0.7689 A"
+      ]
+    ],
+    "analysis": [
+      "Output power is fixed at 6 W, so average input current rises as input voltage falls.",
+      "Lower input is often the peak-current corner. Voltage stress and thermal loss need their own checks over the full range."
+    ],
+    "limits": "Efficiency, saturation, current-limit tolerance and switch/diode drops are excluded.",
+    "connections": [
+      [
+        "/power-buck-converters/",
+        "Compare buck states"
+      ],
+      [
+        "/transformers/",
+        "Magnetic flux and turns"
+      ]
+    ],
+    "sources": "The Art of Electronics, §§9.6.6–9.6.10; TI SLVA372"
   }
 }

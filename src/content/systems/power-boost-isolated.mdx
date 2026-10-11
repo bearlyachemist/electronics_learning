@@ -1,0 +1,110 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot,PowerCircuit} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 100</span><span className="hairline"/>POWER CIRCUITS</div>
+
+<h1>Boost, buck–boost and isolated converters<br/><em>The output current is not the switch current.</em></h1>
+
+<p className="dek">Derive step-up and inverting conversion, understand the boost right-half-plane zero, and compare four-switch, flyback, forward and switched-capacitor power architectures.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="boost">
+
+<div className="section-heading"><span>01</span><h2>Derive boost voltage and current from the two states</h2></div>
+
+A boost places the inductor in the input path. When the switch turns on, its switch node falls near ground and the inductor sees $V_{in}$. The diode is reverse biased; the output capacitor supplies the load. When the switch opens, the inductor drives its node above the output until the diode conducts, and its current delivers energy to the output.
+
+<PowerCircuit kind="boost"/>
+
+In steady CCM operation, volt-second balance and output charge balance give:
+
+<Equation tex={String.raw`V_{in}D+(V_{in}-V_o)(1-D)=0,\qquad V_o=\frac{V_{in}}{1-D},\qquad I_L=\frac{I_o}{1-D}`}/><Equation tex={String.raw`\Delta I_L=\frac{V_{in}D}{Lf_s},\qquad I_{pk}=\frac{I_o}{1-D}+\frac{\Delta I_L}{2}`}/>
+For 5-to-12 V conversion at 0.5 A, $D=0.5833$ and average inductor current is 1.2 A. With 22 μH at 500 kHz, ripple is 0.2652 A and peak is 1.3326 A. A device advertised with a 1 A switch limit cannot supply this 0.5 A output under the ideal assumptions. Input current increases further when efficiency is below unity: at 90%, the average input for 6 W output is 1.333 A.
+
+The output capacitor supplies load throughout the on interval. A first estimate of discharge ripple is $I_oD/(f_sC_o)$; for 22 μF it is 26.5 mV. ESR adds a step from the discontinuous diode current, so the ripple waveform differs from the buck's triangular capacitor current. The input current is comparatively continuous, although local input bypass is still required.
+
+The diode gives an input-to-output path even when switching is disabled. A basic boost therefore cannot regulate below its input or inherently disconnect an output short. An output short can draw current through the inductor and diode independently of the switch controller. Use a topology or load-disconnect element that provides the needed fault behavior.
+
+</section>
+
+<section id="rhp">
+
+<div className="section-heading"><span>02</span><h2>Explain the response that initially moves the wrong way</h2></div>
+
+Increasing duty keeps the boost switch on longer. That raises stored inductor current, eventually delivering more energy. But it immediately shortens the interval during which current reaches the output. The output may initially fall before it rises. This delayed inversion is the physical origin of a right-half-plane zero in the CCM duty-to-output transfer function.
+
+For an ideal averaged boost with resistive load, a commonly useful zero frequency is:
+
+<Equation tex={String.raw`f_{z,RHP}=\frac{R(1-D)^2}{2\pi L}`}/>
+At 12 V and 0.5 A, $R=24$ Ω. Using $D=0.5833$ and 22 μH gives about 30.1 kHz. At 1 A the resistance halves and the zero falls to about 15.1 kHz. At lower input, larger duty reduces it further. A feedback crossover placed too near this zero accumulates unfavorable phase; unlike a left-half-plane zero, its increasing magnitude does not bring useful phase lead.
+
+Choose bandwidth comfortably below the lowest zero over the operating range, using the controller's compensation method and a full loop model. A one-fifth rule can be a starting point, not a guaranteed design. An inner current loop does not remove the fundamental CCM boost energy-transfer delay. DCM has a different plant; use its own small-signal model. Do not simply reuse a buck compensation network because the switches look similar.
+
+At very large duty, switch peak current, off-time, diode conduction and input undervoltage all become limiting. The ideal gain diverges as $D\to1$, but no real converter provides infinite voltage. Finite losses and minimum off-time bound usable gain before that mathematical limit.
+
+</section>
+
+<section id="buckboost">
+
+<div className="section-heading"><span>03</span><h2>Choose inversion or four switches deliberately</h2></div>
+
+The inverting buck–boost stores energy from the input during its on interval and releases it into a negative output during the off interval. With output magnitude $|V_o|$, ideal CCM balance gives:
+
+<Equation tex={String.raw`\frac{|V_o|}{V_{in}}=\frac{D}{1-D},\qquad I_{L,avg}=\frac{I_o}{1-D},\qquad V_{stress}\simeq V_{in}+|V_o|`}/>
+Generating −5 V from +12 V needs $D=5/17=0.2941$. For 0.2 A output, average inductor current is 0.2833 A and ideal switch/diode blocking stress is 17 V, before overshoot. Input and output currents are both pulsed. The controller's ground and gate-drive reference may sit at the negative rail in some implementations; its pin voltages must be checked in that reference frame, especially for enable and feedback interfaces.
+
+A noninverting four-switch buck–boost places an inductor between two half bridges. At high input it can operate mainly as a buck; at low input mainly as a boost; near equality it may switch both bridges according to its control strategy. This gives a positive regulated output above, below or near input, at the cost of more switches, gate drive, switching loss and control complexity. Mode transitions need transient and ripple tests.
+
+SEPIC gives a noninverting step-up/step-down output using an energy-transfer capacitor and two inductive windings or separate inductors. Ideal CCM voltage ratio is also $D/(1-D)$, but current stress, coupled-inductor behavior and capacitor rms current differ. Ćuk transfers energy through a capacitor and can produce continuous input and output current in its basic inverting form. Topology names alone do not specify ripple or EMI: draw each on/off path and evaluate the actual coupled components.
+
+</section>
+
+<section id="isolation">
+
+<div className="section-heading"><span>04</span><h2>Separate stored-energy conversion from transformer action</h2></div>
+
+A flyback uses a coupled magnetic element with designed magnetizing inductance. During primary switch on, magnetizing current rises and energy is stored; the secondary rectifier is reverse biased. During off time, polarity reverses and energy is released through the secondary. It is useful to think of it as an isolated buck–boost rather than an ordinary transformer delivering load power simultaneously through both windings.
+
+Let $n=N_s/N_p$. For an ideal CCM flyback, volt-second balance referred to the primary gives $V_o/V_{in}=nD/(1-D)$. In DCM, if magnetizing current starts at zero and reaches $I_{pk}$ each cycle, transferred energy is approximately $L_m I_{pk}^2/2$, so ideal output power is that energy times switching frequency.
+
+<Equation tex={String.raw`\frac{V_o}{V_{in}}=\frac{N_s}{N_p}\frac{D}{1-D},\qquad P_{DCM}\simeq\frac12 L_m I_{pk}^2f_s`}/>
+For 50 μH, 1 A peak and 200 kHz, that ideal DCM energy rate is 5 W. Actual delivered power is lower by losses, and the secondary must fully demagnetize before the next cycle for the DCM formula to apply. Leakage inductance stores energy that does not transfer perfectly; it causes drain spikes and often needs a clamp or snubber. Primary switch blocking stress includes input plus reflected output and leakage overshoot.
+
+A forward converter delivers energy through transformer action during the primary on interval, with an output inductor continuing load current during off time. Its core magnetizing flux still needs a reset path. An inadequate reset interval leads to flux accumulation and saturation. Push-pull, half-bridge and full-bridge converters provide other ways to apply alternating transformer voltage; winding balance, dead time and circulating currents become central constraints.
+
+Isolation requires an insulation system, layout spacing, barrier capacitance and appropriate component qualification. A turns ratio alone establishes neither allowable working voltage nor safe insulation. For low-voltage isolated modules, check isolation ratings and their meaning, common-mode transient behavior, output regulation, minimum load and interwinding-capacitance current before treating the two sides as electrically independent.
+
+</section>
+
+<section id="chargepump">
+
+<div className="section-heading"><span>05</span><h2>Recognize what switched capacitors can and cannot do</h2></div>
+
+A charge pump moves charge by reconnecting a flying capacitor between two states. In one state it charges from the input; in the next it is stacked, inverted or connected to the output. The unloaded voltage follows the conversion ratio, but finite switch resistance, capacitor ESR and charge-transfer frequency produce output resistance and ripple.
+
+For a simple teaching model, equivalent switched-capacitor resistance scales as $1/(f_sC_{fly})$ with a topology-dependent coefficient. A 1 μF flying capacitor at 100 kHz gives a 10 Ω scale; a 10 mA load can therefore cause roughly a 0.1 V drop before other losses. Increasing frequency reduces this charge-transfer term but raises switching and gate-drive loss. More detailed models distinguish slow-switching and fast-switching limits.
+
+<Equation tex={String.raw`R_{SC}\propto\frac{1}{f_sC_{fly}},\qquad V_o\simeq M V_{in}-I_oR_{eq}`}/>
+Charge pumps can be compact for modest currents, negative bias rails and fractional-ratio conversion. They do not automatically provide quiet power: charge impulses, regulation mode and clock feedthrough matter to precision analog loads. Choose inductive versus capacitive conversion using voltage ratio, load range, allowable ripple, layout and total efficiency.
+
+Practical component sizing reference: [TI, Basic Calculation of a Boost Converter’s Power Stage](https://www.ti.com/lit/an/slva372d/slva372d.pdf). The ideal derivations here intentionally separate state laws from efficiency estimates and controller-specific limits.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/power-boost-isolated/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§9.6.3–9.6.10; TI SLVA372 (linked above); original energy and control intuition. Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>

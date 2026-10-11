@@ -173,5 +173,40 @@
         }
       ]
     }
+  ],
+  "power-boost-isolated": [
+    {
+      "tag": "SWITCH CURRENT",
+      "title": "A boost current rating",
+      "prompt": "A 3-to-9 V ideal boost supplies 0.3 A with 0.4 A ripple. Find duty, average inductor current and peak.",
+      "hint": "Only the off interval supplies the output.",
+      "solution": [
+        {
+          "text": "D = 2/3, average current = 0.3/(1/3) = 0.9 A, peak = 1.1 A. Real efficiency and current-limit tolerances increase the required margin."
+        }
+      ]
+    },
+    {
+      "tag": "INVERSION",
+      "title": "Find negative-rail stress",
+      "prompt": "An ideal inverting buck–boost makes −12 V from +5 V. Find duty and approximate switch blocking voltage.",
+      "hint": "The inductor transfers to the output in a separate interval.",
+      "solution": [
+        {
+          "text": "D = 12/17 = 0.7059. Ideal blocking voltage is 17 V. Add switching overshoot and derating; check controller pin reference voltages."
+        }
+      ]
+    },
+    {
+      "tag": "ENERGY",
+      "title": "A DCM flyback power estimate",
+      "prompt": "A flyback has 80 μH magnetizing inductance, 0.8 A peak current and 100 kHz switching. Estimate ideal power and output at 85% efficiency.",
+      "hint": "Each fully demagnetized cycle transfers one stored-energy packet.",
+      "solution": [
+        {
+          "text": "Energy per cycle is 25.6 μJ, giving 2.56 W ideal and 2.176 W at the assumed efficiency. Verify complete demagnetization, core flux and peak current."
+        }
+      ]
+    }
   ]
 }
