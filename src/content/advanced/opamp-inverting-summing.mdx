@@ -152,6 +152,48 @@ Put a reference voltage $V_R$ on the plus input. It appears at the output multip
 
 </section>
 
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Budget reference currents, range switching and T-network feedback</h2></div>
+
+<h3>The summing node adds currents, including reference and error currents</h3>
+
+If the plus input is held at $V_R$, each input resistor contributes $(v_i-V_R)/R_i$. The feedback current balances their sum, giving
+
+<Equation tex={String.raw`v_o=V_R-R_F\sum_i\frac{v_i-V_R}{R_i}`}/>
+
+The coefficient of reference voltage is the noise gain $1+R_F\sum_i1/R_i$. For $R_F=20$ kΩ, $R_1=10$ kΩ and $R_2=40$ kΩ, $v_o=3.5V_R-2v_1-0.5v_2$. Setting $V_R=1$ V, $v_1=1.2$ V and $v_2=0.8$ V gives 0.7 V. A 1 mV reference error creates 3.5 mV output error if the source voltages remain fixed.
+
+A disabled channel still affects noise gain if its resistor stays connected to ground. If instead its switch disconnects the branch, the noise gain and bandwidth change. Source resistance adds to each input resistor and changes its weight; a “10 kΩ” branch driven through another 1 kΩ is 9.09% lighter than intended. Include switch resistance and its signal dependence when gain accuracy matters.
+
+<h3>A T network trades resistor size for noise gain</h3>
+
+Connect $R_A$ from the minus node to junction X, $R_B$ from X to output, and $R_C$ from X to ground. For a current input into a virtual-ground minus node, $V_X=-I_{in}R_A$. KCL at X gives
+
+<Equation tex={String.raw`v_o=-I_{in}R_{eff},\qquad R_{eff}=R_A+R_B+\frac{R_AR_B}{R_C}`}/>
+
+With $R_A=R_B=100$ kΩ and $R_C=1$ kΩ, the transresistance is 10.2 MΩ using moderate resistors. But with an ideal high-impedance current source, the voltage noise gain is $1+R_B/R_C=101$. A single 10.2 MΩ feedback resistor would have noise gain 1 at DC in that ideal source model. A 10 µV offset therefore produces 1.01 mV instead of 10 µV. The smaller resistors may reduce awkward parasitics, yet this is not a free replacement for a large feedback resistor. Calculate all resistor-noise transfers and input-capacitance stability as well.
+
+<h3>Range switching needs an error and transient budget</h3>
+
+An input attenuator can preserve amplifier bandwidth while sacrificing source loading and input-referred noise. Changing feedback gain preserves input loading but changes noise gain, bandwidth and offset amplification. Put trimming or precision networks where ratios matter; a resistor that only supplies a small nulling correction may require stability rather than exact absolute value.
+
+For an inverting gain −10, 10 kΩ input and 100 kΩ feedback, changing both resistors tenfold preserves gain but increases their thermal-noise voltages by $\sqrt{10}$ and bias-current-induced voltage errors tenfold. A lower-resistance network increases drive current and heating instead. Choose the impedance scale from the source, noise budget and output-current budget together.
+
+<details>
+<summary>Worked self-check: is a summer's noise gain its largest signal gain?</summary>
+<div>
+
+Four grounded 10 kΩ input branches and 10 kΩ feedback each have signal gain −1, but noise gain is $1+4=5$. A 5 MHz single-pole op amp has approximately 1 MHz closed-loop bandwidth for that configuration, not 5 MHz. Disconnecting three branches changes it to noise gain 2.
+
+</div>
+</details>
+
+<p className="reference-note">Source connections: TAOE §§4.2.1, 4.3.1 and the T-network discussion in §4.5.5; Asadi's summing and finite-gain analyses. Component values and examples are original.</p>
+
+
+</section>
+
 <section id="check">
 
 <div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>

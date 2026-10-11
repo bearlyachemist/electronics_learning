@@ -1098,6 +1098,10 @@ export const advancedChapters = [
         "Set references and resistor accuracy deliberately"
       ],
       [
+        "precision-depth",
+        "Budget reference currents, range switching and T-network feedback"
+      ],
+      [
         "check",
         "Check your understanding"
       ]
