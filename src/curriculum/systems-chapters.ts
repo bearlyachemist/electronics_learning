@@ -112,5 +112,43 @@ export const systemsChapters = [
         "Check your understanding"
       ]
     ]
+  },
+  {
+    "id": "power-linear-regulators",
+    "number": "98",
+    "title": "Linear regulators and supply integrity",
+    "href": "/power-linear-regulators/",
+    "practice": "/power-linear-regulators/practice/",
+    "group": "Power circuits",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "loop",
+        "See the regulator as a feedback amplifier"
+      ],
+      [
+        "heat",
+        "Calculate input power and junction temperature"
+      ],
+      [
+        "transient",
+        "Let charge conservation set the first response"
+      ],
+      [
+        "stability",
+        "Choose the capacitor for the actual control loop"
+      ],
+      [
+        "rejection",
+        "Use a post-regulator with a real noise budget"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
   }
 ];

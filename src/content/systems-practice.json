@@ -103,5 +103,40 @@
         }
       ]
     }
+  ],
+  "power-linear-regulators": [
+    {
+      "tag": "THERMAL",
+      "title": "Can a current-rated LDO survive?",
+      "prompt": "A 9-to-3.3 V LDO delivers 0.3 A at 45 °C ambient. Assume 50 K/W and ignore quiescent loss. Estimate junction temperature.",
+      "hint": "Use the voltage difference, not output power, for pass loss.",
+      "solution": [
+        {
+          "text": "Loss is 5.7 × 0.3 = 1.71 W. Estimated junction is 45 + 50 × 1.71 = 130.5 °C. Compare to the guaranteed operating limit and actual board thermal performance; a current rating alone does not qualify this case."
+        }
+      ]
+    },
+    {
+      "tag": "CHARGE",
+      "title": "Bound a load-step capacitor",
+      "prompt": "A 0.2 A increase must cause less than 40 mV droop before a 5 μs response. Ignore ESR first. What effective capacitance is required?",
+      "hint": "The capacitor supplies missing charge.",
+      "solution": [
+        {
+          "text": "C ≥ 0.2 × 5 μs / 0.04 = 25 μF. Add ESR/ESL error, tolerance and DC-bias derating; nominal 25 μF may be insufficient."
+        }
+      ]
+    },
+    {
+      "tag": "PSRR",
+      "title": "Separate rejection from generated noise",
+      "prompt": "A 50 mV rms ripple lies at a frequency where PSRR is 40 dB. The LDO generates 300 μV rms independent noise in the measured band. Find combined rms.",
+      "hint": "Attenuate the ripple, then sum independent powers.",
+      "solution": [
+        {
+          "text": "Ripple becomes 500 μV rms. Combined magnitude is √(500² + 300²) = 583.1 μV rms. The uncorrelated assumption and actual PSRR conditions must hold."
+        }
+      ]
+    }
   ]
 }

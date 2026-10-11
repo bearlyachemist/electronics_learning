@@ -4169,5 +4169,48 @@
       ]
     ],
     "sources": "The Art of Electronics, Chapters 5 and 8; original sensor and calibration examples"
+  },
+  "power-linear-regulators": {
+    "title": "Three input rails for one linear load",
+    "setup": "A 3.3 V output draws 0.2 A. Ignore quiescent loss and use 60 K/W board thermal resistance at 30 °C ambient.",
+    "equation": "P=(V_{in}-3.3)0.2,\\qquad T_j=30+60P",
+    "columns": [
+      "Input",
+      "Pass loss",
+      "Estimated junction"
+    ],
+    "rows": [
+      [
+        "4 V",
+        "0.14 W",
+        "38.4 °C"
+      ],
+      [
+        "5 V",
+        "0.34 W",
+        "50.4 °C"
+      ],
+      [
+        "12 V",
+        "1.74 W",
+        "134.4 °C"
+      ]
+    ],
+    "analysis": [
+      "Lower input headroom reduces heat, but it also reduces dropout margin and may reduce ripple rejection.",
+      "At 12 V the estimated junction may exceed the intended operating limit even though output current remains only 200 mA."
+    ],
+    "limits": "Thermal resistance is board dependent. Validate the low-input dropout corner separately from the high-input heat corner.",
+    "connections": [
+      [
+        "/regulated-supplies/",
+        "Feedback supplies"
+      ],
+      [
+        "/power/",
+        "Thermal models"
+      ]
+    ],
+    "sources": "The Art of Electronics, §§9.3–9.4"
   }
 }
