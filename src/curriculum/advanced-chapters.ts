@@ -1053,6 +1053,10 @@ export const advancedChapters = [
         "Buffer the actual source and destination"
       ],
       [
+        "precision-depth",
+        "Bias a single-supply amplifier and build a practical lab chain"
+      ],
+      [
         "check",
         "Check your understanding"
       ]

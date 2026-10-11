@@ -153,6 +153,52 @@ Judge a buffer by the error it adds to the whole measurement: source loading, bi
 
 </section>
 
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Bias a single-supply amplifier and build a practical lab chain</h2></div>
+
+<h3>Derive the single-supply level before choosing coupling capacitors</h3>
+
+With the plus input at $v_p$ and the lower feedback resistor returned to $V_R$, KCL gives
+
+<Equation tex={String.raw`v_o=(1+R_F/R_G)v_p-(R_F/R_G)V_R`}/>
+
+If $v_p=V_R+v_{ac}$, the output is $V_R+Gv_{ac}$, not $G(V_R+v_{ac})$. Returning the feedback resistor to the wrong ground amplifies the bias and can immediately saturate the circuit. A 3.3 V supply, 1.65 V bias, gain 11 and 100 mV peak AC request an output from 0.55 to 2.75 V; check the loaded output and both input ranges against those endpoints.
+
+An alternative puts a series capacitor in the lower feedback arm, giving DC gain 1 and AC gain $1+R_F/R_G$. Its transfer from the plus input is $[1+s(R_F+R_G)C]/[1+sR_GC]$. The gain changes over a shelf, with a zero below the pole, so this is not simply an ideal gain block after a single high-pass corner. Input coupling creates another pole. Large coupling capacitors can prolong startup and recovery after an overload even when the steady-state passband looks right.
+
+<h3>A bias reference must carry return current</h3>
+
+A 10 kΩ/10 kΩ divider from 3.3 V has 5 kΩ Thevenin resistance. A 100 µA return current shifts it by 0.5 V unless bypassing or a buffer supplies that current. A 10 µF bypass capacitor has 159 Ω reactance at 100 Hz but 15.9 kΩ at 1 Hz, so the reference is far stiffer in the audio band than at DC. Buffering needs a stable amplifier capable of both current polarities; its own capacitive load may require isolation.
+
+Reference noise can enter through more than one path. If an unwanted reference change drives only the lower feedback resistor while $v_p$ stays fixed, it appears at the output with gain $-(G-1)$. If the same change drives both $v_p$ and the lower resistor coherently, it appears with gain +1. Trace the actual coupling and correlations before assigning a noise-gain factor.
+
+<h3>Build a useful laboratory amplifier from independently checked stages</h3>
+
+A practical lab amplifier can provide AC/DC coupling, gains 1/10/100, a selectable low-pass limit, an offset adjustment and a buffered output. For an original ±5 V design intended for 20 kHz and 3 V peak output, split gain 100 into two gain-10 stages. With a 5 MHz single-pole amplifier in each, each nominal bandwidth is 500 kHz; the combined amplitude at 20 kHz is about 0.9984 of DC, or −0.014 dB. A single gain-100 stage would have 50 kHz bandwidth and lose about 0.65 dB there. The output still needs at least 0.377 V/µs slew rate, adequate load current and swing margin.
+
+Put gain before a noisy final buffer where possible, but budget each stage's internal output at every gain setting. An input offset adjustment lets you magnify changes around a large baseline; an output adjustment merely shifts the displayed result. Gain switches should preserve a feedback path during transitions. A break-before-make switch opening the only feedback connection can produce a large overload pulse.
+
+Input protection has a bandwidth cost: 1 kΩ with 20 pF gives a pole near 8 MHz, but a 100 kΩ source in series moves that pole to about 78.8 kHz, losing approximately 0.27 dB at 20 kHz. A high-resistance sensor needs a different input network. Grounding also matters: a floating input return is best sensed through a difference or instrumentation stage, rather than assumed identical to chassis ground.
+
+<h3>Practical cautions belong on the schematic</h3>
+
+Show supply pins, local decoupling, the DC input-current path and the reference return. Check maximum differential input and clamp-current limits during startup, clipping or a disconnected source. Avoid powering an input through an unpowered amplifier's protection diode unless that operating condition is supported. A follower is a demanding stability test because noise gain is 1; check the actual cable and ADC load rather than assuming its benign DC input resistance describes it.
+
+<details>
+<summary>Worked self-check: where does a capacitor-coupled source get its DC bias?</summary>
+<div>
+
+A 100 nF input capacitor feeding a 100 kΩ bias resistor to 1.65 V has an ideal high-pass corner of 15.9 Hz for a low-impedance source. Without that resistor, even a 10 pA input current can charge a 10 pF input node at 1 V/s. The input then drifts to an invalid range despite appearing “isolated” from the source at DC.
+
+</div>
+</details>
+
+<p className="reference-note">Source connections: TAOE §§4.2.2–4.2.3, 4.2.7, 4.3.1, 4.6.1 and 4.8.1; Asadi's noninverting/follower and bias-error analyses. The laboratory amplifier specification and all numbers are original.</p>
+
+
+</section>
+
 <section id="check">
 
 <div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>

@@ -53,3 +53,5 @@ Completed checkpoint: [80 — Inside a bipolar op amp](https://hebert.phd/electr
 Completed checkpoint: [81 — Inside a CMOS op amp](https://hebert.phd/electronics/opamp-cmos-internals/#precision-depth). Added “Evaluate RRIO accuracy across common mode and load” with original analysis and worked examples.
 
 Completed checkpoint: [82 — Choose BJT, JFET, CMOS or chopper inputs](https://hebert.phd/electronics/opamp-input-tradeoffs/#precision-depth). Added “Select the amplifier by source, operating point and architecture” with original analysis and worked examples.
+
+Completed checkpoint: [83 — Noninverting amplifiers and buffers](https://hebert.phd/electronics/opamp-noninverting/#precision-depth). Added “Bias a single-supply amplifier and build a practical lab chain” with original analysis and worked examples.
