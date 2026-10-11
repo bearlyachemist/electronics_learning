@@ -5,7 +5,7 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 49</span><span className="hairline"/>FIELD-EFFECT TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 47</span><span className="hairline"/>PART II / FIELD-EFFECT TRANSISTORS</div>
 
 <h1>JFET linear circuits<br/><em>Turn a small voltage into useful gain.</em></h1>
 
@@ -52,7 +52,25 @@ The exact finite-$r_o$ result for an unloaded gate and an external drain load R 
 
 <Equation tex="A_v=-\frac{g_mR}{1+g_mR_S+(R+R_S)/r_o}" />
 
-Obtain it by writing KCL at drain and source, including the $r_o$ branch between those two nodes. Merely adding $r_o$ in parallel with $R_D$ and then applying the degeneration denominator is an approximation; degeneration moves the source, so $r_o$ is not connected directly to AC ground.
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / DEGENERATED COMMON SOURCE WITH FINITE r<sub>o</sub></span>
+
+1. **Unknowns.** Let $i$ be the total small-signal current flowing down through the device, from drain to source. It is the controlled-source current plus the current in $r_o$, which connects drain to source:
+<Equation tex="i=g_m(v_i-v_s)+\frac{v_d-v_s}{r_o}"/>
+
+2. **KCL at the source.** The only other path from the source node is $R_S$ to ground, so all of $i$ flows through it: $v_s = iR_S$.
+
+3. **KCL at the drain.** The current $i$ must arrive through the load R from AC ground, which pulls the drain down: $v_d = -iR$.
+
+4. **Substitute** steps 2 and 3 into step 1:
+<Equation tex="i=g_mv_i-g_mR_S\,i-\frac{(R+R_S)\,i}{r_o}\quad\Longrightarrow\quad i=\frac{g_mv_i}{1+g_mR_S+(R+R_S)/r_o}"/>
+
+5. **Gain.** Multiply by $-R$. The result is the exact expression above. With $r_o \to \infty$ it reduces to the simple degenerated gain.
+
+</div>
+
+The derivation writes KCL at drain and source, including the $r_o$ branch between those two nodes. Merely adding $r_o$ in parallel with $R_D$ and then applying the degeneration denominator is an approximation; degeneration moves the source, so $r_o$ is not connected directly to AC ground.
 
 </section>
 
@@ -68,7 +86,11 @@ The AC drain resistance is 3.195 kΩ. With $R_S$ unbypassed:
 
 A 100 mV peak input therefore produces about 213 mV peak output and 66.7 μA peak drain-current change. The gate-source perturbation is only about 33.3 mV because the source follows part of the input. This is why degeneration improves linearity: the device itself sees a smaller signal than the external input.
 
-With $R_S$ completely bypassed at the signal frequency, gain is approximately −6.39. The same 100 mV input now changes drain current by about 200 μA and creates more curvature. In a square-law saturation model, the second-harmonic-to-fundamental ratio for a sinusoidal gate-source amplitude a is approximately:
+With $R_S$ completely bypassed at the signal frequency, gain is approximately −6.39. The same 100 mV input now changes drain current by about 200 μA and creates more curvature. In a square-law saturation model, apply $v_{gs} = a\cos\theta$ about overdrive $u$. The current change is
+
+<Equation tex="\delta i=\frac{k}{2}(u+a\cos\theta)^2-\frac{k}{2}u^2=kua\cos\theta+\frac{k}{4}a^2\left(1+\cos2\theta\right)"/>
+
+using $\cos^2\theta = (1 + \cos2\theta)/2$. The fundamental amplitude is $kua$ and the second-harmonic amplitude is $ka^2/4$, so the second-harmonic-to-fundamental ratio for a sinusoidal gate-source amplitude a is:
 
 <Equation tex="\frac{H_2}{H_1}\approx\frac{a}{4u}" />
 
@@ -98,7 +120,7 @@ Connect the drain directly to the positive supply and take the output at the sou
 
 <Equation tex="\frac{v_s}{R}=g_m(v_g-v_s),\qquad A_v=\frac{g_mR}{1+g_mR}" />
 
-For $g_m$ = 4 mS and R = 2 kΩ, gain is 8/9 = 0.889. It takes a large $g_m R$ product to get very close to unity. The ideal gate draws no signal current at low frequency, while output resistance with the gate held by a low-impedance source is approximately 1/$g_m$ parallel R. Here that is 250 Ω parallel 2 kΩ = 222 Ω.
+For $g_m$ = 4 mS and R = 2 kΩ, gain is 8/9 = 0.889. It takes a large $g_m R$ product to get very close to unity. The ideal gate draws no signal current at low frequency. For output resistance, hold the gate at AC ground and apply a test voltage $v_x$ at the source: the device draws $g_m(0 - v_x)$ into the drain, so the test source must supply $g_mv_x$ through the transistor plus $v_x/R$ through the load. The output resistance is therefore 1/$g_m$ parallel R. Here that is 250 Ω parallel 2 kΩ = 222 Ω.
 
 Unlike the familiar silicon emitter follower, a JFET follower does not have a universal 0.7 V offset. At the 2 mA operating point above, $V_{GS}$ = −2 V, so the source is **2 V above the gate**. A suitable negative supply or positive gate bias may be necessary to put the desired signal range at the source.
 
@@ -124,7 +146,24 @@ The large-signal steering law differs from the BJT tanh law. For matched square-
 
 <Equation tex="I_1-I_2=k\,v_d\sqrt{\frac{I_T}{k}-\frac{v_d^2}{4}},\qquad |v_d|\le\sqrt{\frac{2I_T}{k}}" />
 
-Derive it by writing overdrives as u ± $v_d$/2, adding the two currents to enforce $I_T$, then subtracting. Beyond the boundary, one device is cut off and the other carries the tail current. Gate leakage creates input bias errors; mismatch creates offset; finite tail resistance turns common-mode signals into current changes. These remain real even when ideal gate current is zero.
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE SQUARE-LAW STEERING CURVE</span>
+
+1. **Overdrives.** The sources share one node. With inputs $\pm v_d/2$ about a common level, the two overdrives are $u + v_d/2$ and $u - v_d/2$, where $u$ is the common overdrive that the tail current will determine.
+
+2. **KCL at the tail:**
+<Equation tex="\frac{k}{2}\left(u+\frac{v_d}{2}\right)^2+\frac{k}{2}\left(u-\frac{v_d}{2}\right)^2=k\left(u^2+\frac{v_d^2}{4}\right)=I_T"/>
+   The cross terms cancel. Solve: $u = \sqrt{I_T/k - v_d^2/4}$. The common overdrive falls as the input grows.
+
+3. **Difference.** In $I_1 - I_2$ the squared terms cancel and the cross terms add:
+<Equation tex="I_1-I_2=\frac{k}{2}\cdot2uv_d=k\,v_d\,u=k\,v_d\sqrt{\frac{I_T}{k}-\frac{v_d^2}{4}}"/>
+
+4. **Validity boundary.** Device 2 cuts off when its overdrive $u - v_d/2$ reaches zero. Substituting $u = v_d/2$ into step 2 gives $v_d^2/2 = I_T/k$, the limit $|v_d| = \sqrt{2I_T/k}$.
+
+</div>
+
+The derivation writes overdrives as u ± $v_d$/2, adds the two currents to enforce $I_T$, then subtracts. Beyond the boundary, one device is cut off and the other carries the tail current. Gate leakage creates input bias errors; mismatch creates offset; finite tail resistance turns common-mode signals into current changes. These remain real even when ideal gate current is zero.
 
 </section>
 
@@ -138,7 +177,7 @@ In the ohmic region, a FET's conductance changes with gate voltage. The same qua
 
 Hold $V_{GS}$ fixed and the apparent resistance changes over the signal waveform. For small $V_{DS}$, R ≈ 1/[k($V_{GS}$ − $V_T$)]. With k = 1 mA/V² and overdrive 2 V, the zero-signal resistance is 500 Ω.
 
-If the gate tracks half of the voltage across the channel, $V_{GS}$ = VC + $V_{DS}$/2, substitution cancels the quadratic term in this ideal model:
+If the gate tracks half of the voltage across the channel, $V_{GS}$ = $V_C$ + $V_{DS}$/2, substitute: the bracket becomes $(V_C - V_T)V_{DS} + V_{DS}^2/2 - V_{DS}^2/2$. The quadratic terms cancel in this ideal model:
 
 <Equation tex="I_D=k(V_C-V_T)V_{DS}" />
 

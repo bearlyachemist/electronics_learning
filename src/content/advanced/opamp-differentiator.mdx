@@ -4,13 +4,13 @@ import {DiffBodeFigure,DiffRingFigure,DiffNoiseFigure} from '../../components/Op
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 89</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 84</span><span className="hairline"/>PART III / OP-AMP CIRCUITS</div>
 
 <h1>Band-limited differentiators<br/><em>A derivative needs a bandwidth.</em></h1>
 
 <p className="dek">Swap the integrator's resistor and capacitor and the op amp differentiates, until its rising gain meets the falling open-loop gain and the circuit rings. Derive the resonance, bound the derivative with two components, and see why every useful differentiator has a defined bandwidth.</p>
 
-<div className="chapter-meta"><span>40–55 min</span><span>RC differentiators (Ch. 7) · Integrators (Ch. 88) · Stability (Ch. 79)</span></div>
+<div className="chapter-meta"><span>40–55 min</span><span>RC differentiators (Ch. 7) · Integrators (Ch. 83) · Stability (Ch. 74)</span></div>
 
 </div>
 
@@ -22,7 +22,7 @@ import {DiffBodeFigure,DiffRingFigure,DiffNoiseFigure} from '../../components/Op
 
 Put a capacitor at the input of an inverting amplifier and a resistor in its feedback, and the input current is $C\,dV/dt$: the output is the input's derivative. It is the mirror image of the integrator, and in a sense its opposite in temperament. The integrator ignores high frequencies and accumulates low ones; the differentiator amplifies high frequencies without limit.
 
-That has two consequences. Noise, which is mostly fast, is amplified far more than any slow signal. And the circuit's noise gain rises with frequency, exactly as in the transimpedance amplifier of Chapter 87, which makes the bare circuit nearly unstable. Both are fixed by the same two components.
+That has two consequences. Noise, which is mostly fast, is amplified far more than any slow signal. And the circuit's noise gain rises with frequency, exactly as in the transimpedance amplifier of Chapter 82, which makes the bare circuit nearly unstable. Both are fixed by the same two components.
 
 </div>
 
@@ -36,35 +36,109 @@ That has two consequences. Noise, which is mostly fast, is amplified far more th
 
 <section id="model">
 
-<div className="section-heading"><span>01</span><h2>Bound the derivative at both ends</h2></div>
+<div className="section-heading"><span>01</span><h2>Derive the ideal differentiator from KCL</h2></div>
 
 <OpAmpFigure mode="differentiator"/>
 
-The virtual ground holds the minus input at 0 V, so the current through $C_{IN}$ is $C_{IN}\,dV_I/dt$, and $R_F$ turns it into $V_O = -R_FC_{IN}\,dV_I/dt$. The practical circuit adds two components: $R_{IN}$ in series with $C_{IN}$, which caps the input current at high frequency, and $C_F$ across $R_F$, which rolls off the feedback. Between them, they turn an ideal differentiator, whose gain rises forever, into a band-limited one.
+Begin with the simplest version: a capacitor $C_{IN}$ from the input to the inverting node, a resistor $R_F$ from that node to the output, and the noninverting input grounded. Call the inverting node $X$. Two assumptions, each justified separately, make the analysis short.
 
-A mathematically sharp step has an infinite derivative. Real edges have finite rise times, and real circuits finite bandwidths, so neither ever happens; but an unlimited differentiator gets close enough to saturate on every fast edge.
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE IDEAL DIFFERENTIATOR</span>
+
+1. **No current enters the op amp's inputs.** The input bias current is picoamps to nanoamps, negligible beside the capacitor and resistor currents. So whatever current arrives at node $X$ through $C_{IN}$ must leave through $R_F$.
+
+2. **Node $X$ sits at 0 V.** The op amp's output obeys $v_O = A(v_+ - v_X) = -Av_X$. If the output is finite (a few volts) and $A$ is very large, then $v_X = -v_O/A$ is essentially zero. This "virtual ground" is a consequence of the negative feedback through $R_F$ holding the output in range, not a wire to ground; Section 03 checks it with finite $A$.
+
+3. **Current through the capacitor.** A capacitor's current is $C$ times the rate of change of the voltage across it. That voltage is $v_I - v_X = v_I$, so
+<Equation tex={String.raw`i_C=C_{IN}\frac{d(v_I-v_X)}{dt}=C_{IN}\frac{dv_I}{dt}`}/>
+
+4. **Current through the resistor,** flowing from $X$ to the output, by Ohm's law:
+<Equation tex={String.raw`i_F=\frac{v_X-v_O}{R_F}=-\frac{v_O}{R_F}`}/>
+
+5. **KCL at $X$:** current in equals current out, $i_C = i_F$:
+<Equation tex={String.raw`C_{IN}\frac{dv_I}{dt}=-\frac{v_O}{R_F}\qquad\Longrightarrow\qquad v_O=-R_FC_{IN}\frac{dv_I}{dt}`} label="IDEAL OP-AMP DIFFERENTIATOR"/>
+
+6. **Check the units and sign.** $R_FC_{IN}$ is a time (ohms × farads = seconds), and $dv_I/dt$ is volts per second, so their product is volts. The minus sign is the inverting configuration: a rising input pushes current into $X$, and the output must go negative to pull that current away through $R_F$.
+
+<p className="assume">Valid while: the op amp's loop gain is large at the signal frequency, the output stays within its swing, and the output can supply the current $v_O/R_F$.</p>
+
+</div>
+
+The same result in the frequency domain follows from the impedances: $Z_{IN} = 1/(sC_{IN})$, $Z_F = R_F$, and the inverting gain $-Z_F/Z_{IN} = -sR_FC_{IN}$. Multiplying by $s$ is differentiation, so the two forms agree. Its magnitude, $\omega R_FC_{IN}$, rises without limit as frequency increases, and that single fact causes both problems this chapter solves: noise amplification and instability.
+
+The practical circuit adds two components: $R_{IN}$ in series with $C_{IN}$, which limits the input current at high frequency, and $C_F$ across $R_F$, which rolls off the feedback. Section 02 derives what they do.
 
 </section>
 
 <section id="derive">
 
-<div className="section-heading"><span>02</span><h2>Use impedances before approximating</h2></div>
+<div className="section-heading"><span>02</span><h2>Derive the band-limited transfer function</h2></div>
 
-With $Z_{IN} = R_{IN} + 1/sC_{IN}$ and $Z_F = R_F \parallel 1/sC_F$, the inverting gain $-Z_F/Z_{IN}$ is
+With $R_{IN}$ and $C_F$ added, the input branch and feedback branch are both impedances. Repeat the KCL step with phasors.
 
-<Equation tex={String.raw`H(s)=-\frac{sR_FC_{IN}}{(1+sR_{IN}C_{IN})(1+sR_FC_F)}`} label="BAND-LIMITED DIFFERENTIATOR"/>
+<div className="derivation">
 
-When both denominator terms are near 1, $V_O \approx -R_FC_{IN}\,dV_I/dt$. Above $1/(2\pi R_{IN}C_{IN})$ the input capacitor is a short and the gain levels off at $-R_F/R_{IN}$; above $1/(2\pi R_FC_F)$ the feedback capacitor rolls it off. If the two corners coincide, the circuit differentiates up to that frequency and then falls at 20 dB per decade, with no flat region in between.
+<span className="tiny-label">DERIVATION / THE PRACTICAL DIFFERENTIATOR</span>
+
+1. **Input-branch impedance.** $R_{IN}$ and $C_{IN}$ in series:
+<Equation tex={String.raw`Z_{IN}=R_{IN}+\frac{1}{sC_{IN}}=\frac{1+sR_{IN}C_{IN}}{sC_{IN}}`}/>
+
+2. **Feedback impedance.** $R_F$ and $C_F$ in parallel, using $Z_1Z_2/(Z_1+Z_2)$:
+<Equation tex={String.raw`Z_F=\frac{R_F\cdot\frac{1}{sC_F}}{R_F+\frac{1}{sC_F}}=\frac{R_F}{1+sR_FC_F}`}/>
+
+3. **KCL at $X$, with $V_X = 0$ and no op-amp input current:**
+<Equation tex={String.raw`\frac{V_I-0}{Z_{IN}}=\frac{0-V_O}{Z_F}\qquad\Longrightarrow\qquad\frac{V_O}{V_I}=-\frac{Z_F}{Z_{IN}}`}/>
+
+4. **Substitute and simplify.** Dividing $Z_F$ by $Z_{IN}$ inverts the second fraction:
+<Equation tex={String.raw`H(s)=-\frac{R_F}{1+sR_FC_F}\cdot\frac{sC_{IN}}{1+sR_{IN}C_{IN}}=-\frac{sR_FC_{IN}}{(1+sR_{IN}C_{IN})(1+sR_FC_F)}`} label="BAND-LIMITED DIFFERENTIATOR"/>
+
+5. **Read off the regions.** Define $\tau_1 = R_{IN}C_{IN}$ and $\tau_2 = R_FC_F$, with corner frequencies $f_1 = 1/2\pi\tau_1$ and $f_2 = 1/2\pi\tau_2$.
+   - For $f \ll f_1, f_2$, both denominator factors are about 1 and $H \approx -sR_FC_{IN}$: the ideal derivative.
+   - If $f_1 < f_2$, then for $f_1 \ll f \ll f_2$ the first factor is about $s\tau_1$, so $H \approx -sR_FC_{IN}/(sR_{IN}C_{IN}) = -R_F/R_{IN}$: a flat gain, because $C_{IN}$ has become a short and the circuit is an ordinary inverting amplifier.
+   - For $f \gg f_1, f_2$, both factors are proportional to $s$, so $H \approx -R_FC_{IN}/(s\tau_1\tau_2)$: the gain falls at 20 dB per decade.
+
+</div>
+
+If the two corners are made equal, $\tau_1 = \tau_2 = \tau$, the middle region vanishes: the circuit differentiates up to $f_c = 1/2\pi\tau$ and then rolls off. That is the usual design choice, because it gives the widest differentiating band for a given high-frequency gain limit.
 
 </section>
 
 <section id="resonance">
 
-<div className="section-heading"><span>03</span><h2>Find the resonance</h2></div>
+<div className="section-heading"><span>03</span><h2>Derive the resonance with a finite-gain op amp</h2></div>
 
-Now the opening question. With only $C_{IN}$ and $R_F$, the noise gain $1 + Z_F/Z_{IN} = 1 + sR_FC_{IN}$ rises at 20 dB per decade from $1/(2\pi R_FC_{IN})$. The op amp's open-loop gain falls at 20 dB per decade. Where they cross, the closing rate is 40 dB per decade and the phase margin is nearly zero. Model the op amp as $A = \omega_t/s$ and the closed loop becomes a second-order resonator:
+Section 01 assumed $v_X = 0$. Now let the op amp have a finite, frequency-dependent gain and see what that assumption was hiding. A compensated op amp's open-loop gain above a few hertz is well described by $A(s) = \omega_t/s$, where $\omega_t = 2\pi f_t$ is its unity-gain angular frequency (Chapter 74).
 
-<Equation tex={String.raw`\frac{V_O}{V_I}=\frac{-sR_FC_{IN}}{1+\dfrac{s}{\omega_t}+\dfrac{s^2R_FC_{IN}}{\omega_t}},\qquad f_0=\frac{1}{2\pi}\sqrt{\frac{\omega_t}{R_FC_{IN}}},\qquad Q=\sqrt{\omega_tR_FC_{IN}}`}/>
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE BARE DIFFERENTIATOR WITH FINITE GAIN</span>
+
+1. **The op amp relation.** With the plus input grounded, $V_O = -A V_X$, so $V_X = -V_O/A$. Node $X$ is no longer exactly zero.
+
+2. **KCL at $X$** (still no input current), with $C_{IN}$ from $V_I$ and $R_F$ to $V_O$:
+<Equation tex={String.raw`sC_{IN}(V_I-V_X)=\frac{V_X-V_O}{R_F}`}/>
+
+3. **Substitute $V_X = -V_O/A$** and multiply both sides by $R_F$:
+<Equation tex={String.raw`sR_FC_{IN}V_I+sR_FC_{IN}\frac{V_O}{A}=-\frac{V_O}{A}-V_O`}/>
+
+4. **Collect the $V_O$ terms** on one side:
+<Equation tex={String.raw`sR_FC_{IN}V_I=-V_O\left(1+\frac{1}{A}+\frac{sR_FC_{IN}}{A}\right)\qquad\Longrightarrow\qquad\frac{V_O}{V_I}=\frac{-sR_FC_{IN}}{1+\dfrac{1+sR_FC_{IN}}{A}}`}/>
+   The numerator $1 + sR_FC_{IN}$ inside the correction term is the **noise gain** $1 + Z_F/Z_{IN}$: the gain the circuit applies to an error at the op amp's input. As $A \to \infty$ the correction vanishes and the ideal result returns.
+
+5. **Insert $A = \omega_t/s$,** so $1/A = s/\omega_t$:
+<Equation tex={String.raw`\frac{V_O}{V_I}=\frac{-sR_FC_{IN}}{1+\dfrac{s}{\omega_t}+\dfrac{s^2R_FC_{IN}}{\omega_t}}`}/>
+
+6. **Match to the standard second-order form** $1 + s/(Q\omega_0) + s^2/\omega_0^2$, term by term:
+<Equation tex={String.raw`\frac{1}{\omega_0^2}=\frac{R_FC_{IN}}{\omega_t}\quad\Rightarrow\quad\omega_0=\sqrt{\frac{\omega_t}{R_FC_{IN}}}`}/>
+<Equation tex={String.raw`\frac{1}{Q\omega_0}=\frac{1}{\omega_t}\quad\Rightarrow\quad Q=\frac{\omega_t}{\omega_0}=\sqrt{\omega_tR_FC_{IN}}`} label="RESONANCE OF THE BARE DIFFERENTIATOR"/>
+
+7. **How long it rings.** A second-order system with $Q \gg 1$ responds to a disturbance with a sinusoid at $\omega_0$ whose envelope decays as $e^{-\omega_0t/2Q}$. The envelope time constant is $2Q/\omega_0 = Q/(\pi f_0)$.
+
+<p className="assume">The loop view gives the same answer: the noise gain $1 + sR_FC_{IN}$ rises at 20 dB per decade, $A$ falls at 20 dB per decade, and they meet with a 40 dB-per-decade closing rate, about 0° of phase margin. A large $Q$ is what "almost no phase margin" looks like in the closed-loop response.</p>
+
+</div>
+
 
 <DiffBodeFigure/>
 
@@ -130,7 +204,9 @@ At $f=0.1f_c$, magnitude is 0.9901 of ideal, a 0.99% error, but phase error is a
 
 An input ramp of 1 V in 100 µs has slope 10000 V/s. With $R_FC_{in}=100$ µs, the ideal derivative output is −1 V during that ramp. The practical circuit rounds the beginning and end over its two time constants. A 1 V edge in 1 µs would request −100 V under the same ideal derivative model, far beyond ordinary output range. The band-limiting resistors and capacitors bound the linear high-frequency response, but a sufficiently large fast edge can still overload the amplifier.
 
-For equal time constants $\tau$, a unit input **step** has the exact ideal-amplifier response
+For equal time constants $\tau$, the step response follows from the transfer function in three lines. A unit step has Laplace transform $1/s$, so the output is
+<Equation tex={String.raw`V_O(s)=\frac1s\cdot\frac{-sR_FC_{in}}{(1+s\tau)^2}=-\frac{R_FC_{in}}{\tau^2}\cdot\frac{1}{(s+1/\tau)^2}`}/>
+The standard transform pair $t\,e^{-at} \leftrightarrow 1/(s+a)^2$ then gives the time response directly; setting its derivative to zero shows the peak occurs at $t = \tau$:
 
 <Equation tex={String.raw`v_o(t)=-\frac{R_FC_{in}}{\tau^2}\,t\,e^{-t/\tau},\qquad |v_{o,peak}|=\frac{R_FC_{in}}{e\tau}\quad(t=\tau)`}/>
 

@@ -5,13 +5,13 @@ import {CascodeNodeFigure,CascodeOutputFigure,CascodeRoutFigure} from '../../com
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 62</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 57</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>The cascode current mirror<br/><em>Hold the copying transistor's drain still.</em></h1>
 
 <p className="dek">Stack a second pair of transistors on a mirror so that the output voltage can no longer reach the copying device. Derive the hundredfold rise in output resistance, then pay for it in compliance, and audit what cascoding does not fix.</p>
 
-<div className="chapter-meta"><span>50–70 min</span><span>Basic mirror (Ch. 59) · Degeneration (Ch. 61)</span></div>
+<div className="chapter-meta"><span>50–70 min</span><span>Basic mirror (Ch. 54) · Degeneration (Ch. 56)</span></div>
 
 </div>
 
@@ -21,7 +21,7 @@ import {CascodeNodeFigure,CascodeOutputFigure,CascodeRoutFigure} from '../../com
 
 <div>
 
-Chapter 59 found the simple mirror's main systematic error: its output transistor sees a different drain voltage from its reference, and channel-length modulation turns that difference into a current error. Chapter 61 reduced the effect with a source resistor, at the cost of a resistor drop.
+Chapter 54 found the simple mirror's main systematic error: its output transistor sees a different drain voltage from its reference, and channel-length modulation turns that difference into a current error. Chapter 56 reduced the effect with a source resistor, at the cost of a resistor drop.
 
 The cascode attacks the cause directly. Put a second transistor in series above the output device, with its gate held at a fixed voltage. That transistor acts as a common-gate stage: its source, which is the lower device's drain, barely moves however much the output moves. The copying transistor's drain is shielded, so its current stops depending on the load.
 
@@ -43,7 +43,7 @@ The cascode attacks the cause directly. Put a second transistor in series above 
 
 Four transistors do two jobs. The lower pair, $M_1$ and $M_2$, is an ordinary mirror: it copies the current. The upper pair, $M_3$ and $M_4$, copies a **voltage**: it makes $M_2$'s drain voltage $V_X$ equal to $M_1$'s.
 
-The trick is in the reference stack. $M_1$ is diode connected, so its drain sits at $V_{GS}$. $M_3$, also diode connected, sits on top of it, so its gate is at $V_B = 2V_{GS}$. $M_4$ has that same gate voltage and carries the same current, so it has the same $V_{GS}$ as $M_3$, which puts its source at $V_B - V_{GS} = V_{GS}$. Now $M_2$ and $M_1$ have equal gate, source **and** drain voltages, and the drain-voltage error of Chapter 59 vanishes.
+The trick is in the reference stack. $M_1$ is diode connected, so its drain sits at $V_{GS}$. $M_3$, also diode connected, sits on top of it, so its gate is at $V_B = 2V_{GS}$. $M_4$ has that same gate voltage and carries the same current, so it has the same $V_{GS}$ as $M_3$, which puts its source at $V_B - V_{GS} = V_{GS}$. Now $M_2$ and $M_1$ have equal gate, source **and** drain voltages, and the drain-voltage error of Chapter 54 vanishes.
 
 <CascodeNodeFigure/>
 
@@ -63,7 +63,7 @@ Hold both gate lines at AC ground and push a test current $i$ into the output. C
 
 <Equation tex={String.raw`R_{out}=\frac{v_{out}}{i}=r_{o1}+r_{o2}+g_{m2}r_{o1}r_{o2}\;\approx\;(g_{m2}r_{o2})\,r_{o1}`} label="CASCODE OUTPUT RESISTANCE"/>
 
-The cascode multiplies the lower device's resistance by the upper device's **intrinsic gain** $g_mr_o$, typically 20 to 1000. Compare Chapter 61's source degeneration, which multiplied $r_o$ by $1 + g_mR_S$. A cascode is degeneration in which the "source resistor" is the lower transistor's own $r_{o1}$, a very large resistance that costs only one overdrive of DC voltage.
+The cascode multiplies the lower device's resistance by the upper device's **intrinsic gain** $g_mr_o$, typically 20 to 1000. Compare Chapter 56's source degeneration, which multiplied $r_o$ by $1 + g_mR_S$. A cascode is degeneration in which the "source resistor" is the lower transistor's own $r_{o1}$, a very large resistance that costs only one overdrive of DC voltage.
 
 If the upper device's body is grounded, replace $g_{m2}$ by $g_{m2} + g_{mb2}$: the body effect helps here.
 
@@ -94,7 +94,7 @@ Together:
 
 <CascodeOutputFigure/>
 
-So the answer to the opening question is no. The cascode makes the minimum output voltage **worse**: $V_T + 2u$ instead of $u$. At 0.25 mA in our example that is 2.0 V instead of 0.5 V. Of the extra 1.5 V, one overdrive is the unavoidable price of a second transistor in saturation; the threshold voltage is pure waste, there only because the simple diode stack puts $V_X$ a threshold higher than $M_2$ needs. Chapter 63 recovers it.
+So the answer to the opening question is no. The cascode makes the minimum output voltage **worse**: $V_T + 2u$ instead of $u$. At 0.25 mA in our example that is 2.0 V instead of 0.5 V. Of the extra 1.5 V, one overdrive is the unavoidable price of a second transistor in saturation; the threshold voltage is pure waste, there only because the simple diode stack puts $V_X$ a threshold higher than $M_2$ needs. Chapter 58 recovers it.
 
 <div className="margin-note">
 
@@ -128,7 +128,7 @@ Lower current raises $R_{out}$ steeply but lowers $g_m$, and the headroom cost f
 
 <p>The reference stack needs $V_B = 2(V_T + u)$, plus headroom for whatever generates $I_{REF}$, say 0.3 V for a PMOS source. At 1 mA that is 4.0 + 0.3 = 4.3 V: impossible. At 0.25 mA it is 3.0 + 0.3 = 3.3 V: exactly the rail, with no margin for threshold spread.</p>
 
-<p>To fit comfortably you would cut the overdrive. At $u$ = 0.2 V (40 µA with this $k$), $V_B$ = 2.4 V and the output works down to 1.4 V. That still leaves the output only 1.9 V of the 3.3 V rail. The standard cascode is a 5 V circuit; low-voltage designs use the wide-swing bias of Chapter 63.</p>
+<p>To fit comfortably you would cut the overdrive. At $u$ = 0.2 V (40 µA with this $k$), $V_B$ = 2.4 V and the output works down to 1.4 V. That still leaves the output only 1.9 V of the 3.3 V rail. The standard cascode is a 5 V circuit; low-voltage designs use the wide-swing bias of Chapter 58.</p>
 
 </div>
 
@@ -206,7 +206,7 @@ No. The error is $-2\Delta V_T/u$ ≈ −2% regardless of cascoding, because it 
 <summary>5. Which part of the cascode's extra headroom is unavoidable, and which part is waste?</summary>
 <div>
 
-The upper device needs one overdrive across it to stay saturated: that is unavoidable. The lower device needs only $u$ at its drain, but the diode stack holds it at $V_T + u$. The extra threshold voltage is waste, caused by the bias scheme rather than by the topology. Biasing $V_B$ lower recovers it (Chapter 63).
+The upper device needs one overdrive across it to stay saturated: that is unavoidable. The lower device needs only $u$ at its drain, but the diode stack holds it at $V_T + u$. The extra threshold voltage is waste, caused by the bias scheme rather than by the topology. Biasing $V_B$ lower recovers it (Chapter 58).
 
 </div>
 </details>

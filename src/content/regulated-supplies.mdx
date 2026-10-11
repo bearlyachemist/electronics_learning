@@ -5,7 +5,7 @@ import {FeedbackBlock,FeedbackAmpFigure,SupplyFigure,ThermalFigure,LogicFigure} 
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 44</span><span className="hairline"/>TRANSISTORS / FEEDBACK & CONTROL</div>
+<div className="eyebrow"><span>CHAPTER 93</span><span className="hairline"/>PART IV / LINEAR REGULATION</div>
 
 <h1>Regulated power supplies<br/><em>A feedback amplifier that delivers power.</em></h1>
 
@@ -48,7 +48,7 @@ Let the divider fraction be b = $R_{bottom}$/($R_{top}$ + $R_{bottom}$), and inc
 
 <Equation tex="v_o=A(V_{\mathrm{ref}}-bv_o),\qquad v_o=\frac{A}{1+Ab}V_{\mathrm{ref}}" />
 
-At large loop gain:
+At large loop gain, $Ab \gg 1$, so $A/(1+Ab) \to 1/b$. Substituting the divider fraction, $1/b = (R_{top}+R_{bottom})/R_{bottom}$:
 
 <Equation tex="V_{\mathrm{out}}\approx\frac{V_{\mathrm{ref}}}{b}=V_{\mathrm{ref}}\left(1+\frac{R_{\mathrm{top}}}{R_{\mathrm{bottom}}}\right)" />
 
@@ -80,7 +80,11 @@ Several errors have different paths through the loop. Do not combine them under 
 
 <Equation tex="v_o=A(V_{\mathrm{ref}}-bv_o)-r_o\frac{v_o}{R_L}" />
 
-<Equation tex="v_o=\frac{A V_{\mathrm{ref}}}{1+Ab+r_o/R_L},\qquad r_{\mathrm{out,closed}}\approx\frac{r_o}{1+Ab}" />
+<Equation tex="v_o=\frac{A V_{\mathrm{ref}}}{1+Ab+r_o/R_L}" />
+
+To read off the output resistance, write the load current as $i_L = v_o/R_L$ in the first equation and collect $v_o$ instead: $v_o(1 + Ab) = AV_{ref} - r_oi_L$. The output is a Thévenin source of $AV_{ref}/(1+Ab)$ behind
+
+<Equation tex="r_{\mathrm{out,closed}}=-\frac{\partial v_o}{\partial i_L}=\frac{r_o}{1+Ab}" />
 
 For $r_o$ = 2 Ω and T = 200, the small-signal output resistance is 9.95 mΩ. A 100 mA load increase would cause approximately 0.995 mV drop in this low-frequency linear model. Wiring outside the sensing point can easily exceed that contribution.
 
@@ -90,7 +94,7 @@ For $r_o$ = 2 Ω and T = 200, the small-signal output resistance is 9.95 mΩ. A 
 
 ### Allocate an output-accuracy budget
 
-For a high-loop-gain regulator, small independent changes give:
+For a high-loop-gain regulator, start from $V_o = (V_{ref} + V_{OS})(1 + R_{top}/R_{bottom})$, where the amplifier's offset $V_{OS}$ adds directly to the reference it is compared with. Take the logarithm and differentiate each term. The ratio term gives $d\ln(1 + R_t/R_b) = (R_t/R_b)/(1 + R_t/R_b)\cdot(dR_t/R_t - dR_b/R_b)$, and $(R_t/R_b)/(1+R_t/R_b) = R_t/(R_t+R_b) = 1 - b$. Small independent changes therefore give:
 
 <Equation tex="\frac{\delta V_o}{V_o}\approx\frac{\delta V_{ref}}{V_{ref}}+\frac{V_{OS}}{V_{ref}}+(1-b)\left(\frac{\delta R_{top}}{R_{top}}-\frac{\delta R_{bottom}}{R_{bottom}}\right)"/>
 
@@ -112,7 +116,7 @@ Current gain also sets driver demand. At 200 mA load and a worst-case pass $\bet
 
 ### A transistor current limiter
 
-A common simple limiter senses the voltage across a small series resistor. When that drop reaches the sensing transistor's $V_{BE}$, the transistor diverts pass-base drive:
+A common simple limiter senses the voltage across a small series resistor. The sensing transistor's base–emitter junction is connected across the resistor, so by KVL $V_{BE,sense} = I_LR_{sense}$. When that drop reaches the transistor's turn-on voltage, it conducts and diverts pass-base drive, so the current cannot rise much further:
 
 <Equation tex="I_{\mathrm{lim}}\approx\frac{V_{BE,\mathrm{sense}}}{R_{\mathrm{sense}}}" />
 
@@ -178,7 +182,7 @@ The base driver dissipates power too. So do a current-sense resistor, rectifier,
 
 <div className="section-heading"><span>06</span><h2>Dynamics and a complete design</h2></div>
 
-A regulator load step initially comes from the output capacitor because the loop cannot respond instantly. Before the controller catches up, a first estimate is:
+A regulator load step initially comes from the output capacitor because the loop cannot respond instantly. Before the controller catches up, the extra current comes out of the capacitor, $i = C\,dv/dt$. A constant step $\Delta I$ for a time $\Delta t$ removes charge $\Delta I\,\Delta t$, and the series ESR drops $\Delta I\,R_{ESR}$ immediately. A first estimate is:
 
 <Equation tex="\Delta V_C\approx\frac{\Delta I\,\Delta t}{C},\qquad \Delta V_{\mathrm{ESR}}\approx\Delta I\,R_{\mathrm{ESR}}" />
 

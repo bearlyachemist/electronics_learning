@@ -5,13 +5,13 @@ import {LevelShiftCircuit,FollowerLoadGainFigure,SinkSlewFigure} from '../../com
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 67</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 62</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>Current-loaded source followers<br/><em>Keep the current flowing, whatever the load.</em></h1>
 
 <p className="dek">Add a current sink under a source follower so its transconductance no longer depends on the load. Derive the gain, use the circuit as a level shifter, and inspect both transistors on every excursion, because the sink brings its own compliance and its own speed limit.</p>
 
-<div className="chapter-meta"><span>45–60 min + exploration</span><span>Source follower (Ch. 66) · Mirrors (Ch. 59)</span></div>
+<div className="chapter-meta"><span>45–60 min + exploration</span><span>Source follower (Ch. 61) · Mirrors (Ch. 54)</span></div>
 
 </div>
 
@@ -21,7 +21,7 @@ import {LevelShiftCircuit,FollowerLoadGainFigure,SinkSlewFigure} from '../../com
 
 <div>
 
-Chapter 66's follower had two weaknesses traceable to one cause: its current came from the load. A light load meant little current, little $g_m$, and gain well below one; a falling output could only be pulled down by the load resistor.
+Chapter 61's follower had two weaknesses traceable to one cause: its current came from the load. A light load meant little current, little $g_m$, and gain well below one; a falling output could only be pulled down by the load resistor.
 
 Put a current sink under the source and both weaknesses improve. The transistor now carries the sink current plus the load current, so $g_m$ stays up when the load is light, and the sink actively pulls the output down. The circuit becomes the standard MOS buffer and level shifter. But "ideal buffer" needs every assumption at once, and the body effect, in particular, does not go away.
 
@@ -59,7 +59,7 @@ KCL at the source, for small signals, now has one more conductance, that of a re
 
 <Equation tex={String.raw`A_v=\frac{g_m}{g_m+g_{mb}+g_{ds}+g_{sink}+1/R_L}`} label="CURRENT-LOADED FOLLOWER GAIN"/>
 
-The structure is the same as in Chapter 66, but $g_m$ is now set by $I_B + I_{load}$ rather than by the load alone. With no body effect, an ideal sink and no load, the gain is exactly 1, and the output sits a fixed $V_T + \sqrt{2I_B/k}$ below the gate. That is the ideal-buffer answer, and it requires all four assumptions.
+The structure is the same as in Chapter 61, but $g_m$ is now set by $I_B + I_{load}$ rather than by the load alone. With no body effect, an ideal sink and no load, the gain is exactly 1, and the output sits a fixed $V_T + \sqrt{2I_B/k}$ below the gate. That is the ideal-buffer answer, and it requires all four assumptions.
 
 <FollowerLoadGainFigure/>
 
@@ -139,7 +139,7 @@ The input can demand an output that violates either one. Below the lower limit t
 
 **Noise.** The sink's current noise flows through the source node's impedance, about $1/g_m$, and appears directly at the output. A mirror sink also passes on the noise of its reference. Filtering the sink's gate line is a common fix.
 
-**One-way drive, again.** The sink can pull only $I_B$. A load that must be discharged faster, or an external circuit that sources current into the output, needs a push–pull output stage (Chapter 74).
+**One-way drive, again.** The sink can pull only $I_B$. A load that must be discharged faster, or an external circuit that sources current into the output, needs a push–pull output stage (Chapter 69).
 
 **Large negative gate excursions.** If the gate drops far below the source, for example during a fast falling input with a large load capacitance, $V_{GS}$ goes strongly negative. Check the device's gate–source voltage rating.
 

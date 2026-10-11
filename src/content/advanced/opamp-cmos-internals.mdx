@@ -5,13 +5,13 @@ import {RailToRailInputFigure,RroOutputCircuit,RroSwingFigure,LeakageTempFigure}
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 81</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 76</span><span className="hairline"/>PART III / THE OP AMP</div>
 
 <h1>Inside a CMOS op amp<br/><em>Picoamp inputs, rail-to-rail claims, and their conditions.</em></h1>
 
 <p className="dek">Assemble a CMOS op amp from the MOSFET studies, then follow its distinctive specifications to their transistors: tiny bias current and its temperature dependence, input range near the rails with complementary pairs, outputs that reach the rails only at light load, and flicker noise.</p>
 
-<div className="chapter-meta"><span>50–70 min</span><span>Two-stage amplifier (Ch. 75) · Noise and g<sub>m</sub>/I<sub>D</sub> (Ch. 76) · Bipolar internals (Ch. 80)</span></div>
+<div className="chapter-meta"><span>50–70 min</span><span>Two-stage amplifier (Ch. 70) · Noise and g<sub>m</sub>/I<sub>D</sub> (Ch. 71) · Bipolar internals (Ch. 75)</span></div>
 
 </div>
 
@@ -23,7 +23,7 @@ import {RailToRailInputFigure,RroOutputCircuit,RroSwingFigure,LeakageTempFigure}
 
 Most op amps made today are CMOS. They run from 1.8 V or 5 V supplies, draw microamps, have inputs that take picoamps, and are advertised as "rail-to-rail". Each of those claims comes from a specific circuit choice, and each holds under specific conditions.
 
-This chapter builds the CMOS op amp from the MOSFET chapters (57–76) and then examines four of its specifications closely. It also compares the result with the bipolar op amp of Chapter 80, because choosing between them (Chapter 82) depends on exactly these differences.
+This chapter builds the CMOS op amp from the MOSFET chapters (57–76) and then examines four of its specifications closely. It also compares the result with the bipolar op amp of Chapter 75, because choosing between them (Chapter 77) depends on exactly these differences.
 
 </div>
 
@@ -41,7 +41,7 @@ This chapter builds the CMOS op amp from the MOSFET chapters (57–76) and then 
 
 <InternalAmplifierFigure technology="mos"/>
 
-This is Chapter 75's amplifier: an NMOS pair with a PMOS mirror load (Chapter 72), an NMOS common-source gain stage with a PMOS current-source load (Chapter 65), and a Miller capacitor that splits the poles. The ideal tail and fixed PMOS bias stand for real bias networks (Chapters 59–63). The bodies are drawn tied to their sources to keep the algebra simple; in a substrate-based process the NMOS bodies are grounded, which shifts thresholds and changes the input range.
+This is Chapter 70's amplifier: an NMOS pair with a PMOS mirror load (Chapter 67), an NMOS common-source gain stage with a PMOS current-source load (Chapter 60), and a Miller capacitor that splits the poles. The ideal tail and fixed PMOS bias stand for real bias networks (Chapters 54–58). The bodies are drawn tied to their sources to keep the algebra simple; in a substrate-based process the NMOS bodies are grounded, which shifts thresholds and changes the input range.
 
 The gates draw only leakage at DC, which is the CMOS op amp's great advantage for high-impedance sources. They still present capacitance, sit behind protection diodes that leak, and have voltage ratings.
 
@@ -53,7 +53,7 @@ The gates draw only leakage at DC, which is the CMOS op amp's great advantage fo
 
 <Equation tex={String.raw`g_m=\frac{2I_D}{u},\qquad A_0\approx g_{m1}R_1\,g_{m2}R_2,\qquad f_u\approx\frac{g_{m1}}{2\pi C_C},\qquad SR=\frac{I_T}{C_C}=u_0\cdot2\pi f_u`}/>
 
-The last relation is Chapter 80's slew rate per unit bandwidth with $I_T/g_{m1} = u_0$ for a MOS pair. At 0.2 V of overdrive that is four times the bipolar value: CMOS op amps slew faster for the same bandwidth, and pay for it in voltage noise and offset, because $g_m$ per microamp is lower.
+The last relation is Chapter 75's slew rate per unit bandwidth with $I_T/g_{m1} = u_0$ for a MOS pair. At 0.2 V of overdrive that is four times the bipolar value: CMOS op amps slew faster for the same bandwidth, and pay for it in voltage noise and offset, because $g_m$ per microamp is lower.
 
 <div className="worked-example">
 
@@ -61,7 +61,7 @@ The last relation is Chapter 80's slew rate per unit bandwidth with $I_T/g_{m1} 
 
 <p>$g_m = 2I_D/u$ = 1.0, 0.5 and 0.25 mS per device. (Each overdrive needs a different device width at the same current, not a different gate voltage on the same device.) The first-stage transconductance $g_{m1}$ is the same as one device's, so $f_u = g_{m1}/2\pi C_C$ = <strong>8.0, 4.0 and 2.0 MHz</strong>.</p>
 
-<p>The slew rate is $I_T/C_C$ = 100 µA / 20 pF = <strong>5 V/µs</strong> in all three. So the lowest overdrive gives the most bandwidth and the least noise for the same slew rate, but needs the widest devices, with more capacitance and worse matching relative to signal (Chapter 59).</p>
+<p>The slew rate is $I_T/C_C$ = 100 µA / 20 pF = <strong>5 V/µs</strong> in all three. So the lowest overdrive gives the most bandwidth and the least noise for the same slew rate, but needs the widest devices, with more capacitance and worse matching relative to signal (Chapter 54).</p>
 
 </div>
 
@@ -69,7 +69,7 @@ The last relation is Chapter 80's slew rate per unit bandwidth with $I_T/g_{m1} 
 
 <h3 id="book-notes">Constant total tail current does not guarantee constant MOS transconductance</h3>
 
-With matched effective device factors in strong inversion, each complementary input pair's small-signal transconductance is proportional to the square root of its tail current. If a fixed total current is divided as fractions x and $1-x$ between the two pairs, the summed transconductance, normalized to one pair carrying all the current, is
+With matched effective device factors in strong inversion, each complementary input pair's small-signal transconductance is proportional to the square root of its tail current. If a fixed total current $I$ is divided as fractions x and $1-x$ between the two pairs, the pairs' transconductances are $\sqrt{2k\,xI/2}$ and $\sqrt{2k(1-x)I/2}$ (per device, each device carrying half its pair's tail). Their sum, divided by the value $\sqrt{kI}$ when one pair carries everything, is
 
 <Equation tex={String.raw`\frac{G_{m,tot}}{G_{m,edge}}=\sqrt{x}+\sqrt{1-x}`}/>
 
@@ -105,7 +105,7 @@ That answers the opening question: zero DC gate current does not by itself give 
 
 <div className="section-heading"><span>04</span><h2>Rail-to-rail outputs and their load</h2></div>
 
-A source-follower output (Chapter 74) can never get closer to a rail than one $V_{GS}$, because its gate would have to go beyond the rail. CMOS op amps instead use **common-source** output devices, with drains at the output:
+A source-follower output (Chapter 69) can never get closer to a rail than one $V_{GS}$, because its gate would have to go beyond the rail. CMOS op amps instead use **common-source** output devices, with drains at the output:
 
 <RroOutputCircuit/>
 
@@ -123,7 +123,7 @@ With no load, a saturated common-source device can pull its drain to within mill
 
 <p><strong>200 Ω load:</strong> about 6.6 mA at the extremes, a 0.33 V drop. Swing: about 0.33 V to 2.97 V. The output is still "rail-to-rail" in the advertisement, but not in this circuit.</p>
 
-<p>The common-source output also has a high open-loop output resistance, kilohms rather than tens of ohms. Feedback divides it by the loop gain, which falls with frequency, so at high frequency the output impedance rises and interacts with capacitive loads (Chapter 93).</p>
+<p>The common-source output also has a high open-loop output resistance, kilohms rather than tens of ohms. Feedback divides it by the loop gain, which falls with frequency, so at high frequency the output impedance rises and interacts with capacitive loads (Chapter 88).</p>
 
 </div>
 
@@ -153,13 +153,13 @@ A MOS gate's own leakage is tiny, but every input is protected by diodes to the 
 
 <div className="section-heading"><span>06</span><h2>Treat rail range and low noise as separate goals</h2></div>
 
-**Flicker noise.** CMOS input devices have far higher $1/f$ noise than bipolar ones; corner frequencies of 1–10 kHz are common (Chapter 76). Large input devices lower it, at the cost of capacitance. For DC precision, auto-zero and chopper CMOS amplifiers modulate the input and remove both offset and flicker noise (Chapter 82), introducing switching artifacts of their own.
+**Flicker noise.** CMOS input devices have far higher $1/f$ noise than bipolar ones; corner frequencies of 1–10 kHz are common (Chapter 71). Large input devices lower it, at the cost of capacitance. For DC precision, auto-zero and chopper CMOS amplifiers modulate the input and remove both offset and flicker noise (Chapter 77), introducing switching artifacts of their own.
 
 **Mismatch.** CMOS offsets are typically millivolts untrimmed, larger than bipolar's, because threshold matching is poorer than $V_{BE}$ matching. Trimming at the factory or auto-zeroing brings them to microvolts.
 
-**Low voltage.** Every overdrive and threshold eats into a 1.8 V supply. Designs there use weak inversion, wide-swing biasing (Chapter 63), and single-stage or folded architectures rather than stacked cascodes.
+**Low voltage.** Every overdrive and threshold eats into a 1.8 V supply. Designs there use weak inversion, wide-swing biasing (Chapter 58), and single-stage or folded architectures rather than stacked cascodes.
 
-**The complete comparison.** A CMOS op amp is not simply "better" than a bipolar one: it trades voltage noise and offset for bias current, slew rate and supply range. Chapter 82 turns these trades into a selection method.
+**The complete comparison.** A CMOS op amp is not simply "better" than a bipolar one: it trades voltage noise and offset for bias current, slew rate and supply range. Chapter 77 turns these trades into a selection method.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>CMOS op amps offer picoamp inputs (doubling every 10 °C), rail-to-rail inputs <em>with a transconductance and offset that change across the range</em>, and outputs that reach the rails only at light load.</p></div>
 
@@ -179,13 +179,13 @@ Constant-transconductance control stabilizes bandwidth but does not automaticall
 
 Near a rail, the conducting MOSFET approaches triode operation. A 40 Ω effective on-resistance supplying 2 mA needs roughly 80 mV headroom. Feedback cannot remove this headroom once the gate drive has reached its limit. With lighter loading the output may get much closer; measure source and sink directions separately.
 
-Away from the rail, a common-source output can have appreciable **open-loop** resistance. Its gain depends on the load, so $A\beta$ can fall under heavy loading. The same load then affects gain error, distortion and stability, not just swing. Internal local feedback can shape this resistance with frequency; a single unloaded DC number is insufficient. Capacitive loads add an especially important extra state, developed in Chapter 93.
+Away from the rail, a common-source output can have appreciable **open-loop** resistance. Its gain depends on the load, so $A\beta$ can fall under heavy loading. The same load then affects gain error, distortion and stability, not just swing. Internal local feedback can shape this resistance with frequency; a single unloaded DC number is insufficient. Capacitive loads add an especially important extra state, developed in Chapter 88.
 
 For an ADC with a 0–3.3 V range, a 10 mV residual output floor loses roughly 199 codes of a 16-bit conversion, because one LSB is 50.35 µV. “Rail-to-rail output” alone cannot establish use of the last code. A pull-down or extra negative rail can improve the floor in some architectures, but changes loading, dissipation and power sequencing; verify the amplifier and converter constraints together.
 
 <h3>Class-AB current control keeps the handover smooth</h3>
 
-An efficient output stage should keep a small overlap current near zero load yet deliver much larger current on demand. One useful idealized control law is $I_NI_P=I_Q^2$ together with $I_N-I_P=I_L$. Solving gives
+An efficient output stage should keep a small overlap current near zero load yet deliver much larger current on demand. One useful idealized control law is $I_NI_P=I_Q^2$ together with $I_N-I_P=I_L$. Substitute $I_P = I_N - I_L$ into the product: $I_N^2 - I_LI_N - I_Q^2 = 0$. The quadratic formula, keeping the positive root because currents are positive, gives
 
 <Equation tex={String.raw`I_N=\frac{I_L+\sqrt{I_L^2+4I_Q^2}}2,\qquad I_P=\frac{-I_L+\sqrt{I_L^2+4I_Q^2}}2`}/>
 

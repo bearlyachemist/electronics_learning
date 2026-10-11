@@ -5,13 +5,13 @@ import {AcNoninvCircuit,AcNoninvBodeFigure,ImpedanceScaleFigure,BootstrapBiasCir
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 83</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 78</span><span className="hairline"/>PART III / OP-AMP CIRCUITS</div>
 
 <h1>Noninverting amplifiers and buffers<br/><em>Gain without loading the source.</em></h1>
 
 <p className="dek">Design a buffer and a gain stage with explicit budgets: the resistor scale that balances noise, bias error and output current; AC coupling that keeps a DC path and does not amplify offset; bootstrapping to keep input impedance high; and the settling an ADC driver really needs.</p>
 
-<div className="chapter-meta"><span>55–75 min + exploration</span><span>Ideal op amps (Ch. 77) · DC errors (Ch. 78) · Bandwidth and slew (Ch. 79)</span></div>
+<div className="chapter-meta"><span>55–75 min + exploration</span><span>Ideal op amps (Ch. 72) · DC errors (Ch. 73) · Bandwidth and slew (Ch. 74)</span></div>
 
 </div>
 
@@ -131,7 +131,7 @@ Split $R_B$ into two halves and drive their midpoint from the output through a c
 
 <div className="section-heading"><span>05</span><h2>Buffer the actual source and destination</h2></div>
 
-**Capacitive loads.** The answer to the opening question is yes. A follower has noise gain 1, the lowest possible, so its loop crosses unity at the highest frequency and is the most vulnerable to extra poles. A capacitive load forms such a pole with the op amp's output resistance; a few hundred picofarads can make a follower ring or oscillate. Choose a unity-gain-stable part rated for the load, or isolate the load (Chapter 93).
+**Capacitive loads.** The answer to the opening question is yes. A follower has noise gain 1, the lowest possible, so its loop crosses unity at the highest frequency and is the most vulnerable to extra poles. A capacitive load forms such a pole with the op amp's output resistance; a few hundred picofarads can make a follower ring or oscillate. Choose a unity-gain-stable part rated for the load, or isolate the load (Chapter 88).
 
 **Single supply.** On a single supply, the signal must sit at mid-supply. Bias the plus input from a mid-supply reference, and return $R_G$ (through $C_G$) to ground or to the same reference; returning it to ground without $C_G$ changes the DC gain and drives the output toward a rail.
 

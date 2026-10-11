@@ -628,5 +628,255 @@
         }
       ]
     }
+  ],
+  "digital-cable-interfaces": [
+    {
+      "tag": "RS485",
+      "title": "Bias against two terminations",
+      "prompt": "A 3.3 V bus uses two 120 Ω end terminations and symmetric 470 Ω bias resistors. Estimate idle differential voltage in the simple divider model.",
+      "hint": "The terminations are a 60 Ω equivalent load.",
+      "solution": [
+        {
+          "text": "Voltage is 3.3 × 60/(940 + 60) = 0.198 V. This nominal value needs a full tolerance/leakage and receiver-threshold check; it is not an automatically valid fail-safe design."
+        }
+      ]
+    },
+    {
+      "tag": "ETHERNET",
+      "title": "Small packets have larger overhead",
+      "prompt": "Use a teaching 100-byte Ethernet payload plus 14-byte header, 4-byte FCS, 8-byte preamble and 12-byte gap. Find payload efficiency and ideal 100 Mbit/s payload rate.",
+      "hint": "Count all channel byte-times.",
+      "solution": [
+        {
+          "text": "Efficiency is 100/138 = 72.464%; ideal frame-payload rate is 72.464 Mbit/s before higher-layer overhead."
+        }
+      ]
+    },
+    {
+      "tag": "BUFFERING",
+      "title": "A host pauses the stream",
+      "prompt": "An ADC produces two channels, each 16 bits at 500 kS/s. Host service can pause 30 ms. Find minimum raw payload buffering.",
+      "hint": "Compute combined bytes per second first.",
+      "solution": [
+        {
+          "text": "Combined payload is 2 MB/s. A 30 ms pause accumulates 60 kB. Add metadata, alignment, scheduling margin and a defined overflow policy."
+        }
+      ]
+    }
+  ],
+  "em-fields": [
+    {
+      "tag": "GEOMETRY",
+      "title": "Derive a coax from its dimensions",
+      "prompt": "A coaxial cable has inner radius 0.5 mm, outer radius 1.75 mm and PTFE dielectric with εr = 2.1. Find C′, L′, Z₀ and the wave velocity.",
+      "hint": "Every result depends on ln(b/a); compute it once.",
+      "solution": [
+        {
+          "text": "ln(1.75/0.5) = ln 3.5 = 1.253."
+        },
+        {
+          "text": "C′ = 2πε₀εᵣ/ln(b/a) = 2π(8.854 pF/m)(2.1)/1.253 = 93.3 pF/m."
+        },
+        {
+          "text": "L′ = (μ₀/2π) ln(b/a) = 2×10⁻⁷ × 1.253 = 250.6 nH/m."
+        },
+        {
+          "text": "Z₀ = √(L′/C′) = 51.8 Ω, matching (60 Ω/√2.1) × 1.253. Velocity c/√2.1 = 2.07×10⁸ m/s."
+        }
+      ]
+    },
+    {
+      "tag": "SKIN",
+      "title": "Find the AC resistance of a thin wire",
+      "prompt": "At 100 MHz, find the skin depth in copper (ρ = 1.72×10⁻⁸ Ω·m) and the resistance per metre of a 0.5 mm diameter wire. Compare with its DC resistance.",
+      "hint": "δ falls as 1/√f from 66 µm at 1 MHz; the current flows in a layer of area 2πaδ.",
+      "solution": [
+        {
+          "text": "δ = √(2ρ/ωμ₀) = 6.60 µm at 100 MHz."
+        },
+        {
+          "text": "R′_ac ≈ 1/(2πaσδ) = 1/(2π × 0.25 mm × 5.81×10⁷ S/m × 6.60 µm) = 1.66 Ω/m."
+        },
+        {
+          "text": "R′_dc = ρ/(πa²) = 87.6 mΩ/m, so the ratio is a/(2δ) ≈ 19."
+        }
+      ]
+    },
+    {
+      "tag": "COUPLING",
+      "title": "Estimate inductive crosstalk",
+      "prompt": "A victim loop 3 cm long has its two conductors 5 mm and 7 mm from a long aggressor wire. The aggressor carries a 0.5 A step with a 2 ns rise. Estimate the mutual inductance and the induced voltage.",
+      "hint": "Integrate B = μ₀I/(2πr) across the loop.",
+      "solution": [
+        {
+          "text": "M = (μ₀ℓ/2π) ln(r₂/r₁) = 2×10⁻⁷ × 0.03 × ln 1.4 = 2.02 nH."
+        },
+        {
+          "text": "dI/dt = 0.5 A / 2 ns = 2.5×10⁸ A/s, so v = M dI/dt ≈ 0.50 V during the edge."
+        },
+        {
+          "text": "Halving the loop width or moving it twice as far away both reduce the logarithm and the pickup."
+        }
+      ]
+    }
+  ],
+  "rf-components-smith": [
+    {
+      "tag": "SELF-RESONANCE",
+      "title": "Find where a bypass capacitor stops working",
+      "prompt": "A 10 nF capacitor has 0.8 nH of mounting inductance. Find its self-resonant frequency and its reactance at 200 MHz.",
+      "hint": "Series resonance occurs at 1/(2π√(LC)).",
+      "solution": [
+        {
+          "text": "f_sr = 1/(2π√(0.8 nH × 10 nF)) = 56.3 MHz."
+        },
+        {
+          "text": "At 200 MHz: ωL − 1/(ωC) = 1.005 − 0.080 = 0.93 Ω, inductive."
+        },
+        {
+          "text": "Above 56 MHz the part behaves as 0.8 nH; a smaller package or a second, smaller capacitor raises the useful range."
+        }
+      ]
+    },
+    {
+      "tag": "Q",
+      "title": "Convert an inductor's loss to parallel form",
+      "prompt": "A 470 nH coil has 0.8 Ω effective series resistance at 25 MHz. Find Q, the parallel equivalent resistance, the capacitance that resonates it and the tank bandwidth.",
+      "hint": "R_p = R_s(1 + Q²); bandwidth is f₀/Q.",
+      "solution": [
+        {
+          "text": "X = 2π(25 MHz)(470 nH) = 73.8 Ω, so Q = 92.3."
+        },
+        {
+          "text": "R_p = 0.8(1 + 92.3²) ≈ 6.82 kΩ; X_p ≈ 73.8 Ω is essentially unchanged."
+        },
+        {
+          "text": "C = 1/(ωX) = 86.2 pF and B = 25 MHz/92.3 ≈ 271 kHz."
+        }
+      ]
+    },
+    {
+      "tag": "QUARTER WAVE",
+      "title": "Design and stress a quarter-wave transformer",
+      "prompt": "Match a 12.5 Ω load to 50 Ω at 1 GHz with a quarter-wave line on a board with effective permittivity 4. Find the line impedance and length, then the return loss at 1.2 GHz.",
+      "hint": "Z_T = √(Z₀Z_L). At 1.2 GHz the same line is 108° long; use the general Z_in formula.",
+      "solution": [
+        {
+          "text": "Z_T = √(50 × 12.5) = 25 Ω; λ/4 = (0.3 m/2)/4 = 37.5 mm."
+        },
+        {
+          "text": "At 1.2 GHz, βℓ = 108° and tan βℓ = −3.078: Z_in = 25(12.5 − j76.9)/(25 − j38.5) = 38.9 − j17.1 Ω."
+        },
+        {
+          "text": "Γ = (Z_in − 50)/(Z_in + 50) has magnitude 0.226, a return loss of 12.9 dB, down from a perfect match at 1 GHz."
+        }
+      ]
+    }
+  ],
+  "oscillators-pll": [
+    {
+      "tag": "COLPITTS",
+      "title": "Size a Colpitts oscillator",
+      "prompt": "Design a 5 MHz Colpitts oscillator with a 2.2 µH inductor of Q = 40 and equal capacitors. Find C₁, C₂ and the minimum transconductance.",
+      "hint": "C_s = 1/(ω₀²L), then g_m > rω₀²C₁C₂ with r = ω₀L/Q.",
+      "solution": [
+        {
+          "text": "C_s = 1/((2π × 5 MHz)² × 2.2 µH) = 461 pF, so C₁ = C₂ = 921 pF."
+        },
+        {
+          "text": "r = ω₀L/Q = 69.1/40 = 1.73 Ω."
+        },
+        {
+          "text": "g_m > 1.73 × (3.14×10⁷)² × (921 pF)² = 1.45 mS; with threefold margin, about 4.3 mS."
+        }
+      ]
+    },
+    {
+      "tag": "CRYSTAL",
+      "title": "Predict crystal pulling from layout",
+      "prompt": "A 25 MHz crystal has C_m = 8 fF and C₀ = 3 pF and is calibrated for a 10 pF load. The board actually presents 12 pF. Find the frequency error.",
+      "hint": "f_L ≈ f_s[1 + C_m/(2(C₀ + C_L))]; compare the two loads.",
+      "solution": [
+        {
+          "text": "At 10 pF: offset = 25 MHz × 8 fF/(2 × 13 pF) = 7.69 kHz above f_s."
+        },
+        {
+          "text": "At 12 pF: 25 MHz × 8 fF/(2 × 15 pF) = 6.67 kHz."
+        },
+        {
+          "text": "The oscillator runs 1.03 kHz, or 41 ppm, low. Reduce the load capacitors by the stray capacitance to recover the calibration."
+        }
+      ]
+    },
+    {
+      "tag": "PLL",
+      "title": "Design a charge-pump loop filter",
+      "prompt": "A 2.4 GHz synthesizer uses a 10 MHz reference, I_cp = 0.5 mA and K_v = 2π × 100 MHz/V. Choose R and C for f_n = 50 kHz and ζ = 0.7, and find how much reference phase noise is amplified in-band.",
+      "hint": "N = f_out/f_ref; C = I_cpK_v/(2πNω_n²) and R = 2ζ/(ω_nC).",
+      "solution": [
+        {
+          "text": "N = 240. ω_n = 2π × 50 kHz = 3.14×10⁵ rad/s."
+        },
+        {
+          "text": "C = (0.5 mA)(6.28×10⁸)/(2π × 240 × (3.14×10⁵)²) = 2.11 nF; R = 1.4/(3.14×10⁵ × 2.11 nF) = 2.11 kΩ."
+        },
+        {
+          "text": "In-band reference noise rises by 20 log₁₀ 240 = 47.6 dB. The 50 kHz loop is 200 times slower than the comparison rate, so the continuous model is reasonable."
+        }
+      ]
+    }
+  ],
+  "antennas-propagation": [
+    {
+      "tag": "EFFICIENCY",
+      "title": "Judge a short antenna",
+      "prompt": "A 15 cm dipole is used at 27 MHz. Find its radiation resistance and its efficiency if conductor and matching losses total 3 Ω.",
+      "hint": "R_rad = 80π²(ℓ/λ)².",
+      "solution": [
+        {
+          "text": "λ = 11.1 m, so ℓ/λ = 0.0135 and R_rad = 790 × 1.83×10⁻⁴ = 0.144 Ω."
+        },
+        {
+          "text": "Efficiency = 0.144/(0.144 + 3) = 4.6%, a loss of 13.4 dB."
+        },
+        {
+          "text": "The antenna is electrically short; a longer element or a lower-loss matching network matters more than any other change."
+        }
+      ]
+    },
+    {
+      "tag": "LINK",
+      "title": "Budget a sub-GHz link",
+      "prompt": "A 915 MHz link uses 14 dBm transmit power, 0 dBi antennas, −110 dBm receiver sensitivity and a 15 dB fade margin. Estimate free-space range.",
+      "hint": "Find the path loss at 1 m, then the extra loss the budget allows.",
+      "solution": [
+        {
+          "text": "λ = 0.328 m; path loss at 1 m = 20 log₁₀(4π/0.328) = 31.7 dB."
+        },
+        {
+          "text": "Allowed path loss = 14 + 0 + 0 + 110 − 15 = 109 dB, which is 77.3 dB beyond 1 m."
+        },
+        {
+          "text": "Range ≈ 10^(77.3/20) ≈ 7.3 km in free space; terrain and obstructions reduce it further."
+        }
+      ]
+    },
+    {
+      "tag": "EMC",
+      "title": "Find the allowable cable current",
+      "prompt": "An emission limit is 40 dBµV/m at 3 m. How much common-mode current may flow on a 1.5 m cable at 200 MHz under the E_cm ≈ 1.26×10⁻⁶ fℓI/r estimate?",
+      "hint": "Convert 40 dBµV/m to volts per metre first.",
+      "solution": [
+        {
+          "text": "40 dBµV/m = 100 µV/m."
+        },
+        {
+          "text": "I = Er/(1.26×10⁻⁶ fℓ) = (10⁻⁴ × 3)/(1.26×10⁻⁶ × 2×10⁸ × 1.5) ≈ 0.80 µA."
+        },
+        {
+          "text": "Less than a microampere: common-mode chokes and connector filtering are sized for this, not for the signal current."
+        }
+      ]
+    }
   ]
 }

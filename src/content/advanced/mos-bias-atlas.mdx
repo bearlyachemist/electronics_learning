@@ -4,13 +4,13 @@ import {BiasAtlasCircuit,OutputFamilyFigure,GainVsGateFigure,ThresholdSpreadFigu
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 57</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 52</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>MOSFET bias: an operating-point atlas<br/><em>A gain calculation starts with a current.</em></h1>
 
 <p className="dek">Solve a gate-biased NMOS stage with drain and source resistors, decide which region it is in, read its transconductance from the operating point, and make the bias survive part-to-part spread before choosing a signal swing.</p>
 
-<div className="chapter-meta"><span>60–80 min + exploration</span><span>MOSFET physics (Ch. 52) · Common-source basics (Ch. 53)</span></div>
+<div className="chapter-meta"><span>60–80 min + exploration</span><span>MOSFET physics (Ch. 50) · Common-source basics (Ch. 51)</span></div>
 
 </div>
 
@@ -44,7 +44,7 @@ At DC the capacitors are open circuits, so the circuit has three facts. The gate
 
 We use the long-channel law with $u = V_{GS} - V_T$, the **overdrive**:
 
-<Equation tex={String.raw`I_D=\begin{cases}0 & u\le 0\ \text{(cutoff)}\\[2pt] k\left(uV_{DS}-\tfrac12V_{DS}^2\right) & 0\le V_{DS}\le u\ \text{(triode)}\\[2pt] \tfrac12 k\,u^2\,(1+\lambda V_{DS}) & V_{DS}\ge u\ \text{(saturation)}\end{cases}`} label="THE DEVICE LAW USED IN CHAPTERS 57–76"/>
+<Equation tex={String.raw`I_D=\begin{cases}0 & u\le 0\ \text{(cutoff)}\\[2pt] k\left(uV_{DS}-\tfrac12V_{DS}^2\right) & 0\le V_{DS}\le u\ \text{(triode)}\\[2pt] \tfrac12 k\,u^2\,(1+\lambda V_{DS}) & V_{DS}\ge u\ \text{(saturation)}\end{cases}`} label="THE DEVICE LAW USED IN CHAPTERS 52–71"/>
 
 Here $k = \mu_n C_{ox} W/L$. Unless stated otherwise, $k$ = 2 mA/V², $V_T$ = 1 V and $\lambda$ = 0. In saturation the slope of the current with gate voltage is the transconductance:
 
@@ -84,7 +84,7 @@ The figure shows the method, but by hand we use algebra. **Assume** a region, so
 
 <p>Now the node voltages: $V_S$ = 0.268 V, $V_D = 5 - 0.536 × 2$ = 3.93 V, $V_{DS}$ = 3.66 V. The overdrive is $u = 2 - 0.268 - 1$ = 0.732 V. Test: $V_{DS}$ = 3.66 V ≥ 0.732 V, so saturation holds with 2.93 V of margin.</p>
 
-<p>Finally, the slopes: $g_m = ku$ = 1.46 mS, and with the source resistor unbypassed the gain is $-g_mR_D/(1+g_mR_S)$ = −2.93/1.73 = <strong>−1.69</strong>. With $C_S$ fitted the source is grounded for signals and the gain is $-g_mR_D$ = <strong>−2.93</strong>.</p>
+<p>Finally, the slopes: $g_m = ku$ = 1.46 mS. With the source resistor unbypassed, KCL at the source node gives $v_s = i_dR_S$ with $i_d = g_m(v_g - v_s)$, so $i_d = g_mv_g/(1 + g_mR_S)$, and the drain moves by $-i_dR_D$. The gain is $-g_mR_D/(1+g_mR_S)$ = −2.93/1.73 = <strong>−1.69</strong>. With $C_S$ fitted the source is grounded for signals and the gain is $-g_mR_D$ = <strong>−2.93</strong>.</p>
 
 </div>
 
@@ -128,7 +128,7 @@ Now the opening question has its answer. In saturation, gain $= -g_mR_D = -kuR_D
 
 <div className="section-heading"><span>04</span><h2>Make the current survive part-to-part spread</h2></div>
 
-Threshold voltage is the least predictable MOSFET parameter. A discrete small-signal part may specify $V_T$ anywhere from 0.8 to 3 V; even matched integrated devices drift by about −2 mV/°C. A bias that sets $V_{GS}$ directly therefore sets the current only loosely. Differentiate the saturation law with a source resistor present:
+Threshold voltage is the least predictable MOSFET parameter. A discrete small-signal part may specify $V_T$ anywhere from 0.8 to 3 V; even matched integrated devices drift by about −2 mV/°C. A bias that sets $V_{GS}$ directly therefore sets the current only loosely. Differentiate the saturation law with a source resistor present. The gate loop gives $V_{GS} = V_G - I_DR_S$, so with $V_G$ fixed a current change moves the gate-source voltage by $\delta V_{GS} = -R_S\,\delta I_D$. The device law gives $\delta I_D = g_m(\delta V_{GS} - \delta V_T)$, because the current depends only on the overdrive $V_{GS} - V_T$. Substitute the first into the second and collect $\delta I_D(1 + g_mR_S) = -g_m\,\delta V_T$:
 
 <Equation tex={String.raw`\frac{\partial I_D}{\partial V_T}=-\frac{g_m}{1+g_mR_S}`} label="BIAS SENSITIVITY TO THRESHOLD"/>
 
@@ -174,11 +174,11 @@ A positive saturation margin at the quiescent point says the stage is an amplifi
 
 </div>
 
-That square law is the second limit. With gate signal $v_g$, the drain current changes by
+That square law is the second limit. With gate signal $v_g$, expand $\tfrac12k(u + v_g)^2 - \tfrac12ku^2$; the $\tfrac12ku^2$ cancels and the drain current changes by
 
 <Equation tex={String.raw`\Delta i_D=k\left(u\,v_g+\tfrac12v_g^2\right)=g_mv_g\left(1+\frac{v_g}{2u}\right)`}/>
 
-The bracket is the distortion: a sine input produces a second harmonic of relative size $v_g/(4u)$. At the 2 V bias ($u$ = 1 V) a 0.1 V gate peak gives 2.5% second harmonic and an output that swings −0.42 V / +0.38 V. A 0.25 V peak gives 6.3%, an output of −1.13 V / +0.88 V, and a visibly lopsided waveform. Large overdrive buys linearity; small overdrive buys $g_m$ per milliampere. That tension runs through every MOS chapter that follows.
+The bracket is the distortion. For $v_g = a\cos\theta$, the squared term is $\tfrac12ka^2\cos^2\theta = \tfrac14ka^2(1 + \cos2\theta)$, while the linear term has amplitude $kua$: a sine input produces a second harmonic of relative size $(ka^2/4)/(kua) = a/(4u)$. At the 2 V bias ($u$ = 1 V) a 0.1 V gate peak gives 2.5% second harmonic and an output that swings −0.42 V / +0.38 V. A 0.25 V peak gives 6.3%, an output of −1.13 V / +0.88 V, and a visibly lopsided waveform. Large overdrive buys linearity; small overdrive buys $g_m$ per milliampere. That tension runs through every MOS chapter that follows.
 
 | Gate peak | 2nd harmonic $v_g/4u$ | Drain down / up | Region at peak |
 |---|---|---|---|

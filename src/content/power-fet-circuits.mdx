@@ -5,7 +5,7 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 55</span><span className="hairline"/>FIELD-EFFECT TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 96</span><span className="hairline"/>PART IV / POWER SWITCHES</div>
 
 <h1>Power stages & IGBTs<br/><em>Follow the current through every state.</em></h1>
 
@@ -40,7 +40,7 @@ An inductor keeps current flowing when gate commands change. Body diodes, enhanc
 
 For a low-side switch, the source stays near ground. For a high-side n-channel device, the source rises toward the positive rail when the switch turns on. Keeping $V_{GS}$ at 10 V on a 24 V rail therefore requires a gate near 34 V relative to ground. A 10 V ground-referenced gate command is insufficient.
 
-A floating high-side driver can obtain this voltage from an isolated supply, charge pump or bootstrap capacitor. A bootstrap charges when the switching node is low and then rides upward with it. Its voltage droops as it supplies gate charge and driver current:
+A floating high-side driver can obtain this voltage from an isolated supply, charge pump or bootstrap capacitor. A bootstrap charges when the switching node is low and then rides upward with it. Its voltage droops as it supplies gate charge and driver current. While the high side is on, the capacitor is disconnected from its charging source, so every coulomb it delivers lowers its voltage by $1/C_{boot}$: gate charge, the driver's quiescent current integrated over the on-time, and any other demand all add:
 
 <Equation tex="\Delta V_{\mathrm{boot}}\approx\frac{Q_g+I_{\mathrm{driver}}t_{\mathrm{on}}+Q_{\mathrm{other}}}{C_{\mathrm{boot}}}" />
 
@@ -58,7 +58,7 @@ A half bridge places one switch from the positive rail to the switching node and
 
 If both switches conduct simultaneously, they short the rails. Dead time deliberately leaves both off during transitions. Too little invites shoot-through; too much forces extra diode conduction and can distort an inverter waveform. Propagation-delay mismatch, gate discharge and Miller-induced turn-on all affect the necessary interval.
 
-For current I, diode forward drop VF, two equal dead intervals $t_d$ per cycle and frequency $f_s$, a first estimate is:
+For current I, diode forward drop VF, two equal dead intervals $t_d$ per cycle and frequency $f_s$: during each dead interval the diode dissipates $V_FI$ for a time $t_d$, so the energy per cycle is $2V_FIt_d$, and a first estimate is:
 
 <Equation tex="P_{\mathrm{dead}}\approx2V_F I t_d f_s" />
 
@@ -74,15 +74,15 @@ An H bridge uses two half bridges to apply either polarity across a load. The in
 
 <BuckCircuitFigure/>
 
-In an ideal continuous-current buck, the high-side switch connects $V_{in}$ to the inductor for fraction D of each cycle. During the remaining interval, a diode or synchronous low-side MOSFET provides the return path. Steady-state inductor volt-seconds sum to zero:
+In an ideal continuous-current buck, the high-side switch connects $V_{in}$ to the inductor for fraction D of each cycle. During the remaining interval, a diode or synchronous low-side MOSFET provides the return path. The inductor obeys $v_L = L\,di/dt$. In steady state the current returns to the same value at the end of every cycle, so the net change over a period is zero, $\int v_L\,dt = L\,\Delta i = 0$. During the on-interval $DT$ the inductor sees $V_{in} - V_o$; during the off-interval $(1-D)T$ its input end is held at ground, so it sees $-V_o$. Steady-state inductor volt-seconds therefore sum to zero:
 
 <Equation tex="D(V_{\mathrm{in}}-V_o)+(1-D)(-V_o)=0,\qquad V_o=DV_{\mathrm{in}}" />
 
-For 24 V to 12 V, D = 0.5. At 100 kHz with L = 100 μH, on-time is 5 μs and ripple is:
+For 24 V to 12 V, D = 0.5. During the on-time $t_{on} = D/f_s$, the inductor current rises at the constant rate $(V_{in} - V_o)/L$, so its peak-to-peak ripple is that slope times $t_{on}$. At 100 kHz with L = 100 μH, on-time is 5 μs and ripple is:
 
 <Equation tex="\Delta I_L=\frac{(V_{\mathrm{in}}-V_o)D}{Lf_s}=0.60\ \mathrm A" />
 
-At a 5 A average load, current runs from 4.7 to 5.3 A, so continuous-current operation is consistent. Each switch's conduction calculation uses its own interval and hot resistance. For a 20 mΩ high-side device:
+At a 5 A average load, current runs from 4.7 to 5.3 A, so continuous-current operation is consistent. Each switch's conduction calculation uses its own interval and hot resistance. Using the triangular-ripple mean square of Chapter 95, $I_o^2 + \Delta I_L^2/12$, over the high side's share D of each period, for a 20 mΩ high-side device:
 
 <Equation tex="P_H\approx R_H D\left(I_o^2+\frac{\Delta I_L^2}{12}\right)=0.2503\ \mathrm W" />
 
@@ -131,6 +131,8 @@ The stored carriers must be removed when the device turns off. A current tail ca
 An IGBT's on-state is often approximated locally by a voltage intercept plus resistance:
 
 <Equation tex="V_{CE}\approx V_0+rI,\qquad P_{\mathrm{cond}}\approx D(V_0I+rI^2)" />
+
+The power follows from $V_{CE}\,I$ during conduction, averaged over the fraction $D$ of time the device is on (for a constant current $I$).
 
 For rough calculations at a specified current, a given $V_{CE}$(sat) can be used as a fixed drop. Switching energy is often more useful than edge-time estimates:
 

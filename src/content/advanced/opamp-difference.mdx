@@ -4,13 +4,13 @@ import {CmrrMismatchFigure,CmrrMonteCarloFigure,CurrentSenseCircuit} from '../..
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 85</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 80</span><span className="hairline"/>PART III / OP-AMP CIRCUITS</div>
 
 <h1>Difference amplifiers and resistor CMRR<br/><em>Subtract two large voltages, keep the small difference.</em></h1>
 
 <p className="dek">Derive the four-resistor difference amplifier without assuming the ratios match, separate its differential and common-mode gains, find how resistor mismatch sets its CMRR, and check it statistically and in a real current-sensing circuit.</p>
 
-<div className="chapter-meta"><span>50–70 min</span><span>Inverting and noninverting amplifiers (Chs. 83–84) · Pair CMRR (Ch. 71)</span></div>
+<div className="chapter-meta"><span>50–70 min</span><span>Inverting and noninverting amplifiers (Chs. 83–84) · Pair CMRR (Ch. 66)</span></div>
 
 </div>
 
@@ -50,7 +50,24 @@ Equal nominal resistors give unity subtraction only if their ratios are actually
 
 <div className="section-heading"><span>02</span><h2>Expose differential and common-mode terms</h2></div>
 
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE DIFFERENCE AMPLIFIER BY SUPERPOSITION</span>
+
+1. **$V_2$ alone** ($V_1$ grounded). The divider puts $v_+ = V_2R_4/(R_3+R_4) = V_2\,b/(1+b)$ on the plus input. With $V_1$ grounded, $R_1$ and $R_2$ form an ordinary noninverting gain of $1 + R_2/R_1 = 1 + a$, so this input contributes $(1+a)\,b\,V_2/(1+b)$.
+
+2. **$V_1$ alone** ($V_2$ grounded). No current flows in $R_3$ and $R_4$, so the plus input sits at 0 V, and the minus input is a virtual ground. KCL there gives $V_1/R_1 = -V_O/R_2$, a contribution of $-aV_1$.
+
+3. **Add** (the circuit is linear):
 <Equation tex={String.raw`V_O=-aV_1+cV_2,\qquad c=\frac{(1+a)\,b}{1+b}`}/>
+
+4. **Change variables.** Substitute $V_1 = V_C - v_d/2$ and $V_2 = V_C + v_d/2$ and collect terms in $V_C$ and $v_d$: the coefficient of $v_d$ is $(a + c)/2$, and the coefficient of $V_C$ is $c - a$.
+
+5. **Mismatch.** Put $b = a(1+\epsilon)$ into $c$ and subtract $a$:
+<Equation tex={String.raw`c-a=a\,\frac{(1+a)(1+\epsilon)-(1+a+a\epsilon)}{1+a+a\epsilon}=\frac{a\,\epsilon}{1+a+a\epsilon}\approx\frac{a\,\epsilon}{1+a}`}/>
+   With $A_d \approx a = G$, the CMRR is $A_d/A_{cm} \approx (1+G)/\epsilon$.
+
+</div>
 
 Rewrite the inputs as a common-mode voltage and a difference, $V_1 = V_C - v_d/2$ and $V_2 = V_C + v_d/2$:
 
@@ -126,7 +143,7 @@ Both are useful, for different questions. "Will every unit meet 54 dB?" needs th
 
 <div className="section-heading"><span>06</span><h2>Check source and input range together</h2></div>
 
-**Unequal input impedances.** The minus input looks like $R_1$ to its source; the plus input looks like $R_3 + R_4$. A common-mode voltage therefore draws different currents from the two inputs. If the sources have unequal impedances, the voltages reaching the resistors differ, which is a ratio mismatch. With 10 kΩ input resistors, a 100 Ω source on one input and none on the other is a 1% ratio error, limiting CMRR to 46 dB at unity gain. Buffer the inputs (Chapter 86) when source impedances are significant or unequal.
+**Unequal input impedances.** The minus input looks like $R_1$ to its source; the plus input looks like $R_3 + R_4$. A common-mode voltage therefore draws different currents from the two inputs. If the sources have unequal impedances, the voltages reaching the resistors differ, which is a ratio mismatch. With 10 kΩ input resistors, a 100 Ω source on one input and none on the other is a 1% ratio error, limiting CMRR to 46 dB at unity gain. Buffer the inputs (Chapter 81) when source impedances are significant or unequal.
 
 **AC common-mode rejection.** Stray capacitances across the resistors, if unequal, make the ratios frequency dependent. A difference amplifier with 90 dB of DC CMRR may have 50 dB at 100 kHz. Symmetric layout and matched capacitors across $R_2$ and $R_4$ help; so does filtering both inputs identically.
 

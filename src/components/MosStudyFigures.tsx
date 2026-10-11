@@ -6,7 +6,7 @@ const xs=(a:number,b:number,n=200)=>Array.from({length:n+1},(_,i)=>a+(b-a)*i/n);
 const slope=(fn:(x:number)=>number,x:number,h=1e-4)=>(fn(x+h)-fn(x-h))/(2*h);
 const K=.002,VT=1;
 
-/* ---------- Chapter 57: bias atlas ---------- */
+/* ---------- Chapter 52: bias atlas ---------- */
 export function BiasAtlasCircuit(){
  const q=S.fetPins({at:[386,180]});
  return <S.Figure caption="The circuit used throughout this chapter. A 3 MΩ / 2 MΩ divider holds the gate at 2.0 V while drawing only 1 µA; the coupling capacitor adds the signal without disturbing that DC level. $R_S$ is 0 or 500 Ω in the examples. The optional bypass capacitor $C_S$ grounds the source for signals while leaving the DC bias unchanged. The body is tied to the source, as in a discrete MOSFET.">
@@ -46,7 +46,7 @@ export function ThresholdSpreadFigure(){
  <Plot curves={cases.map(([vg,rs,name,color])=>({name,color,points:xs(.7,1.3).map(vt=>[vt,bias({vg,rs,vt}).id*1e3] as [number,number])}))} xRange={[.7,1.3]} yRange={[0,1.8]} xLabel="THRESHOLD VOLTAGE V_T / V" yLabel="DRAIN CURRENT / mA" description="Drain current against threshold voltage for three bias circuits; the one with a one kilohm source resistor is flattest."/></S.Figure>;
 }
 
-/* ---------- Chapter 58: diode-connected loads ---------- */
+/* ---------- Chapter 53: diode-connected loads ---------- */
 // Output of an NMOS input (k = 2 mA/V²) loaded by a diode-connected NMOS of k·ratio on 5 V. Thresholds 1 V.
 const diodeOut=(vin:number,ratio:number,gamma=0)=>{
  const f=(v:number)=>channel(vin,v,K,VT).id-channel(5-v,5-v,K*ratio,bodyThreshold(VT,gamma,.6,v)).id;
@@ -101,7 +101,7 @@ export function DiodeBodyFigure(){
   xRange={[0,5]} yRange={[0,4.5]} xLabel="INPUT V_in / V" yLabel="OUTPUT V_out / V" description="With a grounded body the transfer curve sits lower and is no longer straight."/></S.Figure>;
 }
 
-/* ---------- Chapter 59: basic current mirror ---------- */
+/* ---------- Chapter 54: basic current mirror ---------- */
 export function MirrorResistorCircuit(){
  const l=S.fetPins({at:[250,250],flip:true}),r=S.fetPins({at:[450,250]});
  return <S.Figure caption="A complete mirror. $R_{REF}$ from the 5 V rail sets the reference: $M_1$, diode connected, settles at the gate voltage that makes its drain current equal to the resistor current, 2.0 V at 1 mA for $k$ = 2 mA/V². $M_2$ shares that gate voltage and copies the current into whatever load hangs on its drain, provided its drain stays above the 1 V overdrive.">
@@ -138,7 +138,7 @@ export function MirrorMismatchFigure(){
   xRange={[0,1.5]} yRange={[0,6]} xLabel="OVERDRIVE u / V" yLabel="1σ CURRENT MISMATCH / %" description="Current mismatch falls with overdrive as the threshold contribution shrinks, approaching the constant k mismatch."/></S.Figure>;
 }
 
-/* ---------- Chapter 60: ratioed and complementary mirrors ---------- */
+/* ---------- Chapter 55: ratioed and complementary mirrors ---------- */
 export function BiasTreeCircuit(){
  const m1=S.fetPins({at:[134,250],flip:true}),m5=S.fetPins({at:[300,250]}),m2=S.fetPins({at:[460,250]}),m3=S.fetPins({at:[488,100],kind:'pmos',flip:true}),m4=S.fetPins({at:[630,100],kind:'pmos'});
  return <S.Figure caption="A bias tree. One resistor sets a 100 µA reference in $M_1$. NMOS copies sink current: $M_5$, four unit devices in parallel, sinks 400 µA; $M_2$ sinks 100 µA out of the diode-connected PMOS $M_3$, which turns it into a PMOS gate voltage. $M_4$, two PMOS units, then sources 200 µA into a grounded load. Sinks and sources for a whole chip can hang off one reference this way. All units: $k$ = 2 mA/V², $|V_T|$ = 1 V.">
@@ -174,7 +174,7 @@ export function UnitRatioFigure(){
   xRange={[0,10]} yRange={[-1,20]} xLabel="UNIT DRAWN WIDTH W / µm" yLabel="RATIO ERROR / %" description="A single wide device has a ratio error falling from about nineteen percent at half a micrometre to under one percent at ten; parallel unit devices have zero systematic error."/></S.Figure>;
 }
 
-/* ---------- Chapter 61: source degeneration ---------- */
+/* ---------- Chapter 56: source degeneration ---------- */
 // Saturated NMOS (k/2 = 1 mA/V², V_T = 1 V) with source resistor R (kΩ), biased at 1 mA; current in mA for gate signal v.
 const degI=(v:number,R:number)=>{const a=1+R+v;if(a<=0)return 0;if(R===0)return a*a;const t=(-1+Math.sqrt(1+4*R*a))/(2*R);return t*t;};
 export function DegenSmallSignalFigure(){
@@ -206,7 +206,7 @@ export function DegenMismatchFigure(){
   xRange={[0,3]} yRange={[0,2.2]} xLabel="SOURCE RESISTANCE R_S / kΩ" yLabel="CURRENT MISMATCH / %" description="Threshold contribution falls and resistor contribution rises as source resistance increases; the combined mismatch falls from two percent toward one."/></S.Figure>;
 }
 
-/* ---------- Chapter 62: cascode mirror ---------- */
+/* ---------- Chapter 57: cascode mirror ---------- */
 // Standard four-transistor cascode mirror, all devices k = 2 mA/V², V_T = 1 V, λ = 0.02 V⁻¹, bodies tied to sources.
 const cascOut=(vout:number,iref:number,vb?:number)=>{
  const v0=diodeVoltage({iref,k:K,vt:VT,lambda:.02}),b=vb??2*v0;
@@ -242,7 +242,7 @@ export function CascodeRoutFigure(){
   xScale="log" yScale="log" xRange={[.01,5]} yRange={[.01,1e5]} xLabel="BIAS CURRENT / mA" yLabel="OUTPUT RESISTANCE / MΩ" description="Log-log plot: simple mirror output resistance falls as one over current, cascode as current to the minus three halves, always about a hundred times higher."/></S.Figure>;
 }
 
-/* ---------- Chapter 63: wide-swing cascode ---------- */
+/* ---------- Chapter 58: wide-swing cascode ---------- */
 // General cascode output: lower gate at the reference V_GS, upper gate at vb. k = 8 mA/V², V_T = 0.7 V, λ = 0.05 V⁻¹.
 const WK=.008,WT=.7,WL=.05;
 const wideOut=(vout:number,iref:number,vb:number)=>{
@@ -277,7 +277,7 @@ export function WideSwingOutputFigure(){
   xRange={[0,2.5]} yRange={[200,270]} xLabel="OUTPUT VOLTAGE V_OUT / V" yLabel="OUTPUT CURRENT / µA" description="Wide-swing cascode current flattens at about 0.6 volts; standard cascode at about 1.2 volts; simple mirror slopes throughout."/></S.Figure>;
 }
 
-/* ---------- Chapter 64: resistor-loaded common source ---------- */
+/* ---------- Chapter 59: resistor-loaded common source ---------- */
 export function CsDesignCircuit(){
  const q=S.fetPins({at:[386,190]});
  return <S.Figure caption="The worked design of this chapter: gain about −8 into a 10 kΩ load from 5 V. A 1 mA drain current with 0.4 V of overdrive gives $g_m$ = 5 mS. $R_S$ sets the bias by feedback and is bypassed by $C_S$ for signals. $C_{in}$ and $C_{out}$ block DC at the input and output.">
@@ -313,7 +313,7 @@ export function CsDistortionFigure(){
   xRange={[0,1.5]} yRange={[0,15]} xLabel="OUTPUT PEAK / V" yLabel="SECOND HARMONIC / %" description="Straight lines of distortion against output amplitude; the larger the product of drain current and load resistance, the shallower the line."/></S.Figure>;
 }
 
-/* ---------- Chapter 65: active loads ---------- */
+/* ---------- Chapter 60: active loads ---------- */
 // NMOS input and PMOS current-source load, both k = 2 mA/V², |V_T| = 1 V, λ = 0.02 V⁻¹, 5 V. PMOS V_SG fixed for 1 mA at V_O = 2.5 V.
 const AL=.02,VSGP=1+Math.sqrt(2*.001/(K*(1+AL*2.5)));
 const pCur=(vo:number)=>channel(VSGP,Math.max(0,5-vo),K,VT,AL).id;
@@ -355,7 +355,7 @@ export function ActiveGbwFigure(){
   xScale="log" xRange={[1e3,1e9]} yRange={[-20,40]} xLabel="FREQUENCY / Hz" yLabel="GAIN / dB" description="Three single-pole responses with different low-frequency gains meeting a common minus twenty decibel per decade asymptote."/></S.Figure>;
 }
 
-/* ---------- Chapter 66: resistor-loaded source follower ---------- */
+/* ---------- Chapter 61: resistor-loaded source follower ---------- */
 export function FollowerBufferCircuit(){
  const q=S.fetPins({at:[336,170]});
  return <S.Figure caption="A source follower as a buffer. A 100 kΩ sensor cannot drive a 2 kΩ load directly: the divider would pass only 2% of its signal. The MOSFET's gate draws no current, so the sensor sees an open circuit, while the source drives the load from a resistance of about $1/g_m$ ≈ 640 Ω. The gate bias of 3 V comes from the sensor's own DC level or a bias network, omitted here. The body is tied to the source.">
@@ -382,7 +382,7 @@ export function FollowerSlewFigure(){
  <Plot curves={[{name:'Gate',color:S.gray,dashed:true,points:gate},{name:'Source output',color:S.green,points:pts}]} xRange={[0,80]} yRange={[0,4.5]} xLabel="TIME / µs" yLabel="VOLTAGE / V" description="Square-wave gate drive; the source output rises within about a microsecond but falls exponentially over about ten microseconds."/></S.Figure>;
 }
 
-/* ---------- Chapter 67: current-loaded follower ---------- */
+/* ---------- Chapter 62: current-loaded follower ---------- */
 export function LevelShiftCircuit(){
  const m1=S.fetPins({at:[420,120]}),m2=S.fetPins({at:[420,270]}),m3=S.fetPins({at:[220,270],flip:true});
  return <S.Figure caption="A current-loaded follower used as a level shifter. $M_3$ and $M_2$ form a mirror that sinks 0.5 mA from the follower $M_1$ whatever the output voltage, so $M_1$'s gate–source drop stays fixed at $V_T + \sqrt{2I_B/k}$ = 1.71 V. The output copies the input 1.71 V lower, with a gain near one even into a light load. $M_2$ must keep at least its overdrive, 0.71 V, across it.">
@@ -411,11 +411,11 @@ export function SinkSlewFigure(){
  const sink=(v:number)=>channel(1.707,Math.max(0,v),K,VT,0).id;
  for(let n=0;n<=20000;n++){const t=n*dt,vg=(Math.floor(t/20e-6)%2===0)?4:2;if(n%40===0){a.push([t*1e6,v1]);b.push([t*1e6,v2]);gate.push([t*1e6,vg]);}
   v1+=dt*(channel(vg-v1,5-v1,K,VT,0).id-v1/R)/C;v2+=dt*(channel(vg-v2,5-v2,K,VT,0).id-sink(v2)-v2/R)/C;}
- return <S.Figure plot caption="The same 1 nF, 10 kΩ load as in Chapter 66, driven by a resistor-only follower (gray) and by a follower with a 0.5 mA mirror sink (green), with the gate stepped from 4 V to 2 V at 20 µs. The sink pulls the output down at about $(I_B + V_O/R_L)/C_L$ ≈ 0.7 V/µs, about three times faster than the resistor alone (0.24 V/µs), until it nears its own compliance at 0.71 V. The price: 0.5 mA flows all the time.">
+ return <S.Figure plot caption="The same 1 nF, 10 kΩ load as in Chapter 61, driven by a resistor-only follower (gray) and by a follower with a 0.5 mA mirror sink (green), with the gate stepped from 4 V to 2 V at 20 µs. The sink pulls the output down at about $(I_B + V_O/R_L)/C_L$ ≈ 0.7 V/µs, about three times faster than the resistor alone (0.24 V/µs), until it nears its own compliance at 0.71 V. The price: 0.5 mA flows all the time.">
  <Plot curves={[{name:'Gate',color:S.ink,dashed:true,points:gate},{name:'Resistor only',color:S.gray,points:a},{name:'With 0.5 mA sink',color:S.green,points:b}]} xRange={[0,40]} yRange={[0,4.5]} xLabel="TIME / µs" yLabel="VOLTAGE / V" description="After the gate falls, the follower with a current sink discharges its load several times faster than the resistor-only follower."/></S.Figure>;
 }
 
-/* ---------- Chapter 68: common gate ---------- */
+/* ---------- Chapter 63: common gate ---------- */
 export function CgPhotodiodeCircuit(){
  const q=S.fetPins({at:[380,160]});
  return <S.Figure caption="A common-gate stage as a current buffer for a photodiode. The photodiode's 10 pF would form a 3.2 MHz pole with a 5 kΩ resistor connected directly. Instead it sees the transistor's source, about 545 Ω, while the signal current passes almost unchanged through the channel into $R_D$. The sink $I_B$ biases the transistor at 1 mA; the gate sits at a fixed bias $V_B$.">
@@ -444,7 +444,7 @@ export function CgBandwidthFigure(){
   xScale="log" xRange={[1e4,1e9]} yRange={[30,80]} xLabel="FREQUENCY / Hz" yLabel="TRANSIMPEDANCE / dBΩ" description="Both transimpedances start at five kilohms; the direct connection rolls off near three megahertz, the buffered one near twenty megahertz."/></S.Figure>;
 }
 
-/* ---------- Chapter 69: cascode amplifier ---------- */
+/* ---------- Chapter 64: cascode amplifier ---------- */
 export function TelescopicCircuit(){
  const m1=S.fetPins({at:[336,330]}),m2=S.fetPins({at:[336,240]}),m3=S.fetPins({at:[336,160],kind:'pmos'}),m4=S.fetPins({at:[336,80],kind:'pmos'});
  return <S.Figure caption="A fully cascoded common-source stage. $M_1$ is the input; $M_2$ (gate at $V_{B1}$) cascodes it, raising the resistance looking down to about $g_mr_o^2$. $M_4$ is the PMOS current-source load and $M_3$ (gate at $V_{B2}$) cascodes it, raising the resistance looking up by the same factor. Both resistances are needed: a cascode stage's gain is limited by whichever side has the lower resistance. With four devices biased at 0.25 mA and 0.5 V of overdrive the gain is about −20 000.">
@@ -473,7 +473,7 @@ export function CascodeMillerFigure(){
   xScale="log" xRange={[1e4,1e9]} yRange={[-10,45]} xLabel="FREQUENCY / Hz" yLabel="GAIN / dB" description="Common-source response flat at 34 decibels, rolling off near one megahertz; cascode flat at 40 decibels, rolling off near five megahertz."/></S.Figure>;
 }
 
-/* ---------- Chapter 70: differential pair ---------- */
+/* ---------- Chapter 65: differential pair ---------- */
 export function HalfCircuitFigure(){
  const a=S.fetPins({at:[170,170]}),b=S.fetPins({at:[470,170]});
  return <S.Figure caption="Half-circuit analysis. A symmetric pair driven by $\pm v_d/2$ has a tail node that does not move, so for differential signals each half is a common-source stage with a grounded source (left): gain $-g_mR_D$ from $v_d/2$. Driven by a common-mode $v_c$ on both gates, both halves move together; each half carries half of the tail current change, so each sees twice the tail's incremental resistance $R_T$ in its source (right): a heavily degenerated stage with gain about $-R_D/2R_T$.">
@@ -501,7 +501,7 @@ export function DiffOffsetFigure(){
   xRange={[0,5]} yRange={[0,10]} xTicks={[]} xLabel="CONTRIBUTION" yLabel="INPUT-REFERRED OFFSET / mV" description="Bar chart: three five millivolt offset contributions and their root-sum-square total of about 8.7 millivolts."/></S.Figure>;
 }
 
-/* ---------- Chapter 71: differential range and rejection ---------- */
+/* ---------- Chapter 66: differential range and rejection ---------- */
 export function CmWindowFigure(){
  const u0=1,uT=.3,VD=4;
  return <S.Figure plot caption="The common-mode window of the example pair ($I_T$ = 2 mA, $u_0$ = 1 V, $V_T$ = 1 V, $R_D$ = 1 kΩ, 5 V supply, tail needing $u_T$ = 0.3 V). The shared source follows the inputs, $V_S = V_C - V_T - u_0$ (green). It must stay above the tail's compliance (lower dashed line) and below $V_D - u_0$ (upper dashed line), where the input devices would leave saturation. Those two limits fix the valid common-mode range: 2.3 V to 5.0 V. A 10 mV signal at 2.0 V common mode fails, however small it is.">
@@ -516,7 +516,7 @@ export function CmrrFrequencyFigure(){
   xScale="log" xRange={[100,1e9]} yRange={[-10,90]} xLabel="FREQUENCY / Hz" yLabel="SINGLE-ENDED CMRR / dB" description="Common-mode rejection flat at 40 decibels for a simple tail and 80 decibels for a cascode tail, both falling at twenty decibels per decade and merging above a few megahertz."/></S.Figure>;
 }
 
-/* ---------- Chapter 72: mirror-loaded differential pair ---------- */
+/* ---------- Chapter 67: mirror-loaded differential pair ---------- */
 // 2 mA tail, k = 2 mA/V² for all devices, |V_T| = 1 V, λ = 0.02 V⁻¹, V_C = 2.5 V, 5 V supply.
 const otaOut=(vd:number)=>{
  const p=differential({vdiff:vd,vc:2.5,tail:.002,k:K,rd:1000}),vs=p.vs;
@@ -545,7 +545,7 @@ export function OtaTransferFigure(){
   xRange={[-80,80]} yRange={[0,5]} xLabel="DIFFERENTIAL INPUT v_d / mV" yLabel="OUTPUT VOLTAGE / V" description="Steep sigmoid: output near 1.2 volts for negative inputs, rising through three volts at zero, to about 4.3 volts for positive inputs."/></S.Figure>;
 }
 
-/* ---------- Chapter 73: degenerated differential pair ---------- */
+/* ---------- Chapter 68: degenerated differential pair ---------- */
 const dI=(v:number,rs:number)=>{const p=differential({vdiff:v,rs,tail:.002,k:K});return (p.i1-p.i2)*1e3;};
 export function DegenSteeringFigure(){
  const rs:[number,string][]=[[0,S.orange],[250,S.gray],[500,S.ink],[1000,S.green]];
@@ -568,7 +568,7 @@ export function SplitTailCircuit(){
  </S.Schematic></S.Figure>;
 }
 
-/* ---------- Chapter 74: complementary output followers ---------- */
+/* ---------- Chapter 69: complementary output followers ---------- */
 // NMOS and PMOS followers, k = 20 mA/V², |V_T| = 1 V, ±5 V rails, 1 kΩ load; gate spread VB.
 const compOut=(vin:number,VB:number,RL=1000)=>{const gn=vin+VB/2,gp=vin-VB/2;
  return bisect((vo:number)=>vo/RL+channel(vo-gp,Math.max(0,vo+5),.02,VT).id-channel(gn-vo,Math.max(0,5-vo),.02,VT).id,-5,5);};
@@ -605,7 +605,7 @@ export function OutputPowerFigure(){
   xRange={[0,4.6]} yRange={[0,160]} xLabel="OUTPUT AMPLITUDE V_pk / V" yLabel="POWER / mW" description="Load power parabola, supply power straight line, and transistor dissipation that peaks near 3.2 volts of output amplitude."/></S.Figure>;
 }
 
-/* ---------- Chapter 75: two-stage amplifier ---------- */
+/* ---------- Chapter 70: two-stage amplifier ---------- */
 const TS={gm1:1e-3,R1:5e4,gm2:4e-3,R2:2.5e4,C1:.5e-12,C2:10e-12};
 const tsCoef=(Cc:number)=>{const {gm1,R1,gm2,R2,C1,C2}=TS;return {A0:gm1*R1*gm2*R2,a:R1*(C1+Cc)+R2*(C2+Cc)+gm2*R1*R2*Cc,b:R1*R2*(C1*C2+Cc*(C1+C2)),tz:Cc/gm2};};
 // Open-loop response; with a nulling resistor of 1/gm2 the right-half-plane zero is removed.
@@ -646,7 +646,7 @@ export function TwoStageStepFigure(){
   xRange={[0,200]} yRange={[-.2,1.6]} xLabel="TIME / ns" yLabel="OUTPUT / V" description="Step responses: one with large overshoot and ringing, one settling smoothly to one volt."/></S.Figure>;
 }
 
-/* ---------- Chapter 76: noise and transconductance efficiency ---------- */
+/* ---------- Chapter 71: noise and transconductance efficiency ---------- */
 const KB=1.380649e-23;
 export function NoiseVsSourceFigure(){
  const rs=xs(1,7,200).map(e=>10**e),th=(r:number)=>Math.sqrt(4*KB*300*r)*1e9;

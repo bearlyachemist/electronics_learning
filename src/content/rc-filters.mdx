@@ -4,7 +4,7 @@ import {DividerFigure,FilterPairFigure,FilterLoadingFigure} from '../components/
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 22</span><span className="hairline"/>FOUNDATIONS / IMPEDANCE & FILTERS</div>
+<div className="eyebrow"><span>CHAPTER 15</span><span className="hairline"/>PART I / AC CIRCUITS &amp; FILTERS</div>
 
 <h1>Dividers generalized & RC filters<br/><em>A divider whose ratio depends on frequency.</em></h1>
 
@@ -88,7 +88,7 @@ Plot gain in dB against log frequency. Far below the corner, |H| ≈ 1: a horizo
 
 <Equation tex="20\log_{10}|H|\approx-20\log_{10}\frac{f}{f_{3\mathrm{dB}}}"/>
 
-which is a straight line falling **20 dB per decade** (equivalently 6 dB per octave, Chapter 23). The two asymptotes meet at $f_{3\mathrm{dB}}$, which is why it is also called the **corner** or **break** frequency. The true curve lies 3 dB below the corner of the asymptotes and within 1 dB of them an octave either side.
+which is a straight line falling **20 dB per decade** (equivalently 6 dB per octave, Chapter 16). The two asymptotes meet at $f_{3\mathrm{dB}}$, which is why it is also called the **corner** or **break** frequency. The true curve lies 3 dB below the corner of the asymptotes and within 1 dB of them an octave either side.
 
 The phase moves from 0° toward −90°, passing −45° at the corner. A useful straight-line sketch has the phase change happen over two decades, from 0.1$f_{3\mathrm{dB}}$ to 10$f_{3\mathrm{dB}}$; the actual error is at most about 6° at those ends.
 
@@ -158,7 +158,7 @@ The transfer functions above assume an ideal voltage source driving the filter a
 
 ### Output impedance: the Thévenin view
 
-At the output terminals, a low-pass filter looks like a Thévenin source (Chapter 2, generalized in Chapter 25) with $V_{\mathrm{th}}$ = H·$V_{\mathrm{in}}$ and
+At the output terminals, a low-pass filter looks like a Thévenin source (Chapter 2, generalized in Chapter 18) with $V_{\mathrm{th}}$ = H·$V_{\mathrm{in}}$ and
 
 <Equation tex="Z_{\mathrm{out}}=R\parallel\frac{1}{j\omega C}"/>
 
@@ -208,7 +208,7 @@ Chapters 7 and 8 found that an RC high-pass approximately differentiates and an 
 
 <Equation tex="H_{\mathrm{HP}}\approx j\omega RC\quad(f\ll f_{3\mathrm{dB}}),\qquad H_{\mathrm{LP}}\approx\frac{1}{j\omega RC}\quad(f\gg f_{3\mathrm{dB}})"/>
 
-Multiplying a phasor by jωRC is what differentiation does (Chapter 19): gain proportional to frequency, rising 20 dB/decade, with a +90° lead. Dividing by jωRC is integration: falling 20 dB/decade, −90° lag. **A high-pass differentiates the part of the signal below its corner; a low-pass integrates the part above its corner.**
+Multiplying a phasor by jωRC is what differentiation does (Chapter 12): gain proportional to frequency, rising 20 dB/decade, with a +90° lead. Dividing by jωRC is integration: falling 20 dB/decade, −90° lag. **A high-pass differentiates the part of the signal below its corner; a low-pass integrates the part above its corner.**
 
 For a non-sinusoidal signal, the condition must hold for every significant Fourier component. A square wave has components at odd multiples of its fundamental, so a differentiator must have its corner above the highest harmonic that matters, and an integrator must have its corner below the fundamental.
 
@@ -232,7 +232,7 @@ For 100 Ω and 10 mH, $f_{3\mathrm{dB}}$ = 1.59 kHz, the same as the 10 kΩ / 10
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>An RC filter is a divider with one <em>frequency-dependent arm</em>. On log axes it is two straight lines meeting at 1/(2πRC), and every real use starts by asking what drives it and what it drives.</p></div>
 
-<p className="reference-note">Coverage: The Art of Electronics §§1.3.2, 1.7.7–1.7.10. Multiple poles, band-pass and notch filters follow in Chapter 23.</p>
+<p className="reference-note">Coverage: The Art of Electronics §§1.3.2, 1.7.7–1.7.10. Multiple poles, band-pass and notch filters follow in Chapter 16.</p>
 
 </section>
 

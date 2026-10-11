@@ -1,10 +1,11 @@
 import Equation from '../../components/Equation.astro';
 import {SystemsFlow,SystemsPlot,PowerCircuit,MatchCircuit} from '../../components/SystemsFigures';
 import {SystemsLab} from '../../components/SystemsLab';
+import {SarArchitectureFigure,SarSearchPlot} from '../../components/ConverterFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 107</span><span className="hairline"/>DATA CONVERTERS</div>
+<div className="eyebrow"><span>CHAPTER 110</span><span className="hairline"/>PART VI / ANALOG-TO-DIGITAL CONVERTERS</div>
 
 <h1>Successive-approximation ADCs<br/><em>A binary search becomes a charge experiment.</em></h1>
 
@@ -20,7 +21,9 @@ import {SystemsLab} from '../../components/SystemsLab';
 
 A successive-approximation register converter holds an input, tries a DAC code, asks a comparator which side of that trial the held input occupies, and keeps or clears the current bit. It starts with the most significant bit and progressively halves the remaining interval. Ideally an N-bit result needs N comparator decisions, plus acquisition and timing overhead. This reuses hardware rather than making every threshold decision in parallel.
 
-For a 4-bit converter with 1 V reference and held input 0.68 V, try 0.5 V: keep the MSB. Try 0.75 V: clear the next bit. Try 0.625 V: keep the next bit. Try 0.6875 V: clear the final bit. Result is binary 1010, code 10. Under the floor-bin convention, the result locates the input in [0.625, 0.6875) V; midpoint reconstruction is 0.65625 V. The comparator has answered four yes/no questions, not measured four analog voltages independently.
+Why N decisions suffice: before any decision the input lies somewhere in an interval of width $V_{ref}$. Each comparison against the interval's midpoint tells which half it is in, so after $N$ comparisons the interval has width $V_{ref}/2^N = q$, one code. For a 4-bit converter with 1 V reference and held input 0.68 V, try 0.5 V: keep the MSB. Try 0.75 V: clear the next bit. Try 0.625 V: keep the next bit. Try 0.6875 V: clear the final bit. Result is binary 1010, code 10. Under the floor-bin convention, the result locates the input in [0.625, 0.6875) V; midpoint reconstruction is 0.65625 V. The comparator has answered four yes/no questions, not measured four analog voltages independently.
+
+<SarSearchPlot/>
 
 <Equation tex={String.raw`V_{trial}=V_{ref}\sum_{k=1}^{N}b_k2^{-k},\qquad b_k\in\{0,1\}`}/><SystemsFlow labels={["Track / hold|one input sample", "Trial DAC|binary weight", "Comparator|above / below", "SAR logic|keep / clear"]} caption="Each decision updates the trial DAC for the next comparison. The held input must remain valid throughout the conversion."/>
 A SAR ADC can provide low latency and deterministic conversion timing, making it useful for multiplexed measurement and control. These are architectural tendencies, not universal specifications: pipelined-SAR and digitally filtered SAR products can have additional latency or different timing. Read the actual conversion-start, acquisition and data-ready definitions.
@@ -31,7 +34,29 @@ A SAR ADC can provide low latency and deterministic conversion timing, making it
 
 <div className="section-heading"><span>02</span><h2>Derive a charge-redistribution trial DAC</h2></div>
 
-A conceptual capacitor array has binary weights plus a dummy unit capacitor, making total capacitance $C_T=2^NC_u$. For one sampling convention, the common top plate is initially held at zero while bottom plates sample $V_{in}$. After opening the top-plate clamp, reconnect bottom plates to zero. Conserved charge makes the top-plate voltage approximately $-V_{in}$. Switching selected bottoms to $V_{ref}$ then adds a weighted voltage.
+<SarArchitectureFigure/>
+
+
+A conceptual capacitor array has binary weights plus a dummy unit capacitor, making total capacitance $C_T=2^NC_u$. For one sampling convention, the common top plate is initially held at zero while bottom plates sample $V_{in}$.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE CHARGE-REDISTRIBUTION TRIAL VOLTAGE</span>
+
+1. **Sample.** With the top plate clamped at 0 V and every bottom plate at $V_{in}$, each capacitor holds $C_i(0 - V_{in})$ on its top plate. The total top-plate charge is $Q_T = -C_TV_{in}$.
+
+2. **Isolate.** Open the top-plate clamp. Nothing else connects to the top node (the comparator input draws no current), so $Q_T$ is conserved from now on.
+
+3. **Apply a trial.** Connect each bottom plate to $V_{b,i}$, either 0 V or $V_{ref}$ according to its trial bit $b_i$. The top node moves to some new voltage $V_x$, and the top-plate charge is now $\sum_iC_i(V_x - V_{b,i})$.
+
+4. **Conserve charge.** Set this equal to $-C_TV_{in}$ and use $\sum_iC_i = C_T$:
+<Equation tex={String.raw`C_TV_x-V_{ref}\sum_ib_iC_i=-C_TV_{in}\quad\Longrightarrow\quad V_x=-V_{in}+\frac{V_{ref}}{C_T}\sum_ib_iC_i`}/>
+
+5. **Read the comparator.** With binary weights $C_i/C_T = 2^{-i}$, the second term is exactly the trial voltage $V_{trial}$ of section 01. So $V_x = V_{trial} - V_{in}$: a negative $V_x$ means the trial is below the input and the bit is kept.
+
+</div>
+
+After opening the top-plate clamp, reconnect bottom plates to zero. Conserved charge makes the top-plate voltage approximately $-V_{in}$. Switching selected bottoms to $V_{ref}$ then adds a weighted voltage.
 
 <Equation tex={String.raw`Q_T=\sum_i C_i(V_x-V_{b,i}),\qquad V_x=-V_{in}+\frac{V_{ref}}{C_T}\sum_i b_iC_i`}/>
 The comparator observes the sign of this residual. At a correct decision, the trial sum is close to the input. This derivation names the sampling convention; other SARs use differential arrays, top-plate sampling, monotonic switching, split capacitors or other common-mode trajectories. Their internal node voltages and reference charge differ even though the binary-search idea is the same.
@@ -46,14 +71,14 @@ A comparator offset shifts its effective comparison boundary, contributing mainl
 
 <div className="section-heading"><span>03</span><h2>Trade sampling noise against charge and settling</h2></div>
 
-An ideal capacitor sampled through a resistive switch acquires thermal voltage variance approximately $kT/C$ under the simple equilibrium model. Increasing capacitance lowers sampled noise, but increases the charge the source and reference must move. A large sampling capacitor may therefore improve internal noise while making the external driver harder to design.
+An ideal capacitor sampled through a resistive switch acquires thermal voltage variance approximately $kT/C$ under the simple equilibrium model (the resistor's noise integrated through the RC filter, Chapter 48). Requiring it to be below the quantization variance $q^2/12$ and solving for $C$ gives the second relation below. Increasing capacitance lowers sampled noise, but increases the charge the source and reference must move. A large sampling capacitor may therefore improve internal noise while making the external driver harder to design.
 
 <Equation tex={String.raw`\sigma_{sample}\simeq\sqrt{kT/C},\qquad C>\frac{12kT}{q^2}\quad\text{if }\sigma_{sample}<q/\sqrt{12}`}/>
 For 300 K, 3.3 V span and 16 bits, this one-term requirement gives roughly 19.6 pF. It is not a recommended ADC capacitance: comparator noise, capacitor ratios, differential topology, bandwidth and other sampling phases change the complete budget. Allocating all quantization-noise-equivalent variance to one source leaves no allowance for the others.
 
 A buffer should settle the ADC's switched load without instability. A small series resistor can isolate the amplifier and damp kickback; a local capacitor can provide transient charge. But the network must recharge within acquisition time. Slew-rate recovery and amplifier distortion need to be measured at the intended input frequency and common mode, not inferred solely from nominal GBW.
 
-For 16 bits with 1 kΩ effective source and 30 pF sampling capacitance, the first-order full-span acquisition requirement is about 353.5 ns. If acquisition is only 200 ns, that model predicts residual $e^{-200/30}=0.00127$ of the step, roughly 83 codes for a full-span transition. Repeated sampling of one slowly changing input can conceal a problem that appears when the multiplexer changes channels.
+For 16 bits with 1 kΩ effective source and 30 pF sampling capacitance, the first-order full-span acquisition requirement is about 353.5 ns. (From Chapter 109, $t \ge (N+1)\ln2\cdot RC = 17 \times 0.693 \times 30$ ns.) If acquisition is only 200 ns, that model predicts residual $e^{-200/30}=0.00127$ of the step, roughly 83 codes for a full-span transition. Repeated sampling of one slowly changing input can conceal a problem that appears when the multiplexer changes channels.
 
 </section>
 

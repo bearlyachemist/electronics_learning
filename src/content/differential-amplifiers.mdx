@@ -4,7 +4,7 @@ import {DiffPairLab} from '../components/StageLabs';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 36</span><span className="hairline"/>FOUNDATIONS / AMPLIFIER BUILDING BLOCKS</div>
+<div className="eyebrow"><span>CHAPTER 36</span><span className="hairline"/>PART II / BIPOLAR TRANSISTORS</div>
 
 <h1>Differential amplifiers<br/><em>Amplify the difference, ignore the rest.</em></h1>
 
@@ -62,9 +62,22 @@ The emitters share one node, so the difference in base voltages appears entirely
 
 <Equation tex="\frac{I_{C1}}{I_{C2}}=\frac{I_Se^{V_{BE1}/V_T}}{I_Se^{V_{BE2}/V_T}}=e^{v_d/V_T},\qquad I_{C1}+I_{C2}=I_T"/>
 
-Solve the two equations:
+The second equation is KCL at the shared emitter node, taking $\alpha \approx 1$. Solve the two equations together.
 
-<Equation tex="I_{C1}=\frac{I_T}{1+e^{-v_d/V_T}},\qquad I_{C2}=\frac{I_T}{1+e^{+v_d/V_T}},\qquad I_{C1}-I_{C2}=I_T\tanh\frac{v_d}{2V_T}" label="LONG-TAILED PAIR"/>
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE TANH STEERING LAW</span>
+
+1. **Eliminate $I_{C2}$.** From the ratio, $I_{C2} = I_{C1}e^{-v_d/V_T}$. Substitute into the sum:
+<Equation tex="I_{C1}\left(1+e^{-v_d/V_T}\right)=I_T\quad\Longrightarrow\quad I_{C1}=\frac{I_T}{1+e^{-v_d/V_T}}"/>
+   By the same steps with the roles exchanged, $I_{C2} = I_T/(1+e^{+v_d/V_T})$.
+
+2. **Form the difference.** Put both over a common form by multiplying the top and bottom of $I_{C1}$ by $e^{v_d/2V_T}$ and of $I_{C2}$ by $e^{-v_d/2V_T}$. Then both denominators equal $e^{v_d/2V_T} + e^{-v_d/2V_T}$:
+<Equation tex="I_{C1}-I_{C2}=I_T\,\frac{e^{v_d/2V_T}-e^{-v_d/2V_T}}{e^{v_d/2V_T}+e^{-v_d/2V_T}}=I_T\tanh\frac{v_d}{2V_T}" label="LONG-TAILED PAIR"/>
+
+3. **Small-signal check.** Near $v_d = 0$, $\tanh u \approx u$, so $I_{C1} - I_{C2} \approx I_Tv_d/2V_T$. Each side changes by half of that, $\pm(I_T/2)v_d/(2V_T) = g_m\,v_d/2$ with $g_m = (I_T/2)/V_T$: each transistor sees half the differential input.
+
+</div>
 
 The tail current is **steered** from one side to the other by the input difference. The common-mode voltage does not appear at all: raising both bases together raises the shared emitter node with them, and the tail current, split equally, does not change.
 
@@ -94,7 +107,22 @@ A 1% departure corresponds to $|v_d|\approx\sqrt{0.12}V_T=8.95$ mV at 300 K. Thi
 
 ### Differential gain: the half circuit
 
-For a small differential input, $v_1$ rises by $v_d$/2 and $v_2$ falls by $v_d$/2. By symmetry the shared emitter node does not move: it is a virtual AC ground for differential signals. Each half is then a common-emitter stage with input $v_d$/2:
+For a small differential input, $v_1$ rises by $v_d$/2 and $v_2$ falls by $v_d$/2. The shared emitter node does not move: it is a virtual AC ground for differential signals.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / WHY THE TAIL NODE IS A DIFFERENTIAL GROUND</span>
+
+1. **KCL at the tail node** for small signals. Each half delivers an emitter current that depends on its own base-to-tail voltage through the half's emitter impedance $r_e + R_E$. With the tail node at $v_t$:
+<Equation tex="\frac{v_d/2-v_t}{r_e+R_E}+\frac{-v_d/2-v_t}{r_e+R_E}=\frac{v_t}{R_T}"/>
+
+2. **The $v_d$ terms cancel** on the left, leaving $-2v_t/(r_e+R_E) = v_t/R_T$. The only solution is $v_t = 0$, for any value of $R_T$.
+
+3. **Consequence.** With the tail node fixed, each half is an ordinary common-emitter stage driven by $\pm v_d/2$, and Chapter 32's result applies directly. The emitter current of side 1 is $(v_d/2)/(r_e+R_E)$, and side 2's is equal and opposite.
+
+</div>
+
+Each half is then a common-emitter stage with input $v_d$/2:
 
 <Equation tex="i_{c1}=-i_{c2}=\frac{v_d/2}{r_e+R_E},\qquad A_d=\frac{v_{c2}}{v_d}=\frac{R_C}{2(r_e+R_E)}\ \ (\text{single-ended}),\qquad A_{d,\mathrm{diff}}=\frac{R_C}{r_e+R_E}"/>
 
@@ -102,7 +130,7 @@ Taking the output from one collector gives half the gain of taking it between th
 
 ### Common-mode gain: the other half circuit
 
-For a common-mode input both bases rise together and both collector currents change equally. Split the tail resistance $R_T$ into two resistors $2R_T$ in parallel, one for each half. Each half is now a common-emitter stage with $2R_T$ of degeneration:
+For a common-mode input both bases rise together and both collector currents change equally. Split the tail resistance $R_T$ into two resistors $2R_T$ in parallel, one for each half. This changes nothing: the two half-tails together carry the same current at the same voltage. By symmetry the wire joining the two emitters then carries no current and can be cut. Each half is now a common-emitter stage with $2R_T$ of degeneration (plus its own $R_E$), so Chapter 32's gain formula gives $A_{cm}$ directly. Divide $A_d$ by it to get the CMRR:
 
 <Equation tex="A_{cm}=-\frac{R_C}{2R_T+r_e+R_E}\approx-\frac{R_C}{2R_T},\qquad \mathrm{CMRR}=\left|\frac{A_d}{A_{cm}}\right|\approx\frac{R_T}{r_e+R_E}"/>
 
@@ -140,9 +168,26 @@ Replace both collector resistors with a PNP current mirror. $Q_3$ (diode-connect
 
 <ActiveLoadFigure/>
 
-For a differential input, $Q_1$’s current rises by i and $Q_2$’s falls by i. The mirror copies $Q_1$’s increase to the output node, so the output node receives +i from $Q_4$ while $Q_2$ draws i less: the net current into the output is 2i. Both halves now contribute. And the node sees only transistor output resistances, $r_o$ of $Q_2$ in parallel with $r_o$ of $Q_4$:
+For a differential input, $Q_1$’s current rises by i and $Q_2$’s falls by i. The mirror copies $Q_1$’s increase to the output node, so the output node receives +i from $Q_4$ while $Q_2$ draws i less: the net current into the output is 2i. Both halves now contribute.
 
-<Equation tex="A_d=G_m\,(r_{o2}\parallel r_{o4})=\frac{1}{r_e+R_E}\cdot\frac{V_A}{I_T},\qquad A_d=\frac{V_A}{2V_T}\ \ (R_E=0)" label="ACTIVE-LOAD GAIN"/>
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / GAIN OF THE MIRROR-LOADED PAIR</span>
+
+1. **Short-circuit output current.** Hold the output node at a fixed voltage, so no current flows in any $r_o$. From the half-circuit, $i_{c1} = +i$ and $i_{c2} = -i$, with $i = (v_d/2)/(r_e + R_E)$.
+
+2. **The mirror.** $Q_3$'s diode carries $i_{c1}$; $Q_4$ copies it, so $Q_4$ pushes $+i$ into the output node.
+
+3. **KCL at the output node.** Current in from $Q_4$ is $+i$; current out through $Q_2$'s collector is $i_{c2} = -i$, which is the same as $+i$ in. The net short-circuit current into the node is
+<Equation tex="i_{sc}=i-(-i)=2i=\frac{v_d}{r_e+R_E}\quad\Longrightarrow\quad G_m=\frac{1}{r_e+R_E}"/>
+
+4. **Output resistance.** With the inputs at rest, the node connects to signal ground through $Q_2$'s collector ($r_{o2}$, raised a little by degeneration) and $Q_4$'s collector ($r_{o4}$). These are in parallel. Each transistor carries $I_T/2$, so each $r_o = V_A/(I_T/2)$, and the parallel pair is $V_A/I_T$.
+
+5. **Open-circuit gain** is the short-circuit current times the output resistance (a Norton-to-Thévenin step):
+<Equation tex="A_d=G_m\,(r_{o2}\parallel r_{o4})=\frac{1}{r_e+R_E}\cdot\frac{V_A}{I_T}" label="ACTIVE-LOAD GAIN"/>
+   With $R_E = 0$ and $r_e = V_T/(I_T/2)$, the currents cancel and $A_d = V_A/(2V_T)$.
+
+</div>
 
 The gain depends only on the Early voltage. For $V_A$ = 100 V it is 100/(2 × 0.02585) ≈ **1930** from one stage—with a single-ended output and no large resistors. With 100 Ω of degeneration it falls to about 660 but becomes more linear. This is the input stage of most bipolar op-amps; its high output impedance also means it must drive a high-impedance next stage, usually a follower or another gain stage.
 
@@ -180,7 +225,7 @@ The gain depends only on the Early voltage. For $V_A$ = 100 V it is 100/(2 × 0.
 
 More collector current raises transconductance and lowers the voltage-equivalent collector shot noise. It also raises base shot noise, which becomes a voltage when it flows through source resistance. These effects compete even before power and headroom are considered.
 
-For one input transistor, retain only collector and base shot noise, use $g_m=I_C/U_T$ and a constant beta, and assume independent noise sources. With source resistance $R_S$:
+For one input transistor, retain only collector and base shot noise, use $g_m=I_C/U_T$ and a constant beta, and assume independent noise sources. Collector shot noise $2qI_C$ (A²/Hz) referred to the input divides by $g_m^2$, giving $2qI_C\,U_T^2/I_C^2 = 2qU_T^2/I_C$. Base shot noise $2qI_B = 2qI_C/\beta$ flows through $R_S$ and becomes a voltage $2qI_CR_S^2/\beta$. Uncorrelated noise powers add. To find the minimum, set the derivative with respect to $I_C$ to zero: $-2qU_T^2/I_C^2 + 2qR_S^2/\beta = 0$. With source resistance $R_S$:
 
 <Equation tex={String.raw`e_{n,\mathrm{device}}^2\approx\frac{2qU_T^2}{I_C}+\frac{2qI_C R_S^2}{\beta},\qquad I_{C,\mathrm{opt}}=\frac{U_T\sqrt\beta}{R_S}`}/>
 

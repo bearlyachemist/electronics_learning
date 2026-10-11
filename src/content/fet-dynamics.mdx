@@ -5,7 +5,7 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 50</span><span className="hairline"/>FIELD-EFFECT TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 48</span><span className="hairline"/>PART II / FIELD-EFFECT TRANSISTORS</div>
 
 <h1>Gate current, capacitance & oscillators<br/><em>A quiet gate can still demand current.</em></h1>
 
@@ -91,6 +91,8 @@ For a resistor feeding a grounded capacitor, integrate its one-sided thermal-noi
 
 <Equation tex="\langle v_n^2\rangle=\int_0^\infty\frac{4k_BTR}{1+(2\pi fRC)^2}\,df=\frac{k_BT}{C}"/>
 
+To evaluate the integral, substitute $x = 2\pi fRC$, so $df = dx/(2\pi RC)$. The integral becomes $\frac{4k_BTR}{2\pi RC}\int_0^\infty\frac{dx}{1+x^2}$, and $\int_0^\infty dx/(1+x^2) = \pi/2$. The $R$ cancels: $4k_BTR\cdot\frac{1}{2\pi RC}\cdot\frac{\pi}{2} = k_BT/C$. A larger R makes more noise per hertz, but narrows the bandwidth in exact proportion.
+
 At 300 K and 20 pF, the ideal equilibrium RMS voltage is 14.4 µV. Increasing R raises open-circuit noise density while narrowing bandwidth; the integrated equilibrium result is unchanged for the same C. This does not include transistor noise or establish finite-time settling. A larger capacitor reduces this noise contribution but requires more charging current and slows acquisition.
 
 In an oscillator, amplitude control is another slow state. It must average enough cycles to avoid modulating each sine, yet respond before startup drives the amplifier into sustained clipping. The frequency-selective Wien loop and the envelope-control loop answer different questions.
@@ -105,9 +107,23 @@ In an oscillator, amplitude control is another slow state. It must average enoug
 
 An oscillator replaces an external signal with a small fluctuation that recirculates through positive feedback. At a candidate frequency, the complete loop must return the appropriate phase, and initial loop magnitude must exceed one for growth. These conditions identify a possible startup mode; nonlinear amplitude behavior and other modes still need analysis.
 
-A Wien bridge uses a series RC arm from output to the feedback node and a parallel RC arm from that node to ground. For equal R and equal C:
+A Wien bridge uses a series RC arm from output to the feedback node and a parallel RC arm from that node to ground. For equal R and equal C, derive the feedback fraction.
 
-<Equation tex="Z_s=R+\frac1{sC},\qquad Z_p=\frac{R}{1+sRC},\qquad \beta(s)=\frac{Z_p}{Z_s+Z_p}=\frac{sRC}{(sRC)^2+3sRC+1}" />
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE WIEN NETWORK</span>
+
+1. **Arm impedances.** The series arm is R plus a capacitor; the parallel arm is R in parallel with a capacitor, $R\cdot\frac{1}{sC}/(R + \frac{1}{sC})$:
+<Equation tex="Z_s=R+\frac1{sC}=\frac{1+sRC}{sC},\qquad Z_p=\frac{R}{1+sRC}"/>
+
+2. **Divider.** With no current drawn by the amplifier input, the feedback node is a voltage divider: $\beta = Z_p/(Z_s + Z_p)$. Multiply numerator and denominator by $sC(1+sRC)$ to clear fractions:
+<Equation tex="\beta(s)=\frac{sRC}{(1+sRC)^2+sRC}=\frac{sRC}{(sRC)^2+3sRC+1}"/>
+
+3. **Zero-phase frequency.** Set $s = j\omega$ and write $x = \omega RC$. Then $\beta = jx/[(1 - x^2) + 3jx]$. The numerator is purely imaginary; $\beta$ is real (zero phase) when the denominator is purely imaginary too, which requires $1 - x^2 = 0$, so $\omega_0 = 1/RC$.
+
+4. **Magnitude there.** At $x = 1$, $\beta = j/(3j) = 1/3$.
+
+</div>
 
 At $ω_0$ = 1/RC, the real terms in the denominator cancel, leaving $\beta$ = 1/3 with zero phase. A noninverting amplifier therefore needs gain three for marginal sustained oscillation in the ideal linear model. A gain slightly above three initiates growth from noise or an initial disturbance.
 
@@ -137,7 +153,7 @@ Half-channel-voltage gate tracking from the previous chapter can reduce the JFET
 
 <div className="section-heading"><span>06</span><h2>Other FET oscillator roles</h2></div>
 
-A Colpitts oscillator uses an inductor and a capacitive divider. The tank's effective capacitance is C1C2/($C_1$ + $C_2$), so an unloaded first estimate is:
+A Colpitts oscillator uses an inductor and a capacitive divider. Around the tank loop, the inductor sees $C_1$ and $C_2$ in series, whose combined capacitance is $C_1C_2/(C_1 + C_2)$ (series capacitances add as reciprocals). Resonance is where the inductor's and that capacitance's reactances are equal, $\omega L = 1/(\omega C_{series})$, so an unloaded first estimate is:
 
 <Equation tex="f_0\approx\frac1{2\pi\sqrt{L\,C_1C_2/(C_1+C_2)}}" />
 

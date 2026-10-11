@@ -4,7 +4,7 @@ import {DarlingtonLab} from '../components/StageLabs';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 38</span><span className="hairline"/>FOUNDATIONS / AMPLIFIER BUILDING BLOCKS</div>
+<div className="eyebrow"><span>CHAPTER 38</span><span className="hairline"/>PART II / BIPOLAR TRANSISTORS</div>
 
 <h1>The Darlington connection<br/><em>Two transistors acting as one with $\beta$².</em></h1>
 
@@ -40,11 +40,11 @@ That combination, the **Darlington connection**, is everywhere: in power switche
 
 <CompoundPairsFigure/>
 
-Connect the emitter of $Q_1$ to the base of $Q_2$ and tie the two collectors together. The composite has a base ($Q_1$’s), an emitter ($Q_2$’s) and a collector (both). Follow a base current $I_B$:
+Connect the emitter of $Q_1$ to the base of $Q_2$ and tie the two collectors together. The composite has a base ($Q_1$’s), an emitter ($Q_2$’s) and a collector (both). Follow a base current $I_B$. KCL at $Q_1$ says its emitter current is its base current plus its collector current, $(\beta_1+1)I_B$, and all of it becomes $Q_2$'s base current. KCL at the shared collector node then adds the two collector currents:
 
 <Equation tex="I_{E1}=(\beta_1+1)I_B=I_{B2},\qquad I_C=\beta_1I_B+\beta_2(\beta_1+1)I_B\quad\Rightarrow\quad \beta_{\mathrm{Darl}}=\beta_1\beta_2+\beta_1+\beta_2\approx\beta_1\beta_2" label="DARLINGTON CURRENT GAIN"/>
 
-With $\beta$₁ = 150 and $\beta$₂ = 50 the composite gain is 7700; the lab’s Ebers–Moll model gives exactly that in the active region. As a follower, the pair presents an input impedance of about $\beta_1\beta_2$ times its emitter load: 8 Ω looks like 60 kΩ.
+With $\beta$₁ = 150 and $\beta$₂ = 50 the composite gain is 7700; the lab’s Ebers–Moll model gives exactly that in the active region. As a follower, the pair presents an input impedance of about $\beta_1\beta_2$ times its emitter load. Apply Chapter 28's result twice: $Q_2$'s base looks like $(\beta_2+1)R_L$, and that is $Q_1$'s emitter load, so $Q_1$'s base looks like $(\beta_1+1)(\beta_2+1)R_L$. With the betas above, 8 Ω looks like 61 kΩ.
 
 The composite’s base–emitter voltage is the sum of two: **$V_{BE}$ ≈ 1.2–1.5 V**. In the lab, switching 1 A takes about 1.45 V between base and emitter, because the power transistor runs at high current.
 
@@ -56,7 +56,7 @@ The composite’s base–emitter voltage is the sum of two: **$V_{BE}$ ≈ 1.2�
 
 ### Saturation voltage
 
-$Q_2$ can saturate only if its base is held above its emitter by $V_{BE2}$, and its base is $Q_1$’s emitter. $Q_1$ cannot pull its own emitter above its collector by more than $V_{CE(\mathrm{sat})}$. So the composite’s collector cannot fall below
+$Q_2$ can saturate only if its base is held above its emitter by $V_{BE2}$, and its base is $Q_1$’s emitter. $Q_1$ cannot pull its own emitter above its collector by more than $V_{CE(\mathrm{sat})}$. Write KVL from the composite collector down through $Q_1$ (collector to emitter) and then through $Q_2$'s base–emitter junction to the composite emitter: $V_{CE} = V_{CE1} + V_{BE2}$. The smallest $V_{CE1}$ can be is $V_{CE(\mathrm{sat})1}$, so the composite’s collector cannot fall below
 
 <Equation tex="V_{CE,\min}\approx V_{BE2}+V_{CE(\mathrm{sat})1}\approx0.7\text{–}1\ \mathrm V"/>
 
@@ -78,9 +78,9 @@ $Q_1$’s collector-to-base leakage is amplified by both transistors, and the tw
 
 The **Sziklai** or **complementary-feedback pair** uses an NPN driver $Q_1$ and a PNP output $Q_2$. $Q_1$’s collector pulls down on $Q_2$’s base; $Q_2$’s emitter is the composite’s collector terminal, and $Q_2$’s collector returns to $Q_1$’s emitter, the composite’s emitter. The pair behaves as a single NPN transistor:
 
-- **Current gain** ≈ $\beta_1\beta_2$, as for the Darlington: $Q_1$’s collector current is $Q_2$’s base current.
+- **Current gain** ≈ $\beta_1\beta_2$, as for the Darlington: $Q_1$’s collector current $\beta_1I_B$ is $Q_2$’s base current, so $Q_2$ carries $\beta_2\beta_1I_B$. KCL at the composite emitter (where $Q_1$'s emitter and $Q_2$'s collector meet) gives $I_E = (\beta_1+1)I_B + \beta_1\beta_2I_B$, and the composite collector current is $Q_2$'s emitter current, $\beta_1(\beta_2+1)I_B$. The composite gain is therefore $\beta_1(\beta_2+1) \approx \beta_1\beta_2$.
 - **Input $V_{BE}$ is one junction** (about 0.74 V in the lab), because only $Q_1$’s base–emitter is between the input and output terminals. The pair is also more thermally stable: only $Q_1$’s $V_{BE}$ sets the input voltage, and $Q_1$ is a small transistor that does not heat itself.
-- **Saturation is no better.** The output can fall only to $Q_2$’s emitter–base voltage plus $Q_1$’s saturation voltage—about 0.76 V in the lab, the same as the Darlington. A common belief that the Sziklai pair “saturates like a single transistor” is not correct.
+- **Saturation is no better.** KVL from the composite collector ($Q_2$'s emitter) to the composite emitter, through $Q_2$'s emitter–base junction and then $Q_1$'s collector–emitter, gives $V_{CE} = V_{EB2} + V_{CE1}$. The output can fall only to $Q_2$’s emitter–base voltage plus $Q_1$’s saturation voltage—about 0.76 V in the lab, the same as the Darlington. A common belief that the Sziklai pair “saturates like a single transistor” is not correct.
 
 The Sziklai pair also has an internal feedback loop through $Q_2$, which makes it faster to respond but more prone to oscillation; small capacitors or resistors are sometimes needed to keep it stable. It is popular in audio output stages, where an NPN Darlington on the upper side and a PNP-equivalent Sziklai pair (PNP driver, NPN power output) on the lower side formed a “quasi-complementary” stage using NPN power transistors on both sides.
 

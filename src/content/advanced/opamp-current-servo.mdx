@@ -5,13 +5,13 @@ import {ServoComplianceFigure,ServoDissipationFigure,HighSideSourceCircuit,Servo
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 92</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 87</span><span className="hairline"/>PART III / OP-AMP CIRCUITS</div>
 
 <h1>Op-amp current servos<br/><em>Force a voltage across a resistor, and the current follows.</em></h1>
 
 <p className="dek">Combine an op amp, a MOSFET and a sense resistor into a precise current source. Budget its accuracy, find its compliance and the transistor's worst-case dissipation, build sinking and sourcing versions, and stabilize a loop that has a large capacitor in it.</p>
 
-<div className="chapter-meta"><span>50–70 min</span><span>Mirrors (Ch. 59) · MOSFET current sinks (Ch. 53) · DC errors (Ch. 78) · Stability (Ch. 79)</span></div>
+<div className="chapter-meta"><span>50–70 min</span><span>Mirrors (Ch. 54) · MOSFET current sinks (Ch. 51) · DC errors (Ch. 73) · Stability (Ch. 74)</span></div>
 
 </div>
 
@@ -21,7 +21,7 @@ import {ServoComplianceFigure,ServoDissipationFigure,HighSideSourceCircuit,Servo
 
 <div>
 
-Chapter 59 promised that precise currents come from forcing a stable voltage across a resistor with a feedback loop. Here is that loop. The op amp compares the voltage across a sense resistor with a set voltage and drives a MOSFET's gate until they match. The current is then $V_{SET}/R_S$, as accurate as the set voltage, the resistor and the op amp's offset, and nearly independent of the MOSFET, the load and the supply.
+Chapter 54 promised that precise currents come from forcing a stable voltage across a resistor with a feedback loop. Here is that loop. The op amp compares the voltage across a sense resistor with a set voltage and drives a MOSFET's gate until they match. The current is then $V_{SET}/R_S$, as accurate as the set voltage, the resistor and the op amp's offset, and nearly independent of the MOSFET, the load and the supply.
 
 The circuit drives LEDs and laser diodes, biases sensors, tests transistors and sinks current from batteries. Its two limits are the ones every current source has: a compliance range beyond which it cannot hold the current, and a transistor that must dissipate whatever voltage the load does not use.
 
@@ -99,7 +99,7 @@ and the op amp must be able to drive the gate to $IR_{SENSE} + V_T + u$, above t
 
 <ServoDissipationFigure/>
 
-The transistor's dissipation is largest when the load takes the least voltage. Size the MOSFET and its heat sink for a short-circuited load, and check its **linear-mode** safe operating area: power MOSFETs optimized for switching can fail at modest dissipation when held in their linear region (Chapter 56).
+The transistor's dissipation is largest when the load takes the least voltage. Size the MOSFET and its heat sink for a short-circuited load, and check its **linear-mode** safe operating area: power MOSFETs optimized for switching can fail at modest dissipation when held in their linear region (Chapter 97).
 
 </section>
 
@@ -113,7 +113,7 @@ The sink above needs the load connected to the supply. When the load must return
 
 The op amp now forces the sense node to $V_{DD} - V_{SET}$. Since $V_{SET}$ is measured from the supply, the set voltage must be derived from the supply too (a divider or a reference referred to $V_{DD}$), or supply variations become current variations. The op amp's inputs sit near the positive rail, so it needs an input range that includes the rail. The compliance is now from ground up: the load may rise to $V_{DD} - V_{SET} - V_{SD,\min}$.
 
-A common variation adds a second, low-side servo whose sense resistor sets a current through a resistor to the supply, generating the PMOS servo's set voltage from a ground-referred command. Precision **current references** (the reference Chapter 59 asked for) are built exactly this way, with a bandgap voltage of about 1.2 V across a precision resistor.
+A common variation adds a second, low-side servo whose sense resistor sets a current through a resistor to the supply, generating the PMOS servo's set voltage from a ground-referred command. Precision **current references** (the reference Chapter 54 asked for) are built exactly this way, with a bandgap voltage of about 1.2 V across a precision resistor.
 
 </section>
 

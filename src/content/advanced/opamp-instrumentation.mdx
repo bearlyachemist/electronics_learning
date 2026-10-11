@@ -4,13 +4,13 @@ import {InaDiamondFigure,InaCmrrGainFigure,BridgeInaCircuit} from '../../compone
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 86</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 81</span><span className="hairline"/>PART III / OP-AMP CIRCUITS</div>
 
 <h1>Instrumentation amplifiers<br/><em>Buffer, amplify the difference, then subtract.</em></h1>
 
 <p className="dek">Derive the three-op-amp instrumentation amplifier, see why gain in its first stage multiplies the CMRR, map the internal voltages that limit its range, and design a bridge amplifier with a proper reference, bias return and input filter.</p>
 
-<div className="chapter-meta"><span>55–75 min</span><span>Difference amplifiers (Ch. 85) · Noninverting amplifiers (Ch. 83)</span></div>
+<div className="chapter-meta"><span>55–75 min</span><span>Difference amplifiers (Ch. 80) · Noninverting amplifiers (Ch. 78)</span></div>
 
 </div>
 
@@ -20,7 +20,7 @@ import {InaDiamondFigure,InaCmrrGainFigure,BridgeInaCircuit} from '../../compone
 
 <div>
 
-Chapter 85's difference amplifier had two weaknesses: its inputs loaded the sources unequally, which spoiled its CMRR, and its CMRR was limited by resistor matching. The instrumentation amplifier fixes both. Two noninverting buffers present high, equal impedances to the sources; a single resistor between them sets a differential gain without touching the common mode; and a difference amplifier at the end subtracts.
+Chapter 80's difference amplifier had two weaknesses: its inputs loaded the sources unequally, which spoiled its CMRR, and its CMRR was limited by resistor matching. The instrumentation amplifier fixes both. Two noninverting buffers present high, equal impedances to the sources; a single resistor between them sets a differential gain without touching the common mode; and a difference amplifier at the end subtracts.
 
 It is the standard front end for bridges, thermocouples, biopotential electrodes and any sensor whose signal is a small difference. It also has a subtle failure mode, the one in the question above, which datasheets describe with a peculiar diamond-shaped graph.
 
@@ -64,13 +64,13 @@ One resistor, $R_G$, sets the differential gain; there is nothing to match in th
 
 <div className="section-heading"><span>03</span><h2>Gain multiplies the CMRR</h2></div>
 
-The subtractor's common-mode gain is set by its resistor mismatch (Chapter 85) and is the same whatever $G_1$ is, because the common mode reaches it unamplified. Its differential input has been multiplied by $G_1$. So the overall CMRR is
+The subtractor's common-mode gain is set by its resistor mismatch (Chapter 80) and is the same whatever $G_1$ is, because the common mode reaches it unamplified. Its differential input has been multiplied by $G_1$. So the overall CMRR is
 
 <Equation tex={String.raw`\mathrm{CMRR}_{INA}\approx G_1\cdot\mathrm{CMRR}_{subtractor}`}/>
 
 <InaCmrrGainFigure/>
 
-With a 0.1% subtractor (66 dB) and a first-stage gain of 100, the INA reaches about 106 dB, a hundred times better than the difference amplifier alone, with the same resistors. That is why INA datasheets show CMRR rising with gain. The source-impedance problem of Chapter 85 also disappears: the sources drive op amp inputs of gigaohms, so a 100 Ω difference in source resistance no longer matters at DC.
+With a 0.1% subtractor (66 dB) and a first-stage gain of 100, the INA reaches about 106 dB, a hundred times better than the difference amplifier alone, with the same resistors. That is why INA datasheets show CMRR rising with gain. The source-impedance problem of Chapter 80 also disappears: the sources drive op amp inputs of gigaohms, so a 100 Ω difference in source resistance no longer matters at DC.
 
 </section>
 
@@ -182,13 +182,13 @@ RF can rectify in input junctions and appear as a DC shift, so an output low-pas
 
 Offset trim changes the zero; CMRR trim balances common-mode feedthrough. Adjusting one does not necessarily fix the other. A REF pin tied through a resistive potentiometer can spoil internal ratio matching; use a low-impedance driver if the architecture requires it. A separate SENSE pin, where available, can correct output lead resistance by returning feedback from the load. That adds cable impedance and capacitance to the loop and must be checked for stability.
 
-At gain 100 with $R_F=10$ kΩ per side, $R_G=202.02$ Ω. A 1 Ω switch resistance in series with $R_G$ gives gain about 99.51, a 0.49% error. Integrated programmable-gain INAs can avoid this error with carefully placed switches and trimmed ratios, but each gain still has its own noise, bandwidth, CMRR and settling. Allow time after channel or gain switching before conversion, and calibrate gain-dependent offset if necessary. Auto-zero INAs reduce drift but retain switching artifacts, input pulses and overload constraints from Chapter 82.
+At gain 100 with $R_F=10$ kΩ per side, $R_G=202.02$ Ω. A 1 Ω switch resistance in series with $R_G$ gives gain about 99.51, a 0.49% error. Integrated programmable-gain INAs can avoid this error with carefully placed switches and trimmed ratios, but each gain still has its own noise, bandwidth, CMRR and settling. Allow time after channel or gain switching before conversion, and calibrate gain-dependent offset if necessary. Auto-zero INAs reduce drift but retain switching artifacts, input pulses and overload constraints from Chapter 77.
 
 <h3>An INA can measure current or close a current-control loop</h3>
 
-Amplifying a Kelvin shunt voltage gives $v_s=G I R_S$. Comparing it with a command and driving a transistor yields $I=V_{cmd}/(GR_S)$ while the actuator has compliance. For $G=20$, $R_S=0.1$ Ω and a 1 V command, the target is 0.5 A; a 20 µV INA input offset contributes 0.2 mA current error. The INA adds poles, so the current-loop bandwidth must account for its gain setting and the transistor/load dynamics. Chapter 92 develops those dynamics.
+Amplifying a Kelvin shunt voltage gives $v_s=G I R_S$. Comparing it with a command and driving a transistor yields $I=V_{cmd}/(GR_S)$ while the actuator has compliance. For $G=20$, $R_S=0.1$ Ω and a 1 V command, the target is 0.5 A; a 20 µV INA input offset contributes 0.2 mA current error. The INA adds poles, so the current-loop bandwidth must account for its gain setting and the transistor/load dynamics. Chapter 87 develops those dynamics.
 
-To generate two outputs from a single-ended INA result, drive a follower and an inverter around a controlled reference: $v_{o+}=V_C+v_d/2$, $v_{o-}=V_C-v_d/2$. Independent errors and settling can unbalance them. A fully differential amplifier controls differential gain and output common mode together; Chapter 94 derives that interface and its ADC constraints.
+To generate two outputs from a single-ended INA result, drive a follower and an inverter around a controlled reference: $v_{o+}=V_C+v_d/2$, $v_{o-}=V_C-v_d/2$. Independent errors and settling can unbalance them. A fully differential amplifier controls differential gain and output common mode together; Chapter 89 derives that interface and its ADC constraints.
 
 <details>
 <summary>Worked self-check: does a higher gain always improve the measurement?</summary>

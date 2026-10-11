@@ -5,7 +5,7 @@ import {FollowerLab} from '../components/BjtLabs';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 28</span><span className="hairline"/>FOUNDATIONS / BIPOLAR TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 28</span><span className="hairline"/>PART II / BIPOLAR TRANSISTORS</div>
 
 <h1>The emitter follower<br/><em>Same voltage, far more current.</em></h1>
 
@@ -85,9 +85,48 @@ Both results are the same fact seen from opposite sides: currents in the emitter
 
 ### Keep the two gains separate
 
-The base-to-emitter gain and the source-to-emitter gain differ when the source has resistance. With $R=R_E\parallel R_L$ and negligible Early effect, the hybrid-π model gives:
+The base-to-emitter gain and the source-to-emitter gain differ when the source has resistance. Derive both from the hybrid-π model of Chapter 30: a resistance $r_\pi$ from base to emitter, and a current source $g_mv_{be}$ from collector to emitter, with $\beta = g_mr_\pi$.
 
-<Equation tex="Z_{in}=r_π+(\beta+1)R,\qquad A_{BE}=\frac{(\beta+1)R}{r_π+(\beta+1)R},\qquad A_{SE}=A_{BE}\frac{Z_{in}}{R_s+Z_{in}}" />
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / FOLLOWER GAIN AND INPUT RESISTANCE BY NODAL ANALYSIS</span>
+
+1. **Small-signal circuit.** The collector goes to the supply, which is signal ground. The emitter node $v_e$ connects to ground through $R = R_E\parallel R_L$. Let $v_b$ be the base voltage, so $v_{be} = v_b - v_e$, and neglect $r_o$.
+
+2. **KCL at the emitter.** Two currents arrive: the base current through $r_\pi$, which is $v_{be}/r_\pi$, and the controlled source current $g_mv_{be}$. One current leaves, through $R$:
+<Equation tex="\frac{v_{be}}{r_\pi}+g_mv_{be}=\frac{v_e}{R}\quad\Longrightarrow\quad v_{be}\,\frac{\beta+1}{r_\pi}=\frac{v_e}{R}"/>
+   using $g_m = \beta/r_\pi$.
+
+3. **Solve for the gain.** Substitute $v_{be} = v_b - v_e$ and collect the $v_e$ terms:
+<Equation tex="(v_b-v_e)(\beta+1)R=r_\pi\,v_e\quad\Longrightarrow\quad A_{BE}=\frac{v_e}{v_b}=\frac{(\beta+1)R}{r_\pi+(\beta+1)R}"/>
+   The gain is less than 1 by the ratio of $r_\pi$ to $(\beta+1)R$. Dividing top and bottom by $\beta+1$ and using $r_\pi/(\beta+1) \approx 1/g_m = r_e$ gives the equivalent form $A_{BE} = R/(r_e + R)$: a divider between the transistor's internal $r_e$ and the load.
+
+4. **Input resistance.** The base current is $i_b = v_{be}/r_\pi$. From step 2, $v_{be} = v_er_\pi/[(\beta+1)R]$, and from step 3, $v_e = v_bA_{BE}$. Therefore
+<Equation tex="i_b=\frac{v_b}{r_\pi+(\beta+1)R}\quad\Longrightarrow\quad Z_{in}=\frac{v_b}{i_b}=r_\pi+(\beta+1)R"/>
+   This refines the simple $(\beta+1)R$ result by the $r_\pi$ term.
+
+5. **Include the source.** A source $v_s$ with resistance $R_s$ drives a load $Z_{in}$, a divider. The source-to-emitter gain is therefore the product:
+<Equation tex="A_{SE}=\frac{v_e}{v_s}=\frac{Z_{in}}{R_s+Z_{in}}\cdot A_{BE}"/>
+
+</div>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / OUTPUT RESISTANCE WITH A TEST SOURCE</span>
+
+1. **Method.** Set the signal source to zero (so the base returns to ground through $R_s$), remove $R$, apply a test voltage $v_x$ at the emitter, and find the current $i_x$ it must supply. Then $Z_{out} = v_x/i_x$.
+
+2. **Base voltage.** The base current flows from ground through $R_s$ and $r_\pi$ in series into the emitter node, in the opposite direction. The base–emitter voltage is therefore set by a divider:
+<Equation tex="v_{be}=-\,v_x\,\frac{r_\pi}{R_s+r_\pi}"/>
+
+3. **KCL at the emitter.** The test source must supply the current leaving the node through $r_\pi$ and $R_s$, plus the current the transistor pulls out of it, which is $-g_mv_{be}$ in the direction away from the emitter:
+<Equation tex="i_x=-\frac{v_{be}}{r_\pi}-g_mv_{be}=-v_{be}\,\frac{\beta+1}{r_\pi}=v_x\,\frac{\beta+1}{R_s+r_\pi}"/>
+
+4. **Result.**
+<Equation tex="Z_{out}=\frac{v_x}{i_x}=\frac{R_s+r_\pi}{\beta+1}\approx\frac{R_s}{\beta+1}+r_e"/>
+   The source resistance is divided by $\beta + 1$, and the transistor adds its intrinsic $r_e$ in series. The simple formula of the previous subsection is the case $R_s \gg r_\pi$.
+
+</div>
 
 The first factor describes following; the second describes source loading. Count each once. Using the input divider and then applying a second output divider based on the same source resistance would double-count one effect.
 
@@ -105,7 +144,7 @@ An NPN follower can **source** as much current as the transistor allows: when th
 
 <p className="caption">Figure 1. A DC-coupled follower. Negative peaks flatten at the voltage where the emitter resistor and load form a divider from −10 V with the transistor off.</p>
 
-With the transistor off, the emitter is pulled down to the divider voltage
+With the transistor off, no current enters the emitter node from the transistor. KCL at that node then involves only the two resistors: $(0 - V_E)/R_L = (V_E - (-V_{EE}))/R_E$. Solving for $V_E$ gives the floor:
 
 <Equation tex="V_{\mathrm{floor}}=-V_{EE}\,\frac{R_L}{R_E+R_L}"/>
 
@@ -133,7 +172,7 @@ That fix has a cost. With $R_E$ = 1 kΩ to −10 V and the output resting at 0 V
 
 <div className="section-heading"><span>05</span><h2>The follower as a voltage regulator</h2></div>
 
-Chapter 15’s zener regulator wastes current: the resistor must supply the full load current plus a minimum zener current at the lowest input voltage. Put a follower after the zener and the zener only has to supply base current.
+Chapter 22’s zener regulator wastes current: the resistor must supply the full load current plus a minimum zener current at the lowest input voltage. Put a follower after the zener and the zener only has to supply base current.
 
 <FollowerRegulatorFigure/>
 
@@ -149,7 +188,23 @@ Chapter 15’s zener regulator wastes current: the resistor must supply the full
 
 </div>
 
-The output still changes with load current through the transistor’s $r_e$ and the zener’s dynamic resistance divided by $\beta$, and with temperature through $V_{BE}$. Feedback regulators (Chapter 15’s preview, and later chapters) compare the output with a reference and correct both.
+The output still changes with load current, and the output-resistance result above says by how much.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / LOAD REGULATION OF THE FOLLOWER REGULATOR</span>
+
+1. **Thévenin model of the base drive.** For small changes, the zener is a resistance $r_z$ (its dynamic resistance, a few ohms) in parallel with the feed resistor $R$. Since $R \gg r_z$, the base sees a source resistance $R_s \approx r_z$.
+
+2. **Output resistance.** From the test-source derivation, the emitter's resistance is $Z_{out} = (R_s + r_\pi)/(\beta+1) \approx r_e + r_z/(\beta+1)$.
+
+3. **Load regulation.** A load-current change $\Delta I_L$ through $Z_{out}$ moves the output by
+<Equation tex="\Delta V_{out}=-\Delta I_L\left(r_e+\frac{r_z}{\beta+1}\right),\qquad r_e=\frac{V_T}{I_E}"/>
+   With $r_z$ = 10 Ω, $\beta$ = 50 and $I_E$ = 100 mA, $Z_{out}$ ≈ 0.26 + 0.20 = 0.46 Ω. Going from 10 mA to 100 mA moves the output by roughly 50 mV. The $r_e$ term is larger at light load, where $I_E$ is small; use the average $r_e$ over the change, or integrate $V_T\ln(I_2/I_1)$, which gives 60 mV for the $V_{BE}$ change alone.
+
+</div>
+
+The output also drifts with temperature through $V_{BE}$, about −2 mV/°C. Feedback regulators (Chapter 22’s preview, and later chapters) compare the output with a reference and correct both.
 
 
 
@@ -159,7 +214,23 @@ Feed an NPN collector directly from the noisy input supply, but feed its base th
 
 <CapacitanceMultiplierFigure/>
 
-For small supply ripple, a stiff load bias and negligible collector-to-emitter feedthrough, the output approximately follows the base's RC low-pass. With R = 1 kΩ and C = 100 µF, the corner is 1.59 Hz and attenuation at 100 Hz is about **36.0 dB**. A 100 mV RMS ripple can therefore become roughly 1.59 mV RMS in that simplified model.
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / RIPPLE TRANSFER OF THE CAPACITANCE MULTIPLIER</span>
+
+1. **KCL at the base node** for small signals. Current arrives from the input through $R$, charges $C$ and feeds the base current $i_b$:
+<Equation tex="\frac{v_{in}-v_b}{R}=sCv_b+i_b"/>
+
+2. **Neglect the base current** for the ripple (it is the DC base current that matters, and its signal component is about $1/(\beta+1)$ of the load-current ripple). Solve for $v_b$:
+<Equation tex="\frac{v_b}{v_{in}}=\frac{1}{1+sRC}"/>
+
+3. **Follower.** With the transistor active and a high collector resistance, $v_e \approx v_b$ (gain $A_{BE} \approx 1$), so the output ripple is the base node's low-pass of the input ripple. At frequency $f \gg f_c = 1/(2\pi RC)$, the attenuation is $|v_e/v_{in}| \approx f_c/f$.
+
+4. **Why "multiplier".** The load draws its current from the emitter, which is $\beta + 1$ times the current drawn from the base node. Viewed from the output, the filter behaves as though $C$ were $(\beta+1)$ times larger with $R$ unchanged in the time constant; the energy comes from the collector supply, not from $C$.
+
+</div>
+
+For small supply ripple, a stiff load bias and negligible collector-to-emitter feedthrough, the output therefore follows the base's RC low-pass. With R = 1 kΩ and C = 100 µF, the corner is 1.59 Hz and attenuation at 100 Hz is about **36.0 dB**. A 100 mV RMS ripple can therefore become roughly 1.59 mV RMS in that simplified model.
 
 The DC cost remains. At 50 mA emitter current and $\beta=100$, base current is 0.495 mA; R drops 0.495 V. Adding a 0.7 V base-emitter drop costs about **1.20 V** of headroom. If beta is only 50, the resistor drop rises to 0.980 V. Once input ripple valleys take the collector close to the emitter, saturation destroys the assumed isolation and ripple passes through.
 

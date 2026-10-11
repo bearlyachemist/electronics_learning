@@ -1,10 +1,11 @@
 import Equation from '../../components/Equation.astro';
 import {SystemsFlow,SystemsPlot,PowerCircuit,MatchCircuit} from '../../components/SystemsFigures';
 import {SystemsLab} from '../../components/SystemsLab';
+import {FlashArchitectureFigure,PipelineStageFigure,PipelineResiduePlot,InterleaveSpurPlot} from '../../components/ConverterFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 108</span><span className="hairline"/>DATA CONVERTERS</div>
+<div className="eyebrow"><span>CHAPTER 111</span><span className="hairline"/>PART VI / ANALOG-TO-DIGITAL CONVERTERS</div>
 
 <h1>Flash, pipeline and interleaved ADCs<br/><em>Parallel decisions trade hardware for speed.</em></h1>
 
@@ -21,6 +22,9 @@ import {SystemsLab} from '../../components/SystemsLab';
 An ideal N-bit flash ADC compares the input with all $2^N-1$ internal thresholds at once. A resistor ladder or other threshold generator supplies the levels. Comparator outputs ideally form a thermometer pattern: those below the input are asserted, those above are not. Encoding logic converts that boundary into a binary result.
 
 <Equation tex={String.raw`N_{comparators}=2^N-1,\qquad T_k=kV_S/2^N`}/>
+
+<FlashArchitectureFigure/>
+
 A 4-bit flash uses 15 comparators; 8 bits needs 255; 12 bits would need 4095. This exponential growth increases input loading, reference distribution, power and matching demands. The comparisons are parallel, but sample aperture, comparator regeneration and encoding still take finite time.
 
 A 3-bit example with 1 V span uses thresholds at 0.125, 0.25, …, 0.875 V. An input of 0.61 V exceeds four thresholds and maps to code 4 under a floor-bin convention. Near a threshold, comparator noise and offset can change the decision. If the thermometer word contains an isolated wrong bit, it has a **bubble**. Bubble-tolerant encoding can suppress some patterns, but an arbitrary bad word cannot be repaired without enough information.
@@ -39,6 +43,8 @@ Flash remains a useful low-bit sub-block in larger architectures. Folding and in
 A two-step converter first makes a coarse decision, converts that decision back to analog with a DAC, subtracts it from the held input and amplifies the remainder. A fine ADC digitizes that smaller interval. Reusing a small flash bank can replace the enormous full-resolution bank, but the residue path now needs accurate DAC levels, gain and settling.
 
 <Equation tex={String.raw`v_r=G(v_{in}-V_{DAC,coarse}),\qquad v_{in}=V_{DAC,coarse}+v_r/G`}/>
+
+The second form is the first solved for $v_{in}$: the fine stage measures $v_r$, and dividing by $G$ refers its result, and its errors, back to the input. Choosing $G = 2^{N_c}$ for an $N_c$-bit coarse stage stretches one coarse interval $V_S/2^{N_c}$ to the fine stage's full span.
 For a teaching 6-bit, 1 V-span converter, a 3-bit coarse stage identifies a 0.125 V interval and gain 8 maps that interval to the fine stage's 1 V range. At 0.68 V input, coarse lower boundary is 0.625 V and residue is 0.44 V. A 3-bit fine result of 3 contributes $3/64$ V; concatenated ideal code is $5\times8+3=43$, corresponding to lower boundary 0.671875 V.
 
 If the coarse threshold is wrong but its DAC subtracts the nominal coarse value, the residue can leave the fine ADC's range, creating missing or badly wrong codes. Redundant range lets the next stage absorb some coarse comparator error. It does not remove an arbitrary residue-DAC weight error: that error changes the analog quantity passed onward.
@@ -53,7 +59,28 @@ A pipeline overlaps different samples across stages. While stage one processes s
 
 A useful normalized redundant stage accepts $x=v_{in}/V_R$ in [−1,1]. Two comparators at approximately ±0.25 choose $d=-1,0,+1$. Its residue is $r=2x-d$. This is often called a 1.5-bit stage because it uses three decisions represented by two bits with redundancy, rather than contributing two independent net bits.
 
+<PipelineStageFigure/>
+
 <Equation tex={String.raw`d=\begin{cases}-1&x<-1/4\\0&|x|\le1/4\\1&x>1/4\end{cases},\qquad r=2x-d,\qquad x=(d+r)/2`}/>
+
+<PipelineResiduePlot/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / RECONSTRUCTION AND REDUNDANCY OF A 1.5-BIT STAGE</span>
+
+1. **Recursion.** Each stage's residue is the next stage's input, $x_{k+1} = r_k$. Inverting $r = 2x - d$ gives $x_k = (d_k + x_{k+1})/2$.
+
+2. **Unroll.** Substituting repeatedly:
+<Equation tex={String.raw`x_1=\frac{d_1}{2}+\frac{d_2}{4}+\frac{d_3}{8}+\cdots+\frac{d_K}{2^K}+\frac{r_K}{2^K}`}/>
+   The decisions are binary-weighted digits that can be −1, 0 or +1, and the final residue sets the remaining error, at most $1/2^K$ in magnitude.
+
+3. **Residue range with an ideal threshold.** For $d = +1$ (when $x > 1/4$), $r = 2x - 1$ lies between $-1/2$ and $+1$. For $d = 0$ ($|x| \le 1/4$), $r = 2x$ lies between $\pm1/2$. Every residue stays inside the next stage's $[-1, 1]$ with margin.
+
+4. **Moving a threshold.** Suppose the upper threshold is at $t$ instead of $1/4$. Inputs up to $t$ choose $d = 0$ and give $r = 2x \le 2t$, which stays within range if $t \le 1/2$. Inputs above $t$ choose $d = +1$ and give $r = 2x - 1 > 2t - 1$, within range if $t \ge 0$. Any threshold between 0 and 1/2, that is, an error of up to ±1/4, still produces valid residues, and step 2 then reconstructs the input exactly.
+
+</div>
+
 At $x=0.6$, the first decision is +1 and residue 0.2. The next stage decides 0 and produces 0.4. A third decides +1 and produces −0.2. Reconstructing $1/2+0/4+1/8-0.2/8$ gives 0.6. Digital correction aligns and combines weighted decisions; it is not simple concatenation of the raw two-bit stage words.
 
 If the positive comparator threshold shifts from 0.25 to 0.30, an input 0.28 can choose d = 0 instead of +1. Its residue becomes 0.56, still within the next stage's range; the reconstruction can remain correct. Redundancy tolerates a bounded comparator decision error while the residue stays valid. Gain error, nonlinear settling and sub-DAC mismatch still create transfer errors unless separately calibrated.
@@ -70,7 +97,25 @@ Time interleaving uses M ADC channels sampling in staggered phases, creating tot
 
 For two channels, alternate offset values create a pattern at $f_s/2$. Gain mismatch modulates the input and creates images around $f_s/2\pm f_{in}$. Relative timing skew creates an error proportional to input derivative, so its spurs become worse at high input frequency. Under a small-skew two-channel model with relative delay $\Delta t$, the image-to-signal amplitude scale is approximately $\pi f_{in}\Delta t$.
 
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE TIMING-SKEW IMAGE</span>
+
+1. **Sampling error.** Let even samples be taken $\Delta t/2$ late and odd samples $\Delta t/2$ early. For $v = A\cos\omega t$, each sample is off by about $\pm(\Delta t/2)\,dv/dt$, with the sign alternating as $(-1)^n$:
+<Equation tex={String.raw`e[n]\approx(-1)^n\frac{\Delta t}{2}\left(-A\omega\sin\omega t_n\right)`}/>
+
+2. **Alternating sign is a modulation.** At the sample instants $(-1)^n = \cos(\pi f_st_n)$, so $e$ is a sine at $f_{in}$ multiplied by a cosine at $f_s/2$. The product contains frequencies $f_s/2 \pm f_{in}$, each with amplitude $A\omega\Delta t/4$.
+
+3. **Both land on one image.** In sampled data, $f_s/2 + f_{in}$ aliases to $f_s/2 - f_{in}$ (they are equidistant from $f_s/2$). The two components add, giving image amplitude $A\omega\Delta t/2 = A\pi f_{in}\Delta t$.
+
+4. **Ratio.** Dividing by the signal amplitude $A$:
+
+</div>
+
 <Equation tex={String.raw`\frac{A_{image}}{A_{signal}}\simeq\pi f_{in}\Delta t,\qquad Spur_{dBc}\simeq20\log_{10}(\pi f_{in}\Delta t)`}/>
+
+<InterleaveSpurPlot/>
+
 At 10 MHz and 10 ps relative skew, this gives about −70.1 dBc. At 100 MHz it becomes about −50.1 dBc. A correction that aligns low-frequency DC readings cannot expose this timing mismatch. Background calibration may estimate and track it, but convergence, residuals and response to input spectrum must be assessed.
 
 Interleaved outputs may have internal correction and alignment already applied. Check whether the data sheet quotes aggregate or per-channel sample rate, output latency and channel synchronization. A multi-channel ADC is not necessarily an interleaved single channel; the distinction affects timing and use.
@@ -81,7 +126,7 @@ Interleaved outputs may have internal correction and alignment already applied. 
 
 <div className="section-heading"><span>05</span><h2>Match the architecture to the whole channel</h2></div>
 
-For a 100 MS/s pipeline with seven-cycle latency, a sample emerges about 70 ns after its pipeline input, before any serializer and software delay. The converter may still accept a new sample every 10 ns. A control loop cares about the total delay; an RF receiver may care more about sustained throughput and spectral purity.
+For a 100 MS/s pipeline with seven-cycle latency, the delay is latency cycles times clock period, $7 \times 10$ ns, so a sample emerges about 70 ns after its pipeline input, before any serializer and software delay. The converter may still accept a new sample every 10 ns. A control loop cares about the total delay; an RF receiver may care more about sustained throughput and spectral purity.
 
 A 14-bit ADC at 100 MS/s creates 1.4 Gbit/s raw payload per channel. Parallel, LVDS or serialized output links add clocking, framing and physical-channel requirements. Decimation can reduce delivered rate while adding filtering delay. Bring the converter's sample clock, data clock and system synchronization into one timing plan.
 

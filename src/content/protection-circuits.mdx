@@ -4,7 +4,7 @@ import {RegulatorBypassFigure,SteeringFigure,ResetFigure,InrushFigure,OvershootD
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 18</span><span className="hairline"/>FOUNDATIONS / DIODES & SUPPLIES</div>
+<div className="eyebrow"><span>CHAPTER 25</span><span className="hairline"/>PART II / DIODES</div>
 
 <h1>Protection & bypass diodes<br/><em>Plan the path for every fault.</em></h1>
 
@@ -120,7 +120,7 @@ When identical sources are in series—solar cells, battery cells, LED strings�
 
 A diode across each group of cells, cathode toward the more positive end, is reverse-biased while the group generates. If the group stops generating, the string current drives the diode into conduction and flows around the group at a cost of one diode drop instead of a large reverse voltage. The string loses that group’s contribution rather than failing completely.
 
-<aside className="margin-note"><strong>The same pattern three times.</strong> The flywheel diode across a relay (Chapter 17), the regulator protection diode and the solar bypass diode are all reverse-biased in normal operation and conduct only when some stored energy or forced current would otherwise push a component into a damaging reverse condition.</aside>
+<aside className="margin-note"><strong>The same pattern three times.</strong> The flywheel diode across a relay (Chapter 24), the regulator protection diode and the solar bypass diode are all reverse-biased in normal operation and conduct only when some stored energy or forced current would otherwise push a component into a damaging reverse condition.</aside>
 
 </section>
 
@@ -210,7 +210,7 @@ The energy is small but the current is large and fast. The real waveform has a s
 
 ### Steering diodes and the rail-injection trap
 
-Most chip inputs contain diodes from the pin to the supply and from ground to the pin—the two-rail limiter of Chapter 16, built into the silicon. External steering diodes, typically Schottky so they conduct before the internal ones, plus a series resistor, handle larger currents.
+Most chip inputs contain diodes from the pin to the supply and from ground to the pin—the two-rail limiter of Chapter 23, built into the silicon. External steering diodes, typically Schottky so they conduct before the internal ones, plus a series resistor, handle larger currents.
 
 <SteeringFigure/>
 
@@ -274,7 +274,7 @@ where $V_{\mathrm{final}}$ is the supply minus a diode drop for charging, and on
 
 <div className="section-heading"><span>06</span><h2>Inductors as friends</h2></div>
 
-Chapter 17 treated the inductive kick as a hazard: a current that will not stop produces whatever voltage it needs. Here we use the same property deliberately. If the voltage an inductor produces can exceed the supply, it can deliver energy to a *higher* voltage than the one that charged it.
+Chapter 24 treated the inductive kick as a hazard: a current that will not stop produces whatever voltage it needs. Here we use the same property deliberately. If the voltage an inductor produces can exceed the supply, it can deliver energy to a *higher* voltage than the one that charged it.
 
 ### The boost cycle
 
@@ -310,7 +310,7 @@ During the on-time the source delivers $\tfrac12LI_{\mathrm{pk}}^2$ into the ind
 
 </div>
 
-Doubling the on-time doubles $I_{\mathrm{pk}}$ and quadruples the energy per cycle: 1.62 W. The output voltage does not appear in the stored energy at all. In discontinuous mode, the inductor delivers a fixed parcel of energy each cycle, and the output voltage rises until the load consumes that power. With no load and no feedback, the output keeps rising—exactly the overvoltage hazard of Chapter 17. Practical converters measure the output and adjust the on-time.
+Doubling the on-time doubles $I_{\mathrm{pk}}$ and quadruples the energy per cycle: 1.62 W. The output voltage does not appear in the stored energy at all. In discontinuous mode, the inductor delivers a fixed parcel of energy each cycle, and the output voltage rises until the load consumes that power. With no load and no feedback, the output keeps rising—exactly the overvoltage hazard of Chapter 24. Practical converters measure the output and adjust the on-time.
 
 The same physics drives a car’s ignition coil (a transformer with a large turns ratio on the release), a camera flash charger and the inductor-based switching regulators treated later in the course. The diode is what turns a destructive kick into a controlled delivery: it gives the inductor current a defined path to a defined voltage.
 
@@ -367,7 +367,7 @@ The fault current is injected into the 3.3 V rail. If the board draws less than 
 </div>
 </details>
 
-<p className="reference-note">Coverage: The Art of Electronics §§1.6.6–1.6.8, extended with protection practice. For component-level choices, manufacturer application notes on reverse-battery protection, hot-plug overshoot and TVS selection are the next step; the <a href="https://www.nexperia.com/applications/interactive-app-notes/IAN50001_automotive-reverse-battery-protection">Nexperia reverse-battery note</a> linked in Chapter 16 compares several topologies. The models here use fixed drops, ideal switches and lumped elements.</p>
+<p className="reference-note">Coverage: The Art of Electronics §§1.6.6–1.6.8, extended with protection practice. For component-level choices, manufacturer application notes on reverse-battery protection, hot-plug overshoot and TVS selection are the next step; the <a href="https://www.nexperia.com/applications/interactive-app-notes/IAN50001_automotive-reverse-battery-protection">Nexperia reverse-battery note</a> linked in Chapter 23 compares several topologies. The models here use fixed drops, ideal switches and lumped elements.</p>
 
 </section>
 

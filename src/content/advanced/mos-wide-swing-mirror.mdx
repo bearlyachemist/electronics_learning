@@ -4,13 +4,13 @@ import {WideSwingCircuit,WideSwingOutputFigure} from '../../components/MosStudyF
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 63</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 58</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>Wide-swing cascode bias<br/><em>Give back the wasted threshold.</em></h1>
 
 <p className="dek">Choose the protected node's voltage deliberately rather than accepting whatever a diode stack provides, design the bias generator that makes the choice possible, and keep the cascode's output resistance down to about two overdrives.</p>
 
-<div className="chapter-meta"><span>45–65 min</span><span>Cascode mirror (Ch. 62)</span></div>
+<div className="chapter-meta"><span>45–65 min</span><span>Cascode mirror (Ch. 57)</span></div>
 
 </div>
 
@@ -20,7 +20,7 @@ import {WideSwingCircuit,WideSwingOutputFigure} from '../../components/MosStudyF
 
 <div>
 
-The standard cascode of Chapter 62 holds the lower device's drain at $V_T + u$, although that device only needs $u$. The extra threshold voltage is not required by the topology. It is an accident of the bias network, which stacks two diode-connected transistors.
+The standard cascode of Chapter 57 holds the lower device's drain at $V_T + u$, although that device only needs $u$. The extra threshold voltage is not required by the topology. It is an accident of the bias network, which stacks two diode-connected transistors.
 
 In a 5 V circuit nobody minds. At 1.8 V, a threshold of 0.5 V is more than a quarter of the supply. The wide-swing mirror keeps the same two output transistors but generates the cascode gate voltage separately, so that the internal node can sit just above $u$. The output's compliance falls from $V_T + 2u$ to about $2u$.
 
@@ -139,7 +139,7 @@ A voltage label on a drawing is not a bias circuit. Every wide-swing design must
 
 Margin is a trade, too. More margin protects the output resistance against variation but gives back swing. Wider devices lower $u$ at fixed current but add capacitance and area. Lower current improves compliance and output resistance, but slows the circuit.
 
-Finally, verify: sweep supply, temperature and mismatch, and report the internal-node margin $V_X - u_1$ explicitly, not just the output current. Only where that margin is positive does the Chapter 62 output-resistance formula apply.
+Finally, verify: sweep supply, temperature and mismatch, and report the internal-node margin $V_X - u_1$ explicitly, not just the output current. Only where that margin is positive does the Chapter 57 output-resistance formula apply.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A cascode needs only $2u$ of headroom; the standard bias wastes a threshold besides. Generate $V_B = V_T + 2u + m$ with a replica, <em>cascode the reference too</em>, and audit the margin at node X.</p></div>
 

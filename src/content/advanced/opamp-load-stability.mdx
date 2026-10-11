@@ -5,13 +5,13 @@ import {CapLoadLagFigure,IsolationCircuits,CapLoadStepFigure} from '../../compon
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 93</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 88</span><span className="hairline"/>PART III / OP-AMP CIRCUITS</div>
 
 <h1>Capacitive loads and feedback placement<br/><em>Where you take the feedback decides what you get.</em></h1>
 
 <p className="dek">See how a capacitive load forms a pole with the op amp's output resistance and eats phase margin. Then compare the fixes, an isolation resistor outside the loop and dual-path feedback, by their stability, their DC accuracy at the load and their settling, and check the large-signal current a capacitor demands.</p>
 
-<div className="chapter-meta"><span>45–60 min + exploration</span><span>Bandwidth and stability (Ch. 79) · Noninverting amplifiers (Ch. 83)</span></div>
+<div className="chapter-meta"><span>45–60 min + exploration</span><span>Bandwidth and stability (Ch. 74) · Noninverting amplifiers (Ch. 78)</span></div>
 
 </div>
 
@@ -21,7 +21,7 @@ import {CapLoadLagFigure,IsolationCircuits,CapLoadStepFigure} from '../../compon
 
 <div>
 
-Op amps drive cables, ADC inputs, MOSFET gates and long traces, and all of those are capacitive. A follower that is perfectly stable on the bench may ring or oscillate once it drives a few nanofarads: Chapter 83 warned about it, and Chapter 92's current servo met a version of the same problem.
+Op amps drive cables, ADC inputs, MOSFET gates and long traces, and all of those are capacitive. A follower that is perfectly stable on the bench may ring or oscillate once it drives a few nanofarads: Chapter 78 warned about it, and Chapter 87's current servo met a version of the same problem.
 
 The cause is a pole in the feedback loop that the datasheet's open-loop curve does not show. The cures all involve a resistor between the op amp and the load, and the question is where the feedback comes from: before the resistor, after it, or both. Each choice gives a different combination of stability and accuracy.
 
@@ -41,7 +41,7 @@ The cause is a pole in the feedback loop that the datasheet's open-loop curve do
 
 <OpAmpFigure mode="stability"/>
 
-Inside the loop, the op amp's output stage has an open-loop output resistance $R_O$, typically tens of ohms. With a capacitive load it forms a pole:
+Inside the loop, the op amp's output stage has an open-loop output resistance $R_O$, typically tens of ohms. Model the amplifier as an ideal internal voltage $Av_e$ behind $R_O$. With a capacitive load, the pin voltage is a divider of $R_O$ and $1/sC_L$: $v_{pin} = Av_e/(1 + sR_OC_L)$. The loop gain acquires the extra factor, a pole at:
 
 <Equation tex={String.raw`f_{load}=\frac{1}{2\pi R_OC_L}`}/>
 
@@ -59,9 +59,11 @@ Real output impedance is not a pure resistance: it rises with frequency as the l
 
 <IsolationCircuits/>
 
-**Isolation resistor outside the loop.** Put $R_{ISO}$ between the op amp's pin and the load, and take feedback at the pin. The loop's load is now $R_{ISO}$ in series with $C_L$, which at high frequency looks resistive, so the pole is tamed: there is a zero at $1/(2\pi R_{ISO}C_L)$ that cancels much of its lag. But the load is now on the far side of an RC filter that the loop does not see. With a resistive load in parallel, the DC load voltage is
+**Isolation resistor outside the loop.** Put $R_{ISO}$ between the op amp's pin and the load, and take feedback at the pin. The loop's load is now $R_{ISO}$ in series with $C_L$, which at high frequency looks resistive, so the pole is tamed. The divider from the internal voltage to the pin is now $(R_{ISO} + 1/sC_L)/(R_O + R_{ISO} + 1/sC_L) = (1 + sR_{ISO}C_L)/[1 + s(R_O + R_{ISO})C_L]$: the pole moves down slightly, to $1/[2\pi(R_O + R_{ISO})C_L]$, but there is now a zero at $1/(2\pi R_{ISO}C_L)$ that cancels much of its lag. Above the zero the divider settles at $R_{ISO}/(R_O + R_{ISO})$, a flat attenuation with no phase shift. But the load is now on the far side of an RC filter that the loop does not see. With a resistive load in parallel, the DC load voltage is
 
 <Equation tex={String.raw`V_{load}=V_{pin}\cdot\frac{R_L}{R_L+R_{ISO}}`}/>
+
+(At DC the capacitor is open, so $R_{ISO}$ and $R_L$ form a simple divider from the pin.)
 
 and that is the answer to the opening question: nobody corrects it. The loop holds the pin exactly; the resistor's drop is outside its reach.
 
@@ -139,7 +141,7 @@ Stability is a small-signal question. A capacitor also demands current, which is
 
 A buffer outside the precision amplifier's feedback path leaves its offset, gain error and load-dependent voltage drop uncorrected. Putting it inside the path corrects these errors at frequencies with sufficient loop gain, but adds its delay and poles. “Unity gain” describes DC signal gain; it does not mean zero phase shift or infinite bandwidth.
 
-Let the precision amplifier have gain $A(s)$, the buffer have transfer $B(s)$ and the overall feedback fraction be $\beta$. Then $H=AB/(1+AB\beta)$ and the return ratio is $T=AB\beta$. A buffer with a 200 kHz pole can seriously degrade a follower using a nominal 1 MHz amplifier: in the same two-pole teaching model developed in Chapter 79, crossover is about 425 kHz and phase margin only about 25°. Check the combined loop, not each device's individual “stable follower” claim.
+Let the precision amplifier have gain $A(s)$, the buffer have transfer $B(s)$ and the overall feedback fraction be $\beta$. Then $H=AB/(1+AB\beta)$ and the return ratio is $T=AB\beta$. A buffer with a 200 kHz pole can seriously degrade a follower using a nominal 1 MHz amplifier: in the same two-pole teaching model developed in Chapter 74, crossover is about 425 kHz and phase margin only about 25°. Check the combined loop, not each device's individual “stable follower” claim.
 
 <h3>A separate fast feedback path can combine precision and drive</h3>
 

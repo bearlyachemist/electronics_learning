@@ -5,7 +5,7 @@ import {LogTransferFigure,SchmittCircuit,SchmittFigure,WienStartupFigure,SignalC
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 94</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 89</span><span className="hairline"/>PART III / OP-AMP CIRCUITS</div>
 
 <h1>Analog functions and a complete design<br/><em>From one feedback element to a working instrument.</em></h1>
 
@@ -101,7 +101,7 @@ An op amp can be used as a comparator, but slowly: it saturates and must recover
 
 <div className="section-heading"><span>04</span><h2>Sine waves from a controlled loop</h2></div>
 
-A Wien-bridge network (a series RC feeding a parallel RC) passes exactly 1/3 of its input, with zero phase shift, at $f_0 = 1/(2\pi RC)$. Follow it with a noninverting amplifier of gain $K$ and close the loop: at $f_0$ the loop gain is $K/3$. The closed loop's characteristic equation is
+A Wien-bridge network (a series RC feeding a parallel RC) passes exactly 1/3 of its input, with zero phase shift, at $f_0 = 1/(2\pi RC)$. Follow it with a noninverting amplifier of gain $K$ and close the loop: at $f_0$ the loop gain is $K/3$. The loop has positive feedback, so its characteristic equation is $1 - K\beta(s) = 0$, with $\beta(s) = sRC/[(sRC)^2 + 3sRC + 1]$ from Chapter 48. Multiply through by the denominator: $(sRC)^2 + 3sRC + 1 - KsRC = 0$. Dividing by $(RC)^2$ and writing $\omega_0 = 1/RC$, the closed loop's characteristic equation is
 
 <Equation tex={String.raw`s^2+(3-K)\,\omega_0\,s+\omega_0^2=0`}/>
 
@@ -121,7 +121,7 @@ so $K < 3$ gives a decaying response, $K > 3$ a growing one, and only $K = 3$ ex
 
 </div>
 
-Letting the op amp clip instead of controlling $K$ also limits the amplitude, but the waveform is then a distorted sine. The rule from Chapter 79 holds here in reverse: an oscillator is a loop deliberately placed at zero phase margin, and keeping it there needs active control.
+Letting the op amp clip instead of controlling $K$ also limits the amplitude, but the waveform is then a distorted sine. The rule from Chapter 74 holds here in reverse: an oscillator is a loop deliberately placed at zero phase margin, and keeping it there needs active control.
 
 </section>
 
@@ -137,13 +137,13 @@ Letting the op amp clip instead of controlling $K$ also limits the amplitude, bu
 
 <span className="tiny-label">WORKED EXAMPLE / THE CHAIN, STAGE BY STAGE</span><h3>From ±5 mV on 2.5 V to a 16-bit code</h3>
 
-<p><strong>Gain and reference.</strong> To use ±1 V of the ADC's range around its center, the gain is 1 V/5 mV = 200. An INA with first-stage gain 20 and subtractor gain 10 keeps its internal outputs at 2.5 ± 0.05 V, well inside their range (Chapter 86). Its reference pin is driven by a buffered divider from the 5 V excitation, so the output's center is half the excitation.</p>
+<p><strong>Gain and reference.</strong> To use ±1 V of the ADC's range around its center, the gain is 1 V/5 mV = 200. An INA with first-stage gain 20 and subtractor gain 10 keeps its internal outputs at 2.5 ± 0.05 V, well inside their range (Chapter 81). Its reference pin is driven by a buffered divider from the 5 V excitation, so the output's center is half the excitation.</p>
 
 <p><strong>Ratiometric measurement.</strong> The ADC's reference is the same 5 V excitation. If the excitation drifts by 1%, the bridge's output, the INA's reference and the ADC's full scale all drift by 1%, and the digital code does not change. A ratiometric chain needs no precision reference.</p>
 
-<p><strong>Filter.</strong> A second-order Butterworth low-pass at 100 Hz (Chapter 90) sets the noise bandwidth to about 111 Hz and attenuates interference, including 50/60 Hz harmonics above the band, before the ADC samples.</p>
+<p><strong>Filter.</strong> A second-order Butterworth low-pass at 100 Hz (Chapter 85) sets the noise bandwidth to about 111 Hz and attenuates interference, including 50/60 Hz harmonics above the band, before the ADC samples.</p>
 
-<p><strong>ADC driver.</strong> A rail-to-rail op amp and an RC charge reservoir settle the ADC's sampling kickback to half an LSB within its acquisition time (Chapter 83).</p>
+<p><strong>ADC driver.</strong> A rail-to-rail op amp and an RC charge reservoir settle the ADC's sampling kickback to half an LSB within its acquisition time (Chapter 78).</p>
 
 </div>
 

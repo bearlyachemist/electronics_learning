@@ -5,7 +5,7 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 52</span><span className="hairline"/>FIELD-EFFECT TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 50</span><span className="hairline"/>PART II / FIELD-EFFECT TRANSISTORS</div>
 
 <h1>MOSFET physics & characteristics<br/><em>From surface charge to a real device.</em></h1>
 
@@ -42,7 +42,7 @@ A MOS structure places a conductor above a semiconductor with a thin insulating 
 
 The oxide capacitance per area is εox/tox. Reducing oxide thickness raises capacitance and strengthens electrostatic control, but also changes field stress and leakage constraints. Threshold depends on gate/body work-function differences, oxide charge, body doping and the charge needed to establish inversion; it is not simply “the voltage required to cross the oxide.”
 
-Above threshold, a first-order channel charge expression is $C_{ox}$($V_{GS}$ − $V_T$ − V(x)). The local channel voltage subtracts from effective gate drive. Integrating that charge along the device produced the triode and saturation laws in chapter 47. The same relation explains both: the drain end loses channel charge first because it is at the highest channel potential.
+Above threshold, a first-order channel charge expression is $C_{ox}$($V_{GS}$ − $V_T$ − V(x)). The local channel voltage subtracts from effective gate drive. Integrating that charge along the device produced the triode and saturation laws in chapter 45. The same relation explains both: the drain end loses channel charge first because it is at the highest channel potential.
 
 An enhancement n-channel device has positive threshold in the usual convention. A depletion n-channel MOSFET has negative threshold, so zero gate-source voltage already exceeds threshold. A negative threshold does not imply a negative drain current.
 
@@ -54,7 +54,22 @@ An enhancement n-channel device has positive threshold in the usual convention. 
 
 <BodyEffectFigure/>
 
-When the source rises relative to a p-type body, the source-body junction becomes more reverse biased. More depletion charge must be balanced by the gate before strong inversion occurs. A common model is:
+When the source rises relative to a p-type body, the source-body junction becomes more reverse biased. More depletion charge must be balanced by the gate before strong inversion occurs.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE BODY-EFFECT THRESHOLD</span>
+
+1. **Depletion charge.** At the onset of strong inversion the surface potential, measured from the body, is $2\phi_F$. A reverse bias $V_{SB}$ on the source–body junction raises the channel's potential relative to the body by $V_{SB}$, so the depletion layer must support $2\phi_F + V_{SB}$. For a uniformly doped one-sided junction (Chapter 19's depletion analysis), the charge per area in a layer supporting voltage $\psi$ is
+<Equation tex="|Q_{dep}|=\sqrt{2q\varepsilon_{si}N_A\,\psi}=\sqrt{2q\varepsilon_{si}N_A\,(2\phi_F+V_{SB})}"/>
+
+2. **Gate voltage to balance it.** The gate must image this charge across the oxide, which takes a voltage $|Q_{dep}|/C_{ox}$. That term is part of the threshold voltage; the other parts (work-function difference, oxide charge, the $2\phi_F$ itself) do not depend on $V_{SB}$.
+
+3. **Change from zero bias.** Subtract the $V_{SB} = 0$ value and define $\gamma = \sqrt{2q\varepsilon_{si}N_A}/C_{ox}$, the body-effect coefficient in √V. The threshold rises by $\gamma$ times the change in $\sqrt{2\phi_F + V_{SB}}$.
+
+</div>
+
+The result is the common model:
 
 <Equation tex="V_T=V_{T0}+\gamma\left(\sqrt{2\phi_F+V_{SB}}-\sqrt{2\phi_F}\right)" />
 
@@ -64,7 +79,7 @@ Differentiating the threshold law gives a body-effect factor:
 
 <Equation tex="\eta=\frac{\partial V_T}{\partial V_{SB}}=\frac{\gamma}{2\sqrt{2\phi_F+V_{SB}}},\qquad g_{mb}\approx\eta g_m" />
 
-Using $v_{bs}$ = $v_b$ − $v_s$, the incremental drain-current model becomes $i_d$ = $g_m v_{gs}$ + $g_{mb}v_{bs}$ + $g_{ds}v_{ds}$. With both drain and body at AC ground, follower gain is approximately $g_m/(g_m+g_{mb}+g_{ds}+G_L)$. Body effect adds a restoring response to source motion, lowering gain.
+Why $g_{mb} = \eta g_m$: in saturation $I_D$ depends on $V_{GS} - V_T(V_{SB})$. A rise in $V_{BS}$ (that is, a fall in $V_{SB}$) lowers $V_T$ by $\eta$ per volt, which acts exactly like raising $V_{GS}$ by $\eta$ per volt. So $\partial I_D/\partial V_{BS} = \eta\,\partial I_D/\partial V_{GS} = \eta g_m$. Using $v_{bs}$ = $v_b$ − $v_s$, the incremental drain-current model becomes $i_d$ = $g_m v_{gs}$ + $g_{mb}v_{bs}$ + $g_{ds}v_{ds}$. With both drain and body at AC ground, write KCL at the source (output) node: the device current $i_d = g_m(v_g - v_s) + g_{mb}(0 - v_s) + g_{ds}(0 - v_s)$ flows into the node and leaves through the load, $v_sG_L$. Collecting the $v_s$ terms, $g_mv_g = v_s(g_m + g_{mb} + g_{ds} + G_L)$, so the follower gain is $g_m/(g_m+g_{mb}+g_{ds}+G_L)$. Body effect adds a restoring response to source motion, lowering gain.
 
 For a discrete MOSFET with body internally tied to source, $V_{SB}$ remains near zero internally and this particular external body-effect mechanism is absent. Do not add a fixed-body term to a circuit whose body follows its source.
 
@@ -84,7 +99,7 @@ If body follows source, that body-effect term disappears and the same frozen tra
 
 A datasheet threshold voltage is usually measured at a specified small drain current. It is not the gate voltage that guarantees a low-resistance power switch. If a device's threshold spans 1–3 V, that does not establish useful on-resistance with a 3.3 V driver. The relevant guarantee is $R_{DS(\mathrm{on})}$ at the actual gate drive, temperature and other stated conditions.
 
-In the simple strong-inversion model:
+In the simple strong-inversion model (Chapter 45), with $g_m = dI_D/dV_{GS} = k(V_{GS}-V_T)$ rewritten using $k = 2I_D/(V_{GS}-V_T)^2$:
 
 <Equation tex="I_D=\frac{k}{2}(V_{GS}-V_T)^2,\qquad g_m=\frac{2I_D}{V_{GS}-V_T}" />
 

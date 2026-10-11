@@ -5,13 +5,13 @@ import {HalfCircuitFigure,MosBjtSteeringFigure,DiffOffsetFigure} from '../../com
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 70</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 65</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>The MOS differential pair<br/><em>Two transistors share one current.</em></h1>
 
 <p className="dek">Split the inputs into differential and common-mode parts, derive the exact square-law steering curve before linearizing it, analyze the pair with half-circuits, and see why its linearity, its offset and its transconductance all trade against one number: the overdrive.</p>
 
-<div className="chapter-meta"><span>55–75 min + exploration</span><span>Mirrors (Ch. 59) · Degeneration (Ch. 61) · BJT pair (Ch. 36)</span></div>
+<div className="chapter-meta"><span>55–75 min + exploration</span><span>Mirrors (Ch. 54) · Degeneration (Ch. 56) · BJT pair (Ch. 36)</span></div>
 
 </div>
 
@@ -75,7 +75,11 @@ State which output you mean before comparing gains: the differential output has 
 
 A bipolar pair steers completely within about ±4$V_T$ ≈ ±100 mV, fixed by physics. A MOS pair steers completely at $\sqrt2\,u_0$, and the designer chooses $u_0$. The cost is transconductance: at fixed tail current, $g_{m0} = I_T/u_0$, so doubling the linear range halves $g_m$. Even a MOS pair at only 0.2 V of overdrive has nearly three times the bipolar pair's linear range, and about a quarter of its $g_m$ ($2V_T/u_0$ = 0.26).
 
-**No even harmonics.** The steering curve is odd: $I_1 - I_T/2$ changes sign with $v_d$. So even with a single-ended output, a matched pair with an ideal tail produces no second harmonic. The first distortion term is cubic. Expanding the square root, a sine of peak $a$ gives
+**No even harmonics.** The steering curve is odd: $I_1 - I_T/2$ changes sign with $v_d$. So even with a single-ended output, a matched pair with an ideal tail produces no second harmonic. The first distortion term is cubic. To size it, write the steering law with $I_T = ku_0^2$ (each side carries $\tfrac12ku_0^2$ at balance): $I_1 - I_2 = ku_0v_d\sqrt{1 - v_d^2/4u_0^2}$. For small $v_d$, $\sqrt{1-x} \approx 1 - x/2$, so
+
+<Equation tex={String.raw`I_1-I_2\approx ku_0v_d-\frac{k\,v_d^3}{8u_0}`}/>
+
+Put $v_d = a\cos\theta$ and use $\cos^3\theta = \tfrac34\cos\theta + \tfrac14\cos3\theta$. The third-harmonic amplitude is $\tfrac14\cdot ka^3/(8u_0) = ka^3/(32u_0)$, while the fundamental is $ku_0a$ to first order. Their ratio, for a sine of peak $a$, is
 
 <Equation tex={String.raw`\frac{H_3}{H_1}\approx\frac{a^2}{32\,u_0^2}`}/>
 
@@ -97,7 +101,7 @@ Symmetry makes small-signal analysis of the pair easy. Decompose any input into 
 
 <Equation tex={String.raw`A_{cm}=\frac{v_{o1}}{v_c}=-\frac{g_{m0}R_D}{1+2g_{m0}R_T}\approx-\frac{R_D}{2R_T}`}/>
 
-An ideal tail ($R_T \to \infty$) rejects common mode completely. A real tail, a transistor current source with output resistance $r_o$ or a cascode with $g_mr_o^2$, makes $A_{cm}$ small but not zero. Chapter 71 develops this into the common-mode rejection ratio.
+An ideal tail ($R_T \to \infty$) rejects common mode completely. A real tail, a transistor current source with output resistance $r_o$ or a cascode with $g_mr_o^2$, makes $A_{cm}$ small but not zero. Chapter 66 develops this into the common-mode rejection ratio.
 
 </section>
 
@@ -123,7 +127,7 @@ Use $I_T$ = 2 mA, $k$ = 2 mA/V², $V_T$ = 1 V, $R_D$ = 1 kΩ, a 5 V supply and $
 
 <MosLab kind="differential" client:load/>
 
-<p className="caption">Live lab. 5 V supply, 1 kΩ drain resistors, $k$ = 2 mA/V², $V_T$ = 1 V, and a tail that needs 0.3 V. The curves show the ideal fixed-tail steering law; the headroom indicator checks the tail and both drains separately. Sweep the differential input at a common mode of 2.5 V, then raise the common mode toward 4.5 V and watch the indicator before the curves change. Finally add source resistors and see the linear range widen (Chapter 73).</p>
+<p className="caption">Live lab. 5 V supply, 1 kΩ drain resistors, $k$ = 2 mA/V², $V_T$ = 1 V, and a tail that needs 0.3 V. The curves show the ideal fixed-tail steering law; the headroom indicator checks the tail and both drains separately. Sweep the differential input at a common mode of 2.5 V, then raise the common mode toward 4.5 V and watch the indicator before the curves change. Finally add source resistors and see the linear range widen (Chapter 68).</p>
 
 </section>
 
@@ -131,7 +135,24 @@ Use $I_T$ = 2 mA, $k$ = 2 mA/V², $V_T$ = 1 V, $R_D$ = 1 kΩ, a 5 V supply and $
 
 <div className="section-heading"><span>05</span><h2>Match the pair and its surroundings</h2></div>
 
-A real pair is not perfectly matched, and the imbalance appears as **input offset**: the differential input needed to make the two outputs equal. Three sources dominate:
+A real pair is not perfectly matched, and the imbalance appears as **input offset**: the differential input needed to make the two outputs equal.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / OFFSET OF A RESISTOR-LOADED PAIR</span>
+
+1. **Balance condition.** The drains are equal when $I_1R_{D1} = I_2R_{D2}$. Write $R_{D1,2} = R_D(1 \pm \epsilon_R/2)$ with $\epsilon_R = \Delta R_D/R_D$, and $I_{1,2} = I_T/2 \pm \delta$. To first order the balance requires $\delta = -\epsilon_R\,I_T/4$: the side with the larger resistor must carry slightly less current.
+
+2. **What produces $\delta$.** A differential input $v$ steers $\pm g_{m0}v/2$ (section 02). A threshold difference $\Delta V_T$ acts exactly like an input voltage in series with one gate. A fractional $k$ difference $\epsilon_k$ at equal overdrive splits the tail as $I_{1,2} = (I_T/2)(1 \pm \epsilon_k/2)$, a current shift of $\epsilon_kI_T/4$.
+
+3. **Solve for the input that balances.** The steered current must cancel the $k$ shift and supply the resistor requirement:
+<Equation tex={String.raw`\frac{g_{m0}}{2}\,(v-\Delta V_T)=-\frac{I_T}{4}\left(\epsilon_R+\epsilon_k\right)`}/>
+
+4. **Refer to the input.** Divide by $g_{m0}/2$ and use $g_{m0} = I_T/u_0$, so $I_T/(2g_{m0}) = u_0/2$. The magnitude of the required input is the offset, with each term able to take either sign in practice:
+
+</div>
+
+Three sources dominate:
 
 <Equation tex={String.raw`V_{OS}\approx\Delta V_T+\frac{u_0}{2}\left(\frac{\Delta R_D}{R_D}+\frac{\Delta k}{k}\right)`} label="INPUT OFFSET OF A RESISTOR-LOADED PAIR"/>
 
@@ -198,7 +219,7 @@ $(u_0/2)(\Delta R/R)$ = 0.5 V × 0.01 = **5 mV** at 1 V of overdrive, and **1 mV
 <summary>6. Raising the common-mode input to 4 V broke a pair that worked at 2.5 V. Which device failed, and why did the steering curve not warn you?</summary>
 <div>
 
-The input device whose current rose: its gate went up with $V_C$ while its drain fell with its larger current, so $V_{DS}$ fell below its overdrive and it entered triode. The ideal steering law assumes both devices saturated and an ideal tail; it says nothing about compliance, which must be checked separately (Chapter 71).
+The input device whose current rose: its gate went up with $V_C$ while its drain fell with its larger current, so $V_{DS}$ fell below its overdrive and it entered triode. The ideal steering law assumes both devices saturated and an ideal tail; it says nothing about compliance, which must be checked separately (Chapter 66).
 
 </div>
 </details>

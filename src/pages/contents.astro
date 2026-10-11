@@ -1,0 +1,25 @@
+---
+import '../styles/global.css';
+import {chapters} from '../curriculum/chapters';
+import {parts, partRange} from '../curriculum/parts';
+import {sitePath} from '../lib/site-path';
+const sorted=[...chapters].sort((a,b)=>Number(a.number)-Number(b.number));
+const inUnit=(u:{from:number,to:number})=>sorted.filter(c=>Number(c.number)>=u.from&&Number(c.number)<=u.to);
+---
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Contents · The Analog Notebook</title><meta name="description" content="All chapters of the Analog Notebook, organized into seven parts from passive circuits to digital interfaces."/></head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar"><a class="brand" href={sitePath('/')}><span class="brand-icon" aria-hidden="true">∿</span> the analog notebook<span class="brand-dot">.</span></a><span class="edition">CONTENTS <span> / </span> {sorted.length} CHAPTERS IN 7 PARTS</span><a class="top-link" href={sitePath('/')}>Start at Chapter 1 <span aria-hidden="true">↗</span></a></header>
+<div class="book-shell">
+<aside class="sidebar"><a class="course-label" href={sitePath('/contents/')}>CONTENTS <span>{sorted.length} CHAPTERS</span></a><p class="sidebar-title">Seven parts</p><nav aria-label="Parts">{parts.map(p=><a href={`#part-${p.id}`}>{p.numeral} <span>{p.title}</span></a>)}</nav>
+<div class="sidebar-note"><span class="tiny-label">HOW TO READ</span><p>Parts I and II are the core sequence. Parts III–VII each build on them and can be read in any order.</p></div></aside>
+<main id="main">
+<div class="chapter-hero"><div class="eyebrow"><span>CONTENTS</span><span class="hairline"></span></div><h1>The Analog Notebook<br/><em>From Kirchhoff to the wire protocol.</em></h1><p class="dek">Each chapter states its model, derives its results from nodal analysis and device laws, checks them against an interactive circuit, and ends with independent practice.</p></div>
+{parts.map(p=>{const [a,b]=partRange(p);return <section id={`part-${p.id}`} class="contents-part">
+<div class="section-heading"><span>{p.numeral}</span><h2>{p.title}</h2></div>
+<p class="contents-blurb">{p.blurb} <span class="contents-range">Chapters {a}–{b}</span></p>
+{p.units.map(u=><div class="contents-unit"><h3>{u.title}</h3><ol>{inUnit(u).map(c=><li><a href={sitePath(c.href)}><span class="contents-num">{c.number}</span><span>{c.title}</span></a></li>)}</ol></div>)}
+</section>})}
+</main></div>
+<footer class="footer"><span>The Analog Notebook · Contents</span><span>Original teaching material · Models and assumptions stated in each chapter</span></footer>
+</body></html>

@@ -179,3 +179,27 @@ Nine further chapters (26–34) bring the course to 34 chapters and 147 problems
 ## Amplifier building blocks (Chapters 35–41)
 
 src/engine/stages.mjs adds multi-transistor solvers built from the Ebers–Moll function of bjt.mjs (mirrors, differential pair, push–pull, compound pairs, paralleled devices) and a general complex nodal-analysis routine (`nodal`) with admittance, transconductance and current-injection stamps. The bootstrap and Miller labs are the first to use nodal analysis rather than a closed-form transfer function—a step toward the generic small-signal solver proposed above. Labs live in src/components/StageLabs.tsx. Chapters 42–46 were developed concurrently in a separate session (see docs/feedback-control.md); chapters.ts is kept sorted by chapter number so navigation follows the book order.
+
+## Parts and chapter numbering (reorganized October 2026)
+
+Chapters are grouped into seven parts defined in `src/curriculum/parts.ts`; each part is a set of units with contiguous
+chapter ranges. The sidebar, mobile chapter list, topbar, footer, `/contents/` page and every chapter's eyebrow label are
+derived from it, and the previous/next pager announces part boundaries.
+
+| Part | Title | Chapters |
+| --- | --- | --- |
+| I | Foundations & passive circuits | 1–18 |
+| II | Semiconductors & transistors | 19–71 |
+| III | Op amps & precision analog | 72–92 |
+| IV | Power electronics | 93–100 |
+| V | Electromagnetics & RF | 101–108 |
+| VI | The analog–digital boundary | 109–113 |
+| VII | Digital electronics | 114–117 |
+
+Chapter numbers are display labels only; URLs use chapter ids, so renumbering never breaks links. The old-to-new map used
+for the reorganization (all internal "Chapter N" references were rewritten with it; textbook chapter citations were left
+alone) is: 1–11 unchanged; AC 19–25 → 12–18; diodes 12–18 → 19–25; 26–43 unchanged; 45 → 44; FETs 47–53 → 45–51;
+MOS 57–76 → 52–71; op amps 77–94 → 72–89; precision 95–97 → 90–92; power 44 → 93, 98 → 94, 54–56 → 95–97, 99–101 → 98–100;
+RF 104 → 102, 102 → 104, 103 → 106, 105 → 108 (new chapters 101, 103, 105, 107); converters 106–110 → 109–113;
+digital 46 → 114, 111–113 → 115–117. New chapters take the next number inside their unit and require extending that
+unit's range in `parts.ts`.

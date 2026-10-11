@@ -5,7 +5,7 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 53</span><span className="hairline"/>FIELD-EFFECT TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 51</span><span className="hairline"/>PART II / FIELD-EFFECT TRANSISTORS</div>
 
 <h1>Linear & depletion MOSFET circuits<br/><em>Control current without hiding the heat.</em></h1>
 
@@ -48,13 +48,13 @@ Choose $R_S$ = 500 Ω, giving $V_S$ = 1 V, and bias the gate at 4 V. A 200 kΩ u
 
 <FetCircuit mos />
 
-With a 10 kΩ AC-coupled load, $R_D$ parallel $R_L$ = 1.803 kΩ. Leaving $R_S$ unbypassed gives:
+With a 10 kΩ AC-coupled load, $R_D$ parallel $R_L$ = 1.803 kΩ. The degenerated common-source gain derived by KCL in Chapter 47, $A_v = -g_m(R_D\parallel R_L)/(1 + g_mR_S)$, applies unchanged because the MOSFET has the same small-signal model. Leaving $R_S$ unbypassed gives:
 
 <Equation tex="A_v\approx-\frac{0.004(1803)}{1+0.004(500)}=-2.40" />
 
 If $C_{gs}$ = 20 pF and $C_{gd}$ = 4 pF, the simple Miller input estimate is 33.6 pF. The bias divider is in parallel with the external signal source when finding the input pole. A 10 kΩ source yields an effective 8.70 kΩ resistance and a first estimate near 545 kHz. Other poles may lower the actual bandwidth.
 
-Threshold spread changes the bias even though the divider is exact. The source resistor reduces that sensitivity: a small threshold shift causes approximately −$g_m\Delta V_T/(1+g_mR_S)$ current change when output conductance is neglected. For +0.1 V, that is about −0.133 mA. Large shifts require solving the DC equation again.
+Threshold spread changes the bias even though the divider is exact. The source resistor reduces that sensitivity. With the gate voltage fixed, KVL around the gate loop gives $V_G = V_{GS} + I_DR_S$, so any change obeys $\delta V_{GS} = -R_S\,\delta I_D$. The device law gives $\delta I_D = g_m(\delta V_{GS} - \delta V_T)$, because current depends on $V_{GS} - V_T$. Substituting the first into the second, $\delta I_D(1 + g_mR_S) = -g_m\,\delta V_T$: a small threshold shift causes approximately −$g_m\Delta V_T/(1+g_mR_S)$ current change when output conductance is neglected. For +0.1 V, that is about −0.133 mA. Large shifts require solving the DC equation again.
 
 </section>
 
@@ -66,9 +66,9 @@ Threshold spread changes the bias even though the divider is exact. The source r
 
 A simple source follower sets $V_S$ approximately to $V_G$ minus the $V_{GS}$ required for its current. Because required $V_{GS}$ varies with device, current and temperature, it is a buffer with an offset, not a precision voltage reference.
 
-For $g_m$ = 20 mS and a 1 kΩ source load, ideal follower gain is 20/21 = 0.952, with output resistance near 50 Ω parallel 1 kΩ = 47.6 Ω. A fixed body or a finite drain output resistance lowers the gain further. Output swing is constrained by gate-drive range, drain headroom and the source's ability to supply or sink load current.
+For $g_m$ = 20 mS and a 1 kΩ source load, the follower result $g_mR/(1 + g_mR)$ (KCL at the source node, Chapter 47) gives an ideal gain of 20/21 = 0.952, with output resistance near $1/g_m$ = 50 Ω parallel 1 kΩ = 47.6 Ω. A fixed body or a finite drain output resistance lowers the gain further. Output swing is constrained by gate-drive range, drain headroom and the source's ability to supply or sink load current.
 
-To obtain an accurate current sink, let an amplifier compare a reference voltage with the voltage across a source sense resistor and drive the MOS gate. With negative feedback maintaining $V_S$ ≈ Vref:
+To obtain an accurate current sink, let an amplifier compare a reference voltage with the voltage across a source sense resistor and drive the MOS gate. The amplifier's output is $A(V_{ref} - V_S)$, so with large gain the loop settles where $V_S$ ≈ $V_{ref}$ (Chapter 42: the error is $1/(1+T)$ of the input). All of the drain current flows through the sense resistor, so by Ohm's law:
 
 <Equation tex="I_D\approx\frac{V_{\mathrm{ref}}}{R_{\mathrm{sense}}}" />
 
@@ -120,7 +120,7 @@ For C = 100 nF, f = 1 kHz and $V_{pk}$ = 50 V, peak current is 31.4 mA. At 10 kH
 
 A conceptual high-voltage amplifier uses a voltage-gain/error stage driving complementary or otherwise bidirectional output devices, with the load voltage returned through a divider. If the divider fraction is 1/20 and loop gain is adequate, a 2.5 V peak input requests 50 V peak at the load. The feedback derivation remains the same as in chapter 42, but output current and phase margin now depend strongly on the capacitive load.
 
-With ideal ±60 V supplies and a class-B push-pull stage delivering the sinusoidal capacitor current, the net average real power delivered to an ideal capacitor is zero. Yet the rails supply approximately $2V_S I_{pk}/\pi$ = 1.20 W for the 31.4 mA example; that power is dissipated in the idealized output stage. Reactive load current can therefore heat an amplifier even when the load's average real power is zero.
+With ideal ±60 V supplies and a class-B push-pull stage delivering the sinusoidal capacitor current, the net average real power delivered to an ideal capacitor is zero. Yet each rail supplies its half-sine of current at constant voltage, an average of $I_{pk}/\pi$ (the same integral as Chapter 37's class B analysis), so together the rails supply approximately $2V_S I_{pk}/\pi$ = 1.20 W for the 31.4 mA example; that power is dissipated in the idealized output stage. Reactive load current can therefore heat an amplifier even when the load's average real power is zero.
 
 Real actuators have dielectric loss and resonances. Output isolation resistance and compensation affect stability, dissipation and load-voltage accuracy. This is an analyzed topology and load calculation, not a ready-to-build high-voltage design with a selected device and validated compensation.
 

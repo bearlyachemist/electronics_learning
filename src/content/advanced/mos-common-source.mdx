@@ -5,13 +5,13 @@ import {CsDesignCircuit,CsBodeFigure,CsDistortionFigure} from '../../components/
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 64</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 59</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>The resistor-loaded common-source amplifier<br/><em>From a specification to a working stage.</em></h1>
 
 <p className="dek">Design a complete common-source amplifier to a specification: choose the operating point from the gain, find the distortion from the load voltage, place every low- and high-frequency corner, and allocate the signal swing in both directions.</p>
 
-<div className="chapter-meta"><span>60–80 min + exploration</span><span>Bias atlas (Ch. 57) · Degeneration (Ch. 61) · Miller effect (Ch. 41)</span></div>
+<div className="chapter-meta"><span>60–80 min + exploration</span><span>Bias atlas (Ch. 52) · Degeneration (Ch. 56) · Miller effect (Ch. 41)</span></div>
 
 </div>
 
@@ -21,7 +21,7 @@ import {CsDesignCircuit,CsBodeFigure,CsDistortionFigure} from '../../components/
 
 <div>
 
-Chapter 57 asked what operating point a given circuit has. A designer asks the reverse: given a gain, a load, a supply, an output amplitude and a bandwidth, what circuit? This chapter answers that question for the simplest MOS voltage amplifier, a single transistor with a resistor in its drain.
+Chapter 52 asked what operating point a given circuit has. A designer asks the reverse: given a gain, a load, a supply, an output amplitude and a bandwidth, what circuit? This chapter answers that question for the simplest MOS voltage amplifier, a single transistor with a resistor in its drain.
 
 On the way, three results emerge that are easy to state and surprising the first time. The gain is set by a **voltage**, the drop across the drain resistor divided by the overdrive. The distortion at a given output amplitude does **not** depend on the overdrive at all. And the bandwidth is usually set not by the transistor but by the Miller-multiplied capacitance from its drain back to its gate.
 
@@ -64,7 +64,7 @@ The midband gain is $-g_m$ times the total resistance at the drain. With an AC-c
 
 <Equation tex={String.raw`A_v=-g_m\,(R_D\parallel R_L\parallel r_o)=-g_mR_D'`}/>
 
-Substitute $g_m = 2I_D/u$ (Chapter 57) and the transistor seems to disappear:
+Substitute $g_m = 2I_D/u$ (Chapter 52) and the transistor seems to disappear:
 
 <Equation tex={String.raw`|A_v|=\frac{2\,I_DR_D'}{u}\qquad\text{unloaded: }|A_v|=\frac{2\,V_{R_D}}{u}`} label="GAIN FROM A VOLTAGE RATIO"/>
 
@@ -90,7 +90,7 @@ Two ceilings remain. The supply limits $V_{R_D}$: with 5 V and room left for swi
 
 <p><strong>Find the overdrive and size the device.</strong> $u = 2I_D/g_m$ = 0.4 V, so $k = 2I_D/u^2$ = <strong>12.5 mA/V²</strong>. Check: $|A_v|$ = 2 × 1.61 V / 0.4 V = 8.06.</p>
 
-<p><strong>Stabilize the bias.</strong> Choose $R_S$ = 500 Ω (0.5 V at 1 mA), bypassed by $C_S$ so the signal gain is unaffected. At DC, $g_mR_S$ = 2.5, so threshold spread is divided by 3.5 (Chapter 57). The gate must sit at $V_S + V_T + u$ = 0.5 + 1 + 0.4 = <strong>1.9 V</strong>: a divider of 3.1 MΩ over 1.9 MΩ draws 1 µA and presents 1.18 MΩ to the source.</p>
+<p><strong>Stabilize the bias.</strong> Choose $R_S$ = 500 Ω (0.5 V at 1 mA), bypassed by $C_S$ so the signal gain is unaffected. At DC, $g_mR_S$ = 2.5, so threshold spread is divided by 3.5 (Chapter 52). The gate must sit at $V_S + V_T + u$ = 0.5 + 1 + 0.4 = <strong>1.9 V</strong>: a divider of 3.1 MΩ over 1.9 MΩ draws 1 µA and presents 1.18 MΩ to the source.</p>
 
 <p><strong>Check the region.</strong> $V_{DS}$ = 3 − 0.5 = 2.5 V against $u$ = 0.4 V. Saturation holds with 2.1 V of margin, which is the room available for downward signal swing at the drain.</p>
 
@@ -116,7 +116,7 @@ The overdrive has cancelled. A larger $u$ makes the transistor more linear, but 
 
 <p>At 1 V peak output, $H_2/H_1$ = 1/(8 × 1.61) = <strong>7.8%</strong>. That is clearly audible, and far from a precision amplifier. The specification did not state a distortion limit; a real one would.</p>
 
-<p>The options are all costly. More current into the same load means less $R_D$ and less gain, unless the supply is raised. Unbypassed degeneration reduces distortion at fixed output by $1 + g_mR_{S1}$ (Chapter 61), but reduces gain by the same factor: 200 Ω unbypassed halves both. A single transistor cannot give high gain, large swing and low distortion from 5 V at once. Overall negative feedback around a higher-gain amplifier can, which is the motivation for the op-amp chapters.</p>
+<p>The options are all costly. More current into the same load means less $R_D$ and less gain, unless the supply is raised. Unbypassed degeneration reduces distortion at fixed output by $1 + g_mR_{S1}$ (Chapter 56), but reduces gain by the same factor: 200 Ω unbypassed halves both. A single transistor cannot give high gain, large swing and low distortion from 5 V at once. Overall negative feedback around a higher-gain amplifier can, which is the motivation for the op-amp chapters.</p>
 
 </div>
 
@@ -172,7 +172,7 @@ Finally, a resistor-loaded stage inherits every spread in its bias. Test the cor
 <summary>1. Would doubling the gate bias double the output signal?</summary>
 <div>
 
-No, and it may destroy it. Raising the gate raises the current and $g_m$, but also the drop across $R_D$, so the drain falls toward the saturation edge (Chapter 57). The gain rises only until the drain meets the edge, then collapses in triode. The output amplitude depends on the operating point and the available swing, not on the bias magnitude.
+No, and it may destroy it. Raising the gate raises the current and $g_m$, but also the drop across $R_D$, so the drain falls toward the saturation edge (Chapter 52). The gain rises only until the drain meets the edge, then collapses in triode. The output amplitude depends on the operating point and the available swing, not on the bias magnitude.
 
 </div>
 </details>
@@ -199,7 +199,7 @@ $R_D'$ = 2 k ∥ 10 k ∥ 50 k = 1.61 kΩ, so $A_v$ = −2 mS × 1.61 kΩ = **�
 <summary>4. Why does 2 pF of gate–drain capacitance matter more than 10 pF of gate–source capacitance?</summary>
 <div>
 
-The gate–source capacitance sees only the input voltage. The gate–drain capacitance sees the input minus the output, which is $(1 + |A_v|)$ times the input. With a gain of 8 it draws as much current as 18 pF to ground would: the Miller effect. A cascode (Chapter 69) holds the drain still and removes most of it.
+The gate–source capacitance sees only the input voltage. The gate–drain capacitance sees the input minus the output, which is $(1 + |A_v|)$ times the input. With a gain of 8 it draws as much current as 18 pF to ground would: the Miller effect. A cascode (Chapter 64) holds the drain still and removes most of it.
 
 </div>
 </details>

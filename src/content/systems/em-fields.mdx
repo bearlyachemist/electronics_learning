@@ -1,0 +1,222 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow} from '../../components/SystemsFigures';
+import {CoaxFieldFigure,SkinDepthPlot} from '../../components/RfFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 101</span><span className="hairline"/>PART V / FIELDS &amp; WAVES</div>
+
+<h1>Electromagnetic fields behind circuit models<br/><em>Every wire is a field problem in disguise.</em></h1>
+
+<p className="dek">Recover Kirchhoff's laws from Maxwell's equations, derive capacitance and inductance from geometry, follow return current and skin effect, and learn when the lumped model stops being honest.</p>
+
+<div className="chapter-meta"><span>50–75 min + practice</span><span>Derivations · Geometry · Practical layout</span></div>
+
+</div>
+
+<section id="lumped">
+
+<div className="section-heading"><span>01</span><h2>Decide when a circuit is lumped</h2></div>
+
+Kirchhoff's laws are not separate axioms. They are Maxwell's equations with two terms neglected, and knowing which two tells you exactly when a schematic stops describing the hardware.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / KIRCHHOFF'S LAWS AS APPROXIMATIONS</span>
+
+1. **KVL from Faraday's law.** Around any closed path, the line integral of electric field equals minus the rate of change of magnetic flux through the path:
+<Equation tex={String.raw`\oint\mathbf E\cdot d\boldsymbol\ell=-\frac{d\Phi_B}{dt}`}/>
+   The voltage across each element is the integral of $\mathbf E$ through it, so the left side is the sum of element voltages around the loop. KVL, $\sum v = 0$, is exact only when no changing flux threads the loop.
+
+2. **Rescue KVL with inductance.** If the loop's own current $i$ produces the flux, $\Phi_B = Li$ and the right side is $-L\,di/dt$. Moving it to the left gives $\sum v + L\,di/dt = 0$: KVL holds again if the loop's inductance is drawn as an element. External changing flux appears the same way, as a source $M\,di_{ext}/dt$.
+
+3. **KCL from charge conservation.** For a closed surface around a node, the current leaving equals the rate at which enclosed charge decreases:
+<Equation tex={String.raw`\oint\mathbf J\cdot d\mathbf A=-\frac{dQ_{enc}}{dt}`}/>
+   KCL, $\sum i = 0$, is exact only when the node stores no charge. Charge stored on the node's surroundings is a capacitance to them; drawing it as a capacitor restores KCL.
+
+4. **When the patches stop working.** Both rescues assume the fields at every point respond instantly to the currents everywhere else. Fields actually travel at $v = c/\sqrt{\varepsilon_r}$. The lumped model is accurate when the structure is much smaller than a wavelength, $\ell \ll \lambda = v/f$, or for a step, when the propagation delay is much less than the rise time.
+
+</div>
+
+At 100 MHz on an FR-4 board with an effective permittivity near 4, $v \approx 1.5\times10^8$ m/s and $\lambda \approx 1.5$ m. A 10 cm trace is λ/15: lumped, with its inductance and capacitance drawn in. At 1 GHz the same trace is $2\lambda/3$ long and must be treated as a transmission line (Chapter 102).
+
+<SystemsFlow labels={["Charge|on conductors", "Electric field|Gauss", "Capacitance|C = Q/V"]} caption="Capacitance summarizes the electric field stored between conductors."/>
+
+<SystemsFlow labels={["Current|in conductors", "Magnetic field|Ampère", "Inductance|L = Φ/I"]} caption="Inductance summarizes the magnetic field linked by a current path."/>
+
+</section>
+
+<section id="capacitance">
+
+<div className="section-heading"><span>02</span><h2>Derive capacitance from Gauss's law</h2></div>
+
+Capacitance is charge per volt, and both quantities follow from the electric field. The recipe is always the same: assume a charge, find the field from Gauss's law, integrate the field to get the voltage, divide.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / PARALLEL PLATES AND COAXIAL LINE</span>
+
+1. **Gauss's law** in a uniform dielectric: the outward flux of $\mathbf E$ through a closed surface equals the enclosed charge divided by permittivity, $\oint\mathbf E\cdot d\mathbf A = Q/\varepsilon$, with $\varepsilon = \varepsilon_r\varepsilon_0$.
+
+2. **Parallel plates.** Charge $+Q$ on a plate of area $A$, $-Q$ on another a distance $d$ away. Neglecting fringing, a pillbox enclosing one plate's surface gives a uniform field $E = Q/(\varepsilon A)$. The voltage is $V = Ed$, so
+<Equation tex={String.raw`C=\frac QV=\frac{\varepsilon A}{d}`}/>
+
+3. **Coax.** Charge $q'$ per unit length on the inner conductor of radius $a$. A cylinder of radius $r$ and length $\ell$ encloses $q'\ell$, and by symmetry the field is radial and uniform over its side: $E\cdot2\pi r\ell = q'\ell/\varepsilon$, so $E = q'/(2\pi\varepsilon r)$.
+
+4. **Integrate to the outer conductor** at radius $b$:
+<Equation tex={String.raw`V=\int_a^b\frac{q'}{2\pi\varepsilon r}\,dr=\frac{q'}{2\pi\varepsilon}\ln\frac ba\qquad\Longrightarrow\qquad C'=\frac{q'}{V}=\frac{2\pi\varepsilon}{\ln(b/a)}`}/>
+   Only the ratio of radii matters, because the field falls as $1/r$ and the voltage depends on the logarithm.
+
+</div>
+
+<CoaxFieldFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A FAMILIAR COAX</span><h3>Inner radius 0.45 mm, outer 1.47 mm, polyethylene ε<sub>r</sub> = 2.25</h3>
+
+<p>$\ln(1.47/0.45) = \ln3.27 = 1.184$. Then $C' = 2\pi(8.854\times10^{-12})(2.25)/1.184 = $ <strong>105.7 pF/m</strong>. A 2 m cable adds 211 pF to whatever drives it at low frequency, which is why a 1 MΩ sensor through a long cable has a corner of under 1 kHz.</p>
+
+<p>A wide PCB trace over a plane behaves approximately like a parallel plate. A 3 mm trace over 0.2 mm of FR-4 ($\varepsilon_r$ = 4.3) gives $\varepsilon w/h$ ≈ 571 pF/m before fringing, which adds more. For narrow traces fringing dominates and a field solver is needed.</p>
+
+</div>
+
+</section>
+
+<section id="inductance">
+
+<div className="section-heading"><span>03</span><h2>Derive inductance from Ampère's law</h2></div>
+
+Inductance is flux linkage per ampere. The recipe mirrors capacitance: assume a current, find $\mathbf B$ from Ampère's law, integrate the flux through the current's loop, divide.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / COAX INDUCTANCE, WAVE SPEED AND IMPEDANCE</span>
+
+1. **Ampère's law** (quasi-static): the circulation of $\mathbf B$ around a closed path equals $\mu$ times the current enclosed, $\oint\mathbf B\cdot d\boldsymbol\ell = \mu I_{enc}$.
+
+2. **Field in the coax.** Between the conductors a circle of radius $r$ encloses the inner current $I$; by symmetry $B\cdot2\pi r = \mu I$, so $B = \mu I/(2\pi r)$. Outside the outer conductor the enclosed current is $I - I = 0$, so there is no external field: this is why coax neither radiates nor picks up much.
+
+3. **Flux per unit length.** The flux passing between the conductors through a strip of length $\ell$ is
+<Equation tex={String.raw`\Phi=\int_a^b\frac{\mu I}{2\pi r}\,\ell\,dr=\frac{\mu I\ell}{2\pi}\ln\frac ba\qquad\Longrightarrow\qquad L'=\frac{\mu}{2\pi}\ln\frac ba`}/>
+   (This is the external inductance; current inside a solid inner conductor adds a small internal term that vanishes at high frequency, section 05.)
+
+4. **The product.** Multiply by $C'$ from section 02: the logarithms cancel and $L'C' = \mu\varepsilon$, independent of geometry. Chapter 102 shows waves travel at $1/\sqrt{L'C'}$, so
+<Equation tex={String.raw`v=\frac{1}{\sqrt{\mu\varepsilon}}=\frac{c}{\sqrt{\varepsilon_r}},\qquad Z_0=\sqrt{\frac{L'}{C'}}=\frac{1}{2\pi}\sqrt{\frac{\mu}{\varepsilon}}\ln\frac ba=\frac{60\ \Omega}{\sqrt{\varepsilon_r}}\ln\frac ba`}/>
+   using $\sqrt{\mu_0/\varepsilon_0}$ ≈ 377 Ω, the impedance of free space.
+
+</div>
+
+For the coax above, $L' = 2\times10^{-7}\times1.184 = $ **236.8 nH/m**, $Z_0 = \sqrt{236.8\text{ n}/105.7\text{ p}}$ ≈ **47.3 Ω** and $v = c/1.5 = 2.0\times10^8$ m/s. Commercial 50 Ω cable uses a slightly smaller inner conductor; the formula tells you which way to move.
+
+### Mutual inductance is how fields couple circuits
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / MUTUAL INDUCTANCE OF A WIRE AND A NEARBY LOOP</span>
+
+1. **Field of a long straight current** $I$: Ampère's law with a circle of radius $r$ gives $B = \mu_0I/(2\pi r)$.
+
+2. **Flux through a rectangular loop** of length $\ell$ parallel to the wire, spanning distances $r_1$ to $r_2$:
+<Equation tex={String.raw`\Phi=\int_{r_1}^{r_2}\frac{\mu_0I}{2\pi r}\,\ell\,dr=\underbrace{\frac{\mu_0\ell}{2\pi}\ln\frac{r_2}{r_1}}_{M}\,I`}/>
+
+3. **Induced voltage.** Faraday's law: a changing aggressor current induces $v = M\,dI/dt$ in series with the victim loop, exactly as a source added to its KVL.
+
+</div>
+
+A victim loop 5 cm long whose conductors sit 10 and 12 mm from an aggressor has $M = (2\times10^{-7})(0.05)\ln1.2$ ≈ **1.8 nH**. A 1 A step in 10 ns ($10^8$ A/s) induces **0.18 V**: enough to corrupt a logic input or a millivolt measurement. Halving the victim's loop area (closer conductors) or doubling its distance both shrink the logarithm.
+
+</section>
+
+<section id="returns">
+
+<div className="section-heading"><span>04</span><h2>Find where the return current really flows</h2></div>
+
+At DC, return current spreads through a ground plane along the path of least resistance. At high frequency it follows the path of least *inductance*, which is directly under the signal trace, because that path encloses the least flux.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / RETURN-CURRENT DENSITY UNDER A TRACE</span>
+
+1. **Image method.** A thin trace at height $h$ above a perfectly conducting plane carries $I$. The plane's surface current is exactly what an equal and opposite image current at depth $h$ would require: the plane forces the tangential electric field to zero, and the trace plus its image satisfy that condition.
+
+2. **Field at the plane.** At horizontal distance $x$, each current is at distance $\sqrt{x^2+h^2}$ and contributes $\mu_0I/[2\pi(x^2+h^2)^{1/2}]$. Their components parallel to the plane add, each scaled by $h/\sqrt{x^2+h^2}$: $B_x = \mu_0Ih/[\pi(x^2+h^2)]$.
+
+3. **Surface current.** The surface current density in a perfect conductor equals the tangential $H$ just above it, $K = B_x/\mu_0$:
+<Equation tex={String.raw`K(x)=\frac{I}{\pi h}\cdot\frac{1}{1+(x/h)^2}`}/>
+   Integrating over all $x$ gives $(I/\pi)[\arctan(x/h)]_{-\infty}^{\infty} = I$: the whole return current flows in the plane.
+
+4. **How concentrated.** The fraction within $\pm Nh$ is $(2/\pi)\arctan N$: 50% within $\pm h$, 80% within $\pm3h$, 94% within $\pm10h$.
+
+</div>
+
+On a board with 0.2 mm dielectric, 80% of a fast signal's return flows within ±0.6 mm of the trace centre. A slot in the plane under the trace forces that current around the slot, enlarging the loop, raising inductance and creating exactly the radiating structure section 06 warns about. The rule "do not route fast signals across plane splits" is this derivation.
+
+</section>
+
+<section id="skin">
+
+<div className="section-heading"><span>05</span><h2>Derive skin depth and AC resistance</h2></div>
+
+Inside a good conductor, a changing current induces fields that oppose it in the interior. Current is pushed toward the surface, and the effective cross-section shrinks as frequency rises.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / SKIN DEPTH</span>
+
+1. **Inside the conductor** displacement current is negligible ($\omega\varepsilon \ll \sigma$ by many orders of magnitude for metals), and Ohm's law reads $\mathbf J = \sigma\mathbf E$.
+
+2. **Combine Faraday and Ampère.** Taking the curl of Faraday's law, $\nabla\times\nabla\times\mathbf E = -\partial(\nabla\times\mathbf B)/\partial t = -\mu\,\partial\mathbf J/\partial t$. With no free charge inside, $\nabla\times\nabla\times\mathbf E = -\nabla^2\mathbf E$. Substitute $\mathbf E = \mathbf J/\sigma$ and use phasors ($\partial/\partial t \to j\omega$):
+<Equation tex={String.raw`\nabla^2\mathbf J=j\omega\mu\sigma\,\mathbf J`}/>
+
+3. **Plane solution.** For a flat surface with depth $x$ into the metal, $d^2J/dx^2 = j\omega\mu\sigma J$. Try $J = J_0e^{-\gamma x}$: $\gamma^2 = j\omega\mu\sigma$, so $\gamma = (1+j)\sqrt{\omega\mu\sigma/2}$ (using $\sqrt j = (1+j)/\sqrt2$, the root that decays). Define
+<Equation tex={String.raw`\delta=\sqrt{\frac{2}{\omega\mu\sigma}}=\sqrt{\frac{2\rho}{\omega\mu}},\qquad J(x)=J_0\,e^{-x/\delta}e^{-jx/\delta}`}/>
+   The magnitude falls by $e$ every $\delta$, and the phase lags by one radian.
+
+4. **Equivalent resistance.** The total current per unit width is $\int_0^\infty J\,dx = J_0\delta/(1+j)$. The surface impedance is $E(0)$ over this, $Z_s = (1+j)/(\sigma\delta)$: a resistance $1/(\sigma\delta)$ per square, exactly that of a uniform layer one skin depth thick.
+
+5. **Round wire,** radius $a \gg \delta$: the layer has area $2\pi a\delta$, so $R' \approx 1/(2\pi a\sigma\delta)$. Compared with $R'_{dc} = 1/(\pi a^2\sigma)$ the ratio is $a/(2\delta)$, which grows as $\sqrt f$.
+
+</div>
+
+<SkinDepthPlot/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A 1 mm COPPER WIRE AT 10 MHz</span><h3>When the copper you paid for stops carrying current</h3>
+
+<p>$\delta = 66\ \mu\text{m}/\sqrt{10} = 20.9$ µm. DC resistance is $\rho/(\pi a^2) = 1.72\times10^{-8}/(\pi\times0.25\times10^{-6})$ = 21.9 mΩ/m. AC resistance is $1/(2\pi a\sigma\delta) = 1/(2\pi\times0.5\text{ mm}\times5.81\times10^7\times20.9\ \mu\text{m})$ = <strong>262 mΩ/m</strong>, twelve times larger.</p>
+
+<p>For an inductor, that raises the series loss and lowers Q (Chapter 103). Litz wire, made of many insulated strands each thinner than δ and woven so each strand visits the surface, recovers much of the cross-section up to a few megahertz. Above that, silver plating or wider flat conductors are used, since only the surface carries current anyway.</p>
+
+</div>
+
+</section>
+
+<section id="radiation">
+
+<div className="section-heading"><span>06</span><h2>Radiate only when you mean to</h2></div>
+
+Maxwell added one term to Ampère's law: a changing electric field acts like a current, $\nabla\times\mathbf H = \mathbf J + \partial\mathbf D/\partial t$. With it, a changing $\mathbf E$ creates $\mathbf B$ and a changing $\mathbf B$ creates $\mathbf E$, and the pair can sustain each other away from any conductor. In free space the resulting wave travels at $c = 1/\sqrt{\mu_0\varepsilon_0}$ with $E/H = \sqrt{\mu_0/\varepsilon_0} \approx 377$ Ω.
+
+Close to a small source, within about $\lambda/2\pi$, the fields are dominated by stored energy that returns to the circuit each cycle: this is the **near field**, where the lumped mutual-capacitance and mutual-inductance models of this chapter apply. Beyond it, a fraction of the energy leaves for good: the **far field**, analyzed in Chapter 107. A circuit radiates efficiently only when some current path is a significant fraction of a wavelength, so the practical rules follow directly:
+
+- Keep high-$di/dt$ loops small (section 03): radiated field grows with loop area and with $f^2$.
+- Give every fast signal an adjacent, unbroken return (section 04).
+- Keep common-mode current off cables, which are often the longest conductors in the system and radiate in proportion to length and frequency.
+
+The ideas in this chapter recur through Part V: transmission lines (Chapter 102) put the $L'$ and $C'$ of sections 02–03 into a wave equation; RF components (Chapter 103) are built from the parasitics and skin effect of sections 03 and 05; antennas (Chapter 107) are structures designed to do what section 06 tells ordinary circuits not to do.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain which neglected term each of Kirchhoff's laws relies on, reproduce the coax $C'$, $L'$ and $Z_0$, and estimate the skin depth at a frequency you care about. Then change one dimension and predict how each result moves.
+
+[Work through three independent problems](/em-fields/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, Appendix H (transmission lines) and the layout discussions of Chapter 12; standard electromagnetics derivations. Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

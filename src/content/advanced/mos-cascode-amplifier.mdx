@@ -5,13 +5,13 @@ import {TelescopicCircuit,CascodeLoadGainFigure,CascodeMillerFigure} from '../..
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 69</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 64</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>The MOS cascode voltage amplifier<br/><em>Common source below, common gate above.</em></h1>
 
 <p className="dek">Stack a common-gate device on a common-source device. Derive the stage's transconductance and output resistance, find out when the enormous unloaded gain is real and when the load erases it, and see how holding the middle node still removes the Miller capacitance.</p>
 
-<div className="chapter-meta"><span>50–70 min</span><span>Cascode mirror (Ch. 62) · Active loads (Ch. 65) · Common gate (Ch. 68)</span></div>
+<div className="chapter-meta"><span>50–70 min</span><span>Cascode mirror (Ch. 57) · Active loads (Ch. 60) · Common gate (Ch. 63)</span></div>
 
 </div>
 
@@ -21,7 +21,7 @@ import {TelescopicCircuit,CascodeLoadGainFigure,CascodeMillerFigure} from '../..
 
 <div>
 
-Chapter 62 put a cascode on a current mirror to raise its output resistance. The same structure with a signal on the lower gate becomes an amplifier: the lower transistor converts the input voltage to a current, and the upper transistor passes that current to the output while holding the lower drain nearly still.
+Chapter 57 put a cascode on a current mirror to raise its output resistance. The same structure with a signal on the lower gate becomes an amplifier: the lower transistor converts the input voltage to a current, and the upper transistor passes that current to the output while holding the lower drain nearly still.
 
 Two benefits follow. The output resistance rises by the intrinsic gain $g_mr_o$, so with a high-impedance load the voltage gain can reach thousands. And because the lower drain barely moves, its gate–drain capacitance is no longer multiplied by the stage gain. But both benefits depend on the rest of the circuit, and quoting the unloaded gain of a loaded stage is one of the commonest errors in analog design.
 
@@ -43,9 +43,9 @@ Two benefits follow. The output resistance rises by the intrinsic gain $g_mr_o$,
 
 The lower gate is the input; the upper gate is held at a fixed bias $V_B$; a current source $I_{LOAD}$ supplies the drain current from above. The node between the two transistors, $X$, is the upper device's source and the lower device's drain.
 
-Bias is a headroom problem, exactly as in Chapters 62–63. Choose $V_X$ a margin above the lower overdrive, then set $V_B = V_X + V_T + u_2$. The output must stay above $V_X + u_2$, and below whatever limit the load imposes. With $u_1 = u_2$ = 1 V, $V_T$ = 1 V and $V_X$ = 1.2 V, $V_B$ = 3.2 V and the output must stay above 2.2 V. If the load is a PMOS current source on 5 V with 1 V of overdrive, the output must stay below 4 V: centered at 3.1 V, the stage has only ±0.9 V of swing.
+Bias is a headroom problem, exactly as in Chapters 57–58. Choose $V_X$ a margin above the lower overdrive, then set $V_B = V_X + V_T + u_2$. The output must stay above $V_X + u_2$, and below whatever limit the load imposes. With $u_1 = u_2$ = 1 V, $V_T$ = 1 V and $V_X$ = 1.2 V, $V_B$ = 3.2 V and the output must stay above 2.2 V. If the load is a PMOS current source on 5 V with 1 V of overdrive, the output must stay below 4 V: centered at 3.1 V, the stage has only ±0.9 V of swing.
 
-As with the active load of Chapter 65, an ideal current-source load does not by itself define the DC output. In practice the stage sits inside a feedback loop.
+As with the active load of Chapter 60, an ideal current-source load does not by itself define the DC output. In practice the stage sits inside a feedback loop.
 
 </section>
 
@@ -53,7 +53,7 @@ As with the active load of Chapter 65, an ideal current-source load does not by 
 
 <div className="section-heading"><span>02</span><h2>Distinguish effective transconductance from resistance</h2></div>
 
-Split the analysis into two numbers. The **output resistance** looking down into the stack, with the input at AC ground, is the cascode result of Chapter 62:
+Split the analysis into two numbers. The **output resistance** looking down into the stack, with the input at AC ground, is the cascode result of Chapter 57:
 
 <Equation tex={String.raw`R_c=r_{o1}+r_{o2}+(g_{m2}+g_{mb2})\,r_{o1}r_{o2}\approx g_{m2}r_{o2}\,r_{o1}`}/>
 
@@ -105,7 +105,7 @@ With PMOS cascodes above as well as NMOS cascodes below, both resistances are ab
 
 <div className="section-heading"><span>04</span><h2>Hold the middle node still</h2></div>
 
-In a common-source stage the gate–drain capacitance $C_{gd}$ connects the input to an output that moves $A_v$ times as far in the opposite direction, so the input sees $C_{gd}(1 + |A_v|)$ (Chapter 64). In a cascode, $M_1$'s drain is node $X$, which moves only by
+In a common-source stage the gate–drain capacitance $C_{gd}$ connects the input to an output that moves $A_v$ times as far in the opposite direction, so the input sees $C_{gd}(1 + |A_v|)$ (Chapter 59). In a cascode, $M_1$'s drain is node $X$, which moves only by
 
 <Equation tex={String.raw`\frac{v_x}{v_{in}}\approx-\frac{g_{m1}}{g_{m2}+g_{mb2}}\approx-1`}/>
 
@@ -135,7 +135,7 @@ This Miller suppression, not the gain, is often the reason a discrete designer a
 
 <div className="section-heading"><span>05</span><h2>Compare against alternatives on equal terms</h2></div>
 
-**Headroom.** Each cascode device costs at least an overdrive plus margin. On a 1.8 V supply a telescopic stack may leave almost no swing; there, designers use two simpler stages instead (Chapter 75), or a "folded" cascode that turns the signal current around through a PMOS common-gate device so the two halves do not stack.
+**Headroom.** Each cascode device costs at least an overdrive plus margin. On a 1.8 V supply a telescopic stack may leave almost no swing; there, designers use two simpler stages instead (Chapter 70), or a "folded" cascode that turns the signal current around through a PMOS common-gate device so the two halves do not stack.
 
 **Gain boosting.** An auxiliary amplifier can drive the cascode gate to hold node $X$ even more firmly, multiplying $R_c$ by its own gain. The auxiliary amplifier's bandwidth and stability then become part of the design.
 

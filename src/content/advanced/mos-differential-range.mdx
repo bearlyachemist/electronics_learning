@@ -5,13 +5,13 @@ import {CmWindowFigure,CmrrFrequencyFigure} from '../../components/MosStudyFigur
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 71</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 66</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>Differential-pair range and rejection<br/><em>Where the pair works, and how well it ignores what it should.</em></h1>
 
 <p className="dek">Replace the ideal tail with a transistor. Derive the common-mode window from the headroom of every device, separate it from the differential linear range, and calculate how finite tail impedance, mismatch and capacitance turn common-mode inputs into errors.</p>
 
-<div className="chapter-meta"><span>50–70 min + exploration</span><span>Differential pair (Ch. 70) · Cascode mirror (Ch. 62)</span></div>
+<div className="chapter-meta"><span>50–70 min + exploration</span><span>Differential pair (Ch. 65) · Cascode mirror (Ch. 57)</span></div>
 
 </div>
 
@@ -21,7 +21,7 @@ import {CmWindowFigure,CmrrFrequencyFigure} from '../../components/MosStudyFigur
 
 <div>
 
-Chapter 70 assumed an ideal tail current and checked headroom only in passing. A real tail is a transistor, and it needs its own saturation voltage. The input devices need theirs. Together they fence the common-mode input into a window, and outside it the pair does not work at all, however small the differential signal.
+Chapter 65 assumed an ideal tail current and checked headroom only in passing. A real tail is a transistor, and it needs its own saturation voltage. The input devices need theirs. Together they fence the common-mode input into a window, and outside it the pair does not work at all, however small the differential signal.
 
 Inside the window, the pair's rejection of common-mode inputs is finite. It depends on how good a current source the tail is, how well the two halves match, and how the tail's impedance falls with frequency. This chapter puts numbers on each of those, because a datasheet's "input common-mode range" and "CMRR" come from exactly these calculations.
 
@@ -51,7 +51,7 @@ At balance the shared source sits one $V_{GS}$ below the inputs, $V_S = V_C - V_
 
 <div className="section-heading"><span>02</span><h2>Calculate three different ranges</h2></div>
 
-Substituting the balanced source voltage into both conditions gives the **common-mode input range**:
+Substitute the balanced source voltage $V_S = V_C - V_T - u_0$ into both conditions. The tail condition $V_S \ge u_T$ becomes $V_C \ge V_T + u_0 + u_T$. The input-device condition $V_D - V_S \ge u_0$ becomes $V_{DD} - I_TR_D/2 - V_C + V_T + u_0 \ge u_0$; the $u_0$ cancels, leaving $V_C \le V_{DD} - I_TR_D/2 + V_T$. Together they give the **common-mode input range**:
 
 <Equation tex={String.raw`V_T+u_0+u_T\;\le\;V_C\;\le\;V_{DD}-\frac{I_TR_D}{2}+V_T`} label="COMMON-MODE WINDOW (BALANCED)"/>
 
@@ -59,7 +59,7 @@ Substituting the balanced source voltage into both conditions gives the **common
 
 That answers the opening question. At 2.0 V common mode the shared source would have to sit at 0 V, leaving the tail no voltage to work with. The tail current collapses, both input devices starve, and no differential signal gets through, however small. Common-mode range and differential range are separate questions.
 
-The **differential** input has two ranges of its own, both from Chapter 70's steering law. The current difference falls below its tangent by the factor $\sqrt{1 - v_d^2/4u_0^2}$, so the **linear** range for 1% compression is
+The **differential** input has two ranges of its own, both from Chapter 65's steering law. The current difference falls below its tangent by the factor $\sqrt{1 - v_d^2/4u_0^2}$, so the **linear** range for 1% compression is
 
 <Equation tex={String.raw`|v_d|\lesssim0.28\,u_0\qquad\text{(1\% gain compression)}`}/>
 
@@ -67,11 +67,11 @@ and the **full-steering** limit, beyond which one device carries the whole tail,
 
 ### Common-mode gain
 
-From the half-circuit of Chapter 70, each half sees $2r_T$ in its source, so a common-mode input produces at each drain
+From the half-circuit of Chapter 65, each half sees $2r_T$ in its source. That half is a degenerated common-source stage, whose KCL result (Chapter 56) is $-g_mR_D/(1 + g_mR_S)$ with $R_S = 2r_T$, so a common-mode input produces at each drain
 
 <Equation tex={String.raw`A_{cm,se}\approx-\frac{g_mR_D}{1+2g_mr_T},\qquad \mathrm{CMRR}_{se}=\left|\frac{A_{d,se}}{A_{cm,se}}\right|\approx\frac{1+2g_mr_T}{2}`} label="SINGLE-ENDED COMMON-MODE REJECTION"/>
 
-Here $A_{d,se} = g_mR_D/2$ is the single-ended differential gain. This ignores the input devices' own $r_o$, body effect and mismatch. With a perfectly matched pair and a **differential** output, the two drains' common-mode responses are identical and cancel exactly; the finite single-ended CMRR above matters when the pair drives a single-ended load or a mirror (Chapter 72).
+Here $A_{d,se} = g_mR_D/2$ is the single-ended differential gain. This ignores the input devices' own $r_o$, body effect and mismatch. With a perfectly matched pair and a **differential** output, the two drains' common-mode responses are identical and cancel exactly; the finite single-ended CMRR above matters when the pair drives a single-ended load or a mirror (Chapter 67).
 
 </section>
 
@@ -101,7 +101,7 @@ Here $A_{d,se} = g_mR_D/2$ is the single-ended differential gain. This ignores t
 
 <div className="section-heading"><span>04</span><h2>Mismatch turns common mode into signal</h2></div>
 
-A differential output cancels common mode only if the two halves are identical. Suppose the drain resistors differ by $\Delta R_D$. A common-mode input changes each drain current by about $v_c/(2r_T)$, and the two drains then differ by that current times $\Delta R_D$. Dividing the differential gain $g_mR_D$ by that common-mode-to-differential gain:
+A differential output cancels common mode only if the two halves are identical. Suppose the drain resistors differ by $\Delta R_D$. A common-mode input changes each drain current by about $v_c/(2r_T)$, and the two drains then differ by that current times $\Delta R_D$. In equations: each drain moves by $-(v_c/2r_T)R_{D}$, so the drain difference is $-(v_c/2r_T)\Delta R_D$ and the common-mode-to-differential gain is $\Delta R_D/(2r_T)$. Dividing the differential gain $g_mR_D$ by that common-mode-to-differential gain:
 
 <Equation tex={String.raw`\mathrm{CMRR}_{diff}\approx\frac{2g_mr_T}{\Delta R_D/R_D}`} label="CMRR LIMITED BY LOAD MISMATCH"/>
 
@@ -139,7 +139,7 @@ The window above was calculated at balance. With a differential signal present, 
 
 **Body effect.** If the input devices' bodies are grounded, their thresholds rise with $V_S$, which raises both the lower and upper limits by different amounts. The window must then be solved implicitly.
 
-**Above the rail.** This resistor-loaded model can accept a common mode up to $V_{DD} + V_T - I_TR_D/2$, slightly above the supply. Real input protection diodes, gate ratings and bias networks usually forbid it. Do not read a saturation inequality as a packaged op amp's input specification; rail-to-rail inputs use two complementary pairs (Chapter 82).
+**Above the rail.** This resistor-loaded model can accept a common mode up to $V_{DD} + V_T - I_TR_D/2$, slightly above the supply. Real input protection diodes, gate ratings and bias networks usually forbid it. Do not read a saturation inequality as a packaged op amp's input specification; rail-to-rail inputs use two complementary pairs (Chapter 77).
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A pair has three ranges: <em>the common-mode window, set by headroom</em>; the linear differential range, $\approx 0.28u_0$; and full steering, $\sqrt2\,u_0$. Its rejection is set by tail impedance at DC, by matching for differential outputs, and by tail capacitance at high frequency.</p></div>
 

@@ -4,7 +4,7 @@ import {BaseTransportLab} from '../components/BjtLabs';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 26</span><span className="hairline"/>FOUNDATIONS / BIPOLAR TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 26</span><span className="hairline"/>PART II / BIPOLAR TRANSISTORS</div>
 
 <h1>Transistor physics<br/><em>A junction that hands its current to another.</em></h1>
 
@@ -20,7 +20,7 @@ import {BaseTransportLab} from '../components/BjtLabs';
 
 <div>
 
-Chapter 12 built a PN junction and Chapter 13 derived the diode law from carriers that diffuse away from it. A bipolar transistor adds one idea: put a second junction so close to the first that the carriers injected by one are collected by the other before they can recombine.
+Chapter 19 built a PN junction and Chapter 20 derived the diode law from carriers that diffuse away from it. A bipolar transistor adds one idea: put a second junction so close to the first that the carriers injected by one are collected by the other before they can recombine.
 
 The consequences are the transistor rules used in every later chapter. Collector current is set by the base–emitter voltage, almost independent of the collector voltage. Only a small base current is needed to supply the losses, so the current gain $\beta$ is large. And the same physics predicts the transistor’s imperfections: a slight dependence on collector voltage, a speed limit, and a strong temperature dependence. This chapter derives them in a deliberately simple one-dimensional model.
 
@@ -40,21 +40,40 @@ The consequences are the transistor rules used in every later chapter. Collector
 
 Inject extra electrons into p-type silicon, where they are minority carriers. Two things happen. They spread out by diffusion, because random thermal motion carries more of them from crowded regions to sparse ones. And they disappear by recombination with the plentiful holes, on average after a **lifetime** $\tau$.
 
-Keep track of the excess electron density Δn(x) in a thin slice between x and x + dx. The diffusion flux is −D dΔn/dx (Chapter 12); more flux entering than leaving accumulates carriers, and recombination removes Δn/$\tau$ per unit volume per second:
+Both effects can be written as one equation by counting electrons in a thin slice of the material.
 
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE MINORITY-CARRIER CONTINUITY EQUATION</span>
+
+1. **Set up a control volume.** Take a slice of cross-sectional area $A$ between $x$ and $x + dx$. Let $\Delta n(x,t)$ be the excess electron density (electrons per cm³ above equilibrium). The slice contains $\Delta n\,A\,dx$ excess electrons.
+
+2. **Diffusion flux.** Fick's law (Chapter 19) says the particle flux, electrons per cm² per second, flows down the density gradient:
+<Equation tex="F(x)=-D_n\frac{\partial\,\Delta n}{\partial x}"/>
+
+3. **Net inflow.** Electrons enter through the face at $x$ at the rate $A\,F(x)$ and leave through the face at $x + dx$ at the rate $A\,F(x+dx)$. For a thin slice, $F(x+dx) \approx F(x) + \frac{\partial F}{\partial x}dx$, so the net inflow is
+<Equation tex="A\,[F(x)-F(x+dx)]=-A\frac{\partial F}{\partial x}dx=A\,D_n\frac{\partial^2\Delta n}{\partial x^2}dx"/>
+
+4. **Recombination.** Each excess electron survives an average time $\tau_n$, so the slice loses excess electrons at the rate $\Delta n\,A\,dx/\tau_n$.
+
+5. **Balance.** The rate of change of the slice's contents equals inflow minus loss. Dividing every term by $A\,dx$:
 <Equation tex="\frac{\partial\,\Delta n}{\partial t}=D_n\frac{\partial^2\Delta n}{\partial x^2}-\frac{\Delta n}{\tau_n}" label="MINORITY-CARRIER CONTINUITY"/>
 
-In steady state the left side is zero, leaving an ordinary differential equation whose solutions are exponentials with a characteristic length:
-
+6. **Steady state.** With the bias held constant, $\partial\Delta n/\partial t = 0$. Dividing by $D_n$ and defining $L_n^2 = D_n\tau_n$:
 <Equation tex="\frac{d^2\Delta n}{dx^2}=\frac{\Delta n}{L_n^2},\qquad L_n=\sqrt{D_n\tau_n}"/>
+   This is a linear second-order equation whose solutions are $e^{x/L_n}$ and $e^{-x/L_n}$, or any combination of them.
+
+<p className="assume">Assumed: one-dimensional flow, no electric field in the region (so no drift current), and low-level injection (the excess electrons are few compared with the holes, so $\tau_n$ is constant).</p>
+
+</div>
 
 The **diffusion length** $L_n$ is how far a typical carrier wanders before recombining. For electrons in moderately doped p-type silicon, $D_n$ ≈ 20 cm²/s and $\tau_n$ ≈ 0.1 µs give $L_n$ ≈ 14 µm.
 
 ### Long and short regions
 
-If the p region is much longer than $L_n$, the excess decays as $e^{-x/L_n}$: almost every injected electron recombines inside it. That was the “long diode” of Chapter 13.
+If the p region is much longer than $L_n$, the excess decays as $e^{-x/L_n}$: almost every injected electron recombines inside it. That was the “long diode” of Chapter 20.
 
-If the region is much **shorter** than $L_n$—say 1 µm—and its far end is held at Δn = 0 by a contact or by a collecting junction, recombination hardly has time to act. Then d²Δn/dx² ≈ 0 and the profile is a straight line from its edge value Δn(0) to zero:
+If the region is much **shorter** than $L_n$ (say 1 µm) and its far end is held at Δn = 0 by a contact or by a collecting junction, recombination hardly has time to act. Then the right side $\Delta n/L_n^2$ is negligible compared with the curvature the boundary conditions force, $d^2\Delta n/dx^2 \approx 0$, and the profile is a straight line from its edge value Δn(0) to zero. The electron current density is $q$ times the diffusion flux, $J_n = qD_n\,|d\Delta n/dx|$, and for a straight line the slope is $\Delta n(0)/W$:
 
 <Equation tex="\Delta n(x)\approx\Delta n(0)\left(1-\frac{x}{W}\right),\qquad J_n=qD_n\frac{\Delta n(0)}{W}"/>
 
@@ -62,11 +81,34 @@ The current is set by the slope of that line. A shorter region gives a steeper s
 
 ### What the straight-line approximation leaves out
 
-With excess carrier density $\Delta n(0)=n_0$ and an ideal collecting boundary $\Delta n(W)=0$, the steady continuity equation gives:
+Solve the steady equation exactly, without dropping the recombination term, and the approximation's error becomes visible.
 
-<Equation tex="\Delta n(x)=n_0\frac{\sinh((W-x)/L_n)}{\sinh(W/L_n)},\qquad \alpha_T=\frac{J_C}{J_E}=\frac{1}{\cosh(W/L_n)}" />
+<div className="derivation">
 
-For $W/L_n\ll1$, $\sinh u\approx u$ and $\cosh u\approx1+u^2/2$. The profile becomes a triangle and $\alpha_T\approx1-W^2/(2L_n^2)$. At $W/L_n=0.1$, the exact survival fraction is 0.9950; at 1 it is only 0.648. A "thin" base means thin relative to the diffusion length, not merely small on a ruler. In forward active operation, reverse bias changes the far-edge equilibrium condition slightly; at substantial injection it is negligible beside the injected density.
+<span className="tiny-label">DERIVATION / EXACT PROFILE AND BASE TRANSPORT FACTOR</span>
+
+1. **General solution.** Any combination of $e^{\pm x/L_n}$ solves the steady equation. Writing it with hyperbolic functions of the distance from the far end makes the boundary conditions easy:
+<Equation tex="\Delta n(x)=a\,\sinh\frac{W-x}{L_n}+b\,\cosh\frac{W-x}{L_n}"/>
+
+2. **Collecting boundary,** $\Delta n(W) = 0$: at $x = W$, $\sinh 0 = 0$ and $\cosh 0 = 1$, so $b = 0$.
+
+3. **Injecting boundary,** $\Delta n(0) = n_0$: $a\,\sinh(W/L_n) = n_0$, so
+<Equation tex="\Delta n(x)=n_0\,\frac{\sinh\left((W-x)/L_n\right)}{\sinh(W/L_n)}"/>
+
+4. **Current at each end.** The electron current density is $J(x) = qD_n|d\Delta n/dx|$. Differentiating, $d\sinh(u)/dx = \cosh(u)\cdot(-1/L_n)$ with $u = (W-x)/L_n$:
+<Equation tex="J(x)=\frac{qD_nn_0}{L_n}\,\frac{\cosh\left((W-x)/L_n\right)}{\sinh(W/L_n)}"/>
+   At the emitter edge ($x = 0$) the cosh is $\cosh(W/L_n)$; at the collector edge ($x = W$) it is 1.
+
+5. **Base transport factor,** the fraction of injected current that arrives at the collector:
+<Equation tex="\alpha_T=\frac{J(W)}{J(0)}=\frac{1}{\cosh(W/L_n)}"/>
+   The missing fraction is the electrons that recombined on the way.
+
+6. **Thin-base limit.** For $u = W/L_n \ll 1$, use $\sinh u \approx u$ and $\cosh u \approx 1 + u^2/2$. The profile becomes $n_0(W-x)/W$, the straight line, and
+<Equation tex="\alpha_T\approx\frac{1}{1+W^2/2L_n^2}\approx1-\frac{W^2}{2L_n^2}"/>
+
+</div>
+
+ At $W/L_n=0.1$, the exact survival fraction is 0.9950; at 1 it is only 0.648. A "thin" base means thin relative to the diffusion length, not merely small on a ruler. In forward active operation, reverse bias changes the far-edge equilibrium condition slightly; at substantial injection it is negligible beside the injected density.
 
 <CarrierProfileFigure/>
 
@@ -98,13 +140,28 @@ Two discrete diodes wired back to back share the junction types but not the geom
 
 <div className="section-heading"><span>03</span><h2>Follow an electron through the base</h2></div>
 
-Forward-bias the base–emitter junction by $V_{BE}$. Just as in the diode, the electron density at the base edge of the emitter junction rises above its equilibrium value $n_{p0}$ = $n_i$²/$N_A$ by the Boltzmann factor:
+Forward-bias the base–emitter junction by $V_{BE}$ and derive the collector current in two steps: first the electron density the junction sets at the base edge, then the current that density drives across the base.
 
-<Equation tex="n(0)=n_{p0}\,e^{V_{BE}/V_T}=\frac{n_i^2}{N_A}e^{V_{BE}/V_T}"/>
+<div className="derivation">
 
-At the other side of the base, the reverse-biased collector junction removes every electron that arrives, so n(W) ≈ 0. The base is much thinner than a diffusion length, so the profile is the straight line of section 01, and nearly all of the electron current reaches the collector:
+<span className="tiny-label">DERIVATION / THE COLLECTOR CURRENT LAW</span>
 
+1. **Equilibrium across the junction.** With no bias, electrons on the emitter side (density $n_{n0} \approx N_D$) face a potential barrier $V_{bi}$ to reach the base. In thermal equilibrium the Boltzmann relation links the densities on the two sides:
+<Equation tex="n_{p0}=n_{n0}\,e^{-V_{bi}/V_T},\qquad n_{p0}=\frac{n_i^2}{N_A}"/>
+   The second form is the mass-action law $np = n_i^2$ in the p-type base, where $p \approx N_A$.
+
+2. **Apply forward bias.** A forward voltage $V_{BE}$ lowers the barrier to $V_{bi} - V_{BE}$. Assume the junction stays close to equilibrium internally (low-level injection: the injected electrons are far fewer than the base's holes), so the same Boltzmann relation holds across the reduced barrier:
+<Equation tex="n(0)=n_{n0}\,e^{-(V_{bi}-V_{BE})/V_T}=n_{p0}\,e^{V_{BE}/V_T}=\frac{n_i^2}{N_A}e^{V_{BE}/V_T}"/>
+   This is the **law of the junction**: each $V_T \ln 10$ ≈ 60 mV of forward bias multiplies the edge density by ten.
+
+3. **Collector boundary.** The reverse-biased collector junction's field sweeps away every electron that reaches it, so $n(W) \approx 0$.
+
+4. **Current across a thin base.** With $W \ll L_n$ the profile is the straight line of section 01, from $n(0)$ to 0. The current is $qA$ times the diffusion flux $D_n\,n(0)/W$, and since almost no electrons recombine on the way ($\alpha_T \approx 1$), this is the collector current:
 <Equation tex="I_C=qAD_n\frac{n(0)}{W}=\underbrace{\frac{qAD_nn_i^2}{N_AW}}_{I_S}\,e^{V_{BE}/V_T}" label="COLLECTOR CURRENT"/>
+
+<p className="assume">The "−1" of the exact diode law, $e^{V_{BE}/V_T} - 1$, is dropped because $e^{V_{BE}/V_T}$ exceeds $10^{10}$ at any useful forward bias.</p>
+
+</div>
 
 Three conclusions follow, each one a later rule of thumb.
 
@@ -134,9 +191,32 @@ If the emitter injected only electrons and none recombined, there would be no ba
 
 **Recombination in the base.** The stored electrons in the base, a triangle of total charge $Q_B$ = qA n(0) W/2, recombine at rate $Q_B$/$\tau_n$. The **base transport factor** $\alpha_T$ is the fraction of injected electrons that survive the crossing.
 
-Dividing each base-current component by $I_C$ gives a compact result for a thin emitter of width $W_E$ and doping $N_E$:
+Each loss is a current that the base terminal must supply. Express both as fractions of $I_C$.
 
-<Equation tex="\frac{1}{\beta}=\frac{I_B}{I_C}\approx\underbrace{\frac{D_pN_AW}{D_nN_EW_E}}_{\text{back-injection}}+\underbrace{\frac{W^2}{2L_n^2}}_{\text{recombination}},\qquad \alpha=\frac{I_C}{I_E}=\gamma\,\alpha_T=\frac{\beta}{\beta+1}" label="CURRENT GAIN"/>
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE CURRENT GAIN FROM TWO LOSSES</span>
+
+1. **Back-injected hole current.** The emitter is also a short region (width $W_E$, doping $N_E$, hole diffusion constant $D_p$). The same junction law and straight-line argument, with the roles of electrons and holes exchanged, give the hole current injected from the base into the emitter:
+<Equation tex="I_{pE}=qAD_p\frac{p_{n0}}{W_E}e^{V_{BE}/V_T},\qquad p_{n0}=\frac{n_i^2}{N_E}"/>
+
+2. **Ratio to the collector current.** Divide by $I_C = qAD_n(n_i^2/N_A)(1/W)e^{V_{BE}/V_T}$. The factors $qA$, $n_i^2$ and the exponential cancel:
+<Equation tex="\frac{I_{pE}}{I_C}=\frac{D_p\,N_A\,W}{D_n\,N_E\,W_E}"/>
+
+3. **Recombination current.** The excess electrons stored in the base form a triangle of height $n(0)$ and base $W$, so the stored charge is $Q_B = qA\,n(0)W/2$. They recombine at the rate $Q_B/\tau_n$, and every recombination needs one hole from the base terminal:
+<Equation tex="I_{rec}=\frac{Q_B}{\tau_n}=\frac{qA\,n(0)\,W}{2\tau_n}"/>
+
+4. **Ratio to the collector current.** Divide by $I_C = qAD_n\,n(0)/W$:
+<Equation tex="\frac{I_{rec}}{I_C}=\frac{W^2}{2D_n\tau_n}=\frac{W^2}{2L_n^2}"/>
+
+5. **Add the losses.** The base current is the sum, $I_B \approx I_{pE} + I_{rec}$, so
+<Equation tex="\frac{1}{\beta}=\frac{I_B}{I_C}\approx\underbrace{\frac{D_pN_AW}{D_nN_EW_E}}_{\text{back-injection}}+\underbrace{\frac{W^2}{2L_n^2}}_{\text{recombination}}" label="CURRENT GAIN"/>
+
+6. **Relate $\beta$ and $\alpha$.** KCL at the transistor gives $I_E = I_C + I_B$, so
+<Equation tex="\alpha=\frac{I_C}{I_E}=\frac{I_C}{I_C+I_C/\beta}=\frac{\beta}{\beta+1},\qquad\beta=\frac{\alpha}{1-\alpha}"/>
+   Equivalently $\alpha = \gamma\,\alpha_T$, the product of the emitter efficiency $\gamma = I_{nE}/(I_{nE}+I_{pE})$ and the transport factor of section 01.
+
+</div>
 
 <div className="worked-example">
 
@@ -188,9 +268,25 @@ The straight line is the transistor. Its height at the emitter end is set by $V_
 
 The collector depletion region extends partly into the base. Raising the collector–base reverse voltage widens it, which narrows the neutral base W. The edge density n(0) is unchanged, so the profile gets steeper and $I_C$ rises. In the model, the neutral base shrinks from 0.708 µm at $V_{CB}$ = 0 to 0.655 µm at 5 V and 0.582 µm at 20 V, raising $I_C$ from 37.6 µA to 40.6 µA and 45.8 µA.
 
-Extended backward on a graph of $I_C$ against $V_{CE}$, these slightly sloping lines meet near a common point on the negative voltage axis, −$V_A$. The **Early voltage** $V_A$ (here about 87 V) summarizes the effect:
+<div className="derivation">
 
-<Equation tex="I_C\approx I_Se^{V_{BE}/V_T}\left(1+\frac{V_{CE}}{V_A}\right),\qquad r_o=\frac{V_A}{I_C}"/>
+<span className="tiny-label">DERIVATION / THE EARLY VOLTAGE</span>
+
+1. **Current depends on width.** From the collector-current law, at fixed $V_{BE}$ the only quantity that changes with collector voltage is the neutral base width: $I_C \propto 1/W$.
+
+2. **Differentiate.** Since $V_{BE}$ is fixed, a change in $V_{CE}$ is a change in $V_{CB}$:
+<Equation tex="\frac{dI_C}{dV_{CE}}=-\frac{I_C}{W}\,\frac{dW}{dV_{CB}}"/>
+   $dW/dV_{CB}$ is negative (more reverse bias, narrower base), so the slope is positive.
+
+3. **Define the Early voltage** as the ratio of the current to its slope, a voltage set by the device's geometry and doping:
+<Equation tex="V_A\equiv\frac{I_C}{dI_C/dV_{CE}}=-\frac{W}{dW/dV_{CB}}"/>
+   Geometrically, a straight line with this slope through the operating point reaches zero current at $V_{CE} = -V_A$: every curve, whatever its current, extrapolates back to about the same point.
+
+4. **Linear model.** To first order about $V_{CE} = 0$, $I_C$ grows by its slope times $V_{CE}$, and the small-signal output resistance is the reciprocal of that slope:
+<Equation tex="I_C\approx I_Se^{V_{BE}/V_T}\left(1+\frac{V_{CE}}{V_A}\right),\qquad r_o=\left(\frac{dI_C}{dV_{CE}}\right)^{-1}=\frac{V_A}{I_C}"/>
+   Check against the model: between 0 and 5 V the current rises from 37.6 µA to 40.6 µA, a chord slope of 0.6 µA/V, so $V_A \approx 40.6/0.6$ ≈ 68 V. Between 5 and 20 V the chord gives about 117 V, because depletion widening slows as reverse bias grows. The tangent at the 5 V operating point lies between these, about 87 V: $V_A$ is only approximately constant.
+
+</div>
 
 The collector’s small-signal output resistance $r_o$ is finite. It limits the gain of a single amplifier stage and the quality of a current source (Chapters 31 and 34). If the collector voltage rises far enough that the depletion region reaches the emitter, the base vanishes: **punch-through**, a breakdown mechanism.
 
@@ -198,17 +294,55 @@ The collector’s small-signal output resistance $r_o$ is finite. It limits the 
 
 ### Stored charge and speed
 
-The electron triangle is stored charge, $Q_B$ = qA n(0) W/2. Dividing by the current gives the average time an electron spends crossing the base, the **base transit time**:
+The electron triangle is stored charge, and changing the current means changing that charge.
 
-<Equation tex="\tau_F=\frac{Q_B}{I_C}=\frac{W^2}{2D_n},\qquad f_T\lesssim\frac{1}{2\pi\tau_F}"/>
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / TRANSIT TIME AND THE SPEED LIMIT IT SETS</span>
+
+1. **Stored charge.** Integrate the excess density over the base: a triangle of height $n(0)$ and width $W$, so $Q_B = qA\,n(0)\,W/2$.
+
+2. **Transit time.** Charge divided by the current that carries it is the average time a carrier spends in the base:
+<Equation tex="\tau_F=\frac{Q_B}{I_C}=\frac{qA\,n(0)W/2}{qAD_n\,n(0)/W}=\frac{W^2}{2D_n}"/>
+
+3. **Diffusion capacitance.** Since $Q_B = \tau_FI_C$ and $dI_C/dV_{BE} = g_m$, a small change in $V_{BE}$ changes the stored charge by $dQ_B = \tau_F\,g_m\,dV_{BE}$. That is a capacitance $C_{diff} = g_m\tau_F$ between base and emitter.
+
+4. **The current-gain limit.** The small-signal base current must supply both $r_\pi$ (Chapter 30) and this capacitance: $i_b = v_{be}(1/r_\pi + j\omega C_{diff})$, while $i_c = g_mv_{be}$. The current gain is
+<Equation tex="\beta(j\omega)=\frac{g_m}{1/r_\pi+j\omega g_m\tau_F}"/>
+   At frequencies where the capacitive term dominates, $|\beta| \approx 1/(\omega\tau_F)$, which equals 1 at the **transition frequency**:
+<Equation tex="f_T=\frac{1}{2\pi\tau_F}"/>
+   Depletion capacitances add to $C_{diff}$, so a real device's $f_T$ is lower: $f_T \lesssim 1/2\pi\tau_F$.
+
+</div>
 
 For W = 0.655 µm, $\tau_F$ ≈ 0.11 ns, which limits this structure to a transition frequency of no more than about 1.5 GHz; junction capacitances lower it further in practice. Changing $I_C$ requires changing $Q_B$, which is why a change in $V_{BE}$ acts as if it charges a capacitance $g_m\tau_F$ (the “diffusion capacitance”) in addition to the depletion capacitances. In saturation the collector junction is forward-biased too and injects its own carriers; the extra stored charge must be removed before the transistor can turn off, which is why saturated switches are slow to release.
 
 ### Temperature
 
-$I_S$ contains $n_i$², which behaves roughly as $T^3e^{-E_g/(kT)}$. Holding $I_C$ fixed while temperature changes, the exponential must be compensated by $V_{BE}$. Writing $V_{BE}$ at temperature T in terms of its value $V_{BE0}$ at $T_0$ and the extrapolated bandgap voltage $V_{G0}$ ≈ 1.21 V:
+$I_S$ contains $n_i^2$, which rises steeply with temperature. Holding $I_C$ fixed, $V_{BE}$ must fall to compensate.
 
-<Equation tex="V_{BE}(T)\approx V_{G0}+\frac{T}{T_0}\left(V_{BE0}-V_{G0}\right)+\frac{3kT}{q}\ln\frac{T_0}{T},\qquad \frac{dV_{BE}}{dT}\approx\frac{V_{BE0}-V_{G0}-3V_T}{T_0}"/>
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE TEMPERATURE DEPENDENCE OF V<sub>BE</sub></span>
+
+1. **Temperature dependence of $I_S$.** The intrinsic density obeys $n_i^2 \propto T^3e^{-E_g/kT}$. Absorbing the geometry and any weak dependence of $D_n$ into a constant $K$, and writing $E_g/k$ in terms of the extrapolated bandgap voltage $V_{G0}$ ≈ 1.21 V (so $E_g/kT = V_{G0}/V_T$):
+<Equation tex="I_S=K\,T^3\,e^{-V_{G0}/V_T}"/>
+
+2. **Invert the diode law** at a fixed collector current $I_C$:
+<Equation tex="V_{BE}=V_T\ln\frac{I_C}{I_S}=V_T\ln\frac{I_C}{K}-3V_T\ln T+V_{G0}"/>
+
+3. **Eliminate the unknown constant.** At a reference temperature $T_0$, where $V_{BE} = V_{BE0}$ and $V_T = V_{T0}$, the same equation gives $\ln(I_C/K) = (V_{BE0} - V_{G0})/V_{T0} + 3\ln T_0$.
+
+4. **Substitute back,** using $V_T/V_{T0} = T/T_0$:
+<Equation tex="V_{BE}(T)=V_{G0}+\frac{T}{T_0}\left(V_{BE0}-V_{G0}\right)+3V_T\ln\frac{T_0}{T}"/>
+   At $T = T_0$ the last term is zero and the expression returns $V_{BE0}$, as it must.
+
+5. **Differentiate and evaluate at $T_0$.** The derivative of $3(kT/q)\ln(T_0/T)$ is $3(k/q)[\ln(T_0/T) - 1]$, which is $-3V_{T0}/T_0$ at $T = T_0$:
+<Equation tex="\frac{dV_{BE}}{dT}\Big|_{T_0}=\frac{V_{BE0}-V_{G0}-3V_{T0}}{T_0}"/>
+
+6. **At constant $V_{BE}$ instead.** From $I_C = I_Se^{V_{BE}/V_T}$, a temperature change that would lower $V_{BE}$ by 2.1 mV at constant current instead raises the current by the factor $e^{2.1/25.85}$, about 8.5% per degree.
+
+</div>
 
 With $V_{BE0}$ = 0.65 V at 300 K this gives **−2.1 mV/°C**: the famous rule that a forward-biased silicon junction’s voltage falls about 2 mV per degree at constant current. Conversely, at constant $V_{BE}$ the collector current rises about 8% per degree—a factor of about 64 from 300 K to 360 K in this temperature law. Chapter 29 designs bias circuits that survive this, and Chapter 34 collects these results as the Ebers–Moll rules of thumb.
 

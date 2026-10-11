@@ -1576,7 +1576,7 @@
      "tex": "C=\\frac{(0.3\\ \\mathrm A)(5\\ \\mathrm{ms})}{5-3.6\\ \\mathrm V}=1.07\\ \\mathrm{mF}"
     },
     {
-     "text": "A 1.5 mF capacitor gives margin for tolerance and ESR drop. It must also charge at start-up: an inrush problem (Chapter 18)."
+     "text": "A 1.5 mF capacitor gives margin for tolerance and ESR drop. It must also charge at start-up: an inrush problem (Chapter 25)."
     }
    ]
   },

@@ -1,10 +1,11 @@
 import Equation from '../../components/Equation.astro';
 import {SystemsFlow,SystemsPlot,PowerCircuit,MatchCircuit} from '../../components/SystemsFigures';
 import {SystemsLab} from '../../components/SystemsLab';
+import {QuantizationErrorPlot,AliasFoldingPlot,JitterErrorPlot,InlDnlPlot} from '../../components/ConverterFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 106</span><span className="hairline"/>DATA CONVERTERS</div>
+<div className="eyebrow"><span>CHAPTER 109</span><span className="hairline"/>PART VI / SAMPLING</div>
 
 <h1>Sampling and converter error budgets<br/><em>Bits describe a representation, not accuracy.</em></h1>
 
@@ -39,6 +40,9 @@ The lab displays floor-coded bins and endpoint clipping explicitly. It does not 
 If quantization error is sufficiently uncorrelated with the input and approximately uniformly distributed across $[-q/2,q/2]$, integrate its mean square:
 
 <Equation tex={String.raw`\sigma_q^2=\frac1q\int_{-q/2}^{q/2}e^2\,de=\frac{q^2}{12},\qquad\sigma_q=q/\sqrt{12}`}/>
+
+<QuantizationErrorPlot/>
+
 A full-span sine has peak $V_S/2$ and rms amplitude $V_S/(2\sqrt2)$. Divide by the rms error, using $V_S = 2^Nq$:
 
 <Equation tex={String.raw`\frac{V_S/(2\sqrt2)}{q/\sqrt{12}}=\frac{2^N\sqrt{12}}{2\sqrt2}=2^N\sqrt{1.5}`}/>
@@ -61,6 +65,9 @@ Noise-free resolution is a DC histogram or peak-to-peak concept and is not ident
 Sampling a sine at $f$ produces values $\sin(2\pi fn/f_s+\phi)$. Replace $f$ by $f + kf_s$: the argument gains $2\pi kn$, an integer number of full turns, so every sample is unchanged. Frequencies separated by integer multiples of $f_s$ produce the same sequence. Replacing $f$ by $kf_s - f$ gives $\sin(-2\pi fn/f_s + \phi)$, the same frequency with its sign (and so its phase direction) reversed. In the first Nyquist zone, a convenient folded frequency is the smallest distance from $f$ to an integer multiple of $f_s$.
 
 <Equation tex={String.raw`f_{alias}=\min_{k\in\mathbb Z}|f-kf_s|,\qquad0\le f_{alias}\le f_s/2`}/>
+
+<AliasFoldingPlot/>
+
 At 10 kS/s, a 7 kHz tone folds to 3 kHz. A digital filter that passes 3 kHz cannot determine whether the sequence came from a genuine 3 kHz input or an aliased 7 kHz input. Reject unwanted energy **before sampling**. The filter must attenuate blockers and broadband noise, not merely meet a nominal signal-band cutoff.
 
 If a wanted band ends at 2 kHz and sampling is 10 kS/s, a blocker at 8 kHz aliases to 2 kHz. A 0 dBV blocker must be attenuated by at least 80 dB to lie below a −80 dBV allowance at that alias frequency, plus any margin. Raising sample rate widens the analog filter transition region and permits digital decimation after the alias-sensitive acquisition. It does not eliminate out-of-band overload of the input buffer or sample switch.
@@ -76,6 +83,9 @@ Bandpass sampling deliberately aliases a **selected band** to a lower frequency.
 An aperture-time error $\delta t$ gives $\delta v\approx(dv/dt)\delta t$. For $v = A\sin\omega t$, $dv/dt = A\omega\cos\omega t$, whose rms value is $A\omega/\sqrt2$. With independent random timing errors of rms $\sigma_t$, the rms voltage error is $A\omega\sigma_t/\sqrt2$, while the signal rms is $A/\sqrt2$. The amplitude cancels from the ratio, leaving $1/(\omega\sigma_t)$, the jitter-limited SNR:
 
 <Equation tex={String.raw`SNR_{jitter}\simeq-20\log_{10}(2\pi f_{in}\sigma_t)`}/>
+
+<JitterErrorPlot/>
+
 At 1 MHz and 1 ps rms jitter, the limit is about 104 dB. At 100 MHz with the same jitter it is about 64 dB. Use the analog input frequency, not the output sample rate. ADC aperture jitter and clock jitter may combine in root-sum-square if independent and evaluated over appropriate integration bands; correlated sources and deterministic jitter require different treatment.
 
 The input often samples through a switch onto a capacitor. For a first-order source resistance $R$ and sampling capacitance $C$, a full-span step leaves fractional error $e^{-t/(RC)}$ (the RC charging solution). Half a bin is a fraction $(q/2)/V_S = 2^{-(N+1)}$ of the span. Setting $e^{-t/RC} \le 2^{-(N+1)}$ and taking logarithms, settling below half a bin requires:
@@ -94,6 +104,9 @@ A local capacitor can supply kickback charge while a small series resistor isola
 Offset translates the transfer; gain error changes its slope. Two-point calibration can correct those terms under fixed conditions. Integral nonlinearity is the remaining deviation from a specified ideal line, which may be an endpoint or best-fit line. Differential nonlinearity describes individual code-width error:
 
 <Equation tex={String.raw`DNL_k=\frac{T_{k+1}-T_k}{q}-1`}/>
+
+<InlDnlPlot/>
+
 Here $T_k$ are sorted code thresholds, so $T_{k+1} - T_k$ is the actual width of code $k$ and DNL is its fractional departure from the ideal width $q$. A zero-width code has DNL = −1 and is missing; reported guarantees about missing codes must be read with the converter's definitions. INL and DNL are not interchangeable. A converter can have well-behaved adjacent widths while its accumulated curve bows significantly. Monotonicity and missing-code specifications are architecture- and definition-sensitive; check the datasheet rather than inferring them from nominal bits.
 
 For a signal-chain budget, carry amplifier offset, gain-ratio error, reference drift, ADC INL, acquisition residual and integrated noise to input-referred units. Add bounded worst-case contributions according to the design requirement; combine independent random noise powers separately. Then check latency, sample timing, multiplexing and digital-output bandwidth. A converter that meets DC accuracy may still fail a control loop because its filtered output arrives too late.

@@ -4,7 +4,7 @@ import {TerminalsFigure,BetaSpreadFigure,SwitchSweepFigure,LampDriverFigure,LedD
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 27</span><span className="hairline"/>FOUNDATIONS / BIPOLAR TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 27</span><span className="hairline"/>PART II / BIPOLAR TRANSISTORS</div>
 
 <h1>The bipolar transistor & the switch<br/><em>A small current steers a large one.</em></h1>
 
@@ -79,7 +79,26 @@ Suppose a transistor with $\beta = 150$ carries 3 mA of emitter current. Then $I
 - **Active.** The base–emitter junction conducts, and the collector circuit can supply $\beta I_B$ while keeping $V_C$ above $V_B$. Then $I_C = \beta I_B$, and the collector behaves like a current source controlled by the base.
 - **Saturation.** If $\beta I_B$ is more than the collector circuit can deliver, the collector voltage falls until the base–collector junction also conducts. The collector current is then set by the external circuit, not by $\beta$, and $V_{CE}$ falls to a small value $V_{CE(\mathrm{sat})}$, typically 0.05–0.2 V for a small transistor. The transistor is a closed switch.
 
-The test for which region you are in is a single comparison. With a collector resistor $R_C$ to a supply $V_{CC}$, the most current the collector circuit can deliver is
+The test for which region you are in is a single comparison, and it follows from one KVL loop.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE SATURATION TEST FROM THE COLLECTOR LOOP</span>
+
+1. **Write KVL around the collector loop.** Start at the supply, go down through $R_C$ to the collector, then through the transistor to the grounded emitter:
+<Equation tex="V_{CC}=I_CR_C+V_{CE}\quad\Longrightarrow\quad V_{CE}=V_{CC}-I_CR_C"/>
+   This is the **load line**: the external circuit alone fixes how $V_{CE}$ and $I_C$ trade off, whatever the transistor does.
+
+2. **Find the largest current the loop allows.** The transistor cannot make $V_{CE}$ smaller than $V_{CE(\mathrm{sat})}$. Setting $V_{CE} = V_{CE(\mathrm{sat})}$ in the load line gives the ceiling:
+<Equation tex="I_{C(\mathrm{max})}=\frac{V_{CC}-V_{CE(\mathrm{sat})}}{R_C}"/>
+
+3. **Assume active and check.** If the transistor is active, $I_C = \beta I_B$, and the load line gives $V_{CE} = V_{CC} - \beta I_BR_C$. That is self-consistent only while $V_{CE} > V_{CE(\mathrm{sat})}$, which rearranges to $\beta I_B < I_{C(\max)}$.
+
+4. **Otherwise saturated.** If $\beta I_B \ge I_{C(\max)}$, the active assumption predicts an impossible $V_{CE}$ below $V_{CE(\mathrm{sat})}$. The transistor instead sits at $V_{CE(\mathrm{sat})}$, and the current is whatever the loop allows.
+
+</div>
+
+Collected into one statement:
 
 <Equation label="THE SATURATION TEST" tex="I_{C(\mathrm{max})}=\frac{V_{CC}-V_{CE(\mathrm{sat})}}{R_C}\qquad\begin{cases}\beta I_B < I_{C(\max)} & \text{active: } I_C=\beta I_B,\ V_{CE}=V_{CC}-\beta I_BR_C\\[4pt] \beta I_B \ge I_{C(\max)} & \text{saturated: } I_C=I_{C(\max)},\ V_{CE}=V_{CE(\mathrm{sat})}\end{cases}"/>
 
@@ -107,7 +126,7 @@ The plot shows why the saturated region is so valuable. On the sloped lines the 
 
 <div className="table-wrap"><table><thead><tr><th>$\beta$</th><th>Fixed base current: $V_C$</th><th>Fixed base voltage: $V_C$</th></tr></thead><tbody><tr><td>50</td><td>12.6 V</td><td>10.63 V</td></tr><tr><td>100</td><td>10.3 V</td><td>10.59 V</td></tr><tr><td>300</td><td>0.79 V (nearly saturated)</td><td>10.56 V</td></tr></tbody></table></div>
 
-<p><strong>Right circuit, fixed base voltage.</strong> The 2.0 V source fixes the base, so the emitter sits one diode drop lower: $V_E = 1.35$ V. The emitter resistor then fixes $I_E = 1.35\text{ V}/1\text{ k}\Omega = 1.35$ mA, and $I_C = \alpha I_E$ changes only from 1.32 mA to 1.35 mA as $\beta$ goes from 50 to 300. The base current still varies with $\beta$, but the circuit no longer cares.</p>
+<p><strong>Right circuit, fixed base voltage.</strong> Write KVL from the 2.0 V source through the base–emitter junction and down the emitter resistor: $V_B = V_{BE} + I_ER_E$. Solving, $I_E = (V_B - V_{BE})/R_E = (2.0 - 0.65)\text{ V}/1\text{ k}\Omega = 1.35$ mA, an expression that contains no $\beta$ at all. Only the split of $I_E$ between collector and base depends on $\beta$: $I_C = \alpha I_E = I_E\,\beta/(\beta+1)$ changes from 1.32 mA to 1.35 mA as $\beta$ goes from 50 to 300. Compare the left circuit, where $I_C = \beta I_B$ is directly proportional to $\beta$.</p>
 
 <p>The lesson is the same as the $\beta$-spread plot's, from the other side. In the active region, never let a design depend on $\beta$; let it depend on resistors and on $V_{BE}$, which is predictable. For switches, saturate. For amplifiers, use the emitter-resistor idea, developed in Chapters 28 and 29.</p>
 
@@ -119,9 +138,25 @@ The plot shows why the saturated region is so valuable. On the sloped lines the 
 
 <div className="section-heading"><span>03</span><h2>The saturated switch</h2></div>
 
-In a switch the transistor should be either fully off (cutoff) or fully on (saturation). In between, both the voltage across it and the current through it are significant, and it dissipates power. The design reduces to three equations:
+In a switch the transistor should be either fully off (cutoff) or fully on (saturation). In between, both the voltage across it and the current through it are significant, and it dissipates power. The design is two KVL loops and one inequality.
 
-<Equation label="SWITCH DESIGN" tex="I_{C(\mathrm{sat})}=\frac{V_{CC}-V_{CE(\mathrm{sat})}-V_{\mathrm{load}}}{R_C},\qquad I_B=N\,\frac{I_{C(\mathrm{sat})}}{\beta_{\min}},\qquad R_B=\frac{V_{\mathrm{in}}-V_{BE}}{I_B}"/>
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / DESIGNING THE SATURATED SWITCH</span>
+
+1. **Collector loop, switch on.** Supply = resistor drop + load drop + $V_{CE(\mathrm{sat})}$. Solve for the current the load will draw when the switch is closed:
+<Equation tex="I_{C(\mathrm{sat})}=\frac{V_{CC}-V_{CE(\mathrm{sat})}-V_{\mathrm{load}}}{R_C}"/>
+   For a load with no series resistor (a lamp, a relay coil), use the load's own current rating instead.
+
+2. **Saturation condition.** From the saturation test, the switch stays on the ceiling only if $\beta I_B \ge I_{C(\mathrm{sat})}$ for every transistor you might receive, including the worst one, $\beta_{\min}$. Multiply the minimum base current by an overdrive factor $N > 1$ for margin:
+<Equation tex="I_B=N\,\frac{I_{C(\mathrm{sat})}}{\beta_{\min}}"/>
+
+3. **Base loop.** Go from the driving source $V_{\mathrm{in}}$ through $R_B$ to the base, then through the conducting base–emitter junction to ground: $V_{\mathrm{in}} = I_BR_B + V_{BE}$. Solve for the resistor:
+<Equation tex="R_B=\frac{V_{\mathrm{in}}-V_{BE}}{I_B}" label="SWITCH DESIGN"/>
+
+4. **Correction for a base pull-down.** If a resistor $R_{BE}$ is connected from base to emitter, KCL at the base says $R_B$ must supply both the base current and the $V_{BE}/R_{BE}$ that flows down $R_{BE}$. Replace $I_B$ in step 3 by $I_B + V_{BE}/R_{BE}$.
+
+</div>
 
 Here $N$ is the overdrive factor, typically 2 to 10. Choose it by asking how certain you are of $\beta_{\min}$ and of the load current; a common rule of thumb simply sets $I_B = I_C/10$, a forced $\beta$ of 10, which is also the condition at which datasheets specify $V_{CE(\mathrm{sat})}$.
 
@@ -147,7 +182,7 @@ The sweep shows what happens if the drive is too weak, or the input changes slow
 
 **Turn-off and the base pull-down.** A resistor from base to emitter (a few kilohms to tens of kilohms) gives stored charge and leakage a path out of the base. It also keeps the transistor off if the driver goes high-impedance. A small capacitor across $R_B$, a "speed-up capacitor," delivers a burst of base current at each edge for faster switching.
 
-**Inductive loads.** A relay or solenoid in the collector will produce a large voltage when the switch opens. A flywheel diode across the winding (Chapter 17) is not optional: without it, the collector voltage can exceed $V_{CEO}$ and destroy the transistor.
+**Inductive loads.** A relay or solenoid in the collector will produce a large voltage when the switch opens. A flywheel diode across the winding (Chapter 24) is not optional: without it, the collector voltage can exceed $V_{CEO}$ and destroy the transistor.
 
 </section>
 
@@ -183,13 +218,13 @@ Notice where the LED is: in the collector, not the emitter. Put it in the emitte
 
 A 12 V relay coil drawing 60 mA (200 Ω) needs, with $\beta_{\min} = 100$ and fivefold overdrive, $I_B = 3$ mA, so $R_B = 4.3\text{ V}/3\text{ mA} \approx 1.5$ kΩ. The diode carries nothing while the transistor is on. At turn-off the coil keeps its 60 mA flowing for a moment, and the diode gives it a loop to circulate in. The collector then rises only to $12 + 0.7$ V instead of hundreds of volts.
 
-The diode slows the relay's release, because the stored energy decays slowly through a 0.7 V clamp. If fast release matters, put a zener in series with the diode (Chapter 17). The collector then rises to $12 + V_Z + 0.7$ V, and the current dies $V_Z/0.7$ times faster. Keep that total below $V_{CEO}$.
+The diode slows the relay's release, because the stored energy decays slowly through a 0.7 V clamp. If fast release matters, put a zener in series with the diode (Chapter 24). The collector then rises to $12 + V_Z + 0.7$ V. To see how much faster the release is, write the coil's equation while it freewheels: the clamp holds a constant voltage $V_{cl}$ across the winding, so $L\,di/dt = -V_{cl}$ (neglecting the coil resistance) and the current ramps to zero in $t = LI_0/V_{cl}$. Raising the clamp from 0.7 V to $V_Z + 0.7$ V shortens that time by the factor $(V_Z + 0.7)/0.7$, about 18 for a 12 V zener. Keep that total below $V_{CEO}$.
 
 ### A transistor inverter
 
 <InverterFigure/>
 
-With a 10 kΩ collector resistor to 5 V and a 22 kΩ base resistor, a low input leaves the transistor off and the output high through 10 kΩ; a high input saturates it and pulls the output to about 0.1 V. Early logic families (Chapter 46) were built this way. The output is weak when high. If it drives the 22 kΩ input of an identical stage, the two resistors form a divider with the next base: $(5 - V)/10\text{ k}\Omega = (V - 0.65)/22\text{ k}\Omega$ gives $V = 3.64$ V, not 5 V. Each additional load pulls it lower, which limits fan-out. The output is also slow to rise, because stored charge must leave the base and the 10 kΩ resistor must charge any wiring capacitance.
+With a 10 kΩ collector resistor to 5 V and a 22 kΩ base resistor, a low input leaves the transistor off and the output high through 10 kΩ; a high input saturates it and pulls the output to about 0.1 V. Early logic families (Chapter 114) were built this way. The output is weak when high. If it drives the 22 kΩ input of an identical stage, the two resistors form a divider with the next base: $(5 - V)/10\text{ k}\Omega = (V - 0.65)/22\text{ k}\Omega$ gives $V = 3.64$ V, not 5 V. Each additional load pulls it lower, which limits fan-out. The output is also slow to rise, because stored charge must leave the base and the 10 kΩ resistor must charge any wiring capacitance.
 
 ### Switching the high side with a PNP
 
@@ -263,7 +298,7 @@ No. The collector circuit can deliver at most $(5 - 0.2)\text{ V}/1\text{ k}\Ome
 <summary>2. A "switch" driving a 200 mA motor measures $V_{CE}$ = 4 V when on. What does that tell you, and what will happen?</summary>
 <div>
 
-The transistor is in the active region, not saturated: the base drive is too small for this transistor's $\beta$ at 200 mA, or the motor draws more than expected. It dissipates $4\text{ V}\times0.2\text{ A} = 0.8$ W and will overheat. Increase the base current (smaller $R_B$, or a Darlington or MOSFET, Chapters 38 and 54) until $V_{CE}$ falls to a few tenths of a volt.
+The transistor is in the active region, not saturated: the base drive is too small for this transistor's $\beta$ at 200 mA, or the motor draws more than expected. It dissipates $4\text{ V}\times0.2\text{ A} = 0.8$ W and will overheat. Increase the base current (smaller $R_B$, or a Darlington or MOSFET, Chapters 38 and 95) until $V_{CE}$ falls to a few tenths of a volt.
 
 </div>
 </details>

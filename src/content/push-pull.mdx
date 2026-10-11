@@ -4,7 +4,7 @@ import {PushPullLab} from '../components/StageLabs';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 37</span><span className="hairline"/>FOUNDATIONS / AMPLIFIER BUILDING BLOCKS</div>
+<div className="eyebrow"><span>CHAPTER 37</span><span className="hairline"/>PART II / BIPOLAR TRANSISTORS</div>
 
 <h1>Push–pull output stages<br/><em>One transistor pushes, the other pulls.</em></h1>
 
@@ -40,7 +40,7 @@ The cure is to give the circuit a transistor for each direction: an NPN follower
 
 A single NPN follower with its emitter resistor returned to −$V_{CC}$ conducts over the whole cycle: **class A**. To pull an 8 Ω load to −10 V, the emitter resistor must sink 1.25 A at that moment, so the quiescent current must be at least 1.25 A. From ±15 V supplies that is 37.5 W of continuous supply power to deliver at most 6.25 W of sine-wave power.
 
-In general, with the quiescent current set just high enough for full swing, the supply delivers $2V_{CC}I_Q$ continuously while the load receives at most $V_{CC}^2/(2R_L)$ with $I_Q$ = $V_{CC}$/$R_L$:
+In general, the stage draws $I_Q$ from $+V_{CC}$ through the transistor and returns it to $-V_{CC}$ through the emitter resistor, so the supplies deliver $2V_{CC}I_Q$ continuously, whatever the signal. The largest sine the stage can deliver has peak $V_{CC}$, so the load receives at most $V_{CC}^2/(2R_L)$. At the negative peak the emitter resistor must sink the whole load current $V_{CC}/R_L$, which sets the minimum quiescent current $I_Q = V_{CC}/R_L$. Dividing:
 
 <Equation tex="\eta_{\max}=\frac{V_{CC}^2/2R_L}{2V_{CC}^2/R_L}=25\%\qquad(\text{resistor-loaded class A})"/>
 
@@ -56,7 +56,11 @@ Join the emitters of an NPN follower (collector to +$V_{CC}$) and a PNP follower
 
 <PushPullFigure/>
 
-For a sinusoidal output of peak $V_p$ into $R_L$, each supply delivers current only on its half-cycle, with average value $V_p$/($\pi R_L$). The total supply power and the load power are
+For a sinusoidal output of peak $V_p$ into $R_L$, the positive supply delivers the load current $(V_p/R_L)\sin\omega t$ during the positive half-cycle only. Its average over a full period is
+
+<Equation tex="\bar I=\frac{1}{2\pi}\int_0^{\pi}\frac{V_p}{R_L}\sin\theta\,d\theta=\frac{1}{2\pi}\cdot\frac{V_p}{R_L}\cdot2=\frac{V_p}{\pi R_L}"/>
+
+The negative supply delivers the same average on the other half-cycle. Each supply's power is $V_{CC}\bar I$, because the supply voltage is constant. The total supply power and the load power are
 
 <Equation tex="P_S=2V_{CC}\frac{V_p}{\pi R_L},\qquad P_L=\frac{V_p^2}{2R_L},\qquad \eta=\frac{P_L}{P_S}=\frac{\pi}{4}\frac{V_p}{V_{CC}}\le78.5\%" label="CLASS B"/>
 
@@ -64,7 +68,11 @@ For a sinusoidal output of peak $V_p$ into $R_L$, each supply delivers current o
 
 The transistors dissipate the difference, $P_S$ − $P_L$. It is zero with no signal—the great advantage of class B—and it is *not* greatest at full output. Differentiating with respect to $V_p$ and setting the result to zero:
 
-<Equation tex="\frac{d}{dV_p}\left(\frac{2V_{CC}V_p}{\pi R_L}-\frac{V_p^2}{2R_L}\right)=0\ \Rightarrow\ V_p=\frac{2V_{CC}}{\pi},\qquad P_{D,\max}=\frac{2V_{CC}^2}{\pi^2R_L}"/>
+<Equation tex="\frac{d}{dV_p}\left(\frac{2V_{CC}V_p}{\pi R_L}-\frac{V_p^2}{2R_L}\right)=\frac{2V_{CC}}{\pi R_L}-\frac{V_p}{R_L}=0\ \Rightarrow\ V_p=\frac{2V_{CC}}{\pi}"/>
+
+Substitute back into $P_D = P_S - P_L$:
+
+<Equation tex="P_{D,\max}=\frac{4V_{CC}^2}{\pi^2R_L}-\frac{2V_{CC}^2}{\pi^2R_L}=\frac{2V_{CC}^2}{\pi^2R_L}"/>
 
 For ±15 V and 8 Ω: maximum sine output 14.1 W (ideal), but the transistors run hottest at about 9.5 V peak, where together they dissipate **5.7 W**. Size heat sinks for that, not for full output or idle. Real stages lose another volt or two to $V_{BE}$ and saturation, so practical efficiency at full output is closer to 60–70%.
 
@@ -114,7 +122,26 @@ The complete fix has three parts:
 
 <VbeMultiplierFigure/>
 
-The $V_{BE}$ multiplier is a transistor with a divider from collector to emitter whose tap drives its base. It conducts whatever current flows, while holding its collector–emitter voltage at $V_BE$(1 + $R_2$/$R_1$). The resistor ratio sets the bias; its $V_{BE}$, on the heat sink, makes the bias fall with temperature at a rate (1 + $R_2$/$R_1$) × 2.1 mV/°C, matching the two (or more) output junctions it compensates.
+The $V_{BE}$ multiplier is a transistor with a divider from collector to emitter whose tap drives its base.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE V<sub>BE</sub> MULTIPLIER</span>
+
+1. **Divider current.** $R_1$ connects base to emitter, so it has exactly $V_{BE}$ across it and carries $I_1 = V_{BE}/R_1$.
+
+2. **KCL at the base.** The current down $R_2$ (collector to base) feeds $R_1$ and the base: $I_2 = I_1 + I_B$. Choose the divider current much larger than $I_B$, so $I_2 \approx I_1$.
+
+3. **KVL from collector to emitter** through $R_2$ and $R_1$:
+<Equation tex="V_{CE}=I_1(R_1+R_2)=V_{BE}\left(1+\frac{R_2}{R_1}\right)"/>
+
+4. **Why it holds regardless of current.** Any extra current through the circuit goes into the transistor's collector; that requires only a slight increase in $V_{BE}$ (60 mV per decade), so $V_{CE}$ barely changes. The circuit is a two-terminal voltage source of about $V_{BE}(1 + R_2/R_1)$ with a small resistance.
+
+5. **Temperature coefficient.** Differentiate step 3 with the resistor ratio fixed: $dV_{CE}/dT = (1 + R_2/R_1)\,dV_{BE}/dT$.
+
+</div>
+
+It conducts whatever current flows, while holding its collector–emitter voltage at $V_{BE}$(1 + $R_2$/$R_1$). The resistor ratio sets the bias; its $V_{BE}$, on the heat sink, makes the bias fall with temperature at a rate (1 + $R_2$/$R_1$) × 2.1 mV/°C, matching the two (or more) output junctions it compensates.
 
 </section>
 
@@ -124,11 +151,15 @@ The $V_{BE}$ multiplier is a transistor with a divider from collector to emitter
 
 ### Feedback hides the dead zone
 
-Put the class B stage inside a negative feedback loop, as an op-amp output stage is. The amplifier driving the bases compares the actual output with the desired one; when the output stalls in the dead zone, the error grows and the driver swings the bases rapidly across the gap. With loop gain A the dead zone shrinks by roughly A: the lab’s gain of 200 brings 1 V distortion from 44% to under 0.2%. Feedback cannot fix the gap instantaneously, so a fast driver is needed, and most real designs combine class AB bias *and* feedback.
+Put the class B stage inside a negative feedback loop, as an op-amp output stage is. The amplifier driving the bases compares the actual output with the desired one; when the output stalls in the dead zone, the error grows and the driver swings the bases rapidly across the gap. To see why, let the driver have gain $A$ and model the output stage as $v_o = v_b - d$, where $d$ is the dead-zone loss (about $\pm$0.6 V when either transistor conducts, and the whole of $v_b$ inside the gap). The driver output is $v_b = A(v_{in} - v_o)$. Eliminating $v_b$:
+
+<Equation tex="v_o=\frac{A}{1+A}\,v_{in}-\frac{d}{1+A}"/>
+
+The error is the dead-zone loss divided by $1 + A$. Equivalently, the input needs to move only $1.2\text{ V}/A$ for the driver to swing the bases across the gap. With loop gain A the dead zone shrinks by roughly A: the lab’s gain of 200 brings 1 V distortion from 44% to under 0.2%. Feedback cannot fix the gap instantaneously, so a fast driver is needed, and most real designs combine class AB bias *and* feedback.
 
 ### Protection
 
-A short circuit on the output turns a follower into a dissipator of $V_{CC}$ times whatever current it can deliver. A common protection adds a small resistor in each emitter and a sensing transistor across it: when the voltage across the resistor reaches about 0.6 V, the sensing transistor steals base drive and limits the current. With 0.33 Ω, the limit is about 1.8 A. Output transistors must also stay inside their **safe operating area**, which shrinks at high voltage because of second breakdown (Chapter 40).
+A short circuit on the output turns a follower into a dissipator of $V_{CC}$ times whatever current it can deliver. A common protection adds a small resistor in each emitter and a sensing transistor across it: the sensing transistor's base–emitter junction sits across the resistor, so by KVL its $V_{BE}$ equals $I_{out}R_{sense}$. When that reaches about 0.6 V, the sensing transistor conducts, steals base drive and limits the current at $I_{lim} \approx 0.6\text{ V}/R_{sense}$. With 0.33 Ω, the limit is about 1.8 A. Output transistors must also stay inside their **safe operating area**, which shrinks at high voltage because of second breakdown (Chapter 40).
 
 ### A design outline
 
@@ -140,7 +171,7 @@ At zero output, equal emitter resistors carry the standing current $I_Q$. The re
 
 <Equation tex="V_{bias}=V_{BE,N}(I_Q)+|V_{BE,P}(I_Q)|+2I_QR_E"/>
 
-For 30 mA and two 0.47 Ω resistors, the resistor contribution is only 28.2 mV. Small changes in junction temperature or bias voltage therefore matter. The incremental sensitivity is $dI_Q/dV_{bias}\approx1/[2(V_T/I_Q+R_E)]$, about 0.375 A/V here. A 10 mV extra bias can raise standing current by roughly 3.8 mA locally.
+For 30 mA and two 0.47 Ω resistors, the resistor contribution is only 28.2 mV. Small changes in junction temperature or bias voltage therefore matter. To find the incremental sensitivity, differentiate the bias equation with respect to $I_Q$. Each junction contributes $dV_{BE}/dI_Q = V_T/I_Q$ and each resistor $R_E$, so $dV_{bias}/dI_Q = 2(V_T/I_Q + R_E)$, and the sensitivity is its reciprocal: $dI_Q/dV_{bias}\approx1/[2(V_T/I_Q+R_E)]$. At 30 mA that is $1/[2(0.86 + 0.47)\ \Omega]$, about 0.375 A/V. A 10 mV extra bias can raise standing current by roughly 3.8 mA locally.
 
 <div className="worked-example">
 

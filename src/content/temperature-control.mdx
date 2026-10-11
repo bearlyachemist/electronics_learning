@@ -5,7 +5,7 @@ import {FeedbackBlock,FeedbackAmpFigure,SupplyFigure,ThermalFigure,LogicFigure} 
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 45</span><span className="hairline"/>TRANSISTORS / FEEDBACK & CONTROL</div>
+<div className="eyebrow"><span>CHAPTER 44</span><span className="hairline"/>PART II / FEEDBACK &amp; CONTROL</div>
 
 <h1>Temperature control<br/><em>Feedback through a slow physical world.</em></h1>
 
@@ -46,13 +46,19 @@ Let T be body temperature, $T_a$ ambient, $C_{th}$ thermal capacitance in J/°C,
 
 The left side is the rate of stored-energy change. The right side is heater input minus heat loss. This is analogous to a capacitor charged by current while a resistor leaks charge away.
 
-For constant power from an initially ambient body:
+For constant power from an initially ambient body, solve the equation directly. Let $u = T - T_a$ be the rise above ambient; with $T_a$ constant, $du/dt = dT/dt$. Multiply through by $\theta$ and define $\tau = \theta C_{th}$:
+
+<Equation tex="\tau\frac{du}{dt}+u=\theta P"/>
+
+This is the RC charging equation of Chapter 5. Its steady solution is $u_\infty = \theta P$ (set $du/dt = 0$), and the deviation from that decays as $e^{-t/\tau}$. With $u(0) = 0$:
 
 <Equation tex="T(t)=T_a+\theta P\left(1-e^{-t/\tau}\right),\qquad \tau=\theta C_{\mathrm{th}}" />
 
 With $\theta$ = 10 °C/W and $C_{th}$ = 20 J/°C, $\tau$ = 200 s. A constant 3 W eventually holds the body 30 °C above ambient. After 200 s it has achieved about 63.2% of that rise.
 
 To hold 50 °C in 20 °C ambient, the required steady power is (50 − 20)/10 = 3 W. A 2 W maximum heater cannot achieve the target regardless of controller sophistication. A 10 W heater can, but needs to reduce its power well before the target if the sensor is slow.
+
+For loop analysis, take the Laplace transform of the small-variation equation $\tau\,d\Delta T/dt + \Delta T = \theta\,\Delta P$ (with zero initial deviation, $d/dt \to s$), giving $(1 + s\tau)\Delta T = \theta\,\Delta P$:
 
 <Equation tex="\frac{\Delta T(s)}{\Delta P(s)}=\frac{\theta}{1+s\theta C_{\mathrm{th}}}" />
 
@@ -122,17 +128,21 @@ A PI controller adds accumulated error:
 
 $K_i$ has units W/(°C·s). Even a small persistent error keeps changing the integral until the needed holding power remains when the instantaneous error reaches zero. Thus PI can remove steady error to a constant setpoint, provided the actuator can supply the required power and the closed loop is stable.
 
-For the single-mass plant without sensor lag, the characteristic polynomial is:
+For the single-mass plant without sensor lag, close the loop. The controller in the Laplace domain is $P = (K_p + K_i/s)E$, and the plant gives $T = \theta P/(1+s\tau)$ (in deviations from ambient). With $E = T_{set} - T$:
+
+<Equation tex="T\left[1+\frac{\theta(K_p+K_i/s)}{1+s\tau}\right]=\frac{\theta(K_p+K_i/s)}{1+s\tau}\,T_{set}"/>
+
+The closed-loop poles are where the bracket is zero. Multiply the bracket by $s(1+s\tau)$ to clear fractions; the characteristic polynomial is:
 
 <Equation tex="\tau s^2+(1+\theta K_p)s+\theta K_i=0" />
 
 All coefficients are positive for positive gains, so this ideal second-order system is stable. Its damping can still become small as integral gain rises; stability does not mean no overshoot.
 
-Now include sensor lag $τ_s$. The characteristic polynomial becomes:
+Now include sensor lag $τ_s$: the controller sees $T_m = T/(1+s\tau_s)$ instead of $T$. The loop now contains one more factor in the denominator, so the bracket becomes $1 + \theta(K_p + K_i/s)/[(1+s\tau)(1+s\tau_s)]$. Multiply by $s(1+s\tau)(1+s\tau_s)$ and expand $(1+s\tau)(1+s\tau_s) = 1 + (\tau+\tau_s)s + \tau\tau_ss^2$. The characteristic polynomial becomes:
 
 <Equation tex="\tau\tau_s s^3+(\tau+\tau_s)s^2+(1+\theta K_p)s+\theta K_i=0" />
 
-For this restricted model with $τ_s$ positive, the cubic Routh condition adds:
+A cubic $a_3s^3 + a_2s^2 + a_1s + a_0$ with all coefficients positive has all its roots in the left half-plane if and only if $a_2a_1 > a_3a_0$ (the Routh–Hurwitz test for third order). Read the coefficients off the polynomial above:
 
 <Equation tex="(\tau+\tau_s)(1+\theta K_p)>\tau\tau_s\theta K_i" />
 

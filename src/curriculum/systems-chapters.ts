@@ -1,11 +1,11 @@
 export const systemsChapters = [
   {
     "id": "precision-references",
-    "number": "95",
+    "number": "90",
     "title": "Precision voltage references",
     "href": "/precision-references/",
     "practice": "/precision-references/practice/",
-    "group": "Precision systems",
+    "group": "Precision measurement",
     "sections": [
       [
         "overview",
@@ -39,11 +39,11 @@ export const systemsChapters = [
   },
   {
     "id": "precision-noise-grounding",
-    "number": "96",
+    "number": "91",
     "title": "Noise, grounding and shielding",
     "href": "/precision-noise-grounding/",
     "practice": "/precision-noise-grounding/practice/",
-    "group": "Precision systems",
+    "group": "Precision measurement",
     "sections": [
       [
         "overview",
@@ -77,11 +77,11 @@ export const systemsChapters = [
   },
   {
     "id": "precision-calibration",
-    "number": "97",
+    "number": "92",
     "title": "Calibration and precision measurement",
     "href": "/precision-calibration/",
     "practice": "/precision-calibration/practice/",
-    "group": "Precision systems",
+    "group": "Precision measurement",
     "sections": [
       [
         "overview",
@@ -115,11 +115,11 @@ export const systemsChapters = [
   },
   {
     "id": "power-linear-regulators",
-    "number": "98",
+    "number": "94",
     "title": "Linear regulators and supply integrity",
     "href": "/power-linear-regulators/",
     "practice": "/power-linear-regulators/practice/",
-    "group": "Power circuits",
+    "group": "Linear regulation",
     "sections": [
       [
         "overview",
@@ -153,11 +153,11 @@ export const systemsChapters = [
   },
   {
     "id": "power-buck-converters",
-    "number": "99",
+    "number": "98",
     "title": "Buck converters from switching states",
     "href": "/power-buck-converters/",
     "practice": "/power-buck-converters/practice/",
-    "group": "Power circuits",
+    "group": "Switching converters",
     "sections": [
       [
         "overview",
@@ -191,11 +191,11 @@ export const systemsChapters = [
   },
   {
     "id": "power-boost-isolated",
-    "number": "100",
+    "number": "99",
     "title": "Boost, buck–boost and isolated converters",
     "href": "/power-boost-isolated/",
     "practice": "/power-boost-isolated/practice/",
-    "group": "Power circuits",
+    "group": "Switching converters",
     "sections": [
       [
         "overview",
@@ -229,11 +229,11 @@ export const systemsChapters = [
   },
   {
     "id": "power-control-layout",
-    "number": "101",
+    "number": "100",
     "title": "Power control, protection and layout",
     "href": "/power-control-layout/",
     "practice": "/power-control-layout/practice/",
-    "group": "Power circuits",
+    "group": "Switching converters",
     "sections": [
       [
         "overview",
@@ -266,8 +266,126 @@ export const systemsChapters = [
     ]
   },
   {
-    "id": "rf-impedance-matching",
+    "id": "em-fields",
+    "number": "101",
+    "title": "Electromagnetic fields behind circuit models",
+    "href": "/em-fields/",
+    "practice": "/em-fields/practice/",
+    "group": "Fields & waves",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "lumped",
+        "Decide when a circuit is lumped"
+      ],
+      [
+        "capacitance",
+        "Derive capacitance from Gauss's law"
+      ],
+      [
+        "inductance",
+        "Derive inductance from Ampère's law"
+      ],
+      [
+        "returns",
+        "Find where the return current really flows"
+      ],
+      [
+        "skin",
+        "Derive skin depth and AC resistance"
+      ],
+      [
+        "radiation",
+        "Radiate only when you mean to"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
+  },
+  {
+    "id": "transmission-lines",
     "number": "102",
+    "title": "Transmission lines and reflections",
+    "href": "/transmission-lines/",
+    "practice": "/transmission-lines/practice/",
+    "group": "Fields & waves",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "distributed",
+        "Replace one wire with distributed storage"
+      ],
+      [
+        "boundaries",
+        "Calculate launch and load reflection"
+      ],
+      [
+        "bounces",
+        "Follow the wave back to the source"
+      ],
+      [
+        "termination",
+        "Choose where the wave is absorbed"
+      ],
+      [
+        "pcb",
+        "Keep geometry, return and measurement continuous"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
+  },
+  {
+    "id": "rf-components-smith",
+    "number": "103",
+    "title": "RF components and the Smith chart",
+    "href": "/rf-components-smith/",
+    "practice": "/rf-components-smith/practice/",
+    "group": "RF circuits",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "parasitics",
+        "Model real components across frequency"
+      ],
+      [
+        "q",
+        "Define Q and convert between series and parallel"
+      ],
+      [
+        "lines",
+        "Derive the input impedance of a terminated line"
+      ],
+      [
+        "smith",
+        "Derive the Smith chart from one map"
+      ],
+      [
+        "matching",
+        "Match with transformers and stubs"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
+  },
+  {
+    "id": "rf-impedance-matching",
+    "number": "104",
     "title": "RF impedance and matching networks",
     "href": "/rf-impedance-matching/",
     "practice": "/rf-impedance-matching/practice/",
@@ -304,8 +422,46 @@ export const systemsChapters = [
     ]
   },
   {
+    "id": "oscillators-pll",
+    "number": "105",
+    "title": "Oscillators, PLLs and phase noise",
+    "href": "/oscillators-pll/",
+    "practice": "/oscillators-pll/practice/",
+    "group": "RF circuits",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "condition",
+        "State the oscillation condition two ways"
+      ],
+      [
+        "colpitts",
+        "Derive the Colpitts start-up condition"
+      ],
+      [
+        "crystal",
+        "Model a crystal and its load capacitance"
+      ],
+      [
+        "noise",
+        "Turn phase noise into jitter"
+      ],
+      [
+        "pll",
+        "Lock a VCO with a phase-locked loop"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
+  },
+  {
     "id": "rf-signal-chains",
-    "number": "103",
+    "number": "106",
     "title": "RF amplifiers, mixers and receiver design",
     "href": "/rf-signal-chains/",
     "practice": "/rf-signal-chains/practice/",
@@ -342,36 +498,40 @@ export const systemsChapters = [
     ]
   },
   {
-    "id": "transmission-lines",
-    "number": "104",
-    "title": "Transmission lines and reflections",
-    "href": "/transmission-lines/",
-    "practice": "/transmission-lines/practice/",
-    "group": "Interconnects",
+    "id": "antennas-propagation",
+    "number": "107",
+    "title": "Antennas, links and emissions",
+    "href": "/antennas-propagation/",
+    "practice": "/antennas-propagation/practice/",
+    "group": "Radiation & signal integrity",
     "sections": [
       [
         "overview",
         "Start here"
       ],
       [
-        "distributed",
-        "Replace one wire with distributed storage"
+        "dipole",
+        "Derive the radiation resistance of a short dipole"
       ],
       [
-        "boundaries",
-        "Calculate launch and load reflection"
+        "practical",
+        "Use half-wave dipoles and monopoles"
       ],
       [
-        "bounces",
-        "Follow the wave back to the source"
+        "gain",
+        "Define directivity, gain and effective area"
       ],
       [
-        "termination",
-        "Choose where the wave is absorbed"
+        "friis",
+        "Derive the Friis link equation"
       ],
       [
-        "pcb",
-        "Keep geometry, return and measurement continuous"
+        "regions",
+        "Locate the far field before measuring"
+      ],
+      [
+        "emissions",
+        "Estimate what a board or cable radiates"
       ],
       [
         "check",
@@ -381,11 +541,11 @@ export const systemsChapters = [
   },
   {
     "id": "differential-pairs",
-    "number": "105",
+    "number": "108",
     "title": "Differential pairs and high-speed PCB channels",
     "href": "/differential-pairs/",
     "practice": "/differential-pairs/practice/",
-    "group": "Interconnects",
+    "group": "Radiation & signal integrity",
     "sections": [
       [
         "overview",
@@ -419,11 +579,11 @@ export const systemsChapters = [
   },
   {
     "id": "sampling-converter-errors",
-    "number": "106",
+    "number": "109",
     "title": "Sampling and converter error budgets",
     "href": "/sampling-converter-errors/",
     "practice": "/sampling-converter-errors/practice/",
-    "group": "Data converters",
+    "group": "Sampling",
     "sections": [
       [
         "overview",
@@ -457,11 +617,11 @@ export const systemsChapters = [
   },
   {
     "id": "adc-successive-approximation",
-    "number": "107",
+    "number": "110",
     "title": "Successive-approximation ADCs",
     "href": "/adc-successive-approximation/",
     "practice": "/adc-successive-approximation/practice/",
-    "group": "Data converters",
+    "group": "Analog-to-digital converters",
     "sections": [
       [
         "overview",
@@ -495,11 +655,11 @@ export const systemsChapters = [
   },
   {
     "id": "adc-flash-pipeline",
-    "number": "108",
+    "number": "111",
     "title": "Flash, pipeline and interleaved ADCs",
     "href": "/adc-flash-pipeline/",
     "practice": "/adc-flash-pipeline/practice/",
-    "group": "Data converters",
+    "group": "Analog-to-digital converters",
     "sections": [
       [
         "overview",
@@ -533,11 +693,11 @@ export const systemsChapters = [
   },
   {
     "id": "adc-integrating-delta-sigma",
-    "number": "109",
+    "number": "112",
     "title": "Integrating and delta–sigma ADCs",
     "href": "/adc-integrating-delta-sigma/",
     "practice": "/adc-integrating-delta-sigma/practice/",
-    "group": "Data converters",
+    "group": "Analog-to-digital converters",
     "sections": [
       [
         "overview",
@@ -575,11 +735,11 @@ export const systemsChapters = [
   },
   {
     "id": "dac-architectures-output",
-    "number": "110",
+    "number": "113",
     "title": "DAC architectures and analog output design",
     "href": "/dac-architectures-output/",
     "practice": "/dac-architectures-output/practice/",
-    "group": "Data converters",
+    "group": "Digital-to-analog converters",
     "sections": [
       [
         "overview",
@@ -617,11 +777,11 @@ export const systemsChapters = [
   },
   {
     "id": "digital-logic-timing",
-    "number": "111",
+    "number": "115",
     "title": "Digital logic, timing and clock domains",
     "href": "/digital-logic-timing/",
     "practice": "/digital-logic-timing/practice/",
-    "group": "Digital systems",
+    "group": "Logic & timing",
     "sections": [
       [
         "overview",
@@ -655,11 +815,11 @@ export const systemsChapters = [
   },
   {
     "id": "digital-board-protocols",
-    "number": "112",
+    "number": "116",
     "title": "UART, SPI and I²C in detail",
     "href": "/digital-board-protocols/",
     "practice": "/digital-board-protocols/practice/",
-    "group": "Digital systems",
+    "group": "Interfaces",
     "sections": [
       [
         "overview",
@@ -692,6 +852,44 @@ export const systemsChapters = [
       [
         "choose",
         "Compare useful work and failure behavior"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
+  },
+  {
+    "id": "digital-cable-interfaces",
+    "number": "117",
+    "title": "RS-485, CAN, USB and Ethernet",
+    "href": "/digital-cable-interfaces/",
+    "practice": "/digital-cable-interfaces/practice/",
+    "group": "Interfaces",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "rs485",
+        "Build an RS-485 bus and a separate message protocol"
+      ],
+      [
+        "can",
+        "Understand dominant arbitration and fault containment"
+      ],
+      [
+        "usb",
+        "Keep USB signaling, host behavior and Type-C distinct"
+      ],
+      [
+        "ethernet",
+        "Separate MAC packets from the cable PHY"
+      ],
+      [
+        "choice",
+        "Compare the link by its failure and timing budgets"
       ],
       [
         "check",

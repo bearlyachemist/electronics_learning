@@ -4814,5 +4814,220 @@
       ]
     ],
     "sources": "The Art of Electronics, §14.7; NXP UM10204; TI SLVA689; original RC budget"
+  },
+  "digital-cable-interfaces": {
+    "title": "End termination changes driver load",
+    "setup": "Use a 2 V differential output into ideal 120 Ω bus termination resistors; ignore cable loss and receiver loading. Compare counts.",
+    "equation": "R_{eq}=120/N,\\quad I_d=2/R_{eq},\\quad P=4/R_{eq}",
+    "columns": [
+      "Termination count",
+      "Equivalent load",
+      "Differential current"
+    ],
+    "rows": [
+      [
+        "1",
+        "120 Ω",
+        "16.667 mA"
+      ],
+      [
+        "2",
+        "60 Ω",
+        "33.333 mA"
+      ],
+      [
+        "4",
+        "30 Ω",
+        "66.667 mA"
+      ]
+    ],
+    "analysis": [
+      "Adding a resistor at every node can overload a driver even though each individual resistor matches the cable impedance.",
+      "Physical placement still matters: the two bus ends absorb traveling waves; an arbitrary pair of resistors elsewhere is not an equivalent distributed termination."
+    ],
+    "limits": "This is a static load comparison, not a complete physical-channel or signal-standard qualification.",
+    "connections": [
+      [
+        "/digital-board-protocols/",
+        "Frames and overhead"
+      ],
+      [
+        "/differential-pairs/",
+        "Common mode and channel"
+      ]
+    ],
+    "sources": "The Art of Electronics, §12.10 and §14.7; TI RS-485/CAN guides; original load example"
+  },
+  "em-fields": {
+    "title": "Coax geometry and impedance",
+    "setup": "Polyethylene coax (εr = 2.25) with three radius ratios. Compare capacitance per metre and characteristic impedance.",
+    "equation": "C'=\\frac{2\\pi\\varepsilon}{\\ln(b/a)},\\quad Z_0=\\frac{60\\ \\Omega}{\\sqrt{\\varepsilon_r}}\\ln\\frac ba",
+    "columns": [
+      "b/a",
+      "C′",
+      "Z₀"
+    ],
+    "rows": [
+      [
+        "2",
+        "180.6 pF/m",
+        "27.7 Ω"
+      ],
+      [
+        "3.5",
+        "99.9 pF/m",
+        "50.1 Ω"
+      ],
+      [
+        "6",
+        "69.9 pF/m",
+        "71.7 Ω"
+      ]
+    ],
+    "analysis": [
+      "Impedance depends only on the logarithm of the radius ratio, so large impedance changes need large geometric changes.",
+      "Capacitance and impedance move in opposite directions because L′C′ = με is fixed by the dielectric."
+    ],
+    "limits": "Assumes TEM propagation, perfect conductors and frequencies where the inner conductor's internal inductance is negligible.",
+    "connections": [
+      [
+        "/transmission-lines/",
+        "Transmission lines"
+      ],
+      [
+        "/capacitors/",
+        "Capacitance from charge"
+      ]
+    ],
+    "sources": "The Art of Electronics, Appendix H; original geometry example"
+  },
+  "rf-components-smith": {
+    "title": "A mismatched load seen through a line",
+    "setup": "A 100 Ω load terminates a lossless 50 Ω line. Compare the input impedance at three electrical lengths.",
+    "equation": "Z_{in}=Z_0\\frac{Z_L+jZ_0\\tan\\beta\\ell}{Z_0+jZ_L\\tan\\beta\\ell}",
+    "columns": [
+      "Length",
+      "Input impedance",
+      "|Γ|"
+    ],
+    "rows": [
+      [
+        "0",
+        "100 Ω",
+        "0.333"
+      ],
+      [
+        "λ/8",
+        "40 − j30 Ω",
+        "0.333"
+      ],
+      [
+        "λ/4",
+        "25 Ω",
+        "0.333"
+      ]
+    ],
+    "analysis": [
+      "The reflection magnitude is unchanged by a lossless line; only its phase rotates, which is why the Smith chart turns line length into rotation.",
+      "A quarter wavelength inverts the normalized impedance, the basis of the quarter-wave transformer."
+    ],
+    "limits": "Lossless line and a single frequency; line loss spirals the trajectory inward toward the centre.",
+    "connections": [
+      [
+        "/transmission-lines/",
+        "Waves and reflections"
+      ],
+      [
+        "/rf-impedance-matching/",
+        "Matching networks"
+      ]
+    ],
+    "sources": "Standard line-impedance derivation; original example"
+  },
+  "oscillators-pll": {
+    "title": "Colpitts capacitor ratio and start-up transconductance",
+    "setup": "A 10 MHz Colpitts with a 1 µH, Q = 50 inductor (r = 1.26 Ω) and C_s = 253 pF. Compare the minimum g_m for three capacitor ratios.",
+    "equation": "g_m>r\\,\\omega_0^2C_1C_2,\\quad C_1C_2=C_s(C_1+C_2)",
+    "columns": [
+      "C₁ : C₂",
+      "C₁ / C₂",
+      "Minimum g_m"
+    ],
+    "rows": [
+      [
+        "1 : 1",
+        "506 / 506 pF",
+        "1.27 mS"
+      ],
+      [
+        "2 : 1",
+        "759 / 380 pF",
+        "1.43 mS"
+      ],
+      [
+        "4 : 1",
+        "1265 / 316 pF",
+        "1.99 mS"
+      ]
+    ],
+    "analysis": [
+      "Equal capacitors minimize the required transconductance for a given frequency.",
+      "Unequal ratios cost g_m but can swamp transistor capacitance or reduce loading of the tank."
+    ],
+    "limits": "Neglects transistor capacitances, output resistance and bias-network loading.",
+    "connections": [
+      [
+        "/fet-dynamics/",
+        "Wien-bridge oscillator"
+      ],
+      [
+        "/resonance/",
+        "Resonance and Q"
+      ]
+    ],
+    "sources": "Original negative-resistance analysis"
+  },
+  "antennas-propagation": {
+    "title": "Range against fade margin at 2.4 GHz",
+    "setup": "0 dBm transmitter, two 2 dBi antennas, −95 dBm sensitivity. Compare free-space range with three fade margins.",
+    "equation": "P_r=P_t+G_t+G_r-20\\log_{10}\\frac{4\\pi d}{\\lambda}",
+    "columns": [
+      "Fade margin",
+      "Allowed path loss",
+      "Range"
+    ],
+    "rows": [
+      [
+        "0 dB",
+        "99 dB",
+        "870 m"
+      ],
+      [
+        "10 dB",
+        "89 dB",
+        "275 m"
+      ],
+      [
+        "20 dB",
+        "79 dB",
+        "87 m"
+      ]
+    ],
+    "analysis": [
+      "Every 20 dB of margin costs a factor of ten in free-space range.",
+      "Indoor obstructions and fading often consume most of the budget, so margin, not nominal sensitivity, decides real coverage."
+    ],
+    "limits": "Free-space propagation with matched, aligned antennas; ground reflections and obstructions change the distance law.",
+    "connections": [
+      [
+        "/rf-signal-chains/",
+        "Receiver noise floor"
+      ],
+      [
+        "/rf-impedance-matching/",
+        "Antenna matching"
+      ]
+    ],
+    "sources": "Friis transmission equation; original link example"
   }
 }

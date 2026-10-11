@@ -4,13 +4,13 @@ import {TwoNodeModelFigure,TwoStageBodeFigure,PoleSplitFigure,TwoStageStepFigure
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 75</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 70</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>Build a two-stage MOS voltage amplifier<br/><em>Gain from two stages, stability from one capacitor.</em></h1>
 
 <p className="dek">Join a mirror-loaded differential pair to a common-source gain stage, find which input is which, and compensate the result. Derive pole splitting from a two-node model, see the right-half-plane zero and how a resistor removes it, and design for a phase margin you can verify in a step response.</p>
 
-<div className="chapter-meta"><span>70–90 min</span><span>Mirror-loaded pair (Ch. 72) · Active loads (Ch. 65) · Miller effect (Ch. 41)</span></div>
+<div className="chapter-meta"><span>70–90 min</span><span>Mirror-loaded pair (Ch. 67) · Active loads (Ch. 60) · Miller effect (Ch. 41)</span></div>
 
 </div>
 
@@ -40,7 +40,7 @@ But a high-gain amplifier with more than one significant pole, placed inside a f
 
 <InternalAmplifierFigure technology="mos"/>
 
-The first stage is Chapter 72's mirror-loaded NMOS pair: it converts $v_d$ into a current $g_{m1}v_d$ delivered to node $V_X$, whose resistance $R_1$ is the parallel output resistance of $M_2$ and $M_4$. The second stage is a common-source NMOS with a PMOS current-source load: it converts $V_X$ into a current $g_{m2}V_X$ delivered to the output, whose resistance $R_2$ is again two transistors' $r_o$ in parallel. $C_C$, the compensation capacitor, connects $V_X$ to the output.
+The first stage is Chapter 67's mirror-loaded NMOS pair: it converts $v_d$ into a current $g_{m1}v_d$ delivered to node $V_X$, whose resistance $R_1$ is the parallel output resistance of $M_2$ and $M_4$. The second stage is a common-source NMOS with a PMOS current-source load: it converts $V_X$ into a current $g_{m2}V_X$ delivered to the output, whose resistance $R_2$ is again two transistors' $r_o$ in parallel. $C_C$, the compensation capacitor, connects $V_X$ to the output.
 
 The tail current, the PMOS bias $V_{BP}$ and the sources' and bodies' connections stand for circuits that must exist in a real design; here they are ideal. The drawing is an original teaching construction, not any particular commercial device.
 
@@ -54,9 +54,9 @@ At low frequency the two stages simply multiply:
 
 <Equation tex={String.raw`A_0=(g_{m1}R_1)(g_{m2}R_2)`} label="DC OPEN-LOOP GAIN"/>
 
-With $g_{m1}$ = 1 mS, $R_1$ = 50 kΩ, $g_{m2}$ = 4 mS and $R_2$ = 25 kΩ, the stage gains are 50 and 100, so $A_0$ = 5000 (74 dB). Under feedback, a 1 V output then needs only 200 µV between the inputs. Here $g_{m1}$ is the whole first stage's differential-to-single-ended transconductance, $g_{m0}$ in Chapter 72, not one branch's.
+With $g_{m1}$ = 1 mS, $R_1$ = 50 kΩ, $g_{m2}$ = 4 mS and $R_2$ = 25 kΩ, the stage gains are 50 and 100, so $A_0$ = 5000 (74 dB). Under feedback, a 1 V output then needs only 200 µV between the inputs. Here $g_{m1}$ is the whole first stage's differential-to-single-ended transconductance, $g_{m0}$ in Chapter 67, not one branch's.
 
-**Polarity.** Raise the left gate. The mirror makes $V_X$ rise (Chapter 72). The common-source second stage inverts, so the output falls. The left gate is therefore the **inverting** input and the right gate the noninverting one: the "plus" input is the gate on the side opposite the mirror's diode. Always trace the signal; a wrong label turns negative feedback into positive feedback.
+**Polarity.** Raise the left gate. The mirror makes $V_X$ rise (Chapter 67). The common-source second stage inverts, so the output falls. The left gate is therefore the **inverting** input and the right gate the noninverting one: the "plus" input is the gate on the side opposite the mirror's diode. Always trace the signal; a wrong label turns negative feedback into positive feedback.
 
 </section>
 
@@ -78,11 +78,30 @@ Each contributes up to 90° of phase lag. By the time the open-loop gain has fal
 
 <div className="section-heading"><span>04</span><h2>Split the poles with one capacitor</h2></div>
 
-Writing KCL at both nodes of the two-node model with $C_C$ included gives
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE TWO-STAGE TRANSFER FUNCTION</span>
+
+1. **Model.** Node 1 (the first-stage output) has resistance $R_1$ and capacitance $C_1$ to ground and receives the first-stage current $-g_{m1}v_d$. Node 2 (the output) has $R_2$ and $C_2$ and the second-stage current source $g_{m2}v_1$ pulling out of it. $C_C$ connects node 1 to node 2. Write $G_i = 1/R_i$.
+
+2. **KCL at the output:**
+<Equation tex={String.raw`g_{m2}v_1+(G_2+sC_2)v_o+sC_C(v_o-v_1)=0\ \Rightarrow\ v_1=-v_o\,\frac{G_2+s(C_2+C_C)}{g_{m2}-sC_C}`}/>
+
+3. **KCL at node 1:**
+<Equation tex={String.raw`-g_{m1}v_d=(G_1+sC_1)v_1+sC_C(v_1-v_o)`}/>
+
+4. **Substitute $v_1$ and clear the fraction** by multiplying through by $g_{m2} - sC_C$:
+<Equation tex={String.raw`g_{m1}(g_{m2}-sC_C)\,v_d=v_o\left[(G_1+s(C_1+C_C))(G_2+s(C_2+C_C))+sC_C(g_{m2}-sC_C)\right]`}/>
+
+5. **Expand the bracket.** The $s^2$ terms are $(C_1+C_C)(C_2+C_C) - C_C^2 = C_1C_2 + C_C(C_1+C_2)$. Divide everything by $G_1G_2$ and write $A_0 = g_{m1}R_1g_{m2}R_2$:
+
+</div>
+
+The result of writing KCL at both nodes of the two-node model with $C_C$ included is
 
 <Equation tex={String.raw`\frac{v_{out}}{v_d}=\frac{A_0\,(1-sC_C/g_{m2})}{1+s\,a+s^2b},\qquad\begin{aligned}a&=R_1(C_1+C_C)+R_2(C_2+C_C)+g_{m2}R_1R_2C_C\\ b&=R_1R_2\,[C_1C_2+C_C(C_1+C_2)]\end{aligned}`}/>
 
-When the term $g_{m2}R_1R_2C_C$ dominates $a$, the two roots separate widely:
+If the roots of $1 + as + bs^2$ are widely separated, the low one is approximately $1/a$ (where the $s^2$ term is still negligible) and the high one approximately $a/b$ (where the constant is negligible), since the product of the roots is $1/b$ and their sum is $a/b$. When the term $g_{m2}R_1R_2C_C$ dominates $a$, the two roots separate widely:
 
 <Equation tex={String.raw`p_1\approx\frac{1}{2\pi\,g_{m2}R_2\,R_1C_C},\qquad p_2\approx\frac{g_{m2}C_C}{2\pi\,[C_1C_2+C_C(C_1+C_2)]}\approx\frac{g_{m2}}{2\pi\,(C_1+C_2)}`}/>
 
@@ -90,11 +109,11 @@ Two things happen at once. Seen from node $X$, $C_C$ is multiplied by the second
 
 <PoleSplitFigure/>
 
-Between the two poles, the gain falls at 20 dB per decade from a single dominant pole and crosses unity at
+Between the two poles, the gain falls at 20 dB per decade from a single dominant pole, $|A| \approx A_0p_1/f$, and crosses unity where that equals 1. Substituting $A_0 = g_{m1}R_1g_{m2}R_2$ and $p_1$, the factor $g_{m2}R_1R_2$ cancels:
 
 <Equation tex={String.raw`f_u=A_0\,p_1\approx\frac{g_{m1}}{2\pi C_C}`} label="UNITY-GAIN FREQUENCY"/>
 
-That is Chapter 65's gain–bandwidth product, $g_m/2\pi C$, for the first stage driving an effective capacitance $C_C$. The second stage's gain has dropped out.
+That is Chapter 60's gain–bandwidth product, $g_m/2\pi C$, for the first stage driving an effective capacitance $C_C$. The second stage's gain has dropped out.
 
 ### The right-half-plane zero
 
@@ -145,13 +164,13 @@ Here 2.2 × (1/4) × 10 pF = 5.5 pF, consistent with the table. The ratio $g_{m2
 
 <div className="section-heading"><span>06</span><h2>Close a real feedback loop</h2></div>
 
-**Internal DC levels.** The second stage's gate is node $X$, so $V_X$ must equal the second stage's $V_{GS}$: with $V_{T2}$ = 1 V and $u_2$ = 0.4 V, $V_X$ = 1.4 V. Check that this lies inside the first stage's output window. If the second stage were a PMOS with the same $V_{SG}$ as the mirror, $V_X$ would sit exactly at the mirror's voltage and the first stage's systematic offset would vanish (Chapter 72); that is why many CMOS op amps use a PMOS second stage with an NMOS input pair, or vice versa.
+**Internal DC levels.** The second stage's gate is node $X$, so $V_X$ must equal the second stage's $V_{GS}$: with $V_{T2}$ = 1 V and $u_2$ = 0.4 V, $V_X$ = 1.4 V. Check that this lies inside the first stage's output window. If the second stage were a PMOS with the same $V_{SG}$ as the mirror, $V_X$ would sit exactly at the mirror's voltage and the first stage's systematic offset would vanish (Chapter 67); that is why many CMOS op amps use a PMOS second stage with an NMOS input pair, or vice versa.
 
 **Overload.** In normal feedback the input difference is microvolts. During overload or slewing it can be volts, internal nodes pin to their limits, and recovery takes time. A closed-loop output that looks valid does not prove that every internal node is in its intended region.
 
-**Output drive.** The second stage is class A: it can sink current up to its bias plus whatever the input stage can steer, but source only its PMOS bias current. Driving a heavy or capacitive load needs a class-AB output (Chapter 74), which adds another stage and another pole.
+**Output drive.** The second stage is class A: it can sink current up to its bias plus whatever the input stage can steer, but source only its PMOS bias current. Driving a heavy or capacitive load needs a class-AB output (Chapter 69), which adds another stage and another pole.
 
-These are the reasons an op amp is more than a differential pair with a large gain label. It needs bias generation, compensation, output drive and overload recovery. Chapter 77 begins the op-amp chapters with the ideal model; Chapters 79–81 restore these real properties one at a time.
+These are the reasons an op amp is more than a differential pair with a large gain label. It needs bias generation, compensation, output drive and overload recovery. Chapter 72 begins the op-amp chapters with the ideal model; Chapters 74–76 restore these real properties one at a time.
 
 
 

@@ -5,13 +5,13 @@ import {ErrorModelCircuit,ErrorVsSourceFigure,ThermocoupleBudgetFigure,OffsetNul
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 78</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 73</span><span className="hairline"/>PART III / THE OP AMP</div>
 
 <h1>Real op amps: the DC error budget<br/><em>Every microvolt has a source.</em></h1>
 
 <p className="dek">Put offset voltage, bias currents, finite gain, drift and common-mode rejection back into the ideal model at the nodes where they act. Solve the signed equations, choose resistors that cancel what can be cancelled, and assemble a worst-case budget for a real measurement.</p>
 
-<div className="chapter-meta"><span>55–75 min + exploration</span><span>Ideal op amps (Ch. 77) · Pair offset (Chs. 70–72)</span></div>
+<div className="chapter-meta"><span>55–75 min + exploration</span><span>Ideal op amps (Ch. 72) · Pair offset (Chs. 70–72)</span></div>
 
 </div>
 
@@ -23,7 +23,7 @@ import {ErrorModelCircuit,ErrorVsSourceFigure,ThermocoupleBudgetFigure,OffsetNul
 
 An ideal op amp with zero input gives zero output. A real one gives a few millivolts, and that error stays put as a signal arrives, adding to every reading. In an audio stage nobody cares; in a thermocouple amplifier, where 1 °C is 41 µV, a 1 mV offset is a 25 °C error.
 
-Chapters 70–72 showed where these errors come from inside the chip: mismatched thresholds, bias currents, finite gain. This chapter treats the op amp as a black box with specified errors, puts each at the node where it acts, and adds them up honestly. The result is an error budget, the document that decides which op amp a precision design needs.
+Chapters 65–67 showed where these errors come from inside the chip: mismatched thresholds, bias currents, finite gain. This chapter treats the op amp as a black box with specified errors, puts each at the node where it acts, and adds them up honestly. The result is an error budget, the document that decides which op amp a precision design needs.
 
 </div>
 
@@ -51,7 +51,30 @@ Keep the specifications distinct. Offset voltage is not the $v_o/A$ that finite 
 
 <div className="section-heading"><span>02</span><h2>Solve the signed noninverting equation</h2></div>
 
-KCL at the minus input includes $I_{B-}$; the plus input sits at $V_{IN} - I_{B+}R_{SRC}$; the amplifier sees $V_{OS}$ added to its input. Solving with finite gain $A_0$:
+KCL at the minus input includes $I_{B-}$; the plus input sits at $V_{IN} - I_{B+}R_{SRC}$; the amplifier sees $V_{OS}$ added to its input. Solve it step by step.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE NONINVERTING AMPLIFIER WITH EVERY DC ERROR</span>
+
+1. **KCL at the minus input.** Current leaves through $R_G$ to ground, through $R_F$ to the output, and into the pin as $I_{B-}$:
+<Equation tex={String.raw`\frac{v_-}{R_G}+\frac{v_--v_o}{R_F}+I_{B-}=0`}/>
+
+2. **Solve for $v_-$.** Multiply by $R_F\parallel R_G$, and note $(R_F\parallel R_G)/R_F = R_G/(R_F+R_G) = \beta$:
+<Equation tex={String.raw`v_-=\beta v_o-I_{B-}\,(R_F\parallel R_G)`}/>
+   The bias current pulls the minus input below the divider voltage.
+
+3. **The plus input.** $I_{B+}$ flows into the pin through the source resistance, so $v_+ = V_{IN} - I_{B+}R_{SRC}$.
+
+4. **The amplifier law.** Model the offset as a source in series with the plus input: $v_o = A_0(v_+ + V_{OS} - v_-)$. Substitute steps 2 and 3:
+<Equation tex={String.raw`v_o=A_0\Bigl[V_{IN}+V_{OS}-I_{B+}R_{SRC}+I_{B-}(R_F\parallel R_G)-\beta v_o\Bigr]`}/>
+
+5. **Collect $v_o$.** Move $A_0\beta v_o$ to the left and divide by $1 + A_0\beta$. Then divide numerator and denominator by $A_0\beta$ and write $NG = 1/\beta$:
+<Equation tex={String.raw`v_o=\frac{A_0}{1+A_0\beta}\Bigl[\cdots\Bigr]=\frac{NG}{1+NG/A_0}\Bigl[\cdots\Bigr]`}/>
+
+</div>
+
+The complete result, with the bracket written out:
 
 <Equation tex={String.raw`v_o=\frac{NG}{1+NG/A_0}\Bigl[V_{IN}+V_{OS}-I_{B+}R_{SRC}+I_{B-}\,(R_F\parallel R_G)\Bigr],\qquad NG=1+\frac{R_F}{R_G}`} label="NONINVERTING AMPLIFIER WITH DC ERRORS"/>
 
@@ -163,13 +186,13 @@ Simulation is useful only for the mechanisms included in its model. Asadi's offs
 
 A 10 mV full-scale meter accurate to 1% allows 100 µV absolute error. That is 1% of full scale but **10% of a 1 mV reading**. To promise 1% of reading at 1 mV, zero error must fall below 10 µV. ADC resolution only sets the step size; it does not remove analog offset, drift, gain error or thermal voltages. State separately the minimum signal, full scale, allowed zero error and allowed scale-factor error.
 
-For a gain-1000 millivoltmeter, 200 µV input offset becomes 200 mV output offset. A 10 MΩ input return converts 10 pA into another 100 µV input error. A precision, low-bias part is needed even if the output meter movement is forgiving. Chapter 92 develops a low-voltage alternative that controls meter **current** directly and avoids depending on coil resistance.
+For a gain-1000 millivoltmeter, 200 µV input offset becomes 200 mV output offset. A 10 MΩ input return converts 10 pA into another 100 µV input error. A precision, low-bias part is needed even if the output meter movement is forgiving. Chapter 87 develops a low-voltage alternative that controls meter **current** directly and avoids depending on coil resistance.
 
 <h3>An analog memory can subtract a large baseline</h3>
 
 <NullMemoryFigure/>
 
-Let a main amplifier produce $y=G(x-h)$, where $h$ is a stored baseline voltage. During NULL, a slow integrator adjusts $h$ according to $dh/dt=y/\tau$. For constant input,
+Let a main amplifier produce $y=G(x-h)$, where $h$ is a stored baseline voltage. During NULL, a slow integrator adjusts $h$ according to $dh/dt=y/\tau$. For constant input, $dx/dt = 0$, so $d(x-h)/dt = -dh/dt = -G(x-h)/\tau$. That is a first-order decay of the error $x - h$ with time constant $\tau/G$; it falls to 1% when $e^{-Gt/\tau} = 0.01$:
 
 <Equation tex={String.raw`\frac{d(x-h)}{dt}=-\frac{G}{\tau}(x-h),\qquad t_{1\%}=\frac{\tau}{G}\ln100`}/>
 

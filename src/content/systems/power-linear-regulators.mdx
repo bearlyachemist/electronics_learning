@@ -4,7 +4,7 @@ import {SystemsLab} from '../../components/SystemsLab';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 98</span><span className="hairline"/>POWER CIRCUITS</div>
+<div className="eyebrow"><span>CHAPTER 94</span><span className="hairline"/>PART IV / LINEAR REGULATION</div>
 
 <h1>Linear regulators and supply integrity<br/><em>Regulation has a current path and a thermal limit.</em></h1>
 
@@ -89,7 +89,7 @@ Power-supply rejection is frequency dependent and varies with headroom, current,
 
 <Equation tex={String.raw`\left|\frac{v_{ripple,out}}{v_{ripple,in}}\right|=10^{-PSRR/20},\qquad \sigma_{total}^2=\sigma_{reg}^2+\int |H_{supply}(f)|^2S_{upstream}(f)\,df`}/>
 
-The first form inverts the definition $\mathrm{PSRR} = 20\log_{10}|v_{in}/v_{out}|$. The second adds the regulator's own noise and the filtered upstream noise in power, because the two are independent (Chapter 96).
+The first form inverts the definition $\mathrm{PSRR} = 20\log_{10}|v_{in}/v_{out}|$. The second adds the regulator's own noise and the filtered upstream noise in power, because the two are independent (Chapter 91).
 A switcher followed by an LDO can give good efficiency and a quieter local rail. Allocate enough headroom at the lowest switcher output, ripple trough and maximum LDO load; excess headroom wastes heat. Check high-frequency coupling that bypasses the LDO through ground impedance or parasitic capacitance. A ferrite bead adds impedance but can resonate with capacitors and requires damping; its impedance is not a fixed resistor at all frequencies.
 
 Reverse current is another state to analyze. If an output capacitor or external source holds the output above an unpowered input, an internal diode or pass channel may conduct backwards. Some regulators block it, some tolerate limited current and some need external protection. Sequence multi-rail loads so input pins are not driven beyond their rails during startup or shutdown. Validate the rail at the load terminals with a short probe return and with realistic current slew; a long oscilloscope ground lead can invent ringing.

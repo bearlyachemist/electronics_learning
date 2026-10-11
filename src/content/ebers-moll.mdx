@@ -4,7 +4,7 @@ import {EbersMollLab} from '../components/BjtLabs';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 34</span><span className="hairline"/>FOUNDATIONS / BIPOLAR TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 34</span><span className="hairline"/>PART II / BIPOLAR TRANSISTORS</div>
 
 <h1>The Ebers–Moll model<br/><em>The exponential law, and what follows from it.</em></h1>
 
@@ -46,17 +46,51 @@ $I_S$ is the saturation current (around 10⁻¹⁴ A for a small-signal transist
 
 ### All four regions
 
-The full model treats the transistor as two interacting diodes. A forward “transport” current flows from collector to emitter when the base–emitter junction is forward-biased, a reverse one when the base–collector junction is, and each junction draws its own base current:
+The full model treats the transistor as two interacting diodes. It follows directly from the base physics of Chapter 26.
 
-<Equation tex="I_C=I_S\left(e^{V_{BE}/V_T}-e^{V_{BC}/V_T}\right)-\frac{I_S}{\beta_R}\left(e^{V_{BC}/V_T}-1\right)"/>
+<div className="derivation">
 
+<span className="tiny-label">DERIVATION / THE TRANSPORT FORM OF EBERS–MOLL</span>
+
+1. **Both edges are set by junction laws.** The law of the junction fixes the excess electron density at each edge of the base: at the emitter edge it is proportional to $e^{V_{BE}/V_T} - 1$, and at the collector edge to $e^{V_{BC}/V_T} - 1$. In the active region the second is essentially $-1$ (zero total density); in saturation it is large and positive.
+
+2. **The transport current.** The thin-base profile is a straight line between the two edge densities, so the diffusion current is proportional to their difference. With the same constant $I_S$ as before:
+<Equation tex="I_T=I_S\left(e^{V_{BE}/V_T}-e^{V_{BC}/V_T}\right)"/>
+   This current flows from collector to emitter (electrons the other way) when the emitter edge is higher, and reverses when the collector edge is higher.
+
+3. **Base currents.** Each forward-biased junction also needs base current for back-injection and recombination. For the base–emitter junction that is $I_S/\beta_F$ times its exponential; for the base–collector junction, $I_S/\beta_R$ times its own:
 <Equation tex="I_B=\frac{I_S}{\beta_F}\left(e^{V_{BE}/V_T}-1\right)+\frac{I_S}{\beta_R}\left(e^{V_{BC}/V_T}-1\right)"/>
 
-$\beta_F$ is the normal current gain; $\beta_R$, the gain with emitter and collector interchanged, is small (often 1–10) because the transistor is built asymmetrically (Chapter 26). With the collector junction reverse-biased, the equations reduce to the active-region law. With both junctions forward-biased—saturation—the collector junction injects too, and solving for $V_{CE}$ at a forced ratio $\beta_{\mathrm{forced}}$ = $I_C$/$I_B$ gives
+4. **The collector current** is the transport current minus the base current drawn through the collector junction (it flows out of the collector terminal):
+<Equation tex="I_C=I_S\left(e^{V_{BE}/V_T}-e^{V_{BC}/V_T}\right)-\frac{I_S}{\beta_R}\left(e^{V_{BC}/V_T}-1\right)"/>
 
+5. **Active-region check.** With $V_{BC}$ a few tenths of a volt negative, $e^{V_{BC}/V_T} \approx 0$. Then $I_C = I_S(e^{V_{BE}/V_T} - 1) + I_S/\beta_R$; the last term is a tiny leakage, and the result reduces to the active-region law above.
+
+</div>
+
+$\beta_F$ is the normal current gain; $\beta_R$, the gain with emitter and collector interchanged, is small (often 1–10) because the transistor is built asymmetrically (Chapter 26). With both junctions forward-biased—saturation—the collector junction injects too, and $V_{CE}$ follows from the two equations.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / SATURATION VOLTAGE AT A FORCED BETA</span>
+
+1. **Abbreviate.** In saturation both exponentials are huge, so drop the −1 terms and write $x = e^{V_{BE}/V_T}$, $y = e^{V_{BC}/V_T}$. Then
+<Equation tex="I_C=I_S\left[x-y\left(1+\frac{1}{\beta_R}\right)\right]=I_S\left[x-\frac{y}{\alpha_R}\right],\qquad I_B=I_S\left[\frac{x}{\beta_F}+\frac{y}{\beta_R}\right]"/>
+   using $1 + 1/\beta_R = (1+\beta_R)/\beta_R = 1/\alpha_R$.
+
+2. **Impose the drive.** The external circuit forces the ratio $I_C = \beta_{\mathrm{forced}}I_B$. Substitute and cancel $I_S$:
+<Equation tex="x-\frac{y}{\alpha_R}=\frac{\beta_{\mathrm{forced}}}{\beta_F}x+\frac{\beta_{\mathrm{forced}}}{\beta_R}y"/>
+
+3. **Collect $x$ and $y$:**
+<Equation tex="x\left(1-\frac{\beta_{\mathrm{forced}}}{\beta_F}\right)=y\left(\frac{1}{\alpha_R}+\frac{\beta_{\mathrm{forced}}}{\beta_R}\right)"/>
+
+4. **Convert to voltage.** KVL around the three terminals gives $V_{CE} = V_{BE} - V_{BC} = V_T\ln(x/y)$:
 <Equation tex="V_{CE(\mathrm{sat})}=V_T\ln\frac{1/\alpha_R+\beta_{\mathrm{forced}}/\beta_R}{1-\beta_{\mathrm{forced}}/\beta_F},\qquad \alpha_R=\frac{\beta_R}{1+\beta_R}"/>
+   The denominator goes to zero as $\beta_{\mathrm{forced}} \to \beta_F$: as the drive weakens toward the active-region boundary, $V_{CE(\mathrm{sat})}$ grows without limit, which is the transistor leaving saturation.
 
-With $\beta_F$ = 150, $\beta_R$ = 2 and a forced $\beta$ of 10, $V_{CE(\mathrm{sat})}$ ≈ 50 mV, independent of the collector current in this ideal model. Real transistors add the collector’s ohmic resistance, which is why datasheets quote 0.1–0.3 V at substantial currents.
+</div>
+
+With $\beta_F$ = 150, $\beta_R$ = 2 and a forced $\beta$ of 10: $1/\alpha_R = 1.5$, the numerator is 1.5 + 5 = 6.5, the denominator is 1 − 10/150 = 0.933, and $V_{CE(\mathrm{sat})}$ = 25.85 mV × ln 6.96 ≈ 50 mV, independent of the collector current in this ideal model. Real transistors add the collector’s ohmic resistance, which is why datasheets quote 0.1–0.3 V at substantial currents.
 
 </section>
 
@@ -72,7 +106,7 @@ With $\beta_F$ = 150, $\beta_R$ = 2 and a forced $\beta$ of 10, $V_{CE(\mathrm{s
 
 </div>
 
-They interlock. At constant $V_{BE}$, a 1 °C rise is equivalent to raising $V_{BE}$ by 2.1 mV, so $I_C$ rises by 2.1/25.85 ≈ 8%. A factor of two in current needs 18 mV ($V_T$ ln 2). Two transistors whose $V_{BE}$ differ by 1 mV carry currents differing by 4%. With $I_S$ = 10⁻¹⁴ A, 1 mA needs $V_{BE}$ = 0.655 V and 10 mA needs 0.714 V—so “0.6 to 0.7 V” is a statement about typical currents, not a law.
+The first row follows from inverting the law: $V_{BE} = V_T\ln(I_C/I_S)$, so multiplying $I_C$ by ten adds $V_T\ln 10$ = 59.5 mV. The reverse, $I_{C2}/I_{C1} = e^{\Delta V_{BE}/V_T}$, gives the others. They interlock. At constant $V_{BE}$, a 1 °C rise is equivalent to raising $V_{BE}$ by 2.1 mV, so $I_C$ rises by 2.1/25.85 ≈ 8%. A factor of two in current needs 18 mV ($V_T$ ln 2). Two transistors whose $V_{BE}$ differ by 1 mV carry currents differing by 4%. With $I_S$ = 10⁻¹⁴ A, 1 mA needs $V_{BE}$ = 0.655 V and 10 mA needs 0.714 V—so “0.6 to 0.7 V” is a statement about typical currents, not a law.
 
 </section>
 
@@ -142,19 +176,19 @@ Two transistors made on the same chip, at the same temperature, have the same $I
 
 <MirrorFigure/>
 
-$Q_1$ is **diode-connected**: its collector is tied to its base. A reference current $I_{\mathrm{ref}}$ fed into it develops exactly the $V_{BE}$ that $Q_1$ needs to carry that current. $Q_2$ shares the same $V_{BE}$, so its collector current copies $I_{\mathrm{ref}}$. Here $I_{\mathrm{ref}}$ ≈ ($V_{CC}$ − $V_{BE}$)/R; on 15 V, R = 14.3 kΩ gives about 1 mA.
+$Q_1$ is **diode-connected**: its collector is tied to its base. A reference current $I_{\mathrm{ref}}$ fed into it develops exactly the $V_{BE}$ that $Q_1$ needs to carry that current. $Q_2$ shares the same $V_{BE}$, so its collector current copies $I_{\mathrm{ref}}$. KVL from the supply through R and down $Q_1$'s base–emitter junction gives $I_{\mathrm{ref}}$ = ($V_{CC}$ − $V_{BE}$)/R; on 15 V, R = 14.3 kΩ gives about 1 mA.
 
 The mirror is useful because the output current is copied without a resistor in the output path: it is a current source whose compliance extends to within a few tenths of a volt of the emitter. It is also programmable: change $I_{\mathrm{ref}}$ and the output follows.
 
 ### Its errors
 
-**Base current.** $I_{\mathrm{ref}}$ supplies the collector current of $Q_1$ plus both base currents. With matched transistors:
+**Base current.** Write KCL at the node where $I_{\mathrm{ref}}$ enters (the joined collector of $Q_1$ and both bases). With matched transistors at equal $V_{BE}$ and, for now, no Early effect, $I_{C1} = I_{C2} = I_{\mathrm{out}}$ and each base draws $I_{\mathrm{out}}/\beta$:
 
-<Equation tex="I_{\mathrm{out}}=\frac{I_{\mathrm{ref}}}{1+2/\beta}"/>
+<Equation tex="I_{\mathrm{ref}}=I_{C1}+I_{B1}+I_{B2}=I_{\mathrm{out}}\left(1+\frac{2}{\beta}\right)\quad\Longrightarrow\quad I_{\mathrm{out}}=\frac{I_{\mathrm{ref}}}{1+2/\beta}"/>
 
 With $\beta$ = 100, $I_{\mathrm{out}}$ = 0.980 $I_{\mathrm{ref}}$, a 2% error.
 
-**Early effect.** $Q_1$ always sits at $V_{CE}$ = $V_{BE}$ ≈ 0.65 V. If $Q_2$’s collector is at 10 V, its current is larger by about (10 − 0.65)/$V_A$. For $V_A$ = 100 V that is **9.3%**—the answer to the opening question—and the output current changes as the load changes the collector voltage.
+**Early effect.** $Q_1$ always sits at $V_{CE}$ = $V_{BE}$ ≈ 0.65 V. With the same $V_{BE}$, the ratio of the two Early-corrected currents is $(1 + V_{CE2}/V_A)/(1 + V_{CE1}/V_A) \approx 1 + (V_{CE2} - V_{CE1})/V_A$. If $Q_2$’s collector is at 10 V, its current is larger by about (10 − 0.65)/$V_A$. For $V_A$ = 100 V that is **9.3%**—the answer to the opening question—and the output current changes as the load changes the collector voltage.
 
 **Mismatch and temperature.** A 1 mV difference in $V_{BE}$ between the two transistors (from geometry or a temperature difference of half a degree) means a 4% current difference. Discrete transistors in separate packages are poorly matched; matched pairs in one package, or transistors on one chip, are far better.
 

@@ -5,7 +5,7 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 54</span><span className="hairline"/>FIELD-EFFECT TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 95</span><span className="hairline"/>PART IV / POWER SWITCHES</div>
 
 <h1>Power MOSFET switching<br/><em>Move charge, then count the losses.</em></h1>
 
@@ -58,7 +58,7 @@ Small-signal capacitance is a local slope dQ/dV. A switching event moves through
 
 During a typical hard turn-on of an inductive load, gate voltage first rises toward the required conduction level. Current transfers to the MOSFET. While drain voltage falls, substantial gate current flows through the gate-drain capacitance. Gate voltage changes comparatively little over this interval: the **Miller plateau**. After the drain transition, further charge strengthens the channel and lowers its resistance.
 
-For approximately constant gate current:
+During the plateau, $V_{GS}$ is nearly constant, so KCL at the gate says the whole gate current flows into $C_{gd}$ while the drain moves. Charge delivered at constant current takes time $Q/I$. The gate current itself is set by KVL around the gate loop: the driver's voltage minus the plateau voltage, divided by the total series resistance. For approximately constant gate current:
 
 <Equation tex="t_{\mathrm{Miller}}\approx\frac{Q_{gd}}{I_g},\qquad I_g\approx\frac{V_{\mathrm{drive}}-V_{\mathrm{plateau}}}{R_{\mathrm{driver}}+R_g+R_{\mathrm{gate,int}}}" />
 
@@ -78,15 +78,19 @@ During the on interval, an ohmic switch dissipates i²$R_{DS(\mathrm{on})}$. Ave
 
 <Equation tex="P_{\mathrm{cond}}=\frac1T\int_{\mathrm{on}}i^2(t)R_{DS(on)}(T_J)\,dt" />
 
-For nearly constant on-state current I and duty D, this becomes I²$R_{DS(\mathrm{on})}$D. If inductor current has triangular peak-to-peak ripple ΔI around I, replace I² with I² + ΔI²/12 over that interval. Using average current squared without checking ripple can underestimate loss.
+For nearly constant on-state current I and duty D, this becomes I²$R_{DS(\mathrm{on})}$D. If inductor current has triangular peak-to-peak ripple ΔI around I, write it during the on interval as $i = I + \Delta I\,(t/t_{on} - 1/2)$, a straight line from $I - \Delta I/2$ to $I + \Delta I/2$. Its mean square is
 
-During hard switching, current and voltage overlap. Approximating each overlap interval as a triangular power pulse gives:
+<Equation tex="\overline{i^2}=\frac{1}{t_{on}}\int_0^{t_{on}}\left[I+\Delta I\left(\frac{t}{t_{on}}-\frac12\right)\right]^2dt=I^2+\frac{\Delta I^2}{12}"/>
+
+(the cross term integrates to zero because the ramp is symmetric about its midpoint, and the ramp's own square averages to $\Delta I^2/12$). So replace I² with I² + ΔI²/12 over that interval. Using average current squared without checking ripple can underestimate loss.
+
+During hard switching, current and voltage overlap. In the simplest model, during a transition of length $t_r$ one quantity ramps linearly while the other holds its full value, so the instantaneous power ramps between 0 and $V_{bus}I$. The energy is the area of that triangle, $\frac12V_{bus}It_r$; similarly $\frac12V_{bus}It_f$ at turn-off. Multiplying the energy per cycle by the switching frequency gives:
 
 <Equation tex="P_{\mathrm{overlap}}\approx\frac12V_{\mathrm{bus}}I(t_r+t_f)f_s" />
 
 For 24 V, 5 A, 30 ns rise overlap, 20 ns fall overlap and 100 kHz, this is 0.30 W. With hot $R_{DS(\mathrm{on})}$ = 24 mΩ and D = 0.5, conduction loss is 0.30 W. The estimated MOSFET total is 0.60 W before additional effects.
 
-The gate-drive supply delivers approximately:
+Each cycle, the driver moves total gate charge $Q_g$ out of a supply held at $V_{drive}$, delivering energy $Q_gV_{drive}$; at turn-off that charge returns to the source terminal, not to the supply. Per second, the gate-drive supply delivers approximately:
 
 <Equation tex="P_{\mathrm{gate,supply}}=Q_gV_{\mathrm{drive}}f_s" />
 
@@ -110,7 +114,11 @@ For a mounted heatsink, add the relevant junction-to-case, interface and sink-to
 
 ### Solve the temperature-resistance loop explicitly
 
-Let $C_0=I^2D R_{25}$, fixed switching loss $P_{sw}$, and local resistance coefficient α. Combining resistance and thermal equations gives:
+Let $C_0=I^2D R_{25}$, fixed switching loss $P_{sw}$, and local resistance coefficient α, so $R(T_J) = R_{25}[1 + \alpha(T_J - 25)]$. There are two equations: power depends on temperature, $P = C_0[1 + \alpha(T_J - 25)] + P_{sw}$, and temperature depends on power, $T_J = T_A + \theta P$. Substitute the second into the first:
+
+<Equation tex="P=C_0\left[1+\alpha(T_A-25)\right]+C_0\alpha\theta P+P_{sw}"/>
+
+Collect the $P$ terms on the left, $P(1 - \theta\alpha C_0)$, and divide:
 
 <Equation tex="P=\frac{C_0[1+\alpha(T_A-25)]+P_{sw}}{1-\theta\alpha C_0},\qquad T_J=T_A+\theta P"/>
 
@@ -126,7 +134,7 @@ This closes the earlier iteration in a linear resistance model. The denominator 
 
 An inductor stores energy LI²/2. A 10 mH coil at 2 A contains 20 mJ. Turning off the transistor does not delete that energy; a diode, clamp, resistor, supply or the transistor must absorb or recover it.
 
-A low-voltage flyback diode gives slow current decay. With approximately constant opposing clamp voltage VC and negligible coil resistance, di/dt ≈ −VC/L. At 0.7 V across 10 mH, decaying 2 A would take about 28.6 ms. A 24 V opposing clamp reduces the corresponding estimate to 0.833 ms. Real winding resistance changes the waveform, and the MOSFET drain sees the supply plus the opposing load clamp voltage in the usual low-side arrangement.
+A low-voltage flyback diode gives slow current decay. With approximately constant opposing clamp voltage VC and negligible coil resistance, di/dt ≈ −VC/L. Integrating, the current falls linearly and reaches zero after $t = LI_0/V_C$. At 0.7 V across 10 mH, decaying 2 A would take about 28.6 ms. A 24 V opposing clamp reduces the corresponding estimate to 0.833 ms. Real winding resistance changes the waveform, and the MOSFET drain sees the supply plus the opposing load clamp voltage in the usual low-side arrangement.
 
 Avalanche is controlled breakdown of the MOSFET's drain junction. A specified single-pulse avalanche energy does not automatically permit repeated operation at the same energy. Starting temperature, current, repetition rate and device construction matter. Design a deliberate energy path and compare its voltage and energy with the selected components' ratings.
 
@@ -136,7 +144,7 @@ Avalanche is controlled breakdown of the MOSFET's drain junction. A specified si
 
 <div className="section-heading"><span>06</span><h2>Fast voltage changes can turn an off device on</h2></div>
 
-A rising drain voltage drives current through $C_{gd}$ even when the gate command is off:
+A rising drain voltage drives current through $C_{gd}$ even when the gate command is off. The capacitor law $i = C\,d(V_D - V_G)/dt$ with the gate held nearly still gives:
 
 <Equation tex="i_{\mathrm{Miller}}\approx C_{gd}\frac{dV_D}{dt}" />
 

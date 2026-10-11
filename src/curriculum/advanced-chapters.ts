@@ -1,7 +1,7 @@
 export const advancedChapters = [
   {
     "id": "mos-bias-atlas",
-    "number": "57",
+    "number": "52",
     "title": "MOSFET bias: an operating-point atlas",
     "href": "/mos-bias-atlas/",
     "practice": "/mos-bias-atlas/practice/",
@@ -38,7 +38,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-diode-load",
-    "number": "58",
+    "number": "53",
     "title": "Diode-connected MOSFET loads",
     "href": "/mos-diode-load/",
     "practice": "/mos-diode-load/practice/",
@@ -75,7 +75,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-current-mirror",
-    "number": "59",
+    "number": "54",
     "title": "The basic MOS current mirror",
     "href": "/mos-current-mirror/",
     "practice": "/mos-current-mirror/practice/",
@@ -116,7 +116,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-ratioed-mirrors",
-    "number": "60",
+    "number": "55",
     "title": "Ratioed and complementary MOS mirrors",
     "href": "/mos-ratioed-mirrors/",
     "practice": "/mos-ratioed-mirrors/practice/",
@@ -153,7 +153,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-source-degeneration",
-    "number": "61",
+    "number": "56",
     "title": "Source degeneration in MOS circuits",
     "href": "/mos-source-degeneration/",
     "practice": "/mos-source-degeneration/practice/",
@@ -190,7 +190,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-cascode-mirror",
-    "number": "62",
+    "number": "57",
     "title": "The cascode current mirror",
     "href": "/mos-cascode-mirror/",
     "practice": "/mos-cascode-mirror/practice/",
@@ -227,7 +227,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-wide-swing-mirror",
-    "number": "63",
+    "number": "58",
     "title": "Wide-swing cascode bias",
     "href": "/mos-wide-swing-mirror/",
     "practice": "/mos-wide-swing-mirror/practice/",
@@ -264,7 +264,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-common-source",
-    "number": "64",
+    "number": "59",
     "title": "The resistor-loaded common-source amplifier",
     "href": "/mos-common-source/",
     "practice": "/mos-common-source/practice/",
@@ -305,7 +305,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-active-load",
-    "number": "65",
+    "number": "60",
     "title": "Common-source stages with active loads",
     "href": "/mos-active-load/",
     "practice": "/mos-active-load/practice/",
@@ -342,7 +342,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-source-follower",
-    "number": "66",
+    "number": "61",
     "title": "The resistor-loaded source follower",
     "href": "/mos-source-follower/",
     "practice": "/mos-source-follower/practice/",
@@ -379,7 +379,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-current-loaded-follower",
-    "number": "67",
+    "number": "62",
     "title": "Current-loaded source followers",
     "href": "/mos-current-loaded-follower/",
     "practice": "/mos-current-loaded-follower/practice/",
@@ -416,7 +416,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-common-gate",
-    "number": "68",
+    "number": "63",
     "title": "Common-gate MOS amplifiers",
     "href": "/mos-common-gate/",
     "practice": "/mos-common-gate/practice/",
@@ -453,7 +453,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-cascode-amplifier",
-    "number": "69",
+    "number": "64",
     "title": "The MOS cascode voltage amplifier",
     "href": "/mos-cascode-amplifier/",
     "practice": "/mos-cascode-amplifier/practice/",
@@ -490,7 +490,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-differential-pair",
-    "number": "70",
+    "number": "65",
     "title": "The MOS differential pair",
     "href": "/mos-differential-pair/",
     "practice": "/mos-differential-pair/practice/",
@@ -527,7 +527,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-differential-range",
-    "number": "71",
+    "number": "66",
     "title": "Differential-pair range and rejection",
     "href": "/mos-differential-range/",
     "practice": "/mos-differential-range/practice/",
@@ -568,7 +568,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-mirror-loaded-differential",
-    "number": "72",
+    "number": "67",
     "title": "Mirror-loaded differential stages",
     "href": "/mos-mirror-loaded-differential/",
     "practice": "/mos-mirror-loaded-differential/practice/",
@@ -605,7 +605,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-differential-degeneration",
-    "number": "73",
+    "number": "68",
     "title": "Degenerated MOS differential pairs",
     "href": "/mos-differential-degeneration/",
     "practice": "/mos-differential-degeneration/practice/",
@@ -642,7 +642,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-complementary-output",
-    "number": "74",
+    "number": "69",
     "title": "Complementary MOS output followers",
     "href": "/mos-complementary-output/",
     "practice": "/mos-complementary-output/practice/",
@@ -683,7 +683,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-two-stage-amplifier",
-    "number": "75",
+    "number": "70",
     "title": "Build a two-stage MOS voltage amplifier",
     "href": "/mos-two-stage-amplifier/",
     "practice": "/mos-two-stage-amplifier/practice/",
@@ -724,7 +724,7 @@ export const advancedChapters = [
   },
   {
     "id": "mos-noise-design",
-    "number": "76",
+    "number": "71",
     "title": "MOS noise and transconductance efficiency",
     "href": "/mos-noise-design/",
     "practice": "/mos-noise-design/practice/",
@@ -765,7 +765,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-ideal",
-    "number": "77",
+    "number": "72",
     "title": "Ideal op amps and feedback",
     "href": "/opamp-ideal/",
     "practice": "/opamp-ideal/practice/",
@@ -806,7 +806,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-dc-errors",
-    "number": "78",
+    "number": "73",
     "title": "Real op amps: the DC error budget",
     "href": "/opamp-dc-errors/",
     "practice": "/opamp-dc-errors/practice/",
@@ -851,7 +851,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-ac-limits",
-    "number": "79",
+    "number": "74",
     "title": "Bandwidth, slew and stability",
     "href": "/opamp-ac-limits/",
     "practice": "/opamp-ac-limits/practice/",
@@ -896,7 +896,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-bjt-internals",
-    "number": "80",
+    "number": "75",
     "title": "Inside a bipolar op amp",
     "href": "/opamp-bjt-internals/",
     "practice": "/opamp-bjt-internals/practice/",
@@ -937,7 +937,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-cmos-internals",
-    "number": "81",
+    "number": "76",
     "title": "Inside a CMOS op amp",
     "href": "/opamp-cmos-internals/",
     "practice": "/opamp-cmos-internals/practice/",
@@ -982,7 +982,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-input-tradeoffs",
-    "number": "82",
+    "number": "77",
     "title": "Choose BJT, JFET, CMOS or chopper inputs",
     "href": "/opamp-input-tradeoffs/",
     "practice": "/opamp-input-tradeoffs/practice/",
@@ -1023,7 +1023,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-noninverting",
-    "number": "83",
+    "number": "78",
     "title": "Noninverting amplifiers and buffers",
     "href": "/opamp-noninverting/",
     "practice": "/opamp-noninverting/practice/",
@@ -1064,7 +1064,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-inverting-summing",
-    "number": "84",
+    "number": "79",
     "title": "Inverting and summing amplifiers",
     "href": "/opamp-inverting-summing/",
     "practice": "/opamp-inverting-summing/practice/",
@@ -1109,7 +1109,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-difference",
-    "number": "85",
+    "number": "80",
     "title": "Difference amplifiers and resistor CMRR",
     "href": "/opamp-difference/",
     "practice": "/opamp-difference/practice/",
@@ -1154,7 +1154,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-instrumentation",
-    "number": "86",
+    "number": "81",
     "title": "Instrumentation amplifiers",
     "href": "/opamp-instrumentation/",
     "practice": "/opamp-instrumentation/practice/",
@@ -1199,7 +1199,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-transimpedance",
-    "number": "87",
+    "number": "82",
     "title": "Transimpedance amplifiers",
     "href": "/opamp-transimpedance/",
     "practice": "/opamp-transimpedance/practice/",
@@ -1244,7 +1244,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-integrator",
-    "number": "88",
+    "number": "83",
     "title": "Practical op-amp integrators",
     "href": "/opamp-integrator/",
     "practice": "/opamp-integrator/practice/",
@@ -1289,7 +1289,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-differentiator",
-    "number": "89",
+    "number": "84",
     "title": "Band-limited differentiators",
     "href": "/opamp-differentiator/",
     "practice": "/opamp-differentiator/practice/",
@@ -1300,15 +1300,15 @@ export const advancedChapters = [
       ],
       [
         "model",
-        "Bound the derivative at both ends"
+        "Derive the ideal differentiator from KCL"
       ],
       [
         "derive",
-        "Use impedances before approximating"
+        "Derive the band-limited transfer function"
       ],
       [
         "resonance",
-        "Find the resonance"
+        "Derive the resonance with a finite-gain op amp"
       ],
       [
         "cases",
@@ -1330,7 +1330,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-active-filters",
-    "number": "90",
+    "number": "85",
     "title": "Active filters and Sallen–Key design",
     "href": "/opamp-active-filters/",
     "practice": "/opamp-active-filters/practice/",
@@ -1371,7 +1371,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-precision-rectifier",
-    "number": "91",
+    "number": "86",
     "title": "Precision rectifiers and peak detection",
     "href": "/opamp-precision-rectifier/",
     "practice": "/opamp-precision-rectifier/practice/",
@@ -1420,7 +1420,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-current-servo",
-    "number": "92",
+    "number": "87",
     "title": "Op-amp current servos",
     "href": "/opamp-current-servo/",
     "practice": "/opamp-current-servo/practice/",
@@ -1465,7 +1465,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-load-stability",
-    "number": "93",
+    "number": "88",
     "title": "Capacitive loads and feedback placement",
     "href": "/opamp-load-stability/",
     "practice": "/opamp-load-stability/practice/",
@@ -1506,7 +1506,7 @@ export const advancedChapters = [
   },
   {
     "id": "opamp-function-design",
-    "number": "94",
+    "number": "89",
     "title": "Analog functions and a complete design",
     "href": "/opamp-function-design/",
     "practice": "/opamp-function-design/practice/",

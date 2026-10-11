@@ -5,7 +5,7 @@ import {FeedbackBlock,FeedbackAmpFigure,SupplyFigure,ThermalFigure,LogicFigure} 
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 43</span><span className="hairline"/>TRANSISTORS / FEEDBACK & CONTROL</div>
+<div className="eyebrow"><span>CHAPTER 43</span><span className="hairline"/>PART II / FEEDBACK &amp; CONTROL</div>
 
 <h1>Feedback in transistor amplifiers<br/><em>Find the loop inside the circuit.</em></h1>
 
@@ -116,7 +116,7 @@ This is an approximately unity-feedback voltage loop. It cannot have voltage gai
 
 At $I_C$ = 1 mA, $\beta$ = 100 and $R_E$′ = 1 kΩ, $g_e R_E$′ ≈ 39.07 and gain is 0.9750. The missing 2.5% is finite loop gain, not a second fixed 0.7 V drop in the AC gain.
 
-For output resistance, suppress the input signal and let its source present $R_s$ to the base. Looking into the transistor's emitter gives approximately:
+For output resistance, suppress the input signal and let its source present $R_s$ to the base. Looking into the transistor's emitter gives the test-source result of Chapter 28, $(r_\pi + R_s)/(\beta+1)$, and $R_E$ is a separate path from the same node to ground, so the two combine in parallel:
 
 <Equation tex="R_{\mathrm{out}}\approx \frac{r_\pi+R_s}{\beta+1}\parallel R_E" />
 
@@ -155,6 +155,16 @@ With emitter at AC ground, source x through $R_s$, base voltage $v_b$ and output
 <Equation tex="\frac{v_o}{R_C'}+\frac{v_o-v_b}{R_F}+g_mv_b=0" />
 
 The last term is the controlled collector current leaving the output node. These equations include feedback-resistor loading at both ends. They are safer than guessing b from a divider that is not actually unloaded.
+
+Solve them in order. The output equation contains only $v_o$ and $v_b$; collect terms:
+
+<Equation tex="v_o\left(\frac{1}{R_C'}+\frac{1}{R_F}\right)=v_b\left(\frac{1}{R_F}-g_m\right)\quad\Rightarrow\quad A_1=\frac{v_o}{v_b}=\frac{1/R_F-g_m}{1/R_C'+1/R_F}"/>
+
+The $1/R_F$ in the numerator is the small current fed forward through $R_F$; it is negligible next to $g_m$. Now substitute $v_o = A_1v_b$ into the base equation:
+
+<Equation tex="v_b\left[\frac{1}{R_s}+\frac{1}{r_\pi}+\frac{1-A_1}{R_F}\right]=\frac{x}{R_s}"/>
+
+The last term shows $R_F$ appearing at the base as $R_F/(1 - A_1)$, the Miller theorem of Chapter 41 applied to a resistor: with $A_1$ ≈ −78, 100 kΩ looks like about 1.26 kΩ to ground. That is why shunt feedback lowers the input resistance so much.
 
 For $R_s$ = 10 kΩ, $R_F$ = 100 kΩ, $R_C$′ = 2 kΩ, $g_m$ = 40 mS and $r_π$ = 2.5 kΩ, the equations give $v_o$/$v_b$ ≈ −78.41 and $v_b$/x ≈ 0.07727, hence total gain about −6.06. Without the feedback resistor, those same frozen small-signal parameters give −16. The DC bias must be re-established if a real circuit's $R_F$ is changed.
 

@@ -4,7 +4,7 @@ import {MirrorLab} from '../components/StageLabs';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 35</span><span className="hairline"/>FOUNDATIONS / AMPLIFIER BUILDING BLOCKS</div>
+<div className="eyebrow"><span>CHAPTER 35</span><span className="hairline"/>PART II / BIPOLAR TRANSISTORS</div>
 
 <h1>Current mirrors<br/><em>Copy a current with a matched transistor.</em></h1>
 
@@ -100,9 +100,23 @@ In the lab’s Ebers–Moll model with $V_A$ = 100 V, the ratio $I_{\mathrm{out}
 
 ### Mismatch and emitter degeneration
 
-A $V_{BE}$ difference ΔV between $Q_1$ and $Q_2$ (from unequal $I_S$, or a temperature difference of ΔV/2.1 mV degrees) changes the output by $e^{ΔV/V_T}$: 3.9% for 1 mV. Adding equal emitter resistors $R_E$ to both transistors changes that. If the voltage across each resistor is $V_{RE}$, a mismatch ΔV must now be absorbed by the resistors as well as the junctions:
+A $V_{BE}$ difference ΔV between $Q_1$ and $Q_2$ (from unequal $I_S$, or a temperature difference of ΔV/2.1 mV degrees) changes the output by $e^{ΔV/V_T}$: 3.9% for 1 mV. Adding equal emitter resistors $R_E$ to both transistors changes that. If the voltage across each resistor is $V_{RE}$, a mismatch ΔV must now be absorbed by the resistors as well as the junctions.
 
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / HOW DEGENERATION DILUTES MISMATCH</span>
+
+1. **KVL from the common base node to ground** through each transistor. Model the mismatch as a small voltage source $\Delta V$ in series with $Q_2$'s base. Both paths start at the same base voltage and end at ground:
+<Equation tex="V_{BE1}+I_1R_E=\Delta V+V_{BE2}+I_2R_E"/>
+
+2. **Linearize.** Let $I_2 = I_1 + \Delta I$ with $\Delta I$ small. The junction voltage changes by $V_T\ln(I_2/I_1) \approx V_T\,\Delta I/I$, and the resistor drop by $\Delta I\,R_E$. Subtracting the matched case leaves
+<Equation tex="0=\Delta V-V_T\frac{\Delta I}{I}-R_E\,\Delta I"/>
+
+3. **Solve for the fractional error,** writing $IR_E = V_{RE}$:
 <Equation tex="\frac{\Delta I}{I}\approx\frac{\Delta V}{V_{RE}+V_T}"/>
+   Without resistors ($V_{RE} = 0$) this is $\Delta V/V_T$, the small-signal version of $e^{\Delta V/V_T}$. Each resistor adds its voltage to the denominator, because the mismatch must now be absorbed by the junction and the resistor together.
+
+</div>
 
 With 0.25 V across the resistors, 1 mV of mismatch causes only 0.36% error instead of 3.9%. The same degeneration multiplies the output resistance, as in Chapter 31: with 1 kΩ resistors (about 0.94 V across them) the lab’s mirror rises from 100 kΩ to about **2.5 MΩ**. The cost is a volt of compliance and headroom.
 
@@ -126,9 +140,9 @@ The flatness of each curve is its output resistance; its height relative to the 
 
 ### The $\beta$-helper
 
-Replace $Q_1$’s collector-to-base wire with a third transistor, an emitter follower $Q_3$ whose base is driven from $Q_1$’s collector and whose emitter supplies both bases. The reference resistor now has to supply only $Q_3$’s base current, which is the two base currents divided by $\beta$ + 1:
+Replace $Q_1$’s collector-to-base wire with a third transistor, an emitter follower $Q_3$ whose base is driven from $Q_1$’s collector and whose emitter supplies both bases. The reference resistor now has to supply only $Q_3$’s base current, which is the two base currents divided by $\beta$ + 1. In equations: KCL at $Q_3$'s emitter gives $I_{E3} = I_{B1} + I_{B2} = 2I_C/\beta$, so $I_{B3} = I_{E3}/(\beta+1)$. KCL at the reference node gives $I_{\mathrm{ref}} = I_{C1} + I_{B3}$. With $I_{C1} = I_{C2} = I_{\mathrm{out}}$:
 
-<Equation tex="I_{\mathrm{out}}=\frac{I_{\mathrm{ref}}}{1+\dfrac{2}{\beta(\beta+1)}}"/>
+<Equation tex="I_{\mathrm{ref}}=I_{\mathrm{out}}\left[1+\frac{2}{\beta(\beta+1)}\right]\quad\Longrightarrow\quad I_{\mathrm{out}}=\frac{I_{\mathrm{ref}}}{1+\dfrac{2}{\beta(\beta+1)}}"/>
 
 At $\beta$ = 100 the base-current error drops from 2% to 0.02%. $Q_1$’s collector now sits at $2V_{BE}$ instead of $V_{BE}$, which slightly changes the Early-effect mismatch but does not remove it; the output resistance is still about $r_o$.
 
@@ -138,9 +152,42 @@ At $\beta$ = 100 the base-current error drops from 2% to 0.02%. $Q_1$’s collec
 
 The Wilson mirror uses three transistors in a feedback loop. $Q_2$ is diode-connected and sets the $V_{BE}$ for $Q_1$. $Q_3$ carries the output current through $Q_2$. $Q_1$’s collector, fed by the reference, drives $Q_3$’s base.
 
-Follow a disturbance. If the output current tries to rise (say, because the output voltage rose), $Q_2$’s current rises, raising $V_{BE}$, so $Q_1$ draws more of the reference current, pulling $Q_3$’s base down and reducing the output current. The loop holds the output equal to the reference. Two consequences follow from the analysis:
+Follow a disturbance. If the output current tries to rise (say, because the output voltage rose), $Q_2$’s current rises, raising $V_{BE}$, so $Q_1$ draws more of the reference current, pulling $Q_3$’s base down and reducing the output current. The loop holds the output equal to the reference. Derive both its accuracy and its output resistance.
 
-<Equation tex="\frac{I_{\mathrm{out}}}{I_{\mathrm{ref}}}=1-\frac{2}{\beta^2+2\beta+2},\qquad R_{\mathrm{out}}\approx\frac{\beta r_o}{2}"/>
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE WILSON MIRROR'S CURRENT RATIO</span>
+
+1. **Matched pair.** $Q_1$ and $Q_2$ share a base–emitter voltage, so their collector currents are equal; call them $I$. Each draws base current $I/\beta$.
+
+2. **KCL at $Q_3$'s emitter.** $Q_3$'s emitter current feeds $Q_2$'s collector and both bases:
+<Equation tex="I_{E3}=I+\frac{2I}{\beta}=I\,\frac{\beta+2}{\beta}"/>
+   so the output is $I_{\mathrm{out}} = I_{C3} = I_{E3}\,\beta/(\beta+1) = I(\beta+2)/(\beta+1)$.
+
+3. **KCL at $Q_1$'s collector.** The reference current splits between $Q_1$'s collector and $Q_3$'s base:
+<Equation tex="I_{\mathrm{ref}}=I+\frac{I_{\mathrm{out}}}{\beta}=I\left[1+\frac{\beta+2}{\beta(\beta+1)}\right]=I\,\frac{\beta^2+2\beta+2}{\beta(\beta+1)}"/>
+
+4. **Divide** step 2 by step 3; the $I$ and one factor $(\beta+1)$ cancel:
+<Equation tex="\frac{I_{\mathrm{out}}}{I_{\mathrm{ref}}}=\frac{\beta(\beta+2)}{\beta^2+2\beta+2}=1-\frac{2}{\beta^2+2\beta+2}"/>
+
+</div>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE WILSON MIRROR'S OUTPUT RESISTANCE</span>
+
+1. **Test current.** Push a small extra current $i_x$ into $Q_3$'s collector with a test voltage $v_x$. The emitter node of $Q_3$ sits on the diode $Q_2$, whose resistance is only about $1/g_m$, so treat $v_{e3} \approx 0$.
+
+2. **Mirror action.** $Q_3$'s emitter current increases by $i_{e3} = i_x + i_{b3}$. That increase flows into the matched pair, whose two collector currents stay equal, so $i_{c1} \approx i_{e3}$.
+
+3. **KCL at $Q_1$'s collector.** The reference current is fixed, so any increase in $i_{c1}$ must be taken from $Q_3$'s base: $i_{b3} = -i_{c1}$. Combining with step 2:
+<Equation tex="i_{c1}=i_x-i_{c1}\quad\Longrightarrow\quad i_{c1}=\frac{i_x}{2},\qquad i_{b3}=-\frac{i_x}{2}"/>
+
+4. **KCL at $Q_3$'s collector.** The test current divides between $Q_3$'s controlled source and its $r_o$. The controlled source is $\beta i_{b3}$ (equivalently $g_mv_{be3}$ with $v_{be3} = r_\pi i_{b3}$):
+<Equation tex="i_x=\beta\left(-\frac{i_x}{2}\right)+\frac{v_x}{r_o}\quad\Longrightarrow\quad R_{\mathrm{out}}=\frac{v_x}{i_x}=\left(1+\frac{\beta}{2}\right)r_o\approx\frac{\beta r_o}{2}"/>
+   The feedback steals half the test current back as base drive, and that half is multiplied by $\beta$ to oppose the change.
+
+</div>
 
 The base-current error is second order in 1/$\beta$ (0.02% at $\beta$ = 100), and the output resistance is $\beta$/2 times larger than a single transistor’s: in the lab, about 5.2 MΩ against 102 kΩ for the basic mirror. $Q_1$ and $Q_2$ also operate at different collector voltages ($2V_{BE}$ and $V_{BE}$); an **improved Wilson** adds a fourth, diode-connected transistor to equalize them.
 
@@ -152,7 +199,7 @@ The base-current error is second order in 1/$\beta$ (0.02% at $\beta$ = 100), an
 
 ### Small currents from small resistors
 
-Suppose a chip needs 10 µA from a 15 V supply. A basic mirror would need R = 14.35 V/10 µA ≈ 1.4 MΩ, an enormous resistor on silicon. Bob Widlar’s solution keeps a 1 mA reference and puts a resistor $R_E$ only in the emitter of the output transistor. The two transistors now have different $V_{BE}$, and the difference appears across $R_E$:
+Suppose a chip needs 10 µA from a 15 V supply. A basic mirror would need R = 14.35 V/10 µA ≈ 1.4 MΩ, an enormous resistor on silicon. Bob Widlar’s solution keeps a 1 mA reference and puts a resistor $R_E$ only in the emitter of the output transistor. The two transistors now have different $V_{BE}$. KVL from the shared base node to ground gives $V_{BE1} = V_{BE2} + I_{E2}R_E$, so the difference appears across $R_E$. Then substitute $V_{BE} = V_T\ln(I_C/I_S)$ for each matched transistor, and take $I_{E2} \approx I_{C2}$:
 
 <Equation tex="V_{BE1}-V_{BE2}=V_T\ln\frac{I_{C1}}{I_{C2}}=I_{C2}R_E\qquad\Rightarrow\qquad R_E=\frac{V_T}{I_{\mathrm{out}}}\ln\frac{I_{\mathrm{ref}}}{I_{\mathrm{out}}}" label="WIDLAR CURRENT SOURCE"/>
 
@@ -168,7 +215,7 @@ A PNP mirror, with emitters at the positive supply, sources currents into loads 
 
 ### A Widlar sensitivity calculation
 
-Ignoring base currents and the Early effect, write $I_{out}R_E=V_T\ln(I_{ref}/I_{out})$. Differentiate while temperature and resistor stay fixed:
+Ignoring base currents and the Early effect, write $I_{out}R_E=V_T\ln I_{ref}-V_T\ln I_{out}$. Take differentials with temperature and resistor fixed: $R_E\,dI_{out} = V_T\,d\ln I_{ref} - V_T\,d\ln I_{out}$. Since $dI_{out} = I_{out}\,d\ln I_{out}$, collect the $d\ln I_{out}$ terms to get the first result below. For the second, hold $I_{ref}$ fixed and let $R_E$ vary: $I_{out}\,dR_E + R_E\,dI_{out} = -V_T\,d\ln I_{out}$, which rearranges the same way:
 
 <Equation tex="\frac{d\ln I_{out}}{d\ln I_{ref}}=\frac{V_T}{V_T+I_{out}R_E},\qquad \frac{d\ln I_{out}}{d\ln R_E}=-\frac{I_{out}R_E}{V_T+I_{out}R_E}"/>
 

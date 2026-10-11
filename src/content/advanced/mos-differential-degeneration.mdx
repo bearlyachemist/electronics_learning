@@ -5,13 +5,13 @@ import {DegenSteeringFigure,DegenGmFigure,SplitTailCircuit} from '../../componen
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 73</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 68</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>Degenerated MOS differential pairs<br/><em>Trade transconductance for range.</em></h1>
 
 <p className="dek">Add a resistor to each source of a differential pair, derive the exact current-sharing relation, and measure what degeneration buys (a wider, flatter, more resistor-defined transconductance) against what it costs in gain, headroom and noise. Then remove the headroom cost with a split tail.</p>
 
-<div className="chapter-meta"><span>45–60 min + exploration</span><span>Differential pair (Chs. 70–71) · Source degeneration (Ch. 61)</span></div>
+<div className="chapter-meta"><span>45–60 min + exploration</span><span>Differential pair (Chs. 70–71) · Source degeneration (Ch. 56)</span></div>
 
 </div>
 
@@ -21,7 +21,7 @@ import {DegenSteeringFigure,DegenGmFigure,SplitTailCircuit} from '../../componen
 
 <div>
 
-Chapter 61 degenerated a single transistor: a source resistor divided its transconductance by $1 + g_mR_S$ and made it more linear and more predictable. A differential pair benefits in the same ways. Its linear range, otherwise fixed by the overdrive, can be extended as far as the designer likes, and its transconductance becomes increasingly set by resistors rather than by $k$.
+Chapter 56 degenerated a single transistor: a source resistor divided its transconductance by $1 + g_mR_S$ and made it more linear and more predictable. A differential pair benefits in the same ways. Its linear range, otherwise fixed by the overdrive, can be extended as far as the designer likes, and its transconductance becomes increasingly set by resistors rather than by $k$.
 
 Filters, mixers and the input stages of instrumentation amplifiers all need a transconductor that converts a large differential voltage to a current accurately. A degenerated pair is the simplest one. As always, the resistor's DC drop costs headroom; but in a differential circuit there is a trick that avoids it.
 
@@ -55,7 +55,7 @@ Go around the loop from one gate to the other: down through $M_1$'s $V_{GS}$ and
 
 <Equation tex={String.raw`v_d=\sqrt{\frac{2I_1}{k}}-\sqrt{\frac{2(I_T-I_1)}{k}}+(2I_1-I_T)\,R_S`} label="EXACT DEGENERATED STEERING (IDEAL TAIL)"/>
 
-The right side increases monotonically with $I_1$, so for any $v_d$ there is exactly one $I_1$ between 0 and $I_T$, easily found numerically. Two results follow directly. Differentiating at balance gives the transconductance, and setting $I_1 = I_T$ gives the full-steering input:
+The right side increases monotonically with $I_1$, so for any $v_d$ there is exactly one $I_1$ between 0 and $I_T$, easily found numerically. Two results follow directly. Differentiating at balance gives the transconductance: $d\sqrt{2I/k}/dI = 1/\sqrt{2kI} = 1/g_m$, so the first two terms contribute $1/g_{m0}$ each and the resistor term contributes $2R_S$, giving $dv_d/dI_1 = 2(1/g_{m0} + R_S)$. Since $I_1 - I_2 = 2I_1 - I_T$, the differential transconductance is $2/(dv_d/dI_1)$. Setting $I_1 = I_T$ (so the second square root vanishes) gives the full-steering input:
 
 <Equation tex={String.raw`G_{md}=\frac{\partial(I_1-I_2)}{\partial v_d}\Big|_0=\frac{g_{m0}}{1+g_{m0}R_S},\qquad |v_{d,\text{full}}|=\sqrt{\frac{2I_T}{k}}+I_TR_S`}/>
 
@@ -125,11 +125,11 @@ Split the tail in two, one $I_T/2$ sink under each source, and connect the two s
 
 <div className="section-heading"><span>05</span><h2>Choose resistors from a complete budget</h2></div>
 
-**The limit of resistor-defined transconductance.** $G_{md} = g_{m0}/(1 + g_{m0}R_S)$ approaches $1/R_S$ only slowly: at $g_{m0}R_S$ = 4 it is still 20% below. The remainder depends on $k$, temperature and current. For precise transconductance, put the transistor inside a feedback loop that forces the input voltage across the resistor (an op-amp-driven transconductor, Chapter 92).
+**The limit of resistor-defined transconductance.** $G_{md} = g_{m0}/(1 + g_{m0}R_S)$ approaches $1/R_S$ only slowly: at $g_{m0}R_S$ = 4 it is still 20% below. The remainder depends on $k$, temperature and current. For precise transconductance, put the transistor inside a feedback loop that forces the input voltage across the resistor (an op-amp-driven transconductor, Chapter 87).
 
 **Offset.** A threshold mismatch still has to be cancelled by an equal input voltage: degeneration does not reduce the input-referred threshold offset. It reduces the current imbalance that a given input produces, which is a different statement. Resistor mismatch adds an offset of about $(\Delta R_S/R_S) \cdot I_TR_S/2$.
 
-**Noise.** Each resistor adds $\sqrt{4kTR_S}$ in series with its gate. Two 1 kΩ resistors add 5.8 nV/√Hz to the input, comparable to the transistors' own noise at these currents (Chapter 76).
+**Noise.** Each resistor adds $\sqrt{4kTR_S}$ in series with its gate. Two 1 kΩ resistors add 5.8 nV/√Hz to the input, comparable to the transistors' own noise at these currents (Chapter 71).
 
 **Gain.** A degenerated pair has lower gain than an undegenerated one with the same load. In an op amp, use degeneration where linearity or input range matters and recover the gain in a later stage.
 

@@ -6,7 +6,7 @@ import {logspace} from './Parts';
 const pairs=(xs:number[],f:(x:number)=>number)=>xs.map(x=>[x,f(x)] as [number,number]);
 const span=(a:number,b:number,n=300)=>Array.from({length:n+1},(_,k)=>a+(b-a)*k/n);
 
-/* ---------- Chapter 05: capacitors ---------- */
+/* ---------- Chapter 5: capacitors ---------- */
 // A physical picture, not a schematic: plates, separated charge, and the field between them.
 export function ParallelPlateFigure(){
   const xs=[0,1,2,3,4,5,6,7,8].map(k=>190+k*30);
@@ -82,7 +82,7 @@ export function SupercapFigure(){
   </Figure>;
 }
 
-/* ---------- Chapter 06: RC circuits ---------- */
+/* ---------- Chapter 6: RC circuits ---------- */
 export function RCSwitchFigure(){
   const n:Pt=[400,60];
   return <Figure caption="The circuit of this chapter. When the switch closes at $t = 0$, the source drives current through $R$ into $C$. The capacitor voltage $v$ cannot jump, so all of $V_s - V_0$ initially appears across the resistor, and the current starts at its maximum, $(V_s - V_0)/R$.">
@@ -142,7 +142,7 @@ export function DebounceFigure(){
     </Schematic></Figure>;
 }
 
-/* ---------- Chapter 07: differentiators ---------- */
+/* ---------- Chapter 7: differentiators ---------- */
 // Steady-state CR high-pass response to a periodic piecewise-linear input, computed by direct time stepping.
 function highpass(input:(t:number)=>number,tau:number,period:number,cycles=2,n=1200){
   const dt=period*(cycles+3)/n;let vc=0;const out:[number,number][]=[];
@@ -199,7 +199,7 @@ export function EdgeDetectorFigure(){
     </Schematic></Figure>;
 }
 
-/* ---------- Chapter 08: integrators ---------- */
+/* ---------- Chapter 8: integrators ---------- */
 // Steady-state RC low-pass response to a periodic input (time stepping, three settling periods discarded).
 function lowpass(input:(t:number)=>number,tau:number,period:number,cycles=2,n=1600){
   const dt=period*(cycles+3)/n;let v=0;const out:[number,number][]=[];
@@ -252,7 +252,7 @@ export function DualSlopeFigure(){
   </Figure>;
 }
 
-/* ---------- Chapter 09: real capacitors ---------- */
+/* ---------- Chapter 9: real capacitors ---------- */
 export function FullCapModelFigure(){
   const A:Pt=[150,70];
   return <Figure caption="A fuller equivalent circuit for a real capacitor. ESR and ESL sit in series with the main capacitance $C$. The leakage resistance carries a small DC current through the dielectric. The extra branch $R_{\mathrm{DA}}C_{\mathrm{DA}}$ models dielectric absorption: charge that soaks slowly into the dielectric and slowly comes back out. Each element matters in a different regime; most designs need only one or two of them.">

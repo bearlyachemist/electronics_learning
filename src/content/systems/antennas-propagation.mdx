@@ -1,0 +1,162 @@
+import Equation from '../../components/Equation.astro';
+import {DipolePatternFigure,FriisLinkPlot,BoardEmissionPlot} from '../../components/RfFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 107</span><span className="hairline"/>PART V / RADIATION &amp; SIGNAL INTEGRITY</div>
+
+<h1>Antennas, links and emissions<br/><em>Radiation is a circuit element you can calculate.</em></h1>
+
+<p className="dek">Derive the radiation resistance of a short dipole, define directivity, gain and effective area, build a Friis link budget, locate the far field, and estimate how much a board loop or a cable radiates.</p>
+
+<div className="chapter-meta"><span>50–75 min + practice</span><span>Derivations · Link budgets · EMC estimates</span></div>
+
+</div>
+
+<section id="dipole">
+
+<div className="section-heading"><span>01</span><h2>Derive the radiation resistance of a short dipole</h2></div>
+
+Chapter 101 showed that changing fields can detach from a conductor. To a circuit, the energy that leaves looks like power dissipated in a resistor. Calculating that **radiation resistance** turns an antenna into an ordinary circuit element.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / RADIATED POWER AND RADIATION RESISTANCE</span>
+
+1. **Far field of a short current element.** A uniform current $I$ (peak phasor) on a length $\ell \ll \lambda$ produces, at distance $r \gg \lambda$ and angle $\theta$ from its axis, a transverse electric field (the standard solution of Maxwell's equations for an oscillating dipole):
+<Equation tex={String.raw`|E_\theta|=\frac{\eta\,I\,\ell\,\sin\theta}{2\lambda r},\qquad\eta=\sqrt{\mu_0/\varepsilon_0}\approx120\pi\ \Omega`}/>
+   It falls as $1/r$, not $1/r^2$ or $1/r^3$ like near fields: that is what makes it radiation.
+
+2. **Power density.** For a plane wave the time-averaged Poynting vector is $S = |E|^2/(2\eta)$ (peak phasors).
+
+3. **Integrate over a sphere.** The power through an element of area $r^2\,d\Omega$ is $S\,r^2\,d\Omega$, and $r$ cancels:
+<Equation tex={String.raw`P=\frac{\eta I^2\ell^2}{8\lambda^2}\int\sin^2\theta\,d\Omega=\frac{\eta I^2\ell^2}{8\lambda^2}\cdot\frac{8\pi}{3}=\frac{\pi\eta}{3}\left(\frac{\ell}{\lambda}\right)^2I^2`}/>
+   using $\int\sin^2\theta\,d\Omega = \int_0^{2\pi}\!\int_0^\pi\sin^3\theta\,d\theta\,d\phi = 2\pi\cdot\tfrac43$.
+
+4. **Define the resistance** that would dissipate the same power, $P = \tfrac12I^2R_{rad}$:
+<Equation tex={String.raw`R_{rad}=\frac{2\pi\eta}{3}\left(\frac{\ell}{\lambda}\right)^2=80\pi^2\left(\frac{\ell}{\lambda}\right)^2\ \Omega`}/>
+
+</div>
+
+The square of electrical length is decisive. A 1 m wire at 1 MHz ($\lambda$ = 300 m) has $R_{rad} = 790 \times (1/300)^2$ ≈ **8.8 mΩ**. If the wire and matching network have even 1 Ω of loss, 99% of the power heats them: efficiency is $R_{rad}/(R_{rad} + R_{loss})$. The same wire at 30 MHz has $R_{rad}$ ≈ 7.9 Ω and radiates readily. Antennas are efficient only when they are a significant fraction of a wavelength, which is also why an accidental antenna on a board becomes a problem only at high frequency.
+
+</section>
+
+<section id="practical">
+
+<div className="section-heading"><span>02</span><h2>Use half-wave dipoles and monopoles</h2></div>
+
+A real dipole is not short, and its current is not uniform: it falls to zero at the open ends. For a centre-fed half-wave dipole the current is approximately $I\cos(2\pi z/\lambda)$, and repeating the integration of section 01 with that distribution (which needs a numerical integral of the cosine-integral function) gives $R_{rad}$ ≈ **73 Ω** with a small inductive reactance that vanishes when the dipole is trimmed a few percent shorter than $\lambda/2$. That resistance is close to common coax impedances, which is one reason the half-wave dipole is the reference antenna.
+
+**The monopole and image theory.** A quarter-wave vertical conductor over a large conducting plane behaves, above the plane, exactly like a half-wave dipole: the plane's currents produce the same field as a mirror-image conductor below it (the image argument of Chapter 101, section 04). But all of the power now goes into the upper half-space, so the same field is produced with half the power: $R_{rad}$ ≈ 36.5 Ω. A monopole needs its ground plane; a short whip on a small board uses the board itself, and the board's currents become part of the antenna.
+
+<DipolePatternFigure/>
+
+At 2.44 GHz, $\lambda$ = 123 mm in air. A quarter-wave monopole is about 31 mm before end-effect shortening. On a PCB the effective permittivity shortens printed antennas further, and nearby components, plastic and a hand all detune them; matching networks (Chapter 104) on the feed recover the match after the product is assembled.
+
+</section>
+
+<section id="gain">
+
+<div className="section-heading"><span>03</span><h2>Define directivity, gain and effective area</h2></div>
+
+**Directivity** compares the peak radiation intensity $U$ (power per steradian) with the average over all directions: $D = 4\pi U_{max}/P$. For the short dipole, $U \propto \sin^2\theta$ peaks at 1 and averages to $(8\pi/3)/4\pi = 2/3$, so $D = 1.5$ (1.76 dBi). The half-wave dipole's narrower pattern gives 1.64 (2.15 dBi). **Gain** includes losses: $G = e_{rad}D$ with radiation efficiency $e_{rad} = R_{rad}/(R_{rad} + R_{loss})$.
+
+A receiving antenna is characterized by its **effective area**: the power delivered to a matched load divided by the incident power density.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / EFFECTIVE AREA OF A SHORT DIPOLE, AND THE GENERAL RESULT</span>
+
+1. **Open-circuit voltage.** A field $E$ parallel to a short dipole induces $V_{oc} = E\ell$ across its terminals.
+
+2. **Thévenin model.** The antenna is a source $V_{oc}$ behind its radiation resistance. A conjugate-matched load (Chapter 104) receives the available power $V_{oc}^2/(8R_{rad})$ (peak phasors, so the factor is 8 rather than 4).
+
+3. **Divide by the incident power density** $S = E^2/(2\eta)$ and substitute $R_{rad}$ from section 01:
+<Equation tex={String.raw`A_e=\frac{E^2\ell^2/8R_{rad}}{E^2/2\eta}=\frac{\eta\ell^2}{4R_{rad}}=\frac{3\lambda^2}{8\pi}`}/>
+   The length cancels: a short dipole collects as much power as a longer one, provided it can be matched.
+
+4. **General result.** $3/(8\pi) = 1.5/(4\pi)$ and 1.5 is this antenna's directivity, so $A_e = \lambda^2D/4\pi$. Reciprocity (an antenna's transmit and receive patterns are identical) extends this to every antenna, with gain in place of directivity once losses are included:
+<Equation tex={String.raw`A_e=\frac{\lambda^2}{4\pi}\,G`}/>
+
+</div>
+
+</section>
+
+<section id="friis">
+
+<div className="section-heading"><span>04</span><h2>Derive the Friis link equation</h2></div>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / FREE-SPACE PATH LOSS</span>
+
+1. **Spread the transmitted power.** An isotropic transmitter's power $P_t$ spreads over a sphere of area $4\pi d^2$. A transmitting gain $G_t$ concentrates it in the receiver's direction: $S = P_tG_t/(4\pi d^2)$.
+
+2. **Collect it.** The receiving antenna delivers $P_r = SA_e$ with $A_e = \lambda^2G_r/4\pi$:
+<Equation tex={String.raw`P_r=P_tG_tG_r\left(\frac{\lambda}{4\pi d}\right)^2`}/>
+
+3. **In decibels.** The factor $(4\pi d/\lambda)^2$ is the free-space path loss. Power falls 20 dB per decade of distance, and the loss at a given distance grows 20 dB per decade of frequency only because the effective area of a fixed-gain antenna shrinks as $\lambda^2$.
+<Equation tex={String.raw`P_r[\mathrm{dBm}]=P_t+G_t+G_r-20\log_{10}\frac{4\pi d}{\lambda}`}/>
+
+</div>
+
+<FriisLinkPlot/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A 2.4 GHz LINK BUDGET</span><h3>0 dBm transmitter, two 2 dBi antennas, 1 MHz channel</h3>
+
+<p><strong>Receiver floor.</strong> Chapter 106's thermal floor is −174 dBm/Hz; over 1 MHz it is −114 dBm. A 6 dB noise figure raises it to −108 dBm, and a demodulator needing 13 dB SNR sets the sensitivity at <strong>−95 dBm</strong>.</p>
+
+<p><strong>Path.</strong> At 2.44 GHz, $\lambda$ = 0.123 m, and the loss at 1 m is $20\log_{10}(4\pi/0.123)$ = 40.2 dB. The budget allows $0 + 2 + 2 - (-95) = 99$ dB of path loss, which is 58.8 dB beyond the 1 m value, a factor of $10^{58.8/20}$ ≈ 870 in distance. Free-space range is about <strong>870 m</strong>.</p>
+
+<p><strong>Margin.</strong> Walls, bodies and multipath fading can cost 20 dB or more indoors. Reserving 20 dB divides the range by ten, to about 87 m. Each 6 dB of extra margin halves free-space range again.</p>
+
+</div>
+
+</section>
+
+<section id="regions">
+
+<div className="section-heading"><span>05</span><h2>Locate the far field before measuring</h2></div>
+
+Near a small antenna, within about $\lambda/2\pi$, the stored reactive fields dominate and fall faster than $1/r$; the ratio $E/H$ depends on whether the source is mainly electric (high impedance) or magnetic (low impedance). Gain and path-loss formulas apply only in the far field.
+
+For an antenna with a largest dimension $D$ that is not small, a second condition applies: rays from its edges and centre must arrive nearly in phase. The extra path from an edge to a point at distance $r$ on axis is $\sqrt{r^2 + (D/2)^2} - r \approx D^2/(8r)$. Requiring this to be under $\lambda/16$ (a 22.5° phase error) gives
+
+<Equation tex={String.raw`r\ge\frac{2D^2}{\lambda}`}/>
+
+A 0.3 m dish at 10 GHz ($\lambda$ = 3 cm) needs 6 m before its pattern is meaningful. EMC measurements at 3 m on a 1 m product at 1 GHz are inside this boundary, which is why emission test standards specify distance and antenna arrangement exactly rather than leaving them to the formula.
+
+</section>
+
+<section id="emissions">
+
+<div className="section-heading"><span>06</span><h2>Estimate what a board or cable radiates</h2></div>
+
+Two small-antenna results cover most accidental radiators. A **current loop** of area $A$ much smaller than $\lambda$ is a magnetic dipole; repeating section 01 for it gives a far field $E = \eta\pi I A/(\lambda^2r)$ at its peak. Substituting $\eta = 120\pi$ and $\lambda = c/f$:
+
+<Equation tex={String.raw`E_{loop}\approx1.32\times10^{-14}\,\frac{f^2AI}{r}\quad(\text{V/m, SI units})`}/>
+
+A **short conductor** carrying common-mode current is an electric dipole, field $\eta I\ell/(2\lambda r)$ from section 01. Doubling it for reflection from a ground plane, as in a typical test setup:
+
+<Equation tex={String.raw`E_{cm}\approx1.26\times10^{-6}\,\frac{f\ell I}{r}`}/>
+
+<BoardEmissionPlot/>
+
+The comparison explains standard EMC practice. A 1 cm² loop carrying 20 mA at 100 MHz produces about 39 dBµV/m at 3 m, just inside a typical 40 dBµV/m limit. A 1 m cable carrying only 20 µA of common-mode current, a thousandth as much, produces about 58 dBµV/m: 18 dB over the limit. The loop's $f^2$ dependence lets it catch up only near 1 GHz. Small loops (Chapter 101) keep differential emissions low, but the cable's common-mode current is usually what fails the test. Ferrite chokes, filtering at the connector, and a low-impedance bond between the cable shield and chassis all aim at that current.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, reproduce the short-dipole radiation resistance from the sphere integral, derive the effective area from the Thévenin model, and recompute the link budget for a different frequency. Then decide whether a given product's loop or cable dominates its emissions.
+
+[Work through three independent problems](/antennas-propagation/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §13.13 and Appendix H; standard antenna and EMC derivations. Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

@@ -4,13 +4,13 @@ import {DiodeLoadCircuit,DiodeSmallSignalFigure,DiodeTransferFigure,DiodeHeadroo
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 58</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 53</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>Diode-connected MOSFET loads<br/><em>A transistor can act as an incremental resistor.</em></h1>
 
 <p className="dek">Derive the resistance of a gate–drain-connected device, use it as the load of a common-source stage, and see why its gain is fixed by device geometry, bounded by headroom, and remarkably linear.</p>
 
-<div className="chapter-meta"><span>50–70 min</span><span>Bias atlas (Ch. 57) · Small-signal resistance (Ch. 3)</span></div>
+<div className="chapter-meta"><span>50–70 min</span><span>Bias atlas (Ch. 52) · Small-signal resistance (Ch. 3)</span></div>
 
 </div>
 
@@ -70,7 +70,7 @@ The controlled current source sits across its own control voltage, so it is indi
 
 </div>
 
-That factor of 100 is the whole story of this chapter and the next few. A diode connection is a convenient low resistance; a current source with a fixed gate is a high one. Chapter 59 uses both together in a current mirror.
+That factor of 100 is the whole story of this chapter and the next few. A diode connection is a convenient low resistance; a current source with a fixed gate is a high one. Chapter 54 uses both together in a current mirror.
 
 ### The opening question
 
@@ -104,7 +104,7 @@ This is a **straight line**. The two square laws cancel, so over its whole range
 
 The line runs from cutoff ($V_{in} < V_T$, where the output rests at $V_{DD} - V_T$ with only leakage flowing) to the point where $V_{out}$ falls to $V_{in} - V_T$ and $M_1$ enters triode. The gain depends only on $k_1/k_2 = (W_1/L_1)/(W_2/L_2)$, a ratio of drawn dimensions. It does not depend on the current, the supply, temperature, or the process's absolute mobility. That is why the diode-connected load was a mainstay of early NMOS logic and is still used for wide-band, low-gain stages.
 
-With finite output conductances and an AC-coupled load $R_L$, KCL at the output gives
+With finite output conductances and an AC-coupled load $R_L$, write KCL at the output node. $M_1$ pulls $g_{m1}v_{in} + g_{ds1}v_{out}$ out of the node to ground. The diode $M_2$, with its gate and drain at AC ground (the supply) and its source at the output, has $v_{gs2} = -v_{out}$ and $v_{ds2} = -v_{out}$, so it supplies $-(g_{m2} + g_{ds2})v_{out}$ into the node. The load draws $v_{out}/R_L$. Setting the sum to zero, $g_{m1}v_{in} + v_{out}(g_{m2} + g_{ds2} + g_{ds1} + 1/R_L) = 0$, which gives
 
 <Equation tex={String.raw`A_v=-\frac{g_{m1}}{g_{m2}+g_{ds2}+g_{ds1}+1/R_L}`}/>
 
@@ -229,7 +229,7 @@ The load's source is the output. When it rises the body effect raises $M_2$'s th
 <summary>6. When would you choose a diode load over a current-source load?</summary>
 <div>
 
-When you want a low, well-defined gain with high bandwidth and low distortion, a predictable DC level (for example, a level shifter or a bias generator), or a stage whose gain is set by geometry and independent of process and temperature. When you need high voltage gain, use a current-source load (Chapter 65): its fixed gate makes its incremental resistance $r_o$ rather than $1/g_m$.
+When you want a low, well-defined gain with high bandwidth and low distortion, a predictable DC level (for example, a level shifter or a bias generator), or a stage whose gain is set by geometry and independent of process and temperature. When you need high voltage gain, use a current-source load (Chapter 60): its fixed gate makes its incremental resistance $r_o$ rather than $1/g_m$.
 
 </div>
 </details>

@@ -5,13 +5,13 @@ import {OtaCurrentFigure,OtaTransferFigure} from '../../components/MosStudyFigur
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 72</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 67</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>Mirror-loaded differential stages<br/><em>Fold both halves into one output.</em></h1>
 
 <p className="dek">Load a differential pair with a current mirror, the five-transistor stage at the heart of CMOS op amps. Follow the signal currents into a single output, derive its gain, offset, common-mode rejection and output range, and treat the mirror as the signal path it is.</p>
 
-<div className="chapter-meta"><span>50–70 min</span><span>Differential pair (Chs. 70–71) · Active loads (Ch. 65)</span></div>
+<div className="chapter-meta"><span>50–70 min</span><span>Differential pair (Chs. 70–71) · Active loads (Ch. 60)</span></div>
 
 </div>
 
@@ -43,7 +43,7 @@ Replace the two drain resistors with a PMOS current mirror and both problems van
 
 The left PMOS is diode connected and carries $M_1$'s drain current; the right PMOS copies it. The right drain is the output, a node where a PMOS current source and an NMOS current source meet.
 
-Assume a matched 1 : 1 mirror, an ideal tail, all devices saturated, and enough supply for the diode-connected device. The left node is low impedance (a diode connection, about $1/g_{mP}$). The output is high impedance, and, as with every active load (Chapter 65), its DC voltage depends on tiny current imbalances: in an amplifier, overall feedback sets it.
+Assume a matched 1 : 1 mirror, an ideal tail, all devices saturated, and enough supply for the diode-connected device. The left node is low impedance (a diode connection, about $1/g_{mP}$). The output is high impedance, and, as with every active load (Chapter 60), its DC voltage depends on tiny current imbalances: in an amplifier, overall feedback sets it.
 
 </section>
 
@@ -73,7 +73,7 @@ The output range is set by the two output devices. $M_2$ needs $V_O \ge V_S + u_
 
 The transfer curve crosses zero input at exactly $V_{out} = V_L$, the diode-connected node's voltage. That is not a coincidence. At balance both NMOS currents are equal, and the right PMOS copies the left PMOS's current exactly only when their drain voltages are equal, which is when the output sits at $V_L$. Any other output voltage needs a small differential input to make up the PMOS mirror's channel-length-modulation error.
 
-This makes a design rule. If the stage that follows has an input voltage equal to $V_L$ (for example, a common-source PMOS second stage whose gate–source voltage equals the mirror's), the first stage has **zero systematic offset**. Chapter 75 uses exactly this choice.
+This makes a design rule. If the stage that follows has an input voltage equal to $V_L$ (for example, a common-source PMOS second stage whose gate–source voltage equals the mirror's), the first stage has **zero systematic offset**. Chapter 70 uses exactly this choice.
 
 <div className="worked-example">
 
@@ -105,11 +105,32 @@ At tail currents of 0.5, 1 and 2 mA with the same devices, $g_{m0}$ is 1.00, 1.4
 
 ### Common-mode rejection from one output
 
-A common-mode input changes both NMOS currents equally, by about $v_c/2r_T$ each. The mirror copies the left change to the right, where it cancels the right change. To first order, the output does not move: the mirror performs the subtraction that a differential output would. The residual comes from the mirror's imperfection, and works out to
+A common-mode input changes both NMOS currents equally, by about $v_c/2r_T$ each. The mirror copies the left change to the right, where it cancels the right change. To first order, the output does not move: the mirror performs the subtraction that a differential output would. Derive the residual.
 
-<Equation tex={String.raw`\mathrm{CMRR}\approx 2\,g_{mP}\,r_T\cdot g_{m0}\,(r_{oN}\parallel r_{oP})`}/>
+<div className="derivation">
 
-With $g_{mP}$ = 2 mS, $r_T$ = 50 kΩ and the gain of 50, that is 200 × 50 = 10 000, or **80 dB** from a single-ended output. A resistor-loaded pair's single drain gave only 40 dB with the same tail (Chapter 71). Mismatch reduces this in practice, but the improvement is real.
+<span className="tiny-label">DERIVATION / COMMON-MODE GAIN OF THE MIRROR-LOADED PAIR</span>
+
+1. **Nodes.** Call the diode-connected node $X$ and the output $Y$. Let $i_1$ and $i_2$ be the small-signal currents flowing down through $M_1$ and $M_2$. Each NMOS has output resistance $r_{oN}$ between its drain and the shared tail node $P$.
+
+2. **Tail.** With both gates at $v_c$ and $g_{m0}r_T \gg 1$, the tail node follows the input, $v_p \approx v_c$, and the two currents are nearly equal: $i_1 \approx i_2 \approx v_c/2r_T$.
+
+3. **KCL at $X$.** The diode carries $i_1$, so $X$ moves by $v_x = -i_1/g_{mP}$.
+
+4. **KCL at $Y$.** $M_4$ copies the diode current, $-g_{mP}v_x = i_1$, and also conducts $-v_y/r_{oP}$ through its own output resistance. That total must equal $i_2$: $i_2 - i_1 = -v_y/r_{oP}$.
+
+5. **The two NMOS branches.** They share $v_{gs}$, so their currents differ only through their $r_{oN}$, whose drain ends sit at $v_x$ and $v_y$: $i_2 - i_1 = (v_y - v_x)/r_{oN}$.
+
+6. **Combine steps 4 and 5** to eliminate $i_2 - i_1$:
+<Equation tex={String.raw`v_y=v_x\,\frac{r_{oP}}{r_{oN}+r_{oP}}=-\frac{v_c}{2g_{mP}r_T}\cdot\frac{r_{oP}}{r_{oN}+r_{oP}}`}/>
+   The diode node's small swing leaks to the output through the divider formed by the two output resistances.
+
+7. **Ratio to the differential gain** $A_d = g_{m0}(r_{oN}\parallel r_{oP})$. The factors $r_{oP}$ and $r_{oN}+r_{oP}$ cancel:
+<Equation tex={String.raw`\mathrm{CMRR}=\left|\frac{A_d}{A_{cm}}\right|\approx 2\,g_{mP}\,r_T\cdot g_{m0}\,r_{oN}`}/>
+
+</div>
+
+With $g_{mP}$ = 2 mS, $r_T$ = 50 kΩ, $g_{m0}$ = 2 mS and $r_{oN}$ = 50 kΩ, that is 200 × 100 = 20 000, or about **86 dB** from a single-ended output. A nodal solution of the same small-signal circuit gives 20 400. A resistor-loaded pair's single drain gave only 40 dB with the same tail (Chapter 66). Mismatch reduces this in practice, but the improvement is real.
 
 </section>
 
@@ -117,11 +138,11 @@ With $g_{mP}$ = 2 mS, $r_T$ = 50 kΩ and the gain of 50, that is 200 × 50 = 10 
 
 <div className="section-heading"><span>05</span><h2>Treat the mirror as a signal path</h2></div>
 
-Half the output current arrives directly from $M_2$; the other half arrives through the mirror, which has a pole at the diode-connected node, $p_m = g_{mP}/C_m$, where $C_m$ is the gate capacitance of both PMOS devices plus the drain capacitances. The output current is therefore
+Half the output current arrives directly from $M_2$; the other half arrives through the mirror, which has a pole at the diode-connected node, $p_m = g_{mP}/C_m$, where $C_m$ is the gate capacitance of both PMOS devices plus the drain capacitances. The direct half is $g_{m0}v_d/2$. The mirrored half enters the diode node, where KCL gives $v_m = (g_{m0}v_d/2)/(g_{mP} + sC_m)$, and the output device copies $g_{mP}v_m = (g_{m0}v_d/2)/(1 + s/p_m)$. Adding the two halves, $\tfrac12g_{m0}v_d[1 + 1/(1+s/p_m)] = \tfrac12g_{m0}v_d(2 + s/p_m)/(1 + s/p_m)$. The output current is therefore
 
 <Equation tex={String.raw`i_{out}=g_{m0}v_d\cdot\frac{1+s/2p_m}{1+s/p_m}`}/>
 
-a pole at $p_m$ and a zero at $2p_m$, a "doublet". At $p_m$ the gain falls by at most 6 dB and the phase lags by up to 19°. With $g_{mP}$ = 2 mS and 2 pF, $p_m$ is 160 MHz, harmless; in a micropower design with $g_{mP}$ = 20 µS and 0.5 pF it is 6 MHz, and must be included in the op amp's stability calculation (Chapter 79). The same delay makes the common-mode cancellation imperfect at high frequency.
+a pole at $p_m$ and a zero at $2p_m$, a "doublet". At $p_m$ the gain falls by at most 6 dB and the phase lags by up to 19°. With $g_{mP}$ = 2 mS and 2 pF, $p_m$ is 160 MHz, harmless; in a micropower design with $g_{mP}$ = 20 µS and 0.5 pF it is 6 MHz, and must be included in the op amp's stability calculation (Chapter 74). The same delay makes the common-mode cancellation imperfect at high frequency.
 
 **Headroom.** The diode-connected PMOS costs a full $V_{TP} + u_P$ of headroom in the left branch, which is one reason low-voltage op amps use folded-cascode input stages instead.
 
@@ -171,7 +192,7 @@ At $V_{out} = V_L$, the diode-connected node's voltage. Only there do the two PM
 <summary>3. Why does a mirror-loaded pair have good single-ended CMRR?</summary>
 <div>
 
-A common-mode input changes both branch currents equally. The mirror copies the left change and delivers it to the output, where it cancels the right branch's identical change. The subtraction that a differential output would do happens inside the stage. Only the mirror's imperfection, about $1/(2g_{mP}r_T)$, gets through.
+A common-mode input changes both branch currents equally. The mirror copies the left change and delivers it to the output, where it cancels the right branch's identical change. The subtraction that a differential output would do happens inside the stage. Only the mirror's imperfection gets through: the diode node moves by $v_c/(2g_{mP}r_T)$, and the output resistances pass a fraction of that to the output, about $1/(4g_{mP}r_T)$ of the input when $r_{oN} = r_{oP}$.
 
 </div>
 </details>

@@ -4,13 +4,13 @@ import {SummingDacCircuit,DacStaircaseFigure,LevelShiftCircuit,MixerBandwidthFig
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 84</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 79</span><span className="hairline"/>PART III / OP-AMP CIRCUITS</div>
 
 <h1>Inverting and summing amplifiers<br/><em>Currents meet at a virtual ground.</em></h1>
 
 <p className="dek">Derive weighted sums from KCL at the summing node, separate each input's signal gain from the circuit's noise gain, and use the virtual ground for three practical circuits: a summing DAC, a single-supply level shifter and a multi-channel mixer.</p>
 
-<div className="chapter-meta"><span>45–65 min</span><span>Ideal op amps (Ch. 77) · DC errors (Ch. 78) · Noninverting amplifiers (Ch. 83)</span></div>
+<div className="chapter-meta"><span>45–65 min</span><span>Ideal op amps (Ch. 72) · DC errors (Ch. 73) · Noninverting amplifiers (Ch. 78)</span></div>
 
 </div>
 
@@ -114,7 +114,7 @@ The virtual ground also explains a mixer's low crosstalk. Because the summing no
 
 <div className="section-heading"><span>05</span><h2>Shift and scale for a single supply</h2></div>
 
-Put a reference voltage $V_R$ on the plus input. It appears at the output multiplied by the noise gain, while the signal is multiplied by its signal gain:
+Put a reference voltage $V_R$ on the plus input. The minus input now sits at $V_R$, so KCL there reads $\sum_i(V_i - V_R)/R_i = (V_R - V_O)/R_F$. Solving for $V_O$ gives $V_O = V_R(1 + R_F\sum_i 1/R_i) - R_F\sum_iV_i/R_i$, and the bracket is the noise gain. The reference appears at the output multiplied by the noise gain, while the signal is multiplied by its signal gain:
 
 <Equation tex={String.raw`V_O=NG\cdot V_R-R_F\sum_i\frac{V_i}{R_i}`}/>
 
@@ -146,7 +146,7 @@ Put a reference voltage $V_R$ on the plus input. It appears at the output multip
 
 **Output range.** Check the sum at the worst simultaneous combination of inputs. Two inputs that are each safely within range can add to more than the output can swing, and the output current through $R_F$ and the load must stay within the op amp's limits.
 
-**Input impedance.** The inverting configuration's input impedance is $R_i$, which loads high-impedance sources. If that matters, buffer the source first, or use a noninverting configuration (Chapter 83).
+**Input impedance.** The inverting configuration's input impedance is $R_i$, which loads high-impedance sources. If that matters, buffer the source first, or use a noninverting configuration (Chapter 78).
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>The virtual ground makes each input's current independent, so the output is a weighted sum $-R_F\sum V_i/R_i$. But the op amp sees <em>all input resistors in parallel</em>: the noise gain $1 + R_F\sum 1/R_i$ sets bandwidth, offset and noise.</p></div>
 

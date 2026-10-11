@@ -7,13 +7,13 @@ import {FilterFamiliesFigure,FilterStepFigure,UnitySkCircuit,QSensitivityFigure}
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 90</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 85</span><span className="hairline"/>PART III / OP-AMP CIRCUITS</div>
 
 <h1>Active filters and Sallen–Key design<br/><em>Poles you can place.</em></h1>
 
 <p className="dek">Derive the Sallen–Key low-pass from its node equations, identify its natural frequency and Q, choose a filter family from the specification, realize a fourth-order filter as two sections, and budget the sensitivity of high-Q sections to their components and to the op amp.</p>
 
-<div className="chapter-meta"><span>60–80 min + exploration</span><span>RC filters (Ch. 22) · Poles (Ch. 23) · Resonance (Ch. 24) · Noninverting amplifiers (Ch. 83)</span></div>
+<div className="chapter-meta"><span>60–80 min + exploration</span><span>RC filters (Ch. 15) · Poles (Ch. 16) · Resonance (Ch. 17) · Noninverting amplifiers (Ch. 78)</span></div>
 
 </div>
 
@@ -23,7 +23,7 @@ import {FilterFamiliesFigure,FilterStepFigure,UnitySkCircuit,QSensitivityFigure}
 
 <div>
 
-Chapter 23 found that cascading RC sections never gives a sharp cutoff: real poles on the negative axis all have $Q \le 0.5$, and their corners blur together. A sharp filter needs complex poles, which passive circuits get from inductors. At audio frequencies inductors are large, lossy and pick up hum.
+Chapter 16 found that cascading RC sections never gives a sharp cutoff: real poles on the negative axis all have $Q \le 0.5$, and their corners blur together. A sharp filter needs complex poles, which passive circuits get from inductors. At audio frequencies inductors are large, lossy and pick up hum.
 
 An op amp can supply the missing ingredient. Feed part of its output back through a capacitor to the middle of an RC chain, and the poles move off the real axis to wherever the designer puts them. The Sallen–Key circuit does this with one op amp, two resistors and two capacitors. Cascade such sections and any classical filter (Butterworth, Bessel, Chebyshev) can be built from a table of section values.
 
@@ -67,9 +67,11 @@ Finally multiply $V_Y/V_I$ by $K$. The constant term is dimensionless, the coeff
 
 <Equation tex={String.raw`H(s)=\frac{K}{1+bs+as^2},\qquad a=R_1R_2C_1C_2,\qquad b=C_2(R_1+R_2)+C_1R_1(1-K)`} label="SALLEN–KEY LOW-PASS"/>
 
+Compare with the standard form $1 + s/(\omega_0Q) + s^2/\omega_0^2$: matching the $s^2$ coefficients gives $1/\omega_0^2 = a$, and matching the $s$ coefficients gives $1/(\omega_0Q) = b$, so $Q = 1/(\omega_0b) = \sqrt a/b$:
+
 <Equation tex={String.raw`f_0=\frac{1}{2\pi\sqrt a},\qquad Q=\frac{\sqrt a}{b}`}/>
 
-Now the opening question. The damping coefficient $b$ contains $C_1R_1(1 - K)$: the larger the gain, the more $C_1$'s feedback cancels the RC chain's natural damping. With equal resistors and capacitors,
+Now the opening question. The damping coefficient $b$ contains $C_1R_1(1 - K)$: the larger the gain, the more $C_1$'s feedback cancels the RC chain's natural damping. With equal resistors and capacitors, $a = R^2C^2$ and $b = 2RC + RC(1-K) = (3-K)RC$, so
 
 <Equation tex={String.raw`f_0=\frac{1}{2\pi RC},\qquad Q=\frac{1}{3-K}`}/>
 
@@ -153,7 +155,7 @@ A filter of order $n$ has $n$ poles; each Sallen–Key section supplies two. Whe
 
 <div className="section-heading"><span>05</span><h2>Design a unity-gain section and a cascade</h2></div>
 
-The equal-component design sets $Q$ with the gain, which makes $Q$ sensitive to resistor ratios. The **unity-gain** design uses a follower ($K$ = 1, exact) and sets $Q$ with the capacitor ratio instead. With $R_1 = R_2 = R$:
+The equal-component design sets $Q$ with the gain, which makes $Q$ sensitive to resistor ratios. The **unity-gain** design uses a follower ($K$ = 1, exact) and sets $Q$ with the capacitor ratio instead. With $R_1 = R_2 = R$ and $K = 1$, the general coefficients become $a = R^2C_1C_2$ and $b = 2RC_2$ (the $C_1$ term vanishes). Then $Q = \sqrt a/b = RC_1^{1/2}C_2^{1/2}/(2RC_2) = \tfrac12\sqrt{C_1/C_2}$:
 
 <Equation tex={String.raw`f_0=\frac{1}{2\pi R\sqrt{C_1C_2}},\qquad Q=\frac12\sqrt{\frac{C_1}{C_2}}\qquad\Rightarrow\qquad\frac{C_1}{C_2}=4Q^2`}/>
 
@@ -181,7 +183,7 @@ A state-variable realization combines a summer with two integrators. In one expl
 
 <Equation tex={String.raw`\dot b=\omega_0 h,\qquad\dot l=\omega_0 b,\qquad h=u-\frac bQ-l`}/>
 
-The integrators can be built from the inverting integrators in Chapter 88 with the required sign inversions in the summing paths. Eliminating the internal states gives a common denominator $D(s)=s^2+(\omega_0/Q)s+\omega_0^2$ and three transfers:
+The integrators can be built from the inverting integrators in Chapter 83 with the required sign inversions in the summing paths. Eliminating the internal states gives a common denominator $D(s)=s^2+(\omega_0/Q)s+\omega_0^2$ and three transfers:
 
 <Equation tex={String.raw`\begin{aligned}H_{HP}&=\frac{s^2}{D}\\H_{BP}&=\frac{\omega_0s}{D}\\H_{LP}&=\frac{\omega_0^2}{D}\\H_{notch}&=H_{HP}+H_{LP}\end{aligned}`}/>
 

@@ -4,7 +4,7 @@ import {CrossoverFigure,CrossoverGainFigure,ClassAbBiasCircuit,OutputPowerFigure
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 74</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 69</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>Complementary MOS output followers<br/><em>One device pushes, the other pulls.</em></h1>
 
@@ -20,7 +20,7 @@ import {CrossoverFigure,CrossoverGainFigure,ClassAbBiasCircuit,OutputPowerFigure
 
 <div>
 
-A single source follower can push current but not pull it (Chapter 66), and adding a current sink lets it pull only as much as the sink's standing current (Chapter 67). To drive a real load in both directions, without burning a large idle current, use two followers of opposite polarity: an NMOS that sources current from the positive rail and a PMOS that sinks it to the negative rail.
+A single source follower can push current but not pull it (Chapter 61), and adding a current sink lets it pull only as much as the sink's standing current (Chapter 62). To drive a real load in both directions, without burning a large idle current, use two followers of opposite polarity: an NMOS that sources current from the positive rail and a PMOS that sinks it to the negative rail.
 
 That is the MOS version of Chapter 37's push–pull stage. Its problem is the handover. Near zero output, each device needs its threshold voltage before it conducts at all, and if nothing provides it, the output sits still while the input wanders through a dead zone. The cure, class-AB bias, has its own subtleties for MOSFETs, whose thresholds are both large and uncertain.
 
@@ -70,7 +70,7 @@ Give each device a little overdrive at zero output: class AB. With both devices 
 
 <Equation tex={String.raw`V_B=V_{TN}+|V_{TP}|+u_N+u_P,\qquad I_Q=\tfrac12k_Nu_N^2=\tfrac12k_Pu_P^2`} label="CLASS-AB GATE SPREAD"/>
 
-For matched devices $V_B = 2(V_T + u)$. Around zero both devices conduct, their source conductances add, and the output resistance is
+For matched devices $V_B = 2(V_T + u)$. Around zero both devices conduct. With both gates held still, a test voltage $v_x$ at the output makes the NMOS conduct $g_{mN}v_x$ less (its $v_{gs}$ falls) and the PMOS conduct $g_{mP}v_x$ more toward the opposite rail, so the test source must supply $(g_{mN} + g_{mP})v_x$. Their source conductances add, and the output resistance is
 
 <Equation tex={String.raw`R_{out}\approx\frac{1}{g_{mN}+g_{mP}}=\frac{1}{2\sqrt{2kI_Q}}`}/>
 
@@ -90,7 +90,7 @@ The cure is to make the spread out of transistors like the output devices. A bia
 
 <Equation tex={String.raw`V_{GS3}+V_{SG4}=V_{GSN}+V_{SGP}`}/>
 
-If $M_N$ and $M_P$ are $n$ times as wide as $M_3$ and $M_4$, and all four have the same threshold (same process, same temperature), the equation is satisfied with the output devices carrying $n$ times the bias current: $I_Q = nI_{bias}$. The thresholds cancel. When the output devices warm, the replicas must warm with them, which means thermal coupling: mounting them on the same die or heat sink.
+If $M_N$ and $M_P$ are $n$ times as wide as $M_3$ and $M_4$, and all four have the same threshold (same process, same temperature), substitute $V_{GS} = V_T + \sqrt{2I/k}$ for each device. The thresholds appear once on each side and cancel, leaving $\sqrt{2I_{bias}/k_N} + \sqrt{2I_{bias}/k_P} = \sqrt{2I_Q/nk_N} + \sqrt{2I_Q/nk_P}$. Both sides share the factor $1/\sqrt{k_N} + 1/\sqrt{k_P}$, so $I_{bias} = I_Q/n$: the equation is satisfied with the output devices carrying $n$ times the bias current, $I_Q = nI_{bias}$. The thresholds cancel. When the output devices warm, the replicas must warm with them, which means thermal coupling: mounting them on the same die or heat sink.
 
 <div className="worked-example">
 
@@ -118,7 +118,7 @@ If $M_N$ and $M_P$ are $n$ times as wide as $M_3$ and $M_4$, and all four have t
 
 </div>
 
-The output sits at least $V_T + u$ below the NMOS gate and above the PMOS gate. With the gate drive limited to the same rails, a complementary follower can never swing closer than about $V_T + u$ to either rail. Rail-to-rail outputs use common-source output devices instead (drains at the output), at the cost of a high output impedance that needs feedback (Chapter 81).
+The output sits at least $V_T + u$ below the NMOS gate and above the PMOS gate. With the gate drive limited to the same rails, a complementary follower can never swing closer than about $V_T + u$ to either rail. Rail-to-rail outputs use common-source output devices instead (drains at the output), at the cost of a high output impedance that needs feedback (Chapter 76).
 
 </section>
 
@@ -128,7 +128,7 @@ The output sits at least $V_T + u$ below the NMOS gate and above the PMOS gate. 
 
 <OutputPowerFigure/>
 
-For a sine output of peak $V_{pk}$ into $R_L$, each rail delivers half-wave current pulses. The average supply power and the load power are
+For a sine output of peak $V_{pk}$ into $R_L$, each rail delivers half-wave current pulses whose average is $V_{pk}/(\pi R_L)$ (the class B integral of Chapter 37), plus the idle current flowing rail to rail. The average supply power and the load power are
 
 <Equation tex={String.raw`P_{supply}=\frac{2V_SV_{pk}}{\pi R_L}+2V_SI_Q,\qquad P_{load}=\frac{V_{pk}^2}{2R_L}`}/>
 

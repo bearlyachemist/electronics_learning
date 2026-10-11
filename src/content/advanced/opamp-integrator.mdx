@@ -4,13 +4,13 @@ import {IntegratorWindowFigure,IntegratorDriftFigure,TriangleOscCircuit,Triangle
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 88</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 83</span><span className="hairline"/>PART III / OP-AMP CIRCUITS</div>
 
 <h1>Practical op-amp integrators<br/><em>Accumulate the signal, not the errors.</em></h1>
 
 <p className="dek">Derive the integrator in time and frequency, see how a microvolt of offset walks its output to a rail, bound it with a feedback resistor, and use integration for real jobs: a triangle-wave oscillator, a charge amplifier and the integral term of a controller.</p>
 
-<div className="chapter-meta"><span>50–70 min</span><span>RC integrators (Ch. 8) · Inverting amplifiers (Ch. 84) · DC errors (Ch. 78)</span></div>
+<div className="chapter-meta"><span>50–70 min</span><span>RC integrators (Ch. 8) · Inverting amplifiers (Ch. 79) · DC errors (Ch. 73)</span></div>
 
 </div>
 
@@ -52,7 +52,7 @@ The output is the accumulated history of the input, plus its initial value. The 
 
 <div className="section-heading"><span>02</span><h2>Derive both frequency and time behavior</h2></div>
 
-With $R_F$ in place, the feedback impedance is $R_F \parallel C_F$:
+With $R_F$ in place, the feedback impedance is $R_F \parallel C_F$. The inverting-amplifier result $-Z_F/R_{IN}$ with $Z_F = R_F/(1 + sR_FC_F)$ gives $H(s)$. For the time domain, write KCL at the virtual-ground minus node directly: the input current $V_I/R_{IN}$ divides between $R_F$, which carries $-V_O/R_F$, and $C_F$, which carries $-C_F\,dV_O/dt$. Dividing $V_I/R_{IN} = -V_O/R_F - C_F\,dV_O/dt$ by $C_F$:
 
 <Equation tex={String.raw`H(s)=-\frac{R_F/R_{IN}}{1+sR_FC_F},\qquad \frac{dV_O}{dt}+\frac{V_O}{R_FC_F}=-\frac{V_I}{R_{IN}C_F}`} label="LEAKY INTEGRATOR"/>
 
@@ -124,7 +124,7 @@ Remove $R_{IN}$ and connect a charge source, such as a piezoelectric sensor or a
 
 This is a **charge amplifier**. Because the summing node does not move, the sensor's own capacitance and its cable's capacitance do not affect the gain, only the noise. A piezoelectric accelerometer delivering 100 pC into a 1 nF feedback capacitor gives −100 mV, whether its cable is 1 m or 10 m long. $R_F$, often 1 GΩ or more, bleeds the charge away with a time constant $R_FC_F$ = 1 s: the amplifier measures vibration above about 0.16 Hz, but not a static force.
 
-**In control loops** an integrator provides the I of a PI controller (Chapter 45): it drives the steady-state error to zero. When the actuator saturates, the integrator keeps accumulating error, **winds up**, and the loop overshoots badly on recovery. Anti-windup, by clamping the integrator's output or resetting it, changes the equations while engaged and must be designed deliberately.
+**In control loops** an integrator provides the I of a PI controller (Chapter 44): it drives the steady-state error to zero. When the actuator saturates, the integrator keeps accumulating error, **winds up**, and the loop overshoots badly on recovery. Anti-windup, by clamping the integrator's output or resetting it, changes the equations while engaged and must be designed deliberately.
 
 
 
@@ -178,7 +178,7 @@ For a constant effective current $I$ with a finite feedback leakage resistance $
 
 <Equation tex={String.raw`v_o(t)=-IR_L+\left[v_o(0)+IR_L\right]e^{-t/(R_LC_F)}`}/>
 
-For short times it resembles the desired ramp. The fractional accumulated-charge error is approximately $t/(2R_LC_F)$. With $R_L=100$ GΩ and $C_F=100$ nF, the time constant is 10000 s; a 100 s integration has about 0.5% leakage curvature. A 1 pC reset-switch charge on that capacitor causes a 10 µV initial step. Dielectric absorption adds slower history-dependent recovery that one leakage resistor cannot model. Chapter 91 shows why diverting switch leakage away from the summing node can matter more than choosing a still-smaller amplifier bias current.
+(This is the leaky-integrator equation with a constant input current; its steady state is $-IR_L$ and its time constant $R_LC_F$.) For short times it resembles the desired ramp. Expand the exponential to second order, $e^{-x} \approx 1 - x + x^2/2$ with $x = t/R_LC_F$: starting from zero, $v_o \approx -(It/C_F)(1 - x/2)$. The fractional accumulated-charge error is therefore approximately $t/(2R_LC_F)$. With $R_L=100$ GΩ and $C_F=100$ nF, the time constant is 10000 s; a 100 s integration has about 0.5% leakage curvature. A 1 pC reset-switch charge on that capacitor causes a 10 µV initial step. Dielectric absorption adds slower history-dependent recovery that one leakage resistor cannot model. Chapter 86 shows why diverting switch leakage away from the summing node can matter more than choosing a still-smaller amplifier bias current.
 
 <h3>The triangle oscillator needs both a ramp and a reliable decision</h3>
 

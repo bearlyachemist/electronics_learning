@@ -5,7 +5,7 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 47</span><span className="hairline"/>FIELD-EFFECT TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 45</span><span className="hairline"/>PART II / FIELD-EFFECT TRANSISTORS</div>
 
 <h1>Field-effect transistors<br/><em>Control a channel with a field.</em></h1>
 
@@ -70,20 +70,34 @@ A useful classification has two independent axes: n versus p channel, and enhanc
 
 <div className="section-heading"><span>03</span><h2>Derive the long-channel MOS equation</h2></div>
 
-Take a long, uniform n-channel MOSFET above threshold, with body effects temporarily ignored. Let the channel potential measured from the source be V(x). The gate's effective attraction at that location is reduced by V(x). With oxide capacitance per area $C_{ox}$ and threshold $V_T$:
+Take a long, uniform n-channel MOSFET above threshold, with body effects temporarily ignored.
 
-<Equation tex="|Q_n(x)|=C_{ox}[V_{GS}-V_T-V(x)]" />
+<div className="derivation">
 
-Define overdrive u = $V_{GS}$ − $V_T$. Substitute the charge expression into the drift equation, separate variables and integrate from source to drain. Current is the same through each channel slice in steady state:
+<span className="tiny-label">DERIVATION / THE LONG-CHANNEL DRAIN CURRENT</span>
 
+1. **Channel charge from the gate capacitor.** The gate, oxide and channel form a parallel-plate capacitor with capacitance $C_{ox}$ per unit area. At position $x$ the channel sits at potential $V(x)$ (measured from the source), so the voltage across the oxide there is $V_{GS} - V(x)$. The first $V_T$ of it is used to deplete the surface and invert it; only the excess induces mobile electrons. Charge = capacitance × voltage:
+<Equation tex="|Q_n(x)|=C_{ox}[V_{GS}-V_T-V(x)]=C_{ox}[u-V(x)],\qquad u=V_{GS}-V_T" />
+
+2. **Drift current.** Insert this into the drift equation of section 01:
+<Equation tex="I_D=W\mu_nC_{ox}[u-V(x)]\,\frac{dV}{dx}"/>
+
+3. **Current continuity.** In steady state no charge accumulates anywhere along the channel, so $I_D$ is the same at every $x$. That lets us separate variables, $I_D\,dx = W\mu_nC_{ox}(u - V)\,dV$, and integrate from the source ($x = 0$, $V = 0$) to the drain ($x = L$, $V = V_{DS}$):
 <Equation tex="I_D\int_0^L dx=\mu_n C_{ox}W\int_0^{V_{DS}}(u-V)\,dV" />
+
+4. **Evaluate both sides.** The left gives $I_DL$; the right gives $\mu_nC_{ox}W(uV_{DS} - V_{DS}^2/2)$. Divide by $L$:
 <Equation tex="I_D=k\left(uV_{DS}-\frac{V_{DS}^2}{2}\right),\qquad k=\mu_nC_{ox}\frac WL" />
+
+5. **Where the formula stops.** The derivative $dI_D/dV_{DS} = k(u - V_{DS})$ reaches zero at $V_{DS} = u$. At that point step 1 gives $Q_n(L) = 0$: the channel has just pinched off at the drain. For larger $V_{DS}$ the formula would wrongly predict falling current; physically, the extra voltage drops across the short pinched-off region near the drain and the channel itself keeps the voltage $u$ across it. Substitute $V_{DS} = u$ to get the saturated current:
+<Equation tex="I_{D,\mathrm{sat}}=k\left(u^2-\frac{u^2}{2}\right)=\frac{k}{2}u^2"/>
+
+</div>
 
 Units provide a useful check: k has units A/V²; the bracket has units V². This is the **triode or ohmic-region equation**, valid while the channel exists all the way to the drain. At very small $V_{DS}$, its quadratic term is negligible:
 
 <Equation tex="I_D\approx kuV_{DS},\qquad R_{\mathrm{channel}}\approx\frac1{ku}" />
 
-As drain voltage reaches u, the inversion charge at the drain end approaches zero. In the simplest model the current becomes:
+As drain voltage reaches u, the inversion charge at the drain end approaches zero (step 5 above). In the simplest model the current then stays at:
 
 <Equation tex="I_{D,\mathrm{sat}}=\frac{k}{2}(V_{GS}-V_T)^2,\qquad V_{DS}\ge V_{GS}-V_T" />
 
@@ -123,6 +137,8 @@ At a chosen bias point, small changes obey:
 
 <Equation tex="i_d=g_m v_{gs}+g_{ds}v_{ds},\qquad g_m=\left.\frac{\partial I_D}{\partial V_{GS}}\right|_{V_{DS}},\qquad r_o=\frac1{g_{ds}}" />
 <Equation tex="g_m=ku=\frac{2I_D}{u}=\sqrt{2kI_D}\quad\text{in ideal saturation}" />
+
+Each form follows from differentiating $I_D = ku^2/2$ with respect to $V_{GS}$ (note $du/dV_{GS} = 1$), which gives $ku$. Then substitute $u = 2I_D/(ku)$, or $u = \sqrt{2I_D/k}$, to express the same slope in terms of current. In the triode region the same differentiation gives $g_m = kV_{DS}$ instead, smaller and set by the drain voltage.
 
 The ideal flat drain curves imply infinite output resistance. Real curves slope because the effective channel changes with drain voltage, among other effects. A simple empirical extension multiplies the current by $(1+\lambda V_{DS})$. Its exact local output conductance is $\lambda$ times the unmodified current; the common estimate $r_o$ ≈ $1/(\lambda I_D)$ assumes $\lambda V_{DS}$ is small.
 

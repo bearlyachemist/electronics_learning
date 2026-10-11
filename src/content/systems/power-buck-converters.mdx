@@ -4,7 +4,7 @@ import {SystemsLab} from '../../components/SystemsLab';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 99</span><span className="hairline"/>POWER CIRCUITS</div>
+<div className="eyebrow"><span>CHAPTER 98</span><span className="hairline"/>PART IV / SWITCHING CONVERTERS</div>
 
 <h1>Buck converters from switching states<br/><em>Balance volt-seconds, then check every current.</em></h1>
 
@@ -55,7 +55,7 @@ In DCM let $D$ be the on fraction, $D_2$ the diode-conduction fraction and $1-D-
 4. **Resistive load.** Set the average equal to $V_o/R = MV_{in}/R$ and substitute steps 1 and 2:
 <Equation tex={String.raw`\frac{V_{in}(1-M)D}{2Lf_s}\cdot\frac{D}{M}=\frac{MV_{in}}{R}\quad\Longrightarrow\quad D^2(1-M)=\frac{2Lf_s}{R}M^2`}/>
 
-5. **Solve the quadratic** $KM^2 + D^2M - D^2 = 0$ for the positive root, then rationalize as in Chapter 48. The boundary with CCM is where $D_2 = 1 - D$, which gives $M = D$ and, from step 4, $K = 1 - D$.
+5. **Solve the quadratic** $KM^2 + D^2M - D^2 = 0$ for the positive root, then rationalize as in Chapter 46. The boundary with CCM is where $D_2 = 1 - D$, which gives $M = D$ and, from step 4, $K = 1 - D$.
 
 </div>
 
@@ -75,7 +75,7 @@ Use the lab's boundary warning as a model check, not as a DCM output prediction.
 
 <div className="section-heading"><span>03</span><h2>Size the input and output current reservoirs</h2></div>
 
-The output capacitor carries the triangular AC part of inductor current. Ignoring ESR, ESL and feedback action, integrate the charge: the capacitor current is positive for half the period, forming a triangle of height $\Delta I_L/2$ and base $T_s/2$, so the charge delivered is $\tfrac12\cdot\tfrac{T_s}{2}\cdot\tfrac{\Delta I_L}{2} = \Delta I_LT_s/8$. Dividing by $C_o$ gives $\Delta V_{pp}\approx\Delta I_L/(8f_sC_o)$. The rms of a symmetric triangle of peak-to-peak $\Delta I$ is $\Delta I/\sqrt{12}$ (the same integral as Chapter 54's ripple calculation). ESR adds an approximately $\Delta I_L\,ESR$ ripple component. These terms do not necessarily peak at the same instant, so summing them is a conservative first budget rather than an exact waveform.
+The output capacitor carries the triangular AC part of inductor current. Ignoring ESR, ESL and feedback action, integrate the charge: the capacitor current is positive for half the period, forming a triangle of height $\Delta I_L/2$ and base $T_s/2$, so the charge delivered is $\tfrac12\cdot\tfrac{T_s}{2}\cdot\tfrac{\Delta I_L}{2} = \Delta I_LT_s/8$. Dividing by $C_o$ gives $\Delta V_{pp}\approx\Delta I_L/(8f_sC_o)$. The rms of a symmetric triangle of peak-to-peak $\Delta I$ is $\Delta I/\sqrt{12}$ (the same integral as Chapter 95's ripple calculation). ESR adds an approximately $\Delta I_L\,ESR$ ripple component. These terms do not necessarily peak at the same instant, so summing them is a conservative first budget rather than an exact waveform.
 
 <Equation tex={String.raw`\Delta V_{o,pp}\simeq\frac{\Delta I_L}{8f_sC_o}+\Delta I_L\,ESR,\qquad I_{C_o,rms}=\frac{\Delta I_L}{\sqrt{12}}`}/>
 For 22 μF effective output capacitance, 500 kHz and the preceding ripple, the capacitive term is 3.01 mV. At 10 mΩ ESR the resistive term is 2.65 mV. A 1 A load step can require far more charge than this periodic ripple. Size for transient response as well as steady ripple; verify effective capacitance under bias and temperature.

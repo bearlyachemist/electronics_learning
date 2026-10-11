@@ -4,7 +4,7 @@ import {ReactiveEnergyFigure,CorrectionCurrentFigure} from '../components/AcFigu
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 21</span><span className="hairline"/>FOUNDATIONS / IMPEDANCE & FILTERS</div>
+<div className="eyebrow"><span>CHAPTER 14</span><span className="hairline"/>PART I / AC CIRCUITS &amp; FILTERS</div>
 
 <h1>Power in reactive circuits<br/><em>Current that does no work still costs.</em></h1>
 
@@ -194,7 +194,7 @@ Over-correcting makes the combination capacitive, and the line current rises aga
 
 ### Non-sinusoidal current
 
-The definition PF = P/($V_{\mathrm{rms}}$ $I_{\mathrm{rms}}$) applies to any waveform, but cos $\theta$ only applies to sinusoids. The capacitor-input rectifier of Chapter 14 draws current in short pulses near the voltage peaks. Those pulses are centered on the voltage waveform, so there is no phase shift in the usual sense, yet the power factor is poor: for the default settings of that chapter’s lab it is about **0.66**. The pulses contain harmonics—currents at 3f, 5f, 7f and beyond—that raise $I_{\mathrm{rms}}$ without contributing average power with a sinusoidal voltage.
+The definition PF = P/($V_{\mathrm{rms}}$ $I_{\mathrm{rms}}$) applies to any waveform, but cos $\theta$ only applies to sinusoids. The capacitor-input rectifier of Chapter 21 draws current in short pulses near the voltage peaks. Those pulses are centered on the voltage waveform, so there is no phase shift in the usual sense, yet the power factor is poor: for the default settings of that chapter’s lab it is about **0.66**. The pulses contain harmonics—currents at 3f, 5f, 7f and beyond—that raise $I_{\mathrm{rms}}$ without contributing average power with a sinusoidal voltage.
 
 The total power factor is then the product of a **displacement factor** (cos $\theta$ of the fundamental) and a **distortion factor** (fundamental RMS current over total RMS current). A capacitor cannot fix distortion. Power supplies above modest power levels use active power-factor correction, a switching converter that forces the input current to follow the voltage waveform.
 

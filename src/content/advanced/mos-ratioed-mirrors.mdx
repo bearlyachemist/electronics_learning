@@ -5,13 +5,13 @@ import {BiasTreeCircuit,PmosComplianceFigure,UnitRatioFigure} from '../../compon
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 60</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 55</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>Ratioed and complementary MOS mirrors<br/><em>Distribute a bias without spending the same current everywhere.</em></h1>
 
 <p className="dek">Build a PMOS sourcing mirror, scale branch currents by geometry, chain NMOS and PMOS mirrors into a bias tree, and track how headroom, ratio accuracy and error accumulate along the chain.</p>
 
-<div className="chapter-meta"><span>50–70 min</span><span>The basic mirror (Ch. 59)</span></div>
+<div className="chapter-meta"><span>50–70 min</span><span>The basic mirror (Ch. 54)</span></div>
 
 </div>
 
@@ -21,7 +21,7 @@ import {BiasTreeCircuit,PmosComplianceFigure,UnitRatioFigure} from '../../compon
 
 <div>
 
-The mirror of Chapter 59 sinks current to ground. Real circuits need currents in both directions and of many sizes: a 20 µA tail for an input pair, 200 µA for a second stage, 2 mA for an output stage. Making a separate reference for each would waste power and matching.
+The mirror of Chapter 54 sinks current to ground. Real circuits need currents in both directions and of many sizes: a 20 µA tail for an input pair, 200 µA for a second stage, 2 mA for an output stage. Making a separate reference for each would waste power and matching.
 
 Instead, one reference feeds a **bias tree**. NMOS mirrors produce sinks; a PMOS mirror turned upside down produces sources; and changing the width of the output transistor scales the copy. This chapter builds that tree, then follows the errors that it accumulates along the way.
 
@@ -71,7 +71,7 @@ The headroom condition is also reflected. The output device needs $V_{SD} \ge u_
 
 <p>Put $R_{REF}$ from the diode-connected PMOS drain to ground. The device needs $u = \sqrt{2 × 0.5/2}$ = 0.707 V, so $V_{SG}$ = 1.707 V and its drain (and gate) sit at 5 − 1.707 = 3.293 V. The resistor therefore carries 0.5 mA with 3.293 V across it: $R_{REF}$ = <strong>6.59 kΩ</strong>.</p>
 
-<p>Do not assume the whole supply appears across the resistor; that would give 10 kΩ, which actually passes only about 0.34 mA. And remember Chapter 59: this reference still moves with the supply, here by 1/(6.59 kΩ + 0.71 kΩ) ≈ 0.14 mA/V, or 27%/V.</p>
+<p>Do not assume the whole supply appears across the resistor; that would give 10 kΩ, which actually passes only about 0.34 mA. And remember Chapter 54: this reference still moves with the supply, here by 1/(6.59 kΩ + 0.71 kΩ) ≈ 0.14 mA/V, or 27%/V.</p>
 
 </div>
 
@@ -103,7 +103,7 @@ At $V_{SD}$ = 0.2 V the output device is in triode and delivers 0.71 mA instead 
 
 <div className="section-heading"><span>04</span><h2>Make ratios accurate with unit devices</h2></div>
 
-The ratio $k_2/k_1$ is what the circuit uses, but the designer draws widths and lengths. They are not the same thing. The effective width of a channel is smaller than its drawn width by an edge loss $\Delta W$, and the effective length differs from the drawn length by $\Delta L$. Drawing one device four times as wide as another does not make its $k$ four times larger:
+The ratio $k_2/k_1$ is what the circuit uses, but the designer draws widths and lengths. They are not the same thing. The effective width of a channel is smaller than its drawn width by an edge loss $\Delta W$, and the effective length differs from the drawn length by $\Delta L$. With $k \propto W_{eff}/L_{eff}$ and equal lengths, the ratio of the two $k$ values is the ratio of effective widths. Drawing one device four times as wide as another does not make its $k$ four times larger:
 
 <Equation tex={String.raw`\frac{k_2}{k_1}=\frac{4W-\Delta W}{W-\Delta W}\ne 4`}/>
 
@@ -121,7 +121,7 @@ The cure is to build every device from identical **unit cells**. A 4× device is
 
 </div>
 
-None of this applies directly to discrete parts. Two MOSFETs of different part numbers, or even of the same part, do not have $k$ in the ratio of their current ratings. With discrete transistors, set ratios with source resistors (Chapter 61) and let the resistors, not the devices, define the currents.
+None of this applies directly to discrete parts. Two MOSFETs of different part numbers, or even of the same part, do not have $k$ in the ratio of their current ratings. With discrete transistors, set ratios with source resistors (Chapter 56) and let the resistors, not the devices, define the currents.
 
 </section>
 
@@ -149,7 +149,7 @@ A complete bias network combines both polarities. The NMOS reference generates a
 
 </div>
 
-The remedies are the subject of the next chapters: source resistors to make currents depend on resistor ratios and to reduce threshold sensitivity (Chapter 61), and cascodes that hold each output drain at the same voltage as its reference (Chapters 62–63).
+The remedies are the subject of the next chapters: source resistors to make currents depend on resistor ratios and to reduce threshold sensitivity (Chapter 56), and cascodes that hold each output drain at the same voltage as its reference (Chapters 57–58).
 
 ### Ratioed source resistors
 

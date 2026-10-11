@@ -4,7 +4,7 @@ import {LimiterTransferFigure,PeakDetectorFigure,PeakWaveFigure,EnvelopeFigure,C
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 16</span><span className="hairline"/>FOUNDATIONS / DIODES & SUPPLIES</div>
+<div className="eyebrow"><span>CHAPTER 23</span><span className="hairline"/>PART II / DIODES</div>
 
 <h1>Diode circuit applications<br/><em>Steer, limit, and remember.</em></h1>
 
@@ -55,7 +55,7 @@ The asymmetric currents arise because the two clip levels are asymmetric around 
 
 Many regulators can source current but cannot sink it. A clamp may charge the supply capacitor and raise the rail, especially if the protected system is unpowered or lightly loaded. The ideal clip level then moves. Check injection-current limits, rail discharge paths and allowed pin voltage from the actual input specification.
 
-A 3.3 V input is not automatically safe at 3.6 V. The external diode drop, protected device's internal structures and relative turn-on voltages all matter. The lab is a circuit-law experiment, not a universal input-protection design. Chapter 18 builds a layered protection scheme.
+A 3.3 V input is not automatically safe at 3.6 V. The external diode drop, protected device's internal structures and relative turn-on voltages all matter. The lab is a circuit-law experiment, not a universal input-protection design. Chapter 25 builds a layered protection scheme.
 
 </section>
 
@@ -142,7 +142,7 @@ Two supplies can feed a common load through separate diodes, each anode at its s
 
 **Example.** A 5.0 V source behind a 0.3 V diode offers roughly 4.7 V, while a 4.5 V source behind the same drop offers 4.2 V. With the first source holding the output near 4.7 V, the second diode is off. Under enough first-source sag, the second path can start conducting.
 
-A series diode also offers simple reverse-polarity protection: normal current flows through it, while a reversed source is blocked. The tradeoff is forward loss. At 1 A and 0.45 V, that is 0.45 W and 0.45 V less supply headroom. MOSFET "ideal diode" circuits reduce loss but require their own polarity and gate-control analysis (Chapter 18).
+A series diode also offers simple reverse-polarity protection: normal current flows through it, while a reversed source is blocked. The tradeoff is forward loss. At 1 A and 0.45 V, that is 0.45 W and 0.45 V less supply headroom. MOSFET "ideal diode" circuits reduce loss but require their own polarity and gate-control analysis (Chapter 25).
 
 <PolarityProtectFigure/>
 

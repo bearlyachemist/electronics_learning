@@ -5,13 +5,13 @@ import {MirrorResistorCircuit,MirrorOutputFigure,MirrorSupplyFigure,MirrorMismat
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 59</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 54</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>The basic MOS current mirror<br/><em>Convert a current to a voltage, then back again.</em></h1>
 
 <p className="dek">Solve the reference device, derive the output's compliance and resistance, see where the reference current comes from, and separate the three ways a copy goes wrong: unequal devices, unequal drain voltages and an imperfect reference.</p>
 
-<div className="chapter-meta"><span>55–75 min + exploration</span><span>Diode-connected loads (Ch. 58) · BJT mirrors (Ch. 35)</span></div>
+<div className="chapter-meta"><span>55–75 min + exploration</span><span>Diode-connected loads (Ch. 53) · BJT mirrors (Ch. 35)</span></div>
 
 </div>
 
@@ -41,7 +41,7 @@ The idea is two conversions that undo each other. A diode-connected transistor t
 
 <MirrorResistorCircuit/>
 
-$M_1$ is diode connected, so it is in saturation whenever it conducts (Chapter 58). The gate draws no current, so all of $I_{REF}$ flows in $M_1$'s channel, and $M_1$ settles at whatever $V_{GS}$ makes $\tfrac12 k(V_{GS} - V_T)^2 = I_{REF}$. With $k$ = 2 mA/V², $V_T$ = 1 V and 1 mA, that is $u$ = 1 V and $V_{GS}$ = 2.0 V.
+$M_1$ is diode connected, so it is in saturation whenever it conducts (Chapter 53). The gate draws no current, so all of $I_{REF}$ flows in $M_1$'s channel, and $M_1$ settles at whatever $V_{GS}$ makes $\tfrac12 k(V_{GS} - V_T)^2 = I_{REF}$. With $k$ = 2 mA/V², $V_T$ = 1 V and 1 mA, that is $u$ = 1 V and $V_{GS}$ = 2.0 V.
 
 $M_2$ has the same gate and source voltages. If it is identical and also in saturation, it carries the same current, whatever its drain voltage (in the $\lambda$ = 0 model). The output is a current sink whose value is set by the reference.
 
@@ -63,7 +63,7 @@ Write both saturation currents with all their parameters and divide. Since the g
 
 Three independent mechanisms are visible, and each has a different cure:
 
-1. **Geometry and mobility**, $k_2/k_1$. Deliberately unequal $W/L$ makes a ratioed mirror (Chapter 60). Accidental inequality is random mismatch.
+1. **Geometry and mobility**, $k_2/k_1$. Deliberately unequal $W/L$ makes a ratioed mirror (Chapter 55). Accidental inequality is random mismatch.
 2. **Threshold**. A difference $\Delta V_T$ changes the current by $-2\Delta V_T/u$ to first order: the smaller the overdrive, the larger the error.
 3. **Drain voltage**. The reference device sits at $V_{DS} = V_{REF}$; the output sits wherever the load puts it. With $\lambda \ne 0$ the ratio is exactly 1 only when $V_{OUT} = V_{REF}$.
 
@@ -101,7 +101,7 @@ Here $I_0$ is the current without the modulation factor. The small-signal resist
 
 </div>
 
-When $\lambda$ is set by channel length, the designer has a knob: $\lambda$ falls roughly as $1/L$. Doubling $L$ (and $W$, to keep $k$) roughly doubles $r_o$, at the cost of area and capacitance. For much larger output resistance without long devices, Chapter 62 stacks a cascode on top.
+When $\lambda$ is set by channel length, the designer has a knob: $\lambda$ falls roughly as $1/L$. Doubling $L$ (and $W$, to keep $k$) roughly doubles $r_o$, at the cost of area and capacitance. For much larger output resistance without long devices, Chapter 57 stacks a cascode on top.
 
 </section>
 
@@ -117,7 +117,7 @@ At 0.2 V the output device is in triode and delivers a fraction of the reference
 
 <MosLab kind="mirror" client:load/>
 
-<p className="caption">Live lab. $k$ = 2 mA/V², $V_T$ = 1 V; both devices use the same region-aware channel law. Set $\lambda$ to zero and sweep the output down through the knee; restore $\lambda$ and compare the slope above the knee. Then add source resistors and predict, before looking, how they move the knee and change the slope. Chapter 61 explains the result.</p>
+<p className="caption">Live lab. $k$ = 2 mA/V², $V_T$ = 1 V; both devices use the same region-aware channel law. Set $\lambda$ to zero and sweep the output down through the knee; restore $\lambda$ and compare the slope above the knee. Then add source resistors and predict, before looking, how they move the knee and change the slope. Chapter 56 explains the result.</p>
 
 </section>
 
@@ -141,13 +141,13 @@ A mirror does not create current; it copies one. In the complete circuit the ref
 
 Temperature acts on the reference too. The threshold falls by about 2 mV/°C, which raises the current, while mobility falls roughly as $T^{-1.5}$, which lowers $k$ and the current. At large overdrive mobility wins and the current falls with temperature; at small overdrive the threshold wins and it rises. Between them is a bias point with nearly zero temperature coefficient, but it is process dependent and rarely where you want to operate.
 
-Precision references therefore derive the current from a stable voltage, typically a bandgap reference of about 1.2 V forced across a resistor by a feedback loop (Chapter 92 builds one with an op amp). Self-biased circuits that make the reference from the mirror itself, the "$\beta$ multiplier", remove the supply dependence but have a second stable state at zero current and need a start-up circuit.
+Precision references therefore derive the current from a stable voltage, typically a bandgap reference of about 1.2 V forced across a resistor by a feedback loop (Chapter 87 builds one with an op amp). Self-biased circuits that make the reference from the mirror itself, the "$\beta$ multiplier", remove the supply dependence but have a second stable state at zero current and need a start-up circuit.
 
 
 
 <h3 id="book-notes">A beta-multiplier can define transconductance instead of current</h3>
 
-A useful bias generator makes equal drain currents flow in two MOSFETs that share a gate but have different size: $k_2=N k_1$. Give the larger device a source resistor R. In the long-channel model with equal thresholds, negligible body effect and channel-length modulation, its smaller required overdrive leaves a voltage across R.
+A useful bias generator makes equal drain currents flow in two MOSFETs that share a gate but have different size: $k_2=N k_1$. Give the larger device a source resistor R. In the long-channel model with equal thresholds, negligible body effect and channel-length modulation, its smaller required overdrive leaves a voltage across R. To derive it, write KVL from the shared gate to ground through each device: $V_G = V_T + u_1$ for the small device and $V_G = V_T + u_2 + IR$ for the large one. Subtracting, $IR = u_1 - u_2$. Equal currents with $k_2 = Nk_1$ require $\tfrac12k_1u_1^2 = \tfrac12Nk_1u_2^2$, so $u_2 = u_1/\sqrt N$. Finally use $g_{m1} = 2I/u_1$ to eliminate $u_1$:
 
 <Equation tex={String.raw`IR=u_1-u_2=u_1\left(1-\frac1{\sqrt N}\right),\qquad g_{m1}=\frac{2I}{u_1}=\frac{2(1-1/\sqrt N)}{R}`}/>
 
@@ -163,7 +163,7 @@ The derivation omits real feedback circuitry that forces equal currents, as well
 
 <div className="section-heading"><span>06</span><h2>Matching</h2></div>
 
-Even drawn identically, two transistors differ randomly in threshold and in $k$. For small differences the relative current error is
+Even drawn identically, two transistors differ randomly in threshold and in $k$. At the shared gate voltage, take the logarithm of $I = \tfrac12k(V_{GS} - V_T)^2$: $\ln I = \ln k + 2\ln(V_{GS} - V_T) - \ln 2$. A small change gives $dI/I = dk/k - 2\,dV_T/u$. For small differences between the two devices the relative current error is therefore
 
 <Equation tex={String.raw`\frac{\Delta I}{I}\approx\frac{\Delta k}{k}-\frac{2\,\Delta V_T}{u}`} label="FIRST-ORDER MISMATCH"/>
 
@@ -183,7 +183,7 @@ The threshold term is divided by overdrive. A mirror run at 0.2 V of overdrive i
 
 </div>
 
-Systematic errors need different cures. Place the two devices close together, in the same orientation, so process gradients affect both equally; for the best results split each into interleaved halves in a common-centroid layout. Keep them at the same temperature: a 1 °C difference shifts $V_T$ by 2 mV, about 0.4% at 1 V overdrive. Discrete MOSFETs, even from the same reel, can differ in threshold by hundreds of millivolts, so a mirror built from separate parts is not a precision circuit unless you use a monolithic matched pair or add source degeneration (Chapter 61).
+Systematic errors need different cures. Place the two devices close together, in the same orientation, so process gradients affect both equally; for the best results split each into interleaved halves in a common-centroid layout. Keep them at the same temperature: a 1 °C difference shifts $V_T$ by 2 mV, about 0.4% at 1 V overdrive. Discrete MOSFETs, even from the same reel, can differ in threshold by hundreds of millivolts, so a mirror built from separate parts is not a precision circuit unless you use a monolithic matched pair or add source degeneration (Chapter 56).
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A mirror copies its reference exactly only when the devices match <em>and</em> their drains sit at the same voltage. Its compliance is one overdrive, its output resistance is $r_o$, and it inherits every fault of its reference.</p></div>
 
@@ -206,7 +206,7 @@ The output device needs $V_{DS} \ge V_{GS} - V_T = u$ to stay in saturation. Its
 <summary>2. Two perfectly matched devices, $\lambda$ = 0.02 V⁻¹, $V_{REF}$ = 2 V, output at 4 V. What is the error and how could you remove it?</summary>
 <div>
 
-The ratio is $(1 + 0.02 × 4)/(1 + 0.02 × 2)$ = 1.08/1.04, a +3.8% error, caused purely by unequal drain voltages. Remove it by forcing the output drain to equal the reference drain (a cascode does this automatically, Chapter 62), or reduce $\lambda$ with longer channels.
+The ratio is $(1 + 0.02 × 4)/(1 + 0.02 × 2)$ = 1.08/1.04, a +3.8% error, caused purely by unequal drain voltages. Remove it by forcing the output drain to equal the reference drain (a cascode does this automatically, Chapter 57), or reduce $\lambda$ with longer channels.
 
 </div>
 </details>

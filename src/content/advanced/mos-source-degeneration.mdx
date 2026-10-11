@@ -5,13 +5,13 @@ import {DegenSmallSignalFigure,DegenLinearityFigure,DegenGainSpreadFigure,DegenM
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 61</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 56</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>Source degeneration in MOS circuits<br/><em>A resistor that makes the transistor matter less.</em></h1>
 
 <p className="dek">Derive local feedback from source-node KCL, including body effect and output conductance, and measure the four things degeneration buys (predictable gain, linearity, output resistance and matching) against the headroom it costs.</p>
 
-<div className="chapter-meta"><span>55–75 min + exploration</span><span>Bias atlas (Ch. 57) · Mirrors (Chs. 59–60) · BJT degeneration (Ch. 32)</span></div>
+<div className="chapter-meta"><span>55–75 min + exploration</span><span>Bias atlas (Ch. 52) · Mirrors (Chs. 59–60) · BJT degeneration (Ch. 32)</span></div>
 
 </div>
 
@@ -89,7 +89,7 @@ With the numbers above, $R_{out}$ = 50 + 0.5 + (2 mS)(50 kΩ)(0.5 kΩ) = **100.5
 
 <div className="section-heading"><span>03</span><h2>Four things degeneration buys</h2></div>
 
-**1. Predictable gain.** If the current is set by a bias circuit, $g_m = \sqrt{2kI_D}$ varies with $k$, and so does an undegenerated gain. With degeneration the fractional sensitivity of gain to $g_m$ is divided by $1 + g_mR_S$:
+**1. Predictable gain.** If the current is set by a bias circuit, $g_m = \sqrt{2kI_D}$ varies with $k$, and so does an undegenerated gain. With degeneration, take logarithms of $|A_v| = g_mR_D/(1 + g_mR_S)$: $\ln|A_v| = \ln g_m + \ln R_D - \ln(1 + g_mR_S)$. Differentiating with respect to $\ln g_m$ gives $1 - g_mR_S/(1 + g_mR_S) = 1/(1 + g_mR_S)$. The fractional sensitivity of gain to $g_m$ is divided by $1 + g_mR_S$:
 
 <Equation tex={String.raw`\frac{dA_v/A_v}{dg_m/g_m}=\frac{1}{1+g_mR_S}`}/>
 
@@ -111,7 +111,27 @@ For the same gate signal, the second-harmonic distortion falls by $(1 + g_mR_S)^
 
 <div className="section-heading"><span>04</span><h2>Degenerated mirrors and their price</h2></div>
 
-In a degenerated mirror, a threshold mismatch $\Delta V_T$ must now be absorbed by both the overdrive and the source drop. To first order, the relative current error is
+In a degenerated mirror, a threshold mismatch $\Delta V_T$ must now be absorbed by both the overdrive and the source drop.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / MISMATCH IN A DEGENERATED MIRROR</span>
+
+1. **KVL from the shared gate to ground** through one branch: $V_G = V_T + u + IR_S$. Both branches share $V_G$, so any mismatch must satisfy
+<Equation tex={String.raw`0=\delta V_T+\delta u+R_S\,\delta I+I\,\delta R_S`}/>
+
+2. **Device law.** From $I = \tfrac12ku^2$, $\delta I/I = \delta k/k + 2\,\delta u/u$, so $\delta u = \tfrac{u}{2}(\delta I/I - \delta k/k)$.
+
+3. **Substitute and multiply by $2/u$.** Use $g_m = 2I/u$, so that $2IR_S/u = g_mR_S$:
+<Equation tex={String.raw`0=\frac{2\,\delta V_T}{u}+\frac{\delta I}{I}-\frac{\delta k}{k}+g_mR_S\frac{\delta I}{I}+g_mR_S\frac{\delta R_S}{R_S}`}/>
+
+4. **Solve for the current error.** Collect the $\delta I/I$ terms:
+<Equation tex={String.raw`\frac{\delta I}{I}=\frac{\delta k/k-2\,\delta V_T/u-g_mR_S\,\delta R_S/R_S}{1+g_mR_S}`}/>
+   With $\delta k = 0$ this is the expression below. Every transistor error is divided by $1 + g_mR_S$; the resistor error is multiplied by $g_mR_S/(1 + g_mR_S)$, which approaches 1.
+
+</div>
+
+To first order, the relative current error is
 
 <Equation tex={String.raw`\frac{\Delta I}{I}\approx-\frac{2\,\Delta V_T/u}{1+g_mR_S}+\frac{\Delta R_S}{R_S}\cdot\frac{-g_mR_S}{1+g_mR_S}`}/>
 
@@ -135,7 +155,7 @@ Here is the effect on the systematic, drain-voltage error. The table uses a 1 mA
 
 <MosCases kind="degenerated"/>
 
-Compare it with the undegenerated table in Chapter 59: above the knee the current changes less with output voltage (higher $R_{out}$), but the knee itself has moved up by the 0.5 V source drop, so the 0.2 V point fails more completely.
+Compare it with the undegenerated table in Chapter 54: above the knee the current changes less with output voltage (higher $R_{out}$), but the knee itself has moved up by the 0.5 V source drop, so the 0.2 V point fails more completely.
 
 <MosLab kind="mirror" client:load/>
 
@@ -147,13 +167,13 @@ Compare it with the undegenerated table in Chapter 59: above the knee the curren
 
 <div className="section-heading"><span>05</span><h2>DC, AC and noise are different questions</h2></div>
 
-**Separating DC from AC.** A capacitor across $R_S$ keeps the DC feedback (stable bias) while removing degeneration at signal frequencies (high gain). Chapter 57 used this. But the capacitor creates a zero and a pole: below roughly $1/(2\pi R_SC_S)$ the stage has its low degenerated gain; above roughly $(1 + g_mR_S)/(2\pi R_SC_S)$ it has its full gain; in between the gain rises at 20 dB/decade. With $R_S$ = 500 Ω, $g_m$ = 2 mS and 10 µF, the transition runs from 32 Hz to 64 Hz. Choose $C_S$ so the whole transition is below the signal band, and remember that the bypassed stage has lost the linearity benefit too.
+**Separating DC from AC.** A capacitor across $R_S$ keeps the DC feedback (stable bias) while removing degeneration at signal frequencies (high gain). Chapter 52 used this. But the capacitor creates a zero and a pole: below roughly $1/(2\pi R_SC_S)$ the stage has its low degenerated gain; above roughly $(1 + g_mR_S)/(2\pi R_SC_S)$ it has its full gain; in between the gain rises at 20 dB/decade. With $R_S$ = 500 Ω, $g_m$ = 2 mS and 10 µF, the transition runs from 32 Hz to 64 Hz. Choose $C_S$ so the whole transition is below the signal band, and remember that the bypassed stage has lost the linearity benefit too.
 
 **Partial bypassing.** Split $R_S$ into an unbypassed part, which sets the AC gain and linearity, and a bypassed part, which adds only DC feedback. This is the most common practical arrangement.
 
-**Noise.** $R_S$ contributes thermal noise $\sqrt{4kTR_S}$ directly in series with the input, adding to the transistor's own noise. At 500 Ω that is 2.9 nV/√Hz. In a low-noise input stage, degeneration is used sparingly, or replaced by global feedback that does not put a resistor in series with the input (Chapter 76).
+**Noise.** $R_S$ contributes thermal noise $\sqrt{4kTR_S}$ directly in series with the input, adding to the transistor's own noise. At 500 Ω that is 2.9 nV/√Hz. In a low-noise input stage, degeneration is used sparingly, or replaced by global feedback that does not put a resistor in series with the input (Chapter 71).
 
-**Headroom, again.** The resistor's DC drop is the one cost that cannot be bypassed away. In low-voltage circuits, where every 100 mV counts, designers get high output resistance from cascodes instead (Chapter 62), which cost about one overdrive rather than a resistor drop.
+**Headroom, again.** The resistor's DC drop is the one cost that cannot be bypassed away. In low-voltage circuits, where every 100 mV counts, designers get high output resistance from cascodes instead (Chapter 57), which cost about one overdrive rather than a resistor drop.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Source degeneration divides every transistor-dependent quantity by $1 + g_mR_S$ and multiplies output resistance by the same factor. It costs gain and headroom, and <em>buys predictability</em>.</p></div>
 

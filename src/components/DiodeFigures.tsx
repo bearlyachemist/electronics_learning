@@ -6,7 +6,7 @@ import {logspace} from './Parts';
 const span=(a:number,b:number,n=300)=>Array.from({length:n+1},(_,k)=>a+(b-a)*k/n);
 const VT=.025852,Q=1.602e-19,EPS=11.7*8.854e-12,NI=1e16; // NI in m⁻³ (10¹⁰ cm⁻³)
 
-/* ---------- Chapter 12: semiconductor physics ---------- */
+/* ---------- Chapter 19: semiconductor physics ---------- */
 // A 2-D cartoon of the silicon lattice with one donor and one acceptor.
 export function LatticeFigure(){
   const xs=[0,1,2,3,4],ys=[0,1,2],X=(i:number)=>120+i*100,Y=(j:number)=>35+j*70;
@@ -69,7 +69,7 @@ export function VaractorFigure(){
     </Schematic></Figure>;
 }
 
-/* ---------- Chapter 13: diode models ---------- */
+/* ---------- Chapter 20: diode models ---------- */
 export function DiodeSymbolFigure(){
   return <Figure caption="The diode symbol and a typical package. The triangle points in the direction of conventional forward current, from anode (A) to cathode (K). The bar is the cathode, and so is the band printed on most packages. Positive diode voltage $V_D$ means the anode is higher than the cathode.">
     <svg viewBox="0 0 640 170" role="img" aria-label="A diode symbol between terminals A and K with a current arrow from A to K, and a cylindrical package with a band at the cathode end.">
@@ -103,7 +103,7 @@ export function DiodeModelsFigure(){
 export function DiodeTempFigure(){
   const vs=span(.4,1,300),is=(T:number)=>1e-12*(T/300)**3*Math.exp(1.12/(8.617e-5)*(1/300-1/T));
   const c=(T:number)=>vs.map(v=>[v,is(T)*Math.expm1(v/(VT*T/300))*1e3] as [number,number]);
-  return <Figure plot caption="An ideal ($n$ = 1) diode model at three temperatures, with the saturation current's strong temperature dependence included. Heating moves the curve left: at a fixed 1 mA the forward voltage falls by roughly 2 mV/°C. The thermal voltage $V_T = kT/q$ grows with temperature, which alone would move the curve the other way; the rapid rise of $I_S$ wins. The effect is a thermometer (Chapter 45) and a hazard for parallel diodes (Chapter 40).">
+  return <Figure plot caption="An ideal ($n$ = 1) diode model at three temperatures, with the saturation current's strong temperature dependence included. Heating moves the curve left: at a fixed 1 mA the forward voltage falls by roughly 2 mV/°C. The thermal voltage $V_T = kT/q$ grows with temperature, which alone would move the curve the other way; the rapid rise of $I_S$ wins. The effect is a thermometer (Chapter 44) and a hazard for parallel diodes (Chapter 40).">
     <Plot curves={[{name:'0 °C',color:gray,points:c(273)},{name:'25 °C',color:green,points:c(298)},{name:'75 °C',color:orange,points:c(348)}]} xRange={[.4,1]} yRange={[0,5]} xLabel="DIODE VOLTAGE / V" yLabel="CURRENT / mA" description="Three exponential curves; the 75 degree curve rises about 0.1 volts to the left of the 25 degree curve, and the 0 degree curve about 0.05 volts to the right."/>
   </Figure>;
 }
@@ -127,7 +127,7 @@ export function DiodeOrFigure(){
     </Schematic></Figure>;
 }
 
-/* ---------- Chapter 14: rectifiers ---------- */
+/* ---------- Chapter 21: rectifiers ---------- */
 export function RectifiedWaveFigure(){
   const t=span(0,2,400),vp=12.73,w=2*Math.PI,s=(x:number)=>vp*Math.sin(w*x);
   return <Figure plot caption="A 9 V RMS (12.73 V peak) sine, rectified with ideal diodes and no capacitor. Half-wave (orange) passes only positive half-cycles: average $V_p/\pi$ = 4.05 V. Full-wave (green) flips the negative half-cycles up: average $2V_p/\pi$ = 8.10 V, with twice as many pulses. Both outputs keep one polarity, but neither is steady; the reservoir capacitor of section 02 does the smoothing.">
@@ -202,7 +202,7 @@ export function SupplyBlockFigure(){
     </Schematic></Figure>;
 }
 
-/* ---------- Chapter 15: regulators ---------- */
+/* ---------- Chapter 22: regulators ---------- */
 export function ZenerCurveFigure(){
   const v=span(-6,1,500),fwd=(x:number)=>1e-12*Math.expm1(x/(1.2*VT));
   // Reverse: 10 Ω slope beyond 5.1 V plus an exponential knee that reaches 2 mA at 5.1 V.
@@ -257,13 +257,13 @@ export function DropoutFigure(){
 
 export function LinearEfficiencyFigure(){
   const v=span(5.3,24,200);
-  return <Figure plot caption="Efficiency of a linear regulator delivering 5 V, ignoring quiescent current: $\eta = V_{\mathrm{out}}/V_{\mathrm{in}}$. From 12 V it is 42%; from 24 V, 21%, with the other 79% turned into heat in the pass device. A linear regulator can never be more efficient than the voltage ratio, however good it is. Switching regulators (Chapter 18) escape this limit.">
+  return <Figure plot caption="Efficiency of a linear regulator delivering 5 V, ignoring quiescent current: $\eta = V_{\mathrm{out}}/V_{\mathrm{in}}$. From 12 V it is 42%; from 24 V, 21%, with the other 79% turned into heat in the pass device. A linear regulator can never be more efficient than the voltage ratio, however good it is. Switching regulators (Chapter 25) escape this limit.">
     <Plot curves={[{name:'Efficiency',color:green,points:v.map(x=>[x,500/x] as [number,number])}]} xRange={[5,24]} yRange={[0,100]} xLabel="INPUT VOLTAGE / V" yLabel="EFFICIENCY / %" point={[12,500/12]} pointLabel="12 V in: 42%"
       description="Efficiency falls from about 94 percent at 5.3 volts in, through 42 percent at 12 volts, to 21 percent at 24 volts."/>
   </Figure>;
 }
 
-/* ---------- Chapter 16: diode applications ---------- */
+/* ---------- Chapter 23: diode applications ---------- */
 export function LimiterTransferFigure(){
   const v=span(-8,8,320),vo=(x:number)=>Math.max(-.3,Math.min(3.6,x));
   return <Figure plot caption="Transfer curve of the two-diode limiter (fixed 0.3 V drops, 3.3 V rail): output against input. Between −0.3 V and 3.6 V neither diode conducts and the output equals the input (slope 1). Outside that window one diode conducts, the output is pinned, and the series resistor takes up the difference. A transfer curve shows a circuit's whole behavior at a glance, for any waveform slow enough to ignore capacitance.">
@@ -343,7 +343,7 @@ export function PolarityProtectFigure(){
     </Schematic></Figure>;
 }
 
-/* ---------- Chapter 17: inductive-load protection ---------- */
+/* ---------- Chapter 24: inductive-load protection ---------- */
 export function FlybackLoopsFigure(){
   const panel=(x0:number,on:boolean)=>{const top:Pt=[x0+120,40],mid:Pt=[x0+120,150];const c=(b:boolean)=>b?green:ink;return <g key={String(on)}>
     <Rail at={top} label="+12 V"/><Ind a={top} b={mid} label="winding" value="100 mH, 120 Ω" flipLabel color={green}/>
@@ -397,7 +397,7 @@ export function PwmFreewheelFigure(){
   </Figure>;
 }
 
-/* ---------- Chapter 18: protection and bypass diodes ---------- */
+/* ---------- Chapter 25: protection and bypass diodes ---------- */
 export function RegulatorBypassFigure(){
   const i:Pt=[250,140],o:Pt=[390,140];
   return <Figure caption="A protection diode from regulator output (anode) to input (cathode). It is reverse-biased in normal operation. If the input collapses faster than the output, the output capacitor discharges through the diode instead of backward through the regulator.">

@@ -13,7 +13,7 @@ function Block({x,y,w=110,h=60,children,ports}:{x:number;y:number;w?:number;h?:n
 }
 function Sum({at:p,from='below'}:{at:Pt;from?:'below'|'above'}){return <g data-pins={[[p[0]-18,p[1]],[p[0]+18,p[1]],[p[0],p[1]+(from==='below'?18:-18)]].map(q=>q.join(',')).join(' ')}><circle cx={p[0]} cy={p[1]} r="18" fill="var(--white)" stroke="var(--ink)" strokeWidth="1.8"/><line x1={p[0]-9} x2={p[0]+9} y1={p[1]} y2={p[1]} stroke="var(--ink)" strokeWidth="1.6"/><line x1={p[0]} x2={p[0]} y1={p[1]-9} y2={p[1]+9} stroke="var(--ink)" strokeWidth="1.6"/></g>;}
 
-/* ---------- Chapter 77: ideal op amps and feedback ---------- */
+/* ---------- Chapter 72: ideal op amps and feedback ---------- */
 export function FeedbackBlockFigure(){
  return <S.Figure caption="Every negative-feedback amplifier in these chapters reduces to this loop. The forward amplifier multiplies the error $v_e = v_i - \beta v_o$ by $A$; the feedback network returns the fraction $\beta$ of the output. Solving the two equations gives the closed-loop gain $A/(1 + A\beta)$. The product $T = A\beta$, the gain around the loop, decides how closely the result approaches $1/\beta$.">
  <S.Schematic width={680} height={250} description="Block diagram: input to a summing junction, error to an amplifier A, output fed back through block beta to the summing junction with a minus sign.">
@@ -49,7 +49,7 @@ export function OptionalInverterCircuit(){
  </S.Schematic></S.Figure>;
 }
 
-/* ---------- Chapter 78: DC error budget ---------- */
+/* ---------- Chapter 73: DC error budget ---------- */
 export function ErrorModelCircuit(){
  const at:Pt=[430,190],p=S.opAmpPins({at,plusTop:true});
  return <S.Figure caption="The DC error model. A real op amp is an ideal one with three sources added at its inputs: an offset voltage $V_{OS}$ in series with one input, and bias currents $I_{B+}$ and $I_{B-}$ flowing into each input (signed: positive into the amplifier). $I_{B+}$ flows through the source resistance $R_{SRC}$; $I_{B-}$ flows through the feedback network, which it sees as $R_F \parallel R_G$.">
@@ -93,7 +93,7 @@ export function OffsetNullCircuit(){
  </S.Schematic></S.Figure>;
 }
 
-/* ---------- Chapter 79: bandwidth, slew and stability ---------- */
+/* ---------- Chapter 74: bandwidth, slew and stability ---------- */
 export function ClosedLoopBodeFigure(){
  const A0=1e5,fp=10,fs=logs(1,1e7,300),ol=(f:number)=>A0/Math.hypot(1,f/fp);
  const cl=(f:number,ng:number)=>{const re=1+ng/A0,im=f*ng/(A0*fp);return ng/Math.hypot(re,im);};
@@ -121,7 +121,7 @@ export function PhaseMarginStepFigure(){
   xRange={[0,12]} yRange={[0,1.6]} xLabel="TIME / µs" yLabel="OUTPUT / FINAL VALUE" description="Three step responses: strongly ringing at noise gain one, moderately at two, nearly clean at ten."/></S.Figure>;
 }
 
-/* ---------- Chapter 80: inside a bipolar op amp ---------- */
+/* ---------- Chapter 75: inside a bipolar op amp ---------- */
 export function SlewGbwFigure(){
  const fu=logs(1e5,1e8,200),VT=.02585;
  const lines:[string,number,string][]=[['BJT pair, SR = 2V_T · 2πf_u',2*VT,S.orange],['BJT pair with I_T R_E = 1 V degeneration',2*VT+1,S.gray],['MOS pair, u_0 = 0.2 V',.2,S.green],['MOS pair, u_0 = 0.5 V',.5,S.ink]];
@@ -140,7 +140,7 @@ export function ShortCircuitLimitCircuit(){
  </S.Schematic></S.Figure>;
 }
 
-/* ---------- Chapter 81: inside a CMOS op amp ---------- */
+/* ---------- Chapter 76: inside a CMOS op amp ---------- */
 export function RailToRailInputFigure(){
  // 3.3 V supply, |V_T| = 0.7 V, u = 0.2 V per input, tail compliance 0.15 V. Each pair's gm fades out over 0.25 V near its limit.
  const VDD=3.3,ramp=(x:number)=>Math.max(0,Math.min(1,x/.25));
@@ -172,7 +172,7 @@ export function LeakageTempFigure(){
   yScale="log" xRange={[-40,125]} yRange={[.01,2000]} xLabel="TEMPERATURE / °C" yLabel="pA, OR µV" description="Bias current rising exponentially with temperature from about a hundredth of a picoamp at minus forty to a nanoamp at one hundred twenty five degrees."/></S.Figure>;
 }
 
-/* ---------- Chapter 82: choosing an input technology ---------- */
+/* ---------- Chapter 77: choosing an input technology ---------- */
 const KB=1.380649e-23;
 const TECH:[string,number,number,string][]=[['Low-noise bipolar: 1 nV, 2 pA',1e-9,2e-12,S.orange],['JFET: 5 nV, 5 fA',5e-9,5e-15,S.green],['CMOS: 15 nV, 1 fA',15e-9,1e-15,S.ink]];
 export function TechNoiseFigure(){
@@ -199,7 +199,7 @@ export function LowFreqNoiseFigure(){
  <Plot curves={d.map(([name,en,fc,color])=>({name,color,points:fs.map(f=>[f,en*Math.sqrt(1+fc/f)] as [number,number])}))} xScale="log" yScale="log" xRange={[.01,1e5]} yRange={[1,10000]} xLabel="FREQUENCY / Hz" yLabel="VOLTAGE NOISE / (nV/√Hz)" description="Three noise spectra: CMOS rises steeply at low frequency, bipolar rises only below a few hertz, chopper flat at twenty nanovolts."/></S.Figure>;
 }
 
-/* ---------- Chapter 83: noninverting amplifiers and buffers ---------- */
+/* ---------- Chapter 78: noninverting amplifiers and buffers ---------- */
 export function AcNoninvCircuit(){
  const at:Pt=[420,170],p=S.opAmpPins({at,plusTop:true});
  return <S.Figure caption="An AC-coupled noninverting amplifier on split supplies. $C_{in}$ blocks the source's DC; $R_B$ gives the plus input a DC path to ground, without which its bias current would charge $C_{in}$ until the output saturated. $C_G$ in series with $R_G$ makes the DC gain exactly 1, so the op amp's offset is not amplified by 11, while above a few hertz the gain is $1 + R_F/R_G$ = 11. Values: $C_{in}$ = 1 µF, $R_B$ = 100 kΩ, $R_F$ = 100 kΩ, $R_G$ = 10 kΩ, $C_G$ = 10 µF.">
@@ -239,7 +239,7 @@ export function BootstrapBiasCircuit(){
  </S.Schematic></S.Figure>;
 }
 
-/* ---------- Chapter 84: inverting and summing amplifiers ---------- */
+/* ---------- Chapter 79: inverting and summing amplifiers ---------- */
 export function SummingDacCircuit(){
  const at:Pt=[470,220],p=S.opAmpPins({at});
  const rows:[string,string,number][]=[['b₀ (LSB)','80 kΩ',70],['b₁','40 kΩ',125],['b₂','20 kΩ',180],['b₃ (MSB)','10 kΩ',235]];
@@ -277,7 +277,7 @@ export function MixerBandwidthFigure(){
   xRange={[1,16]} yRange={[0,5.2]} xLabel="NUMBER OF INPUTS N" yLabel="MHz, OR NOISE GAIN / 4" description="Bandwidth falls from five megahertz with one input to about half a megahertz with sixteen; noise gain rises linearly."/></S.Figure>;
 }
 
-/* ---------- Chapter 85: difference amplifiers and resistor CMRR ---------- */
+/* ---------- Chapter 80: difference amplifiers and resistor CMRR ---------- */
 export function CmrrMismatchFigure(){
  const eps=logs(1e-5,1e-2,200);
  return <S.Figure plot caption="Resistor-limited CMRR of a four-resistor difference amplifier against the relative mismatch $\epsilon$ between its two resistor ratios, for gains of 1, 10 and 100: $\mathrm{CMRR} \approx (1 + G)/\epsilon$. A 0.1% ratio mismatch at unity gain gives only 66 dB. Higher gain helps, because the common-mode error is fixed while the wanted signal grows; at gain 100 the same mismatch gives 100 dB.">
@@ -305,7 +305,7 @@ export function CurrentSenseCircuit(){
  </S.Schematic></S.Figure>;
 }
 
-/* ---------- Chapter 86: instrumentation amplifiers ---------- */
+/* ---------- Chapter 81: instrumentation amplifiers ---------- */
 export function InaDiamondFigure(){
  // 5 V supply, reference 2.5 V, unity subtractor. Internal outputs and final output limited to 0.2–4.5 V; input op amps accept 0–4.0 V common mode.
  const vo=xs(.2,4.5,200),d=(v:number)=>Math.abs(v-2.5)/2;
@@ -334,7 +334,7 @@ export function BridgeInaCircuit(){
  </S.Schematic></S.Figure>;
 }
 
-/* ---------- Chapter 87: transimpedance amplifiers ---------- */
+/* ---------- Chapter 82: transimpedance amplifiers ---------- */
 const TIA={RF:1e6,CIN:50e-12,ft:1e6};
 export function TiaNoiseGainFigure(){
  const fs=logs(10,1e8,300),{RF,CIN,ft}=TIA;
@@ -359,7 +359,7 @@ export function TiaNoiseFigure(){
   xScale="log" yScale="log" xRange={[10,1e6]} yRange={[.1,1000]} xLabel="FREQUENCY / Hz" yLabel="OUTPUT NOISE / (nV/√Hz)" description="Resistor noise flat then falling; amplified voltage noise rising from ten nanovolts to a peak near fifty kilohertz; current-noise term negligible."/></S.Figure>;
 }
 
-/* ---------- Chapter 88: integrators ---------- */
+/* ---------- Chapter 83: integrators ---------- */
 export function IntegratorWindowFigure(){
  const fs=logs(.1,1e7,300),RIN=1e4,C=10e-9,ft=1e6,A0=1e5;
  const H=(f:number,RF:number)=>{const w=2*Math.PI*f;const zr=RF/(1+(w*RF*C)**2),zi=-w*RF*RF*C/(1+(w*RF*C)**2);const ideal=Math.hypot(zr,zi)/RIN;
@@ -397,7 +397,7 @@ export function TriangleWaveFigure(){
  <Plot curves={[{name:'Triangle (integrator output)',color:S.green,points:pts},{name:'Square (comparator output)',color:S.gray,dashed:true,points:sq}]} xRange={[0,6]} yRange={[-6,6]} xLabel="TIME / ms" yLabel="VOLTAGE / V" description="A triangle wave between plus and minus two and a half volts with a two millisecond period, and the square wave that drives it."/></S.Figure>;
 }
 
-/* ---------- Chapter 89: differentiators ---------- */
+/* ---------- Chapter 84: differentiators ---------- */
 // R_F = 100 kΩ, C_IN = 1 nF, op amp f_t = 1 MHz (integrator model A = ω_t/s).
 const DF={RF:1e5,CIN:1e-9,wt:2*Math.PI*1e6};
 const diffH=(f:number,RIN:number,CF:number)=>{const w=2*Math.PI*f,{RF,CIN,wt}=DF;
@@ -431,7 +431,7 @@ export function DiffNoiseFigure(){
  <Plot curves={[{name:'Unlimited bandwidth',color:S.orange,points:naive},{name:'Band-limited',color:S.green,points:filt}]} xRange={[0,1.2]} yRange={[-2,2]} xLabel="TIME / ms" yLabel="DERIVATIVE × 100 µs" description="A noisy, spiky trace that swamps a sinusoid, and a clean sinusoid from the band-limited differentiator."/></S.Figure>;
 }
 
-/* ---------- Chapter 90: active filters ---------- */
+/* ---------- Chapter 85: active filters ---------- */
 // Fourth-order low-pass sections (normalized frequency, Q) for 1 kHz: Butterworth and Bessel at -3 dB = 1, Chebyshev 1 dB at ripple edge = 1.
 const FAMILIES:[string,[number,number][],string][]=[['Butterworth',[[1,.5412],[1,1.3066]],S.green],['Bessel',[[1.4192,.5219],[1.5912,.8055]],S.gray],['Chebyshev, 1 dB ripple',[[.5286,.7845],[.9932,3.5594]],S.orange]];
 const famH=(f:number,sec:[number,number][])=>sec.reduce((p,[fn,q])=>{const x=f/fn;return p/Math.hypot(1-x*x,x/q);},1);
@@ -464,7 +464,7 @@ export function QSensitivityFigure(){
   yScale="log" xRange={[1,3]} yRange={[.3,30]} xLabel="STAGE GAIN K" yLabel="Q" description="Q rising slowly with gain at first and then without limit as gain approaches three."/></S.Figure>;
 }
 
-/* ---------- Chapter 91: precision rectifiers and peak detection ---------- */
+/* ---------- Chapter 86: precision rectifiers and peak detection ---------- */
 export function ImprovedHalfWaveCircuit(){
  const at:Pt=[380,190],p=S.opAmpPins({at});
  return <S.Figure caption="The improved (inverting) half-wave rectifier. For a positive input the op amp's output goes negative, $D_1$ conducts, and the circuit is an inverter of gain −1 through $R_F$: $v_{out} = -v_{in}$. For a negative input the output goes positive, $D_2$ conducts and clamps the op amp's output one diode drop above the virtual ground, while $D_1$ is reverse biased and $v_{out}$ sits at 0 V through $R_F$. The op amp never saturates: it swings only about 1.2 V across each zero crossing.">
@@ -510,7 +510,7 @@ export function PeakDetectorCircuit(){
  </S.Schematic></S.Figure>;
 }
 
-/* ---------- Chapter 92: op-amp current servos ---------- */
+/* ---------- Chapter 87: op-amp current servos ---------- */
 // 10 mA command, 50 Ω sense, 12 V supply, op amp output up to 11 V, MOSFET k = 0.1 A/V², V_T = 2 V.
 const servoI=(RL:number)=>Math.min(.01,bisect((i:number)=>i-channel(11-i*50,Math.max(0,12-i*(RL+50)),.1,2).id,0,12/(RL+50)));
 export function ServoComplianceFigure(){
@@ -544,7 +544,7 @@ export function ServoStepFigure(){
  <Plot curves={[{name:'C_gs = 1 nF, PM ≈ 63°',color:S.green,points:sim(1e-9)},{name:'C_gs = 5 nF, PM ≈ 33°',color:S.orange,points:sim(5e-9)}]} xRange={[0,10]} yRange={[0,1.5]} xLabel="TIME / µs" yLabel="SENSE VOLTAGE / COMMAND" description="Step responses: clean with one nanofarad of gate capacitance, ringing with five."/></S.Figure>;
 }
 
-/* ---------- Chapter 93: capacitive loads and feedback placement ---------- */
+/* ---------- Chapter 88: capacitive loads and feedback placement ---------- */
 export function CapLoadLagFigure(){
  const c=logs(1e-11,1e-7,200);
  return <S.Figure plot caption="Extra phase lag at a 1 MHz loop crossing from the pole formed by an op amp's 50 Ω open-loop output resistance and a capacitive load, $\arctan(2\pi f_cR_OC_L)$. A few hundred picofarads cost little; 1 nF costs 17°; 10 nF costs 72°, leaving almost nothing of a typical 60–70° margin. Cable, a long trace or an ADC's input can easily add this much.">
@@ -572,7 +572,7 @@ export function CapLoadStepFigure(){
  <Plot curves={[{name:'Direct drive',color:S.orange,points:run('direct',0)},{name:'R_ISO outside the loop',color:S.gray,points:run('out',50)},{name:'Dual-path feedback',color:S.green,points:run('dual',50)}]} xRange={[0,20]} yRange={[.9,1.05]} xLabel="TIME / µs" yLabel="LOAD VOLTAGE, ZOOMED / V" description="Zoomed view near the final value: the isolated output settles at 0.952 volts, the dual-feedback output creeps up to 1.000 volt."/></S.Figure>;
 }
 
-/* ---------- Chapter 94: analog functions and a complete design ---------- */
+/* ---------- Chapter 89: analog functions and a complete design ---------- */
 export function LogTransferFigure(){
  const I=logs(1e-9,1e-3,240),Is=1e-14,q=1.602e-19,k=1.380649e-23;
  const vo=(i:number,T:number,leak=0)=>-(k*T/q)*Math.log(Math.max(1e-30,i-leak)/(Is*Math.exp(.06*(T-298))));

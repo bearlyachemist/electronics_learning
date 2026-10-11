@@ -4,13 +4,13 @@ import {ActiveLoadCircuit,ActiveLoadLineFigure,ActiveTransferFigure,ActiveGbwFig
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 65</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 60</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>Common-source stages with active loads<br/><em>Gain from two current sources fighting.</em></h1>
 
 <p className="dek">Replace the drain resistor with a PMOS current source. Derive a gain that is independent of current, see on the load lines why the DC output becomes almost undefined, and trade the stage's large resistance between gain, bandwidth and bias sensitivity.</p>
 
-<div className="chapter-meta"><span>50–70 min</span><span>Mirrors (Chs. 59–60) · Common source (Ch. 64)</span></div>
+<div className="chapter-meta"><span>50–70 min</span><span>Mirrors (Chs. 59–60) · Common source (Ch. 59)</span></div>
 
 </div>
 
@@ -20,7 +20,7 @@ import {ActiveLoadCircuit,ActiveLoadLineFigure,ActiveTransferFigure,ActiveGbwFig
 
 <div>
 
-Chapter 64 found that a resistor-loaded stage's gain is $2V_{R_D}/u$, limited by how much supply voltage you can afford to drop across the resistor. The way out is a load whose **incremental** resistance is large while its **DC** voltage drop is small. A current source is exactly that: it passes its current with a fraction of a volt across it, yet resists changes like tens of kilohms.
+Chapter 59 found that a resistor-loaded stage's gain is $2V_{R_D}/u$, limited by how much supply voltage you can afford to drop across the resistor. The way out is a load whose **incremental** resistance is large while its **DC** voltage drop is small. A current source is exactly that: it passes its current with a fraction of a volt across it, yet resists changes like tens of kilohms.
 
 With a PMOS current source as the load, a single transistor gives gains of 50 to 100, set by the devices' output resistances. That is the gain stage inside almost every CMOS op amp. But it raises a question that resistor loads never posed, the one above, and its answer decides how such stages must be used.
 
@@ -62,7 +62,7 @@ Unloaded, substitute $g_m = 2I_D/u$ and $g_o = \lambda I_D$:
 
 The current cancels. Doubling the bias current doubles $g_m$ but halves both $r_o$, leaving the gain unchanged. The gain depends only on the overdrive and on $\lambda$, which falls with channel length. With $\lambda$ = 0.02 V⁻¹ for both devices and $u$ = 1 V, $|A_v|$ = 50. Halve the overdrive, or double both channel lengths, and it becomes 100. Current buys speed, not gain.
 
-The same equation, read as DC, gives the sensitivity: a current mismatch $\Delta I$ between the two devices moves the output by
+The same equation, read as DC, gives the sensitivity. If the PMOS source would deliver $\Delta I$ more than the NMOS would sink at the same output voltage, KCL at the output node demands that the excess flow somewhere. The only paths are the two output conductances, so the output moves until $\Delta I = -(g_{oN} + g_{oP})\Delta V_O$. A current mismatch $\Delta I$ between the two devices therefore moves the output by
 
 <Equation tex={String.raw`\Delta V_O\approx-\Delta I\,(r_{oN}\parallel r_{oP})`}/>
 
@@ -76,7 +76,7 @@ until one device leaves saturation. The large resistance that makes the gain als
 
 <ActiveLoadLineFigure/>
 
-Compare this with the resistor load line of Chapter 57, a steep straight line crossing the transistor's flat curves at a well-defined angle. Here both curves are nearly flat, so they cross at a shallow angle, and moving either one slightly slides the intersection a long way. Each 10 mV of gate voltage raises the NMOS curve by $g_m × 10$ mV = 20 µA; the intersection must move until the slopes make up 20 µA, which takes $20\text{ µA} × 25\text{ kΩ}$ = 0.5 V.
+Compare this with the resistor load line of Chapter 52, a steep straight line crossing the transistor's flat curves at a well-defined angle. Here both curves are nearly flat, so they cross at a shallow angle, and moving either one slightly slides the intersection a long way. Each 10 mV of gate voltage raises the NMOS curve by $g_m × 10$ mV = 20 µA; the intersection must move until the slopes make up 20 µA, which takes $20\text{ µA} × 25\text{ kΩ}$ = 0.5 V.
 
 <ActiveTransferFigure/>
 
@@ -114,7 +114,7 @@ All three curves share one asymptote and cross unity gain at the same frequency:
 
 <Equation tex={String.raw`\text{GBW}=|A_v|\,f_p=g_mR_{out}\cdot\frac{1}{2\pi R_{out}C}=\frac{g_m}{2\pi C}`} label="GAIN–BANDWIDTH PRODUCT OF A SINGLE NODE"/>
 
-At 2 mS and 10 pF that is 32 MHz. The only ways to raise it are more $g_m$ (more current or smaller overdrive) or less capacitance. This single equation drives op-amp design: Chapter 81 uses it to set the unity-gain frequency of a two-stage CMOS amplifier with a deliberately added compensation capacitor.
+At 2 mS and 10 pF that is 32 MHz. The only ways to raise it are more $g_m$ (more current or smaller overdrive) or less capacitance. This single equation drives op-amp design: Chapter 76 uses it to set the unity-gain frequency of a two-stage CMOS amplifier with a deliberately added compensation capacitor.
 
 <div className="worked-example">
 
@@ -136,7 +136,7 @@ At 2 mS and 10 pF that is 32 MHz. The only ways to raise it are more $g_m$ (more
 
 **Measurement.** A 10 MΩ, 10 pF oscilloscope probe barely changes the 25 kΩ resistance but adds as much capacitance as the circuit itself, halving the bandwidth you are trying to measure. A load connected to ground at DC draws current and moves the operating point, as the worked example showed.
 
-**Design flow.** Choose the DC stabilization before cascading the stage. In a two-stage op amp (Chapter 75), overall feedback sets the output; the intermediate high-gain node stays in its window only because the loop forces the input difference to near zero. Verify the low-frequency loop polarity first, then the compensation.
+**Design flow.** Choose the DC stabilization before cascading the stage. In a two-stage op amp (Chapter 70), overall feedback sets the output; the intermediate high-gain node stays in its window only because the loop forces the input difference to near zero. Verify the low-frequency loop polarity first, then the compensation.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>An active load makes the gain $2/(\lambda_N + \lambda_P)u$, independent of current, but leaves the DC output resting on the ratio of two tiny slopes. <em>High-gain nodes live inside feedback loops.</em></p></div>
 
@@ -195,7 +195,7 @@ Only in the sense that its corner frequency moved up; its gain fell from 50 to 1
 <summary>6. Does noise on the PMOS bias voltage reach the output?</summary>
 <div>
 
-Yes, with the same gain as the input signal: a voltage on $V_{BP}$ changes the PMOS current by $g_{mP}v_{bp}$, and that current flows into the 25 kΩ output node. The bias line must be filtered, or derived so that its noise is common to both sides of a differential stage, where it cancels (Chapter 72).
+Yes, with the same gain as the input signal: a voltage on $V_{BP}$ changes the PMOS current by $g_{mP}v_{bp}$, and that current flows into the 25 kΩ output node. The bias line must be filtered, or derived so that its noise is common to both sides of a differential stage, where it cancels (Chapter 67).
 
 </div>
 </details>

@@ -5,13 +5,13 @@ import {TechNoiseFigure,ChopperBlockFigure,LowFreqNoiseFigure} from '../../compo
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 82</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 77</span><span className="hairline"/>PART III / THE OP AMP</div>
 
 <h1>Choose BJT, JFET, CMOS or chopper inputs<br/><em>Pick the amplifier for the source, not for the datasheet's headline.</em></h1>
 
 <p className="dek">Compare input technologies by their total noise and DC error with the actual source impedance and bandwidth, find where each wins, see how chopping removes offset and flicker noise, and turn the comparison into a selection procedure.</p>
 
-<div className="chapter-meta"><span>45–60 min + exploration</span><span>MOS noise (Ch. 76) · DC errors (Ch. 78) · Bipolar and CMOS internals (Chs. 80–81)</span></div>
+<div className="chapter-meta"><span>45–60 min + exploration</span><span>MOS noise (Ch. 71) · DC errors (Ch. 73) · Bipolar and CMOS internals (Chs. 80–81)</span></div>
 
 </div>
 
@@ -66,7 +66,7 @@ assuming uncorrelated amplifier noise sources and a passive source. For a resist
 
 Near $R_{opt}$ the amplifier adds the least noise relative to the source. A bipolar part with 1 nV/√Hz and 2 pA/√Hz has $R_{opt}$ = 500 Ω; a JFET with 5 nV/√Hz and 5 fA/√Hz has $R_{opt}$ = 1 MΩ. Matching the amplifier to the source impedance matters more than minimizing either $e_n$ or $i_n$ alone.
 
-For DC accuracy, use Chapter 78's signed bias-current terms, offset, drift and CMRR. Total output noise also includes the feedback resistors' noise and the frequency-dependent noise gain; integrate the noise power through the actual circuit's response.
+For DC accuracy, use Chapter 73's signed bias-current terms, offset, drift and CMRR. Total output noise also includes the feedback resistors' noise and the frequency-dependent noise gain; integrate the noise power through the actual circuit's response.
 
 </section>
 
@@ -137,7 +137,7 @@ Some typical outcomes:
 
 - **pH electrode** (about 1 GΩ, DC): bias current dominates everything. An electrometer-grade CMOS or JFET part with femtoamp bias, guarded inputs and a clean board.
 - **Dynamic microphone** (about 200 Ω, audio band): voltage noise dominates. A low-noise bipolar part.
-- **Photodiode** (high resistance, tens of picofarads, kHz–MHz): current noise and input capacitance both matter, and the capacitance shapes the noise gain (Chapter 87). A JFET or low-capacitance CMOS part.
+- **Photodiode** (high resistance, tens of picofarads, kHz–MHz): current noise and input capacitance both matter, and the capacitance shapes the noise gain (Chapter 82). A JFET or low-capacitance CMOS part.
 - **Thermocouple or bridge** (low resistance, DC): drift and $1/f$ noise dominate. A chopper or auto-zero part.
 
 Source impedance is often complex: a piezoelectric sensor is mostly capacitance, a photodiode is capacitance in parallel with a large resistance, a filter network varies with frequency. Use $Z_S(f)$ in the budget when a single resistance does not describe it.
@@ -198,7 +198,7 @@ A traditional low-bandwidth chopper instrument instead modulates a DC signal int
 
 A voltage-feedback op amp senses differential voltage and is governed by $A$ and noise gain. A **current-feedback** amplifier typically has a low-impedance inverting port; its feedback resistor is part of the internal dynamic design, so use its transimpedance model and specified resistor range rather than blindly applying $f_t/NG$. An **OTA** delivers $i_o=g_mv_d$ and needs an output load to create voltage; controlled $g_m$ is useful for tunable filters. A **buffer** supplies current at near-unity gain but may need an external precision loop. **Power amplifiers**, **isolation amplifiers**, **programmable-gain amplifiers**, **instrumentation amplifiers** and **fully differential amplifiers** solve different current, grounding, range or interface problems. Choose the ports and feedback structure before comparing headline bandwidths.
 
-A precision/low-noise input amplifier followed by a fast output amplifier can combine strengths. The slow stage must correct DC error while the fast path carries the required bandwidth; two unconstrained nested high-gain loops can oscillate. Chapter 93 develops a composite-buffer model and its separate fast feedback path.
+A precision/low-noise input amplifier followed by a fast output amplifier can combine strengths. The slow stage must correct DC error while the fast path carries the required bandwidth; two unconstrained nested high-gain loops can oscillate. Chapter 88 develops a composite-buffer model and its separate fast feedback path.
 
 <details>
 <summary>Worked self-check: why not choose the smallest offset in every circuit?</summary>

@@ -4,7 +4,7 @@ import {CEAmpLab} from '../components/BjtLabs';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 32</span><span className="hairline"/>FOUNDATIONS / BIPOLAR TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 32</span><span className="hairline"/>PART II / BIPOLAR TRANSISTORS</div>
 
 <h1>The common-emitter amplifier<br/><em>Voltage gain from a ratio of resistors.</em></h1>
 
@@ -59,15 +59,37 @@ The input impedance is the bias divider in parallel with ($\beta$ + 1)$R_E$; the
 
 <div className="section-heading"><span>02</span><h2>Refine with $r_e$: degeneration and bypassing</h2></div>
 
-The small-signal model (Chapter 30) adds the transistor’s intrinsic emitter resistance $r_e$ = $V_T$/$I_C$ in series with $R_E$:
+The first model assumed $\Delta v_E = \Delta v_B$ exactly. Replace the transistor with its hybrid-π model (Chapter 30) and derive the gain properly.
 
-<Equation tex="G=-\frac{R_C}{R_E+r_e}"/>
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / COMMON-EMITTER GAIN BY NODAL ANALYSIS</span>
+
+1. **Small-signal circuit.** Short the supply to ground and treat coupling capacitors as shorts. Drive the base with an ideal source $v_b$. Between base and emitter is $r_\pi$; from collector to emitter, the controlled source $g_mv_{be}$ (neglect $r_o$ for now); from emitter to ground, $R_E$; from collector to ground, $R_C$.
+
+2. **KCL at the emitter node.** The current arriving through $r_\pi$ plus the controlled-source current must leave through $R_E$:
+<Equation tex="\frac{v_b-v_e}{r_\pi}+g_m(v_b-v_e)=\frac{v_e}{R_E}"/>
+
+3. **Solve for $v_{be}$.** Write $v_{be} = v_b - v_e$ and use $g_m + 1/r_\pi = (\beta+1)/r_\pi$. Then $v_{be}(\beta+1)/r_\pi = v_e/R_E$. Substitute $v_e = v_b - v_{be}$:
+<Equation tex="v_{be}=v_b\,\frac{r_\pi}{r_\pi+(\beta+1)R_E}"/>
+   Only a small fraction of the input appears across the junction; most of it appears across $R_E$.
+
+4. **KCL at the collector node.** The controlled source pulls $g_mv_{be}$ out of the collector node, and the only other path is $R_C$ to ground, so $v_c/R_C = -g_mv_{be}$:
+<Equation tex="v_c=-g_mR_C\,v_{be}=-\frac{\beta\,R_C}{r_\pi+(\beta+1)R_E}\,v_b"/>
+
+5. **Rewrite in terms of $r_e$.** Divide numerator and denominator by $\beta+1$, and note $r_\pi/(\beta+1) = r_e$ (exact with $r_e = V_T/I_E$) and $\beta/(\beta+1) = \alpha$:
+<Equation tex="G=\frac{v_c}{v_b}=-\alpha\,\frac{R_C}{R_E+r_e}\approx-\frac{R_C}{R_E+r_e}"/>
+   The first model's $-R_C/R_E$ is the limit $r_e \ll R_E$. The $r_e$ term is the junction's share of the input.
+
+6. **Output resistance.** Set $v_b = 0$ and drive the collector with a test source. With $r_o$ neglected, the controlled source is an ideal current source, so the only path for the test current is $R_C$: $R_{out} = R_C$. Including $r_o$ adds the Chapter 30 result in parallel: $R_{out} = R_C\parallel r_o[1 + g_m(R_E\parallel r_\pi)]$, which is $R_C$ to within a percent or two.
+
+</div>
 
 At 0.89 mA, $r_e$ = 29 Ω, so the gain of the example stage is −7500/1029 = **−7.29**, close to −7.5 because $R_E$ ≫ $r_e$.
 
 ### Bypassing the emitter for maximum gain
 
-A large capacitor across $R_E$ keeps the emitter at a fixed DC voltage (bias still set by $R_E$) but grounds it for signals. Then only $r_e$ remains:
+A large capacitor across $R_E$ keeps the emitter at a fixed DC voltage (bias still set by $R_E$) but grounds it for signals. Set $R_E = 0$ in the derivation's result. Then only $r_e$ remains, and using $r_e \approx V_T/I_C$:
 
 <Equation tex="G_{\max}=-\frac{R_C}{r_e}=-g_mR_C=-\frac{I_CR_C}{V_T}=-\frac{V_{R_C}}{25\ \mathrm{mV}}" label="BYPASSED GAIN"/>
 
@@ -79,7 +101,7 @@ The maximum gain depends only on the DC voltage across the collector resistor. W
 
 ### The compromise: partial bypassing
 
-Split $R_E$ into an unbypassed part $R_{E1}$ and a bypassed part $R_{E2}$. The bias sees $R_{E1}$ + $R_{E2}$; the signal sees only $R_{E1}$:
+Split $R_E$ into an unbypassed part $R_{E1}$ and a bypassed part $R_{E2}$. The bias sees $R_{E1}$ + $R_{E2}$; the signal sees only $R_{E1}$, so replace $R_E$ by $R_{E1}$ in the gain formula:
 
 <Equation tex="G\approx-\frac{R_C}{R_{E1}+r_e}"/>
 
@@ -107,7 +129,7 @@ The lab solves the stage with the full exponential Ebers–Moll law (Chapter 34)
 
 The collector can rise only to $V_{CC}$ (when the transistor cuts off) and fall only to about $V_E$ + 0.2 V (when it saturates). With $V_C$ = 8.3 V, $V_E$ = 0.9 V and $V_{CC}$ = 15 V, an unloaded stage can swing about +6.7 V and −7.2 V.
 
-A load changes both the gain and the swing. If the output drives a load $R_L$ through a coupling capacitor, signals see $R_C$ ∥ $R_L$:
+A load changes both the gain and the swing. If the output drives a load $R_L$ through a coupling capacitor, KCL at the collector in step 4 gains a second path to ground, so $R_C$ is replaced by $R_C$ ∥ $R_L$:
 
 <Equation tex="G=-\frac{R_C\parallel R_L}{R_E+r_e}"/>
 
@@ -157,13 +179,19 @@ Notice what made the design robust: the gain depends on $R_C$, $R_L$ and $R_{E1}
 
 ### A bypass capacitor produces a shelf, not simply an output high-pass
 
-For split emitter resistance, the signal emitter impedance is $Z_E=R_{E1}+R_{E2}/(1+j\omega R_{E2}C_E)$. Neglect base loading and Early effect:
+For split emitter resistance, the signal emitter impedance is $R_{E1}$ in series with $R_{E2}\parallel C_E$, that is, $Z_E=R_{E1}+R_{E2}/(1+j\omega R_{E2}C_E)$. Replace $R_E$ by $Z_E$ in the nodal result (the derivation holds for any emitter impedance), neglecting base loading and Early effect:
 
 <Equation tex="A_v(j\omega)\approx-\frac{R_C\parallel R_L}{r_e+R_{E1}+R_{E2}/(1+j\omega R_{E2}C_E)}" />
 
+To find its corners, multiply the numerator and denominator by $1 + j\omega R_{E2}C_E$ and let $R_1 = r_e + R_{E1}$:
+
+<Equation tex="A_v=-\frac{R_C\parallel R_L}{R_1+R_{E2}}\cdot\frac{1+j\omega R_{E2}C_E}{1+j\omega\,(R_1\parallel R_{E2})\,C_E}"/>
+
+The zero is at $\omega_z = 1/(R_{E2}C_E)$, where the capacitor's reactance equals $R_{E2}$. The pole is at the higher frequency $\omega_p = 1/[(R_1\parallel R_{E2})C_E]$, because there the capacitor sees $R_{E2}$ in parallel with the resistance looking up into the emitter. Below $\omega_z$ the gain is $-(R_C\parallel R_L)/(R_1 + R_{E2})$; above $\omega_p$ it is $-(R_C\parallel R_L)/R_1$.
+
 At low frequency, both emitter resistors degenerate the stage. At high frequency, only $R_{E1}$ remains. The gain rises between two finite levels, with an associated phase change. Calling the bypass "a short" is justified only after checking its impedance across the intended band.
 
-For $R_{E1}=390\ \Omega$, $R_{E2}=620\ \Omega$, $r_e=29\ \Omega$ and $C_E=100$ µF, the gain-shaping zero is about 2.57 Hz and the pole about 6.37 Hz with a stiff base source. Coupling capacitors add their own high-pass responses. Putting each individual corner at 20 Hz does not make the complete amplifier only 3 dB down at 20 Hz; their losses and phases combine.
+For $R_{E1}=390\ \Omega$, $R_{E2}=620\ \Omega$, $r_e=29\ \Omega$ and $C_E=100$ µF: $f_z = 1/(2\pi\cdot620\cdot100\ \mu\text{F})$ ≈ 2.57 Hz, and $R_1\parallel R_{E2} = 419\parallel620$ ≈ 250 Ω gives $f_p$ ≈ 6.37 Hz, with a stiff base source. Coupling capacitors add their own high-pass responses. Putting each individual corner at 20 Hz does not make the complete amplifier only 3 dB down at 20 Hz; their losses and phases combine.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A common-emitter stage converts input voltage to emitter current with $R_E$, then current back to voltage with $R_C$: <em>G = −$R_C$/($R_E$ + $r_e$)</em>. Degeneration buys predictability with gain.</p></div>
 

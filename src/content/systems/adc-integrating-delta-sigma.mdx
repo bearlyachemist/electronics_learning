@@ -1,10 +1,11 @@
 import Equation from '../../components/Equation.astro';
 import {SystemsFlow,SystemsPlot,PowerCircuit,MatchCircuit} from '../../components/SystemsFigures';
 import {SystemsLab} from '../../components/SystemsLab';
+import {DualSlopePlot,DeltaSigmaArchitectureFigure,DeltaSigmaBitstreamPlot} from '../../components/ConverterFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 109</span><span className="hairline"/>DATA CONVERTERS</div>
+<div className="eyebrow"><span>CHAPTER 112</span><span className="hairline"/>PART VI / ANALOG-TO-DIGITAL CONVERTERS</div>
 
 <h1>Integrating and delta–sigma ADCs<br/><em>Measure an average by balancing charge.</em></h1>
 
@@ -23,6 +24,9 @@ An integrating ADC accumulates input over a time interval rather than deciding o
 For constant input and reference, the two charge changes cancel:
 
 <Equation tex={String.raw`\frac{V_{in}T_{int}}{RC}-\frac{V_{ref}T_{deint}}{RC}=0,\qquad V_{in}=V_{ref}\frac{T_{deint}}{T_{int}}`}/>
+
+<DualSlopePlot/>
+
 The ideal result cancels R and C because both phases use the same components. If both intervals are counted by the same stable clock, its absolute frequency also cancels in their ratio. Component drift between phases, dielectric absorption, integrator leakage, switching charge and unequal paths do not cancel automatically. Auto-zero phases can estimate repeatable offsets, but their sequence and storage errors matter.
 
 For 100 ms integration, 2 V reference and 0.75 V input, return time is 37.5 ms. A 1 MHz counter measures 37500 return ticks against 100000 integration ticks. Maximum conversion time varies with input unless extra phases or a fixed scheduling interval are used. A high-resolution meter can therefore be slow even though its internal counter runs quickly.
@@ -51,9 +55,14 @@ A meter's selectable line-cycle setting often changes rejection, noise and total
 
 <div className="section-heading"><span>03</span><h2>Follow a delta–sigma stream through charge balance</h2></div>
 
+<DeltaSigmaArchitectureFigure/>
+
 A delta–sigma converter uses a feedback DAC and an integrator to keep the difference between input and feedback bounded. In a simple one-bit normalized model, feedback can be +1 or −1. The accumulator tracks the running difference, and a comparator chooses the next feedback level. If the average input is 0.25, the long-term +1 fraction approaches 0.625 because $0.625(1)+0.375(-1)=0.25$.
 
 <Equation tex={String.raw`\bar x-\bar y=\frac{s_{end}-s_{start}}{M},\qquad p_{+}=(1+\bar y)/2`}/>
+
+<DeltaSigmaBitstreamPlot/>
+
 The sign of the residual term depends on the state convention; here state accumulates input minus feedback. A bounded state makes the average feedback track input as M grows. The stream's individual bits are not a sequence of accurate one-bit voltage readings. Information lives in their pattern over time, and the output filter converts that pattern into a multi-bit result.
 
 <SystemsLab kind="delta" client:load/>

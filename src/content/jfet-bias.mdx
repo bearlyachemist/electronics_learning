@@ -5,7 +5,7 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 48</span><span className="hairline"/>FIELD-EFFECT TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 46</span><span className="hairline"/>PART II / FIELD-EFFECT TRANSISTORS</div>
 
 <h1>JFET characteristics & bias<br/><em>Let the source set the current.</em></h1>
 
@@ -79,7 +79,7 @@ Substitution gives an implicit equation:
 
 <Equation tex="I_D=I_{DSS}\left(1-\frac{I_D R_S}{|V_P|}\right)^2" />
 
-A convenient method avoids choosing the wrong root. Let x = √($I_D$/$I_{DSS}$), constrained to 0 ≤ x ≤ 1, and a = $I_{DSS}R_S$/|$V_P$|. Then:
+A convenient method avoids choosing the wrong root. Let x = √($I_D$/$I_{DSS}$), constrained to 0 ≤ x ≤ 1, and a = $I_{DSS}R_S$/|$V_P$|. Take the square root of both sides of the implicit equation, choosing the positive root because the bracket $1 - V_{GS}/V_P$ lies between 0 and 1 in the valid range: $x = 1 - I_DR_S/|V_P|$. Since $I_D = I_{DSS}x^2$, the last term is $ax^2$, so $x = 1 - ax^2$. The quadratic formula gives $x = (-1 + \sqrt{1+4a})/(2a)$ for the positive root; multiplying top and bottom by $1 + \sqrt{1+4a}$ gives the form below, which stays well behaved as $a \to 0$:
 
 <Equation tex="ax^2+x-1=0,\qquad x=\frac{2}{1+\sqrt{1+4a}},\qquad I_D=I_{DSS}x^2" />
 
@@ -115,7 +115,11 @@ For finite output resistance $r_o$, a source resistor increases current-source o
 
 <Equation tex="R_{\mathrm{out}}\approx r_o+R_S+g_mr_oR_S" />
 
-Derive it by holding the gate at AC ground, applying a test drain voltage and noting $v_s$ = $i_d R_S$. Substitute $v_{gs}$ = −$i_d R_S$ and $v_{ds}$ = $v_d$ − $i_d R_S$ into $i_d$ = $g_m v_{gs}$ + $v_{ds}$/$r_o$. The improvement comes from the same local loop that stabilizes bias. It is valid only while the device remains in its current-source region.
+Derive it by holding the gate at AC ground, applying a test drain voltage and noting $v_s$ = $i_d R_S$ (all the drain current flows down $R_S$). Substitute $v_{gs}$ = −$i_d R_S$ and $v_{ds}$ = $v_d$ − $i_d R_S$ into $i_d$ = $g_m v_{gs}$ + $v_{ds}$/$r_o$:
+
+<Equation tex="i_d=-g_mR_S\,i_d+\frac{v_d-i_dR_S}{r_o}\quad\Longrightarrow\quad i_d\left(r_o+g_mr_oR_S+R_S\right)=v_d"/>
+
+Dividing $v_d$ by $i_d$ gives the result above. The improvement comes from the same local loop that stabilizes bias. It is valid only while the device remains in its current-source region.
 
 
 
@@ -147,7 +151,11 @@ Read the parameter conditions as carefully as the numbers: gate leakage, capacit
 
 ### Separate sensitivity to the two device parameters
 
-At a saturated self-biased point, with cutoff magnitude P held fixed:
+Start from the self-bias equation $I_D = I_{DSS}(1 - I_DR_S/P)^2$ and take logarithms: $\ln I_D = \ln I_{DSS} + 2\ln(1 - I_DR_S/P)$. Differentiate:
+
+<Equation tex="d\ln I_D=d\ln I_{DSS}+\frac{2}{1-I_DR_S/P}\left(-\frac{R_S}{P}dI_D+\frac{I_DR_S}{P}d\ln P\right)"/>
+
+The factor $2I_D/[P(1 - I_DR_S/P)]$ is the transconductance $g_m$ at the bias point (from section 02, $g_m = 2I_{DSS}(1 - V_{GS}/V_P)/P$, and $I_{DSS}(1-V_{GS}/V_P) = I_D/(1 - V_{GS}/V_P)$). Writing $dI_D = I_D\,d\ln I_D$, the equation becomes $d\ln I_D(1 + g_mR_S) = d\ln I_{DSS} + g_mR_S\,d\ln P$. At a saturated self-biased point, with the other parameter held fixed:
 
 <Equation tex="\frac{\partial\ln I_D}{\partial\ln I_{DSS}}=\frac{1}{1+g_mR_S},\qquad \frac{\partial\ln I_D}{\partial\ln P}=\frac{g_mR_S}{1+g_mR_S},\quad P=|V_P|"/>
 

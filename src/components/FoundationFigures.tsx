@@ -6,7 +6,7 @@ import {logspace} from './Parts';
 const pairs=(xs:number[],f:(x:number)=>number)=>xs.map(x=>[x,f(x)] as [number,number]);
 const par=(a:number,b:number)=>a*b/(a+b);
 
-/* ---------- Chapter 01: dividers ---------- */
+/* ---------- Chapter 1: dividers ---------- */
 // A loaded divider and its Thévenin equivalent, side by side.
 export function DividerEquivalentFigure(){
   const o1:Pt=[200,110],o2:Pt=[580,110];
@@ -63,7 +63,7 @@ export function BatteryMonitorFigure(){
     </Schematic></Figure>;
 }
 
-/* ---------- Chapter 02: Thévenin ---------- */
+/* ---------- Chapter 2: Thévenin ---------- */
 // The three steps of finding an equivalent, on the 12 V / 3 kΩ / 6 kΩ example.
 export function TheveninStepsFigure(){
   const panel=(x0:number,step:number)=>{const o:Pt=[x0+150,110];return <g key={step}>
@@ -136,7 +136,7 @@ export function DependentTestFigure(){
     </Schematic></Figure>;
 }
 
-/* ---------- Chapter 03: small-signal resistance ---------- */
+/* ---------- Chapter 3: small-signal resistance ---------- */
 const VT=0.02585,IS=1e-12,diodeI=(v:number)=>IS*(Math.exp(v/VT)-1);
 // DC ratio (chord from the origin) versus the tangent at the bias point.
 export function ChordTangentFigure(){
@@ -197,7 +197,7 @@ export function IncrementalFigure(){
     </Schematic></Figure>;
 }
 
-/* ---------- Chapter 04: power and heating ---------- */
+/* ---------- Chapter 4: power and heating ---------- */
 export function HeldConstantFigure(){
   const xs=logspace(0,4,200);
   return <Figure plot caption="Power in a resistor $R$ when the voltage across it is held at 10 V (green, $P = V^2/R$) and when the current through it is held at 100 mA (orange, $P = I^2R$). The lines slope in opposite directions. Asking whether a larger resistor dissipates more is meaningless until you say what the circuit holds fixed; the two drives agree only at $R = V/I$ = 100 Ω.">

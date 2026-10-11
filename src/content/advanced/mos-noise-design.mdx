@@ -5,13 +5,13 @@ import {NoiseVsSourceFigure,GmIdFigure,FlickerFigure} from '../../components/Mos
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 76</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+<div className="eyebrow"><span>CHAPTER 71</span><span className="hairline"/>PART II / MOS ANALOG DESIGN</div>
 
 <h1>MOS noise and transconductance efficiency<br/><em>Spend current only where it lowers the noise.</em></h1>
 
 <p className="dek">Refer every noise source to the input, find how a MOSFET's white noise depends on its transconductance and its flicker noise on its area, compare inversion levels by $g_m/I_D$, and decide when more current helps, when more area helps, and when neither does.</p>
 
-<div className="chapter-meta"><span>50–70 min + exploration</span><span>Differential pair (Ch. 70) · Thermal noise (Ch. 50)</span></div>
+<div className="chapter-meta"><span>50–70 min + exploration</span><span>Differential pair (Ch. 65) · Thermal noise (Ch. 48)</span></div>
 
 </div>
 
@@ -57,7 +57,7 @@ In saturation, a long-channel MOSFET's channel produces a white drain-current no
 
 <Equation tex={String.raw`\frac{\overline{i_{n,d}^2}}{\Delta f}=4k_BT\,\gamma_n\,g_m,\qquad \gamma_n\approx\tfrac23\ \text{(long channel, strong inversion)}`}/>
 
-Here $\gamma_n$ is a noise coefficient, not the body-effect $\gamma$. Dividing by $g_m^2$ refers it to the gate:
+Here $\gamma_n$ is a noise coefficient, not the body-effect $\gamma$. To refer it to the gate, ask what gate voltage would produce the same drain current: $i_d = g_mv_g$, so $v_g = i_d/g_m$ and the power densities scale by $1/g_m^2$:
 
 <Equation tex={String.raw`e_{n,M}^2=\frac{4k_BT\gamma_n}{g_m}\qquad\Longleftrightarrow\qquad e_{n,M}=\sqrt{4k_BT\cdot\frac{\gamma_n}{g_m}}`} label="MOS WHITE INPUT NOISE"/>
 
@@ -111,7 +111,7 @@ At fixed load current, choosing larger load overdrive reduces $g_{mL}=2I/u_L$ an
 
 <div className="section-heading"><span>04</span><h2>Transconductance per microamp</h2></div>
 
-Since noise, gain and speed all improve with $g_m$, the useful question is how much $g_m$ each microamp of current buys. That ratio, $g_m/I_D$, depends on how strongly the channel is inverted:
+Since noise, gain and speed all improve with $g_m$, the useful question is how much $g_m$ each microamp of current buys. That ratio, $g_m/I_D$, depends on how strongly the channel is inverted. It equals $d\ln I_D/dV_{GS}$, the logarithmic slope of the transfer curve. In strong inversion $\ln I_D = \text{const} + 2\ln u$, whose derivative is $2/u$. In weak inversion $I_D \propto e^{V_{GS}/nU_T}$, so $\ln I_D = \text{const} + V_{GS}/nU_T$, whose derivative is the constant $1/nU_T$:
 
 <Equation tex={String.raw`\left(\frac{g_m}{I_D}\right)_{\text{strong}}=\frac{2}{u},\qquad\left(\frac{g_m}{I_D}\right)_{\text{weak}}=\frac{1}{nU_T}`}/>
 
@@ -129,7 +129,7 @@ $U_T = k_BT/q$ ≈ 25.9 mV is the thermal voltage (not the threshold), and $n$ �
 
 <p><strong>Weak inversion, $n$ = 1.5:</strong> $1/(1.5 × 0.0259)$ = 25.8 V⁻¹, so about <strong>39 µA</strong>, but the device must be very wide, with correspondingly large capacitance. Its speed, roughly $g_m/(2\pi C_{gs})$, is far lower.</p>
 
-<p>Low-power designs therefore work in weak or moderate inversion for the input pair, where noise per microamp is best, and in strong inversion for mirrors and loads, where a large overdrive improves matching (Chapter 59) and makes their own noise contribution, proportional to their $g_m$, smaller.</p>
+<p>Low-power designs therefore work in weak or moderate inversion for the input pair, where noise per microamp is best, and in strong inversion for mirrors and loads, where a large overdrive improves matching (Chapter 54) and makes their own noise contribution, proportional to their $g_m$, smaller.</p>
 
 </div>
 
@@ -153,13 +153,13 @@ The **corner frequency** $f_c$, where flicker equals white noise, is typically 1
 
 <span className="tiny-label">WORKED EXAMPLE / A SLOW MEASUREMENT</span><h3>White floor 5 nV/√Hz, corner 1 kHz</h3>
 
-<p>Integrating $e_n^2(1 + f_c/f)$ from $f_1$ to $f_2$ gives $e_n^2[(f_2 - f_1) + f_c\ln(f_2/f_1)]$. Each decade of flicker contributes the same amount, $f_c\ln 10$.</p>
+<p>Integrating $e_n^2(1 + f_c/f)$ from $f_1$ to $f_2$ term by term, $\int df = f_2 - f_1$ and $\int f_c\,df/f = f_c\ln(f_2/f_1)$, gives $e_n^2[(f_2 - f_1) + f_c\ln(f_2/f_1)]$. Each decade of flicker contributes the same amount, $f_c\ln 10$.</p>
 
 <p><strong>0.1 to 10 Hz</strong> (a strain-gauge or thermocouple band): $5\text{ nV}\sqrt{9.9 + 1000\ln 100}$ = <strong>340 nV rms</strong>, almost all flicker.</p>
 
 <p><strong>1 to 10 kHz</strong>: $5\text{ nV}\sqrt{9000 + 1000\ln 10}$ = <strong>532 nV rms</strong>, mostly white.</p>
 
-<p>The 0.1–10 Hz band is a thousand times narrower but has two-thirds of the noise. For slow precision measurements, a chopper-stabilized amplifier (Chapter 82) moves the signal above the flicker corner and removes this noise almost entirely.</p>
+<p>The 0.1–10 Hz band is a thousand times narrower but has two-thirds of the noise. For slow precision measurements, a chopper-stabilized amplifier (Chapter 77) moves the signal above the flicker corner and removes this noise almost entirely.</p>
 
 </div>
 
@@ -173,7 +173,7 @@ The **corner frequency** $f_c$, where flicker equals white noise, is typically 1
 
 **Leakage and current noise.** MOS gate leakage is small but not zero, and it doubles roughly every 10 °C. At very high source impedances (pH electrodes, photodiodes in photovoltaic mode, electrometers), leakage in protection diodes and on the board can dominate. These are DC errors and low-frequency noise, not represented by $e_n$.
 
-**Choosing a technology.** Low source impedance (below ~1 kΩ): the lowest $e_n$ per microamp, usually a bipolar input. High source impedance: the lowest current noise, MOS or JFET. Below the flicker corner: large-area devices, JFETs, or chopping. Chapter 82 turns these rules into a comparison.
+**Choosing a technology.** Low source impedance (below ~1 kΩ): the lowest $e_n$ per microamp, usually a bipolar input. High source impedance: the lowest current noise, MOS or JFET. Below the flicker corner: large-area devices, JFETs, or chopping. Chapter 77 turns these rules into a comparison.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A MOSFET's white noise is that of a resistor $\gamma_n/g_m$, so it falls only as the fourth root of current; its flicker noise falls with area. <em>Stop spending once the source's own noise dominates.</em></p></div>
 

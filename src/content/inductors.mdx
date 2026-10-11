@@ -4,7 +4,7 @@ import {CoreFluxFigure,RLResponseFigure,ClampDecayFigure,FlybackOptionsFigure,Sa
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 10</span><span className="hairline"/>FOUNDATIONS / ENERGY & SIGNALS</div>
+<div className="eyebrow"><span>CHAPTER 10</span><span className="hairline"/>PART I / DC CIRCUITS &amp; ENERGY STORAGE</div>
 
 <h1>Inductors<br/><em>Current has a memory.</em></h1>
 
@@ -121,7 +121,7 @@ For 10 mH, 50 mA, and a 12 V clamp magnitude, stopping time is **41.67 µs**. Th
 <span className="tiny-label">WORKED EXAMPLE / WITH NO CLAMP AT ALL</span><h3>How high does the voltage go?</h3>
 <p>Take the same 100 mH coil at 100 mA and open the switch with no diode. The current must go somewhere; the only path is the small stray capacitance of the open switch and wiring, say 50 pF. The coil's energy moves into that capacitance: $\tfrac12LI^2 = \tfrac12CV^2$, so</p>
 <Equation tex="V=I\sqrt{L/C}=0.1\ \mathrm{A}\times\sqrt{0.1\ \mathrm H/50\ \mathrm{pF}}\approx4.5\ \mathrm{kV}"/>
-<p>Long before that, the switch breaks down: a transistor avalanches, a contact arcs. A 0.5 mJ pulse is small, but repeated every time the relay opens it destroys transistors and erodes contacts. That is why the flywheel diode is not optional (Chapter 17).</p>
+<p>Long before that, the switch breaks down: a transistor avalanches, a contact arcs. A 0.5 mJ pulse is small, but repeated every time the relay opens it destroys transistors and erodes contacts. That is why the flywheel diode is not optional (Chapter 24).</p>
 
 </div>
 

@@ -4,7 +4,7 @@ import {PhaseSplitterLab} from '../components/BjtLabs';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 33</span><span className="hairline"/>FOUNDATIONS / BIPOLAR TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 33</span><span className="hairline"/>PART II / BIPOLAR TRANSISTORS</div>
 
 <h1>Phase splitter & transconductance<br/><em>One current, two voltages.</em></h1>
 
@@ -50,11 +50,26 @@ Both outputs move, toward each other on positive input swings. At rest, $V_E$ �
 
 ### A phase shifter
 
-Connect a resistor R from the collector output and a capacitor C from the emitter output to a common node. With outputs ∓v:
+Connect a resistor R from the collector output and a capacitor C from the emitter output to a common node $x$. Treat the two outputs as ideal sources, $-\mathbf v$ at the collector and $+\mathbf v$ at the emitter.
 
-<Equation tex="\mathbf V_x=\mathbf v\,\frac{j\omega RC-1}{j\omega RC+1},\qquad |\mathbf V_x|=|\mathbf v|,\qquad \angle\mathbf V_x=180^\circ-2\tan^{-1}(\omega RC)"/>
+<div className="derivation">
 
-The amplitude is constant at every frequency while the phase moves from 180° (low frequency) through 90° (at ωRC = 1) to 0°. Making R variable gives an adjustable phase shifter with constant amplitude—an **all-pass** network—that phasors (Chapter 19) make easy to analyze.
+<span className="tiny-label">DERIVATION / THE ALL-PASS PHASE SHIFTER BY KCL</span>
+
+1. **KCL at node $x$.** With nothing else connected, the current arriving through R equals the current leaving through C:
+<Equation tex="\frac{-\mathbf v-\mathbf V_x}{R}+j\omega C\,(\mathbf v-\mathbf V_x)=0"/>
+
+2. **Collect the $\mathbf V_x$ terms.** Multiply by $R$:
+<Equation tex="-\mathbf v-\mathbf V_x+j\omega RC\,\mathbf v-j\omega RC\,\mathbf V_x=0\ \Longrightarrow\ \mathbf V_x=\mathbf v\,\frac{j\omega RC-1}{j\omega RC+1}"/>
+
+3. **Magnitude.** Numerator and denominator have the same magnitude, $\sqrt{1+(\omega RC)^2}$, so $|\mathbf V_x| = |\mathbf v|$ at every frequency.
+
+4. **Phase.** The numerator $-1 + j\omega RC$ lies in the second quadrant at angle $180° - \tan^{-1}(\omega RC)$; the denominator is at $+\tan^{-1}(\omega RC)$. Subtracting:
+<Equation tex="\angle\mathbf V_x=180^\circ-2\tan^{-1}(\omega RC)"/>
+
+</div>
+
+The amplitude is constant at every frequency while the phase moves from 180° (low frequency) through 90° (at ωRC = 1) to 0°. Making R variable gives an adjustable phase shifter with constant amplitude—an **all-pass** network—that phasors (Chapter 12) make easy to analyze.
 
 </section>
 
@@ -93,7 +108,11 @@ A load on the collector output forms a divider with 4.7 kΩ. A 10 kΩ load reduc
 
 <Equation tex="G_m=\frac{\Delta I_{\mathrm{out}}}{\Delta V_{\mathrm{in}}}"/>
 
-For a bare transistor driven at its base with the emitter at signal ground, Chapter 30 found $g_m$ = $I_C$/$V_T$: 38.7 mS at 1 mA. With an emitter resistor, the input voltage must also drive $R_E$, so the stage’s transconductance is smaller and set mainly by the resistor:
+For a bare transistor driven at its base with the emitter at signal ground, Chapter 30 found $g_m$ = $I_C$/$V_T$: 38.7 mS at 1 mA. With an emitter resistor, the input voltage must also drive $R_E$. Chapter 32's nodal analysis found $v_{be} = v_b\,r_\pi/[r_\pi + (\beta+1)R_E]$. Multiply by $g_m$ to get the output current, then divide numerator and denominator by $r_\pi$ (with $(\beta+1)/r_\pi \approx g_m$):
+
+<Equation tex="i_c=g_mv_{be}=\frac{g_m}{1+(\beta+1)R_E/r_\pi}\,v_b\approx\frac{g_m}{1+g_mR_E}\,v_b"/>
+
+The stage’s transconductance is therefore smaller and set mainly by the resistor:
 
 <Equation tex="G_m=\frac{1}{R_E+r_e}=\frac{g_m}{1+g_mR_E}\approx\frac{1}{R_E}\qquad(g_mR_E\gg1)" label="DEGENERATED TRANSCONDUCTANCE"/>
 
@@ -140,7 +159,7 @@ A designer thinking “the base current controls the collector” tends to desig
 
 ### Compensate a known collector load
 
-The approximate balance condition is $R_C\parallel R_{LC}=R_E\parallel R_{LE}$. With an effectively unloaded emitter output, $R_E=4.7$ kΩ and a 10 kΩ collector load, solve $R_C\parallel10\ \mathrm{k\Omega}=4.7\ \mathrm{k\Omega}$:
+The collector output is $-i_c(R_C\parallel R_{LC})$ and the emitter output is $+i_e(R_E\parallel R_{LE})$, with $i_c = \alpha i_e$. Equal magnitudes therefore require, to within $\alpha$, $R_C\parallel R_{LC}=R_E\parallel R_{LE}$. With an effectively unloaded emitter output, $R_E=4.7$ kΩ and a 10 kΩ collector load, solve $R_C\parallel10\ \mathrm{k\Omega}=4.7\ \mathrm{k\Omega}$:
 
 <Equation tex="R_C=\frac{4.7\times10}{10-4.7}\ \mathrm{k\Omega}=8.87\ \mathrm{k\Omega}" />
 

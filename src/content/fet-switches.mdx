@@ -5,7 +5,7 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 51</span><span className="hairline"/>FIELD-EFFECT TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 49</span><span className="hairline"/>PART II / FIELD-EFFECT TRANSISTORS</div>
 
 <h1>FETs as signal switches<br/><em>A switch is still an analog device.</em></h1>
 
@@ -40,7 +40,7 @@ Closing a channel does not make its resistance vanish, and opening it does not r
 
 An ideal closed switch has zero resistance; an open switch has zero leakage and capacitance. A FET approximates those conditions over a restricted range of voltage, frequency and current. Its on-resistance varies with signal voltage, its off-state passes displacement current, and moving its gate can inject charge into the signal path.
 
-If a switch with resistance $R_{ON}$ feeds a resistive load $R_L$ from a stiff voltage source, the attenuation is:
+If a switch with resistance $R_{ON}$ feeds a resistive load $R_L$ from a stiff voltage source, the same current flows through both, so they form a voltage divider and the attenuation is:
 
 <Equation tex="\frac{V_o}{V_i}=\frac{R_L}{R_L+R_{ON}}" />
 
@@ -68,7 +68,25 @@ A shunt mute is a useful topology: place the JFET channel between a low-amplitud
 
 <div className="section-heading"><span>03</span><h2>Why one MOS pass transistor loses a logic level</h2></div>
 
-An n-channel enhancement MOSFET conducts well when its gate is sufficiently above the lower-potential channel terminal. If its gate is fixed at $V_{DD}$ and it tries to charge an output capacitor toward $V_{DD}$, its available $V_{GS}$ falls as the output rises. The current becomes weak near $V_{DD}$ − $V_T$, with body effect often worsening the limitation. The final result depends on leakage and loading; “$V_{DD}$ − $V_T$” is a useful strong-conduction boundary rather than an exact universal final voltage.
+An n-channel enhancement MOSFET conducts well when its gate is sufficiently above the lower-potential channel terminal. If its gate is fixed at $V_{DD}$ and it tries to charge an output capacitor toward $V_{DD}$, its available $V_{GS}$ falls as the output rises. The current becomes weak near $V_{DD}$ − $V_T$, with body effect often worsening the limitation.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / HOW SLOWLY AN NMOS PASS DEVICE PULLS HIGH</span>
+
+1. **Which terminal is the source.** The output $v$ is the lower-potential channel terminal, so it acts as the source: $V_{GS} = V_{DD} - v$. The drain, at $V_{DD}$, is far above $V_{GS} - V_T$, so the device is in saturation.
+
+2. **KCL at the output capacitor.** The drain current charges $C$. Let $V_m = V_{DD} - V_T$, the voltage at which the overdrive reaches zero:
+<Equation tex="C\frac{dv}{dt}=\frac{k}{2}(V_{DD}-v-V_T)^2=\frac{k}{2}(V_m-v)^2"/>
+
+3. **Separate and integrate.** Let $w = V_m - v$, so $dw = -dv$. Then $-C\,dw/w^2 = (k/2)\,dt$, which integrates to $C/w = (k/2)t + C/V_m$ for an output starting at $v = 0$:
+<Equation tex="v(t)=V_m-\frac{V_m}{1+kV_mt/2C}"/>
+
+4. **Interpretation.** The remaining gap $V_m - v$ falls only as $1/t$, not exponentially. After ten time units of $2C/(kV_m)$, the output is still 9% short of $V_m$. In this model it never reaches $V_m$, let alone $V_{DD}$; in practice subthreshold conduction and leakage set where it stops.
+
+</div>
+
+The final result depends on leakage and loading; “$V_{DD}$ − $V_T$” is a useful strong-conduction boundary rather than an exact universal final voltage.
 
 A p-channel pass device has the complementary weakness near the low rail. Put n and p devices in parallel with complementary gate controls and obtain a **CMOS transmission gate**. The n device conducts best toward the low end of the signal range; the p device helps toward the high end. The body/well connections must be arranged for the intended supply range.
 
@@ -93,15 +111,17 @@ During acquisition, a source resistance $R_{src}$ and the switch's on-resistance
 <Equation tex="V_H(t)=V\left(1-e^{-t/\tau}\right),\qquad \tau=(R_{\mathrm{src}}+R_{ON})C_H" />
 <Equation tex="t_{\mathrm{settle}}\ge\tau\ln\!\left(\frac1\epsilon\right)" />
 
+The first equation is the RC charging solution, because the source, the switch and the capacitor form one series loop with total resistance $R_{src} + R_{ON}$. The remaining fractional error is $(V - V_H)/V = e^{-t/\tau}$; requiring it to be at most $\epsilon$ and taking logarithms gives the settling time.
+
 With $R_{src}$ = 1 kΩ, $R_{ON}$ = 100 Ω and $C_H$ = 1 nF, $\tau$ = 1.1 μs. Settling to 0.1% requires 6.91τ = 7.60 μs. For a full-scale step and a 12-bit converter's half-LSB criterion, $\varepsilon$ = 1/8192, requiring 9.01τ = 9.91 μs in this single-pole approximation. The source amplifier may impose further settling limits.
 
-Opening the switch can place some channel or gate-coupled charge on the capacitor:
+Opening the switch can place some channel or gate-coupled charge on the capacitor. Once the switch is open the capacitor is isolated, so charge is conserved on it and any delivered charge changes its voltage by $Q/C$:
 
 <Equation tex="\Delta V_H=\frac{Q_{\mathrm{injected}}}{C_H}" />
 
 An effective 5 pC delivered to 1 nF creates a 5 mV step. The partition of channel charge depends on impedances and timing, so use the relevant datasheet measurement or a suitable model rather than assigning all transistor channel charge to the hold node.
 
-During hold, total leakage from the switch, capacitor, board and buffer changes the voltage:
+During hold, total leakage from the switch, capacitor, board and buffer changes the voltage. The capacitor law $i = C\,dv/dt$ gives the droop rate directly:
 
 <Equation tex="\left|\frac{dV_H}{dt}\right|=\frac{|I_{\mathrm{leak}}|}{C_H}" />
 

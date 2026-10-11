@@ -4,7 +4,7 @@ import {resolve, join, dirname} from 'node:path';
 
 const root = resolve(process.argv[2] || 'dist');
 const base = '/electronics';
-const guides = ['/opamp-coverage/','/systems-coverage/'];
+const guides = ['/opamp-coverage/','/systems-coverage/','/contents/'];
 let pages = 0, references = 0;
 const problems = [];
 async function exists(path) {

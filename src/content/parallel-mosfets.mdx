@@ -5,7 +5,7 @@ import {FetCircuit,FetStructure,BackToBack} from '../components/FetFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 56</span><span className="hairline"/>FIELD-EFFECT TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 97</span><span className="hairline"/>PART IV / POWER SWITCHES</div>
 
 <h1>Parallel MOSFETs & thermal stability<br/><em>Sharing a gate does not guarantee sharing a load.</em></h1>
 
@@ -40,7 +40,7 @@ Sharing a voltage or gate command does not force equal branch currents. Fully en
 
 <ParallelMosFigure/>
 
-When two fully enhanced MOSFETs connect in parallel, their drain-source voltages are equal. If their on-resistances are $R_1$ and $R_2$ and total load current is $I_T$:
+When two fully enhanced MOSFETs connect in parallel, their drain-source voltages are equal. If their on-resistances are $R_1$ and $R_2$ and total load current is $I_T$, Ohm's law gives each branch current from the common voltage $V$, and KCL requires $I_1 + I_2 = I_T$. Substituting, $V(1/R_1 + 1/R_2) = I_T$, so $V = I_TR_1R_2/(R_1 + R_2)$. Dividing back by each resistance gives the current-divider rule:
 
 <Equation tex="I_1=\frac{V}{R_1},\quad I_2=\frac{V}{R_2},\quad I_1=I_T\frac{R_2}{R_1+R_2},\quad I_2=I_T\frac{R_1}{R_1+R_2}" />
 
@@ -52,7 +52,7 @@ This is a useful stabilizing tendency. It is not perfect balancing: package temp
 
 ### Current redistribution is not the same as power reduction
 
-At fixed total current, branch-one power is $P_1=I_T^2R_1R_2^2/(R_1+R_2)^2$. Hold the other branch resistance fixed and differentiate:
+At fixed total current, branch-one power is $P_1=I_1^2R_1=I_T^2R_1R_2^2/(R_1+R_2)^2$. Hold the other branch resistance fixed and differentiate the logarithms: $\ln I_1 = \ln I_T + \ln R_2 - \ln(R_1+R_2)$ gives $\partial\ln I_1/\partial\ln R_1 = -R_1/(R_1+R_2)$. Since $\ln P_1 = 2\ln I_1 + \ln R_1$, its sensitivity is twice that plus one:
 
 <Equation tex="\frac{\partial\ln I_1}{\partial\ln R_1}=-\frac{R_1}{R_1+R_2},\qquad \frac{\partial\ln P_1}{\partial\ln R_1}=\frac{R_2-R_1}{R_1+R_2}"/>
 
@@ -80,7 +80,7 @@ The cost of ballast is real. A 10 mΩ resistor carrying 10 A dissipates 1 W. If 
 
 In linear power service, a MOSFET may sustain a large $V_{DS}$ while its gate is only slightly above threshold. Mobility tends to decrease with temperature, reducing current, while threshold voltage often decreases, increasing overdrive and current. Their competition depends on the operating point.
 
-Using $I_D$ = k(T)($V_{GS}$ − $V_T$(T))²/2 at fixed $V_{GS}$ and $V_{DS}$:
+Using $I_D$ = k(T)($V_{GS}$ − $V_T$(T))²/2 at fixed $V_{GS}$ and $V_{DS}$, take the logarithm, $\ln I_D = \ln k + 2\ln u - \ln 2$ with $u = V_{GS} - V_T$, and differentiate with respect to temperature. Since $du/dT = -dV_T/dT$:
 
 <Equation tex="\frac1{I_D}\frac{dI_D}{dT}=\frac1k\frac{dk}{dT}-\frac{2}{u}\frac{dV_T}{dT}" />
 
@@ -92,7 +92,7 @@ A lumped thermal model is:
 
 <Equation tex="C_\theta\frac{dT}{dt}=P(T)-\frac{T-T_A}{R_\theta}" />
 
-At an equilibrium, small temperature perturbations decay only if:
+Linearize about an equilibrium $T_0$: let $T = T_0 + \delta T$. The equilibrium terms cancel, leaving $C_\theta\,d\delta T/dt = (dP/dT - 1/R_\theta)\,\delta T$. This first-order equation has solution $\delta T \propto e^{\lambda t}$ with $\lambda = (dP/dT - 1/R_\theta)/C_\theta$. Small temperature perturbations decay only if $\lambda < 0$:
 
 <Equation tex="\left.\frac{dP}{dT}\right|_{\mathrm{eq}}<\frac1{R_\theta}" />
 

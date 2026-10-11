@@ -5,13 +5,13 @@ import {ImprovedHalfWaveCircuit,FullWaveCircuit,RectifierRecoveryFigure,PeakDete
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 91</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 86</span><span className="hairline"/>PART III / OP-AMP CIRCUITS</div>
 
 <h1>Precision rectifiers and peak detection<br/><em>Hide the diode inside the loop, then watch it switch.</em></h1>
 
 <p className="dek">Put a diode inside an op amp's feedback loop to rectify signals smaller than its forward drop. Analyze each diode state separately, find the switching error the static analysis hides, cure it with a two-diode design, build a full-wave rectifier and an AC meter, and budget a peak detector's droop.</p>
 
-<div className="chapter-meta"><span>50–70 min</span><span>Diode applications (Ch. 16) · Inverting amplifiers (Ch. 84) · Slew rate (Ch. 79)</span></div>
+<div className="chapter-meta"><span>50–70 min</span><span>Diode applications (Ch. 23) · Inverting amplifiers (Ch. 79) · Slew rate (Ch. 74)</span></div>
 
 </div>
 
@@ -113,7 +113,7 @@ The second stage sums the input with weight −1 and the half-wave output with w
 
 <p>Follow the absolute-value circuit with an RC low-pass much slower than the signal, and the output is the average of $|v_{in}|$. For a sine of peak $V_p$ that average is $2V_p/\pi$ = 0.637 $V_p$, while the rms value is 0.707 $V_p$. Scaling by 0.707/0.637 = <strong>1.11</strong> makes the meter read rms, for sines.</p>
 
-<p>For other waveforms it is wrong. A square wave's average and rms are equal, so the meter reads 11% high; a triangle wave's rms is 1.155 times its average, so it reads 3.9% low. Meters that must be right for any waveform compute the true rms instead (Chapter 94).</p>
+<p>For other waveforms it is wrong. A square wave's average and rms are equal, so the meter reads 11% high; a triangle wave's rms is 1.155 times its average, so it reads 3.9% low. Meters that must be right for any waveform compute the true rms instead (Chapter 89).</p>
 
 <p><strong>Matching.</strong> If the summer's weights are 2.00 and 1.00 to within 0.1%, the two half-cycles have gains equal to within 0.1%. A 1% mismatch makes the positive and negative halves differ by 1%, and adds a ripple component at the signal frequency.</p>
 

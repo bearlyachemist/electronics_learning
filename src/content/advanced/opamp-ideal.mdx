@@ -6,13 +6,13 @@ import {FeedbackBlockFigure,LoopGainErrorFigure,SaturationFigure,OptionalInverte
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 77</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 72</span><span className="hairline"/>PART III / THE OP AMP</div>
 
 <h1>Ideal op amps and feedback<br/><em>Derive the virtual short; don't assume it.</em></h1>
 
 <p className="dek">Start from a differential amplifier with finite gain, close a negative-feedback loop around it, and derive the "golden rules" as limits. Then find exactly where they fail: saturation, wrong polarity, and the difference between signal gain and noise gain.</p>
 
-<div className="chapter-meta"><span>50–70 min + exploration</span><span>Feedback (Ch. 42) · Two-stage amplifier (Ch. 75)</span></div>
+<div className="chapter-meta"><span>50–70 min + exploration</span><span>Feedback (Ch. 42) · Two-stage amplifier (Ch. 70)</span></div>
 
 </div>
 
@@ -22,7 +22,7 @@ import {FeedbackBlockFigure,LoopGainErrorFigure,SaturationFigure,OptionalInverte
 
 <div>
 
-Chapter 75 built an amplifier with a gain of thousands from a handful of transistors. Package that, add an output stage and some protection, and you have an operational amplifier: a differential voltage amplifier with enormous, poorly controlled gain. Nobody uses that gain directly. It is fuel for negative feedback, which trades it for a gain set by two resistors.
+Chapter 70 built an amplifier with a gain of thousands from a handful of transistors. Package that, add an output stage and some protection, and you have an operational amplifier: a differential voltage amplifier with enormous, poorly controlled gain. Nobody uses that gain directly. It is fuel for negative feedback, which trades it for a gain set by two resistors.
 
 Every op-amp textbook gives two rules: no current flows into the inputs, and with negative feedback the output does whatever it takes to make the two inputs equal. This chapter derives the second rule from a finite-gain model, because knowing where it comes from tells you exactly when it stops being true.
 
@@ -46,9 +46,9 @@ An op amp has two inputs, two supply pins and one output. Within its linear rang
 
 <Equation tex={String.raw`v_o=A\,(v_+-v_-)`}/>
 
-with $A$ typically $10^5$ to $10^7$ at DC, falling with frequency (Chapter 79). The ideal op amp takes four limits: infinite gain, infinite input resistance, zero output resistance and unlimited bandwidth. A real one also has finite output swing, finite output current and an input common-mode range. Supply pins are omitted from these drawings for clarity, but every node voltage is measured from the same reference, and the output can never go beyond the rails.
+with $A$ typically $10^5$ to $10^7$ at DC, falling with frequency (Chapter 74). The ideal op amp takes four limits: infinite gain, infinite input resistance, zero output resistance and unlimited bandwidth. A real one also has finite output swing, finite output current and an input common-mode range. Supply pins are omitted from these drawings for clarity, but every node voltage is measured from the same reference, and the output can never go beyond the rails.
 
-The op amp itself is the transistor circuit of Chapter 75: the differential pair converts $v_+ - v_-$ into a current, the following stages turn it into a large output voltage.
+The op amp itself is the transistor circuit of Chapter 70: the differential pair converts $v_+ - v_-$ into a current, the following stages turn it into a large output voltage.
 
 <MosDifferentialFigure mode="mirror"/>
 
@@ -102,7 +102,7 @@ The derivation assumed the op amp's output could reach $v_i/\beta$. Ask for more
 
 </div>
 
-Saturated op amps also take time to recover: internal nodes have been driven to their limits and must return. A circuit that clips occasionally can show errors for microseconds after each clip (Chapter 79).
+Saturated op amps also take time to recover: internal nodes have been driven to their limits and must return. A circuit that clips occasionally can show errors for microseconds after each clip (Chapter 74).
 
 </section>
 
@@ -146,7 +146,7 @@ The loop gain depends on $\beta$, which is set by the feedback network with the 
 
 <Equation tex={String.raw`\text{signal gain}=-\frac{R_F}{R_{IN}},\qquad \text{noise gain}=\frac1\beta=1+\frac{R_F}{R_{IN}}`}/>
 
-**Noise gain** is the gain from a disturbance at the op amp's input (offset, noise) to the output, and it, not the signal gain, sets the loop gain. An inverter with gain −10 has noise gain 11, so its loop gain and its bandwidth are those of a gain-of-11 noninverting stage. A circuit can have a signal gain of zero and a noise gain of 100. Chapters 78–79 use this distinction constantly.
+**Noise gain** is the gain from a disturbance at the op amp's input (offset, noise) to the output, and it, not the signal gain, sets the loop gain. An inverter with gain −10 has noise gain 11, so its loop gain and its bandwidth are those of a gain-of-11 noninverting stage. A circuit can have a signal gain of zero and a noise gain of 100. Chapters 73–74 use this distinction constantly.
 
 Feedback does not create power or perfect accuracy. It reduces errors generated inside the loop by the loop gain. Errors that look like input signals, such as offset voltage and the noise of the input resistors, are amplified by the noise gain along with the signal.
 
@@ -256,7 +256,7 @@ The loop: the output can no longer change to correct the input, so the different
 <summary>5. Why check the input common-mode range separately from the output swing?</summary>
 <div>
 
-The output can be within its range while the inputs are not. In a follower on a single 5 V supply, an input of 4.8 V may be beyond the input stage's common-mode window (Chapter 71), even though the output could reach 4.8 V. Outside that window the input stage is not biased correctly and the gain collapses or the polarity can even invert.
+The output can be within its range while the inputs are not. In a follower on a single 5 V supply, an input of 4.8 V may be beyond the input stage's common-mode window (Chapter 66), even though the output could reach 4.8 V. Outside that window the input stage is not biased correctly and the gain collapses or the polarity can even invert.
 
 </div>
 </details>

@@ -5,7 +5,7 @@ import {FeedbackBlock,FeedbackAmpFigure,SupplyFigure,ThermalFigure,LogicFigure} 
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 42</span><span className="hairline"/>TRANSISTORS / FEEDBACK & CONTROL</div>
+<div className="eyebrow"><span>CHAPTER 42</span><span className="hairline"/>PART II / FEEDBACK &amp; CONTROL</div>
 
 <h1>Negative feedback<br/><em>Control the error, control the result.</em></h1>
 
@@ -120,11 +120,17 @@ Feedback usually spends available gain to improve predictability. Its benefits d
 
 **Output impedance.** For voltage feedback, let an output load current cause an open-loop voltage drop $r_o$ $i_L$. Then:
 
-<Equation tex="y=A(x-by)-r_o i_L\quad\Rightarrow\quad r_{o,\mathrm{closed}}=\frac{r_o}{1+T}" />
+<Equation tex="y=A(x-by)-r_o i_L" />
+
+Collect the $y$ terms: $y(1 + Ab) = Ax - r_oi_L$, so
+
+<Equation tex="y=\frac{A}{1+T}\,x-\frac{r_o}{1+T}\,i_L\quad\Rightarrow\quad r_{o,\mathrm{closed}}=-\frac{\partial y}{\partial i_L}=\frac{r_o}{1+T}" />
+
+The load current still causes the same internal drop, but the drop appears in the fed-back signal, increases the error, and the forward gain drives the output back up by all but $1/(1+T)$ of it.
 
 This derivation assumes the feedback senses the actual output and the stage can supply the correcting current. A current-limited output cannot maintain this low impedance.
 
-**Input impedance.** With series voltage comparison, the small input error can mean less input current for a given applied voltage, increasing input impedance. Shunt current comparison instead tends to reduce input impedance. Current sensing at the output tends to increase output resistance. Do not apply “feedback raises input impedance and lowers output impedance” to every feedback circuit.
+**Input impedance.** With series voltage comparison, the small input error can mean less input current for a given applied voltage, increasing input impedance. Quantify it for a forward amplifier with input resistance $r_i$: the input current is set by the error voltage across $r_i$, $i_{in} = e/r_i$. From the loop equations, $e = x/(1+T)$, so $i_{in} = x/[(1+T)r_i]$ and the source sees $R_{in} = x/i_{in} = r_i(1+T)$. Shunt current comparison instead tends to reduce input impedance. Current sensing at the output tends to increase output resistance. Do not apply “feedback raises input impedance and lowers output impedance” to every feedback circuit.
 
 | Input comparison / output sensing | Common description | Input resistance tendency | Output resistance tendency |
 | --- | --- | --- | --- |
@@ -173,7 +179,11 @@ So far A and b were real constants. A real amplifier contains capacitors and tra
 
 <Equation tex="G(s)=\frac{A(s)}{1+A(s)b(s)}" />
 
-For one forward pole and constant feedback, A(s) = $A_0$/(1 + s/$\omega_p$). Substitute and collect terms:
+For one forward pole and constant feedback, A(s) = $A_0$/(1 + s/$\omega_p$). Substitute, then multiply numerator and denominator by $1 + s/\omega_p$:
+
+<Equation tex="G(s)=\frac{A_0}{1+s/\omega_p+A_0b}=\frac{A_0}{(1+A_0b)\left[1+\dfrac{s}{\omega_p(1+A_0b)}\right]}" />
+
+Separate the constant factor from the frequency-dependent one:
 
 <Equation tex="G(s)=\frac{A_0}{1+A_0b}\frac{1}{1+s/[\omega_p(1+A_0b)]}" />
 

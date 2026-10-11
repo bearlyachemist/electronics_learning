@@ -4,7 +4,7 @@ import {TankFigure,RCLocusFigure,ResonanceWidthFigure,RingingFigure} from '../co
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 24</span><span className="hairline"/>FOUNDATIONS / IMPEDANCE & FILTERS</div>
+<div className="eyebrow"><span>CHAPTER 17</span><span className="hairline"/>PART I / AC CIRCUITS &amp; FILTERS</div>
 
 <h1>Resonance & LC filters<br/><em>Two reactances that cancel.</em></h1>
 
@@ -22,7 +22,7 @@ import {TankFigure,RCLocusFigure,ResonanceWidthFigure,RingingFigure} from '../co
 
 An inductor’s reactance is positive and rises with frequency; a capacitor’s is negative and falls. At one frequency they are equal and opposite. In series they cancel and leave almost nothing to limit the current; in parallel they form an impedance that is almost infinite.
 
-That cancellation is **resonance**. It escapes the RC limit of Chapter 23, giving narrow, selective responses, and it explains the hot-plug overshoot of Chapter 18. It also hides voltages and currents much larger than the source’s, which a designer has to anticipate.
+That cancellation is **resonance**. It escapes the RC limit of Chapter 16, giving narrow, selective responses, and it explains the hot-plug overshoot of Chapter 25. It also hides voltages and currents much larger than the source’s, which a designer has to anticipate.
 
 </div>
 
@@ -38,7 +38,7 @@ That cancellation is **resonance**. It escapes the RC limit of Chapter 23, givin
 
 <div className="section-heading"><span>01</span><h2>Series resonance and Q</h2></div>
 
-Put R, L and C in series across a source. From Chapter 20:
+Put R, L and C in series across a source. From Chapter 13:
 
 <Equation tex="Z=R+j\left(\omega L-\frac{1}{\omega C}\right)"/>
 
@@ -50,7 +50,7 @@ At $f_0$ the impedance is just R, the current is V/R, and it is in phase with th
 
 ### The characteristic impedance and Q
 
-At resonance the two reactances are equal. Their common value is the **characteristic impedance**, already met in the hot-plug analysis of Chapter 18:
+At resonance the two reactances are equal. Their common value is the **characteristic impedance**, already met in the hot-plug analysis of Chapter 25:
 
 <Equation tex="Z_0=\omega_0L=\frac{1}{\omega_0C}=\sqrt{\frac LC}"/>
 
@@ -99,7 +99,7 @@ Phasor diagrams also reveal geometry that algebra hides. In a series RC circuit,
 
 <RCLocusFigure/>
 
-Every point on that semicircle corresponds to one frequency. At the corner frequency the tip sits at the bottom of the circle, where $V_C$ and $V_R$ are equal and the phase is −45°. This is the same low-pass response as Chapter 22, now as a picture.
+Every point on that semicircle corresponds to one frequency. At the corner frequency the tip sits at the bottom of the circle, where $V_C$ and $V_R$ are equal and the phase is −45°. This is the same low-pass response as Chapter 15, now as a picture.
 
 For a parallel circuit, the shared quantity is voltage, so draw V along the real axis and add the branch currents: $I_R$ in phase, $I_C$ leading by 90°, $I_L$ lagging by 90°.
 
@@ -123,7 +123,7 @@ The lab opens at R = 47 Ω (Q ≈ 6.7), slightly below resonance, so all four ar
 
 Put L and C in parallel. Their admittances add: Y = j(ωC − 1/(ωL)). At $\omega_0$ the susceptances cancel and the ideal parallel impedance is infinite. The tank draws no net current from the source, yet current circulates between L and C.
 
-A real tank is limited by its losses, usually the inductor’s winding resistance r in series with L. Using the series-to-parallel conversion of Chapter 20, at resonance the inductor looks like a parallel resistance $R_p$ = r(1 + Q²) ≈ Q²r, and the tank impedance is:
+A real tank is limited by its losses, usually the inductor’s winding resistance r in series with L. Using the series-to-parallel conversion of Chapter 13, at resonance the inductor looks like a parallel resistance $R_p$ = r(1 + Q²) ≈ Q²r, and the tank impedance is:
 
 <Equation tex="Z_{\mathrm{tank}}(f_0)\approx Q^2r=QZ_0=\frac{L}{rC},\qquad Q=\frac{\omega_0L}{r}"/>
 
@@ -147,7 +147,7 @@ The high-Q approximation uses $\omega_0=1/\sqrt{LC}$. With r in series with L, t
 
 The phase crosses zero at $\omega_r=\sqrt{1/(LC)-(r/L)^2}$, provided $r<\sqrt{L/C}$. At that frequency the impedance is exactly $L/(rC)$. The frequency of maximum magnitude is slightly different. For Q ≈ 63 these shifts are tiny; for a lossy winding, blindly using the ideal frequency can be misleading.
 
-Parallel tanks appear as the collector or drain load of tuned amplifiers, which then have high gain only near $f_0$; as the frequency-setting element of oscillators; and as the selecting element in radio receivers (Chapter 25). A series LC from a node to ground, conversely, is a **trap**: a near-short at one frequency, removing it like a notch.
+Parallel tanks appear as the collector or drain load of tuned amplifiers, which then have high gain only near $f_0$; as the frequency-setting element of oscillators; and as the selecting element in radio receivers (Chapter 18). A series LC from a node to ground, conversely, is a **trap**: a near-short at one frequency, removing it like a notch.
 
 </section>
 
@@ -193,7 +193,7 @@ For finite source resistance, write the denominator as $a_0+j\omega a_1-\omega^2
 
 The natural frequency is no longer exactly $1/\sqrt{LC}$, and a peak above DC gain need not exceed unity gain from the source. When $Q>1/\sqrt2$, the peak occurs at $\omega_{peak}=\omega_n\sqrt{1-1/(2Q^2)}$. This is different from the natural frequency and the −3 dB frequency. Labeling all three as "the corner" hides useful distinctions.
 
-High-pass LC filters swap the positions of L and C. Band-pass and band-stop LC filters use series and parallel resonators as their arms. Higher-order LC filters chain several sections; their component values come from tables (Butterworth, Chebyshev and others) normalized to a 1 Ω, 1 rad/s prototype and then impedance- and frequency-scaled exactly as in Chapter 20.
+High-pass LC filters swap the positions of L and C. Band-pass and band-stop LC filters use series and parallel resonators as their arms. Higher-order LC filters chain several sections; their component values come from tables (Butterworth, Chebyshev and others) normalized to a 1 Ω, 1 rad/s prototype and then impedance- and frequency-scaled exactly as in Chapter 13.
 
 </section>
 
@@ -211,7 +211,7 @@ The step response of a second-order circuit is set by the same Q. With damping r
 
 </div>
 
-The overshoot is e^(−πζ/√(1 − ζ²)). The hot-plug circuit of Chapter 18, with Q ≈ 12, overshot by nearly 90%. A peak in the frequency response and ringing in the time response are two views of one property.
+The overshoot is e^(−πζ/√(1 − ζ²)). The hot-plug circuit of Chapter 25, with Q ≈ 12, overshot by nearly 90%. A peak in the frequency response and ringing in the time response are two views of one property.
 
 <RingingFigure/>
 
@@ -236,7 +236,7 @@ The overshoot is e^(−πζ/√(1 − ζ²)). The hot-plug circuit of Chapter 18
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>At resonance the reactances cancel, so <em>resistance alone</em> sets the response. For a series resonator, $Q=Z_0/R$ tells you how sharp, how magnified and how long the ringing will be. A loaded LC low-pass has a different Q set by its terminations.</p></div>
 
-<p className="reference-note">Coverage: The Art of Electronics §§1.7.12, 1.7.14 and 1.7.15. Chapter 25 uses a tank as the tuning element of a simple radio receiver.</p>
+<p className="reference-note">Coverage: The Art of Electronics §§1.7.12, 1.7.14 and 1.7.15. Chapter 18 uses a tank as the tuning element of a simple radio receiver.</p>
 
 </section>
 

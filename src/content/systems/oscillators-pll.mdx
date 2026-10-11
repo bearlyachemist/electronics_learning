@@ -1,0 +1,203 @@
+import Equation from '../../components/Equation.astro';
+import {NegativeResistanceTank,OscillatorStartupPlot,PhaseNoisePlot,PllBlockFigure,PllStepPlot} from '../../components/RfFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 105</span><span className="hairline"/>PART V / RF CIRCUITS</div>
+
+<h1>Oscillators, PLLs and phase noise<br/><em>Make a frequency, then make it behave.</em></h1>
+
+<p className="dek">Derive the oscillation condition from a loop and from a negative resistance, size a Colpitts oscillator, model a crystal, turn phase noise into jitter, and design the loop filter of a charge-pump PLL.</p>
+
+<div className="chapter-meta"><span>55–80 min + practice</span><span>Derivations · Loop design · Noise budgets</span></div>
+
+</div>
+
+<section id="condition">
+
+<div className="section-heading"><span>01</span><h2>State the oscillation condition two ways</h2></div>
+
+An amplifier with positive feedback has closed-loop gain $A/(1 - A\beta)$. Its poles are where $A(s)\beta(s) = 1$. A steady sinusoid at $\omega_0$ requires a pole pair exactly on the $j\omega$ axis, which means $A(j\omega_0)\beta(j\omega_0) = 1$: unit magnitude and zero total phase around the loop. That is the **Barkhausen condition**. Chapter 48 used it for the Wien-bridge oscillator. For LC oscillators a second view is often clearer.
+
+<NegativeResistanceTank/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / GROWTH AND DECAY OF A TANK WITH NEGATIVE CONDUCTANCE</span>
+
+1. **KCL at the tank node.** The capacitor, the loss conductance $G = 1/R_p$, the inductor and the active circuit's current $-G_mv$ must sum to zero:
+<Equation tex={String.raw`C\frac{dv}{dt}+(G-G_m)\,v+\frac1L\int v\,dt=0`}/>
+
+2. **Characteristic equation.** Differentiate once, divide by $C$, and try $v = e^{st}$:
+<Equation tex={String.raw`s^2+\frac{G-G_m}{C}\,s+\frac{1}{LC}=0`}/>
+
+3. **Roots.** For a lightly damped tank the roots are $s \approx -\sigma \pm j\omega_0$ with $\omega_0 = 1/\sqrt{LC}$ and $\sigma = (G - G_m)/2C$.
+   - $G_m < G$: $\sigma > 0$, a decaying ring. The active circuit only raises Q.
+   - $G_m > G$: $\sigma < 0$, an envelope growing as $e^{(G_m - G)t/2C}$. This is the start-up condition.
+   - $G_m = G$: constant amplitude. Nothing linear can hold this exactly; it is reached by limiting.
+
+4. **Amplitude control.** As the amplitude grows, the active device clips or compresses, and its *average* transconductance over a cycle falls. The amplitude settles where average $G_m$ equals $G$. A designer chooses start-up margin $G_m/G$ of about 2–3 so the circuit starts reliably over temperature and parts, but not so large that hard limiting creates harmonics and noise.
+
+</div>
+
+<OscillatorStartupPlot/>
+
+</section>
+
+<section id="colpitts">
+
+<div className="section-heading"><span>02</span><h2>Derive the Colpitts start-up condition</h2></div>
+
+A Colpitts oscillator uses a capacitive divider to obtain the feedback. In the common form, a transistor's gate (or base) sees $C_1$ to its source (emitter), and $C_2$ runs from source to ground. Looking into the gate, that structure is a negative resistance.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / IMPEDANCE LOOKING INTO A CAPACITIVELY DIVIDED FOLLOWER</span>
+
+1. **Test current.** Drive a current $i_x$ into the gate. It flows through $C_1$ to the source, so $v_{gs} = i_x/(sC_1)$.
+
+2. **KCL at the source.** $C_2$ carries the test current plus the transistor's current $g_mv_{gs}$ (drain at AC ground, $r_o$ neglected):
+<Equation tex={String.raw`v_s=\frac{i_x+g_mv_{gs}}{sC_2}=\frac{i_x}{sC_2}\left(1+\frac{g_m}{sC_1}\right)`}/>
+
+3. **Input impedance** $v_x/i_x = (v_{gs} + v_s)/i_x$:
+<Equation tex={String.raw`Z_{in}=\frac{1}{sC_1}+\frac{1}{sC_2}+\frac{g_m}{s^2C_1C_2}`}/>
+
+4. **At $s = j\omega$,** $s^2 = -\omega^2$, so the last term is real and negative:
+<Equation tex={String.raw`Z_{in}=\frac{1}{j\omega C_s}-\frac{g_m}{\omega^2C_1C_2},\qquad C_s=\frac{C_1C_2}{C_1+C_2}`}/>
+   The capacitors appear in series, and the transistor contributes a negative resistance.
+
+5. **Close the loop with an inductor** $L$ of series loss $r$. The loop resonates at $\omega_0 = 1/\sqrt{LC_s}$, and oscillation starts if the negative resistance exceeds the loss:
+<Equation tex={String.raw`g_m>r\,\omega_0^2C_1C_2`}/>
+
+</div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A 10 MHz COLPITTS</span><h3>1 µH inductor with Q = 50, C<sub>1</sub> = C<sub>2</sub></h3>
+
+<p>For 10 MHz, $C_s = 1/(\omega_0^2L) = 253$ pF, so $C_1 = C_2 = 506$ pF. The inductor's series loss is $r = \omega_0L/Q = 62.8/50 = 1.26$ Ω. Start-up requires $g_m > 1.26 \times (6.28\times10^7)^2\times(506\text{ p})^2$ = <strong>1.27 mS</strong>. With threefold margin, 3.8 mS is a bipolar transistor at about 0.1 mA ($g_m = I_C/V_T$).</p>
+
+<p>For a fixed $C_s$, the product is $C_1C_2 = C_s(C_1 + C_2)$, which is smallest when $C_1 = C_2$: equal capacitors need the least $g_m$. A 2:1 ratio raises the requirement to 1.43 mS and 4:1 to 1.99 mS; designers accept that to make $C_2$ large enough to swamp the transistor's capacitance or to set the feedback fraction. Real designs also account for the transistor's own capacitances, which add to $C_1$ and $C_2$ and drift with bias and temperature; the Clapp variant adds a small series capacitor to the inductor so the frequency depends mainly on that stable part.</p>
+
+</div>
+
+</section>
+
+<section id="crystal">
+
+<div className="section-heading"><span>03</span><h2>Model a crystal and its load capacitance</h2></div>
+
+A quartz crystal is a mechanical resonator coupled to electrodes. Near one mode it behaves as a series motional branch $L_m$, $C_m$, $R_m$ in parallel with the electrode capacitance $C_0$. The motional elements are extreme: tens of millihenries and femtofarads.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / SERIES AND PARALLEL RESONANCE</span>
+
+1. **Series resonance.** The motional branch alone has zero reactance at $\omega_s = 1/\sqrt{L_mC_m}$.
+
+2. **Parallel resonance.** Just above $\omega_s$ the motional branch is inductive. It resonates with $C_0$ where its reactance $\omega L_m - 1/(\omega C_m)$ equals $1/(\omega C_0)$. Rearranging, $\omega^2L_m = 1/C_m + 1/C_0$:
+<Equation tex={String.raw`\omega_p=\omega_s\sqrt{1+\frac{C_m}{C_0}}\approx\omega_s\left(1+\frac{C_m}{2C_0}\right)`}/>
+   Since $C_m \ll C_0$, the two resonances are very close, and the crystal is inductive only in that narrow band.
+
+3. **Load capacitance.** An oscillator places a capacitance $C_L$ across the crystal (in a Pierce circuit, the series combination of its two capacitors plus strays). The crystal then operates where its inductive reactance resonates with $C_0 + C_L$, which by the same algebra is
+<Equation tex={String.raw`f_L\approx f_s\left(1+\frac{C_m}{2(C_0+C_L)}\right),\qquad\frac{df_L}{dC_L}=-\frac{f_sC_m}{2(C_0+C_L)^2}`}/>
+
+</div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A 10 MHz CRYSTAL</span><h3>C<sub>m</sub> = 20 fF, C<sub>0</sub> = 5 pF, R<sub>m</sub> = 20 Ω, specified for C<sub>L</sub> = 18 pF</h3>
+
+<p>$L_m = 1/(\omega_s^2C_m)$ = 12.7 mH and $Q = \omega_sL_m/R_m$ ≈ <strong>40 000</strong>, a thousand times an LC tank. The parallel resonance is $f_s C_m/2C_0$ = 20 kHz above $f_s$.</p>
+
+<p>With 18 pF of load, the crystal runs 4.35 kHz above $f_s$; that is the frequency it is calibrated for. The pulling sensitivity is $f_sC_m/[2(23\text{ pF})^2]$ = 189 Hz per pF, or <strong>19 ppm/pF</strong>. A layout that adds 3 pF of unexpected stray capacitance moves the clock by 57 ppm, more than many communication standards allow. Use the crystal maker's specified load and account for pin and trace capacitance in the two load capacitors.</p>
+
+</div>
+
+</section>
+
+<section id="noise">
+
+<div className="section-heading"><span>04</span><h2>Turn phase noise into jitter</h2></div>
+
+A real oscillator's phase wanders. In the frequency domain this spreads the carrier into sidebands; $\mathcal L(\Delta f)$ is the power in a 1 Hz band at offset $\Delta f$, relative to the carrier, in dBc/Hz.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / WHY THE TANK MULTIPLIES NOISE AS 1/Δf²</span>
+
+1. **Tank phase slope.** Near resonance a tank's impedance phase changes by $d\phi/d\omega = 2Q/\omega_0$ (from $X \approx 2L\Delta\omega$ and $\phi \approx X/R$ in Chapter 103's notation).
+
+2. **The loop corrects phase by moving frequency.** If noise adds a phase perturbation $\delta\phi$ somewhere in the loop, the Barkhausen phase condition can only be restored by shifting frequency until the tank supplies $-\delta\phi$: $\delta\omega = (\omega_0/2Q)\,\delta\phi$.
+
+3. **Frequency noise integrates into phase.** Output phase is the integral of frequency, so a frequency fluctuation at offset $\Delta\omega$ produces output phase $\delta\omega/\Delta\omega$. Combining, the output phase is the injected phase multiplied by $\omega_0/(2Q\Delta\omega)$, and in power by its square.
+
+4. **Leeson's model.** Taking the injected noise as the active circuit's thermal floor $2FkT/P_s$, and adding flicker noise below a corner $f_c$:
+<Equation tex={String.raw`\mathcal L(\Delta f)=10\log_{10}\left[\frac{2FkT}{P_s}\left(1+\left(\frac{f_0}{2Q\,\Delta f}\right)^2\right)\left(1+\frac{f_c}{\Delta f}\right)\right]`}/>
+   Higher Q and more signal power both lower the noise; this is why crystal oscillators are quiet.
+
+5. **Jitter.** Phase noise integrated over a band gives the phase variance; both sidebands count. Converting radians to seconds divides by $2\pi f_0$:
+<Equation tex={String.raw`\sigma_\phi^2=2\int_{f_1}^{f_2}10^{\mathcal L(f)/10}df,\qquad\sigma_t=\frac{\sigma_\phi}{2\pi f_0}`}/>
+
+</div>
+
+<PhaseNoisePlot/>
+
+As a quick budget, a 1 GHz clock whose phase noise averages −120 dBc/Hz from 10 kHz to 10 MHz has $\sigma_\phi^2 \approx 2\times10^{-12}\times10^7 = 2\times10^{-5}$ rad², $\sigma_\phi$ = 4.5 mrad and $\sigma_t$ ≈ **0.71 ps** rms. Chapter 109 showed that 1 ps of sampling jitter limits a 100 MHz input to about 64 dB SNR; that is where a clock's phase noise becomes a converter specification.
+
+</section>
+
+<section id="pll">
+
+<div className="section-heading"><span>05</span><h2>Lock a VCO with a phase-locked loop</h2></div>
+
+A VCO is tunable but drifts; a crystal is stable but fixed. A PLL makes a VCO track a multiple of a crystal reference.
+
+<PllBlockFigure/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE LINEAR MODEL OF A CHARGE-PUMP PLL</span>
+
+1. **Phase detector and charge pump.** The PFD produces pulses whose average width is proportional to the phase error; the charge pump turns them into an average current $i = (I_{cp}/2\pi)(\theta_{ref} - \theta_{out}/N)$.
+
+2. **Loop filter.** A series $R$ and $C$ to ground converts current to control voltage: $V_c = i\,(R + 1/sC)$.
+
+3. **VCO.** Frequency is $K_vV_c$ (in rad/s per volt), and phase is its integral: $\theta_{out} = K_vV_c/s$.
+
+4. **Open-loop gain** around the loop, from $\theta_{out}/N$ back to itself:
+<Equation tex={String.raw`T(s)=\frac{I_{cp}}{2\pi}\left(R+\frac{1}{sC}\right)\frac{K_v}{Ns}=\frac{I_{cp}K_v}{2\pi NC}\cdot\frac{1+sRC}{s^2}`}/>
+   Two integrators (the VCO and the capacitor) make a **type-II** loop: zero steady phase error to a frequency step. The resistor's zero at $1/RC$ supplies the phase margin two integrators alone would lack.
+
+5. **Closed loop.** $\theta_{out}/\theta_{ref} = N\,T/(1+T)$. Multiply numerator and denominator by $s^2$:
+<Equation tex={String.raw`\frac{\theta_{out}}{N\theta_{ref}}=\frac{2\zeta\omega_ns+\omega_n^2}{s^2+2\zeta\omega_ns+\omega_n^2},\qquad\omega_n^2=\frac{I_{cp}K_v}{2\pi NC},\qquad\zeta=\frac{RC\,\omega_n}{2}`}/>
+
+6. **Noise shaping.** Inside the loop bandwidth, output phase follows $N\theta_{ref}$: reference phase noise appears multiplied by $N$, a rise of $20\log_{10}N$ dB. Outside it, the loop cannot correct the VCO, and the VCO's own noise appears. The loop bandwidth is chosen near the offset where the two noise curves cross.
+
+</div>
+
+<PllStepPlot/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A 1 GHz SYNTHESIZER FROM A 1 MHz REFERENCE</span><h3>I<sub>cp</sub> = 1 mA, K<sub>v</sub> = 2π × 50 MHz/V, N = 1000, target f<sub>n</sub> = 20 kHz and ζ = 0.707</h3>
+
+<p>From step 5, $C = I_{cp}K_v/(2\pi N\omega_n^2) = (10^{-3})(3.14\times10^8)/[(6283)(1.257\times10^5)^2]$ = <strong>3.17 nF</strong>. Then $R = 2\zeta/(\omega_nC) = 1.414/(1.257\times10^5\times3.17\text{ n})$ = <strong>3.55 kΩ</strong>.</p>
+
+<p>The continuous-time model assumes the loop is much slower than the 1 MHz comparison rate; 20 kHz is fifty times slower. Reference phase noise is raised by $20\log_{10}1000 = 60$ dB inside the loop bandwidth, so a crystal at −150 dBc/Hz contributes −90 dBc/Hz at the output there. A small second capacitor across $R$ and $C$ is normally added to smooth the charge-pump pulses; it adds a third pole that must sit well above the loop bandwidth.</p>
+
+</div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, derive the start-up condition from the tank's characteristic equation, reproduce the Colpitts negative resistance, compute a crystal's pulling sensitivity, and convert a phase-noise level to jitter. Then double the PLL's charge-pump current and predict what happens to its bandwidth and damping.
+
+[Work through three independent problems](/oscillators-pll/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, Chapter 7 and §13.13 (oscillators, crystals and PLLs); Leeson's oscillator noise model. Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

@@ -6,13 +6,13 @@ import {TiaNoiseGainFigure,TiaStepFigure,TiaNoiseFigure} from '../../components/
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 87</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 82</span><span className="hairline"/>PART III / OP-AMP CIRCUITS</div>
 
 <h1>Transimpedance amplifiers<br/><em>Turn a current into a voltage without letting the input move.</em></h1>
 
 <p className="dek">Convert a photodiode's current to a voltage at a virtual ground. Find why the detector's capacitance makes the noise gain rise with frequency, choose the feedback capacitor for fast settling, and budget the noise and dynamic range of a real receiver.</p>
 
-<div className="chapter-meta"><span>55–75 min + exploration</span><span>Bandwidth and stability (Ch. 79) · Common gate (Ch. 68) · Input technologies (Ch. 82)</span></div>
+<div className="chapter-meta"><span>55–75 min + exploration</span><span>Bandwidth and stability (Ch. 74) · Common gate (Ch. 63) · Input technologies (Ch. 77)</span></div>
 
 </div>
 
@@ -22,7 +22,7 @@ import {TiaNoiseGainFigure,TiaStepFigure,TiaNoiseFigure} from '../../components/
 
 <div>
 
-Many sensors produce a current: photodiodes, photomultipliers, ionization chambers, some gas sensors. The simplest current-to-voltage converter is a resistor, but a resistor lets its voltage change with the current, which disturbs a sensor that needs a fixed bias, and forms a slow RC with the sensor's capacitance (Chapter 68 met that problem).
+Many sensors produce a current: photodiodes, photomultipliers, ionization chambers, some gas sensors. The simplest current-to-voltage converter is a resistor, but a resistor lets its voltage change with the current, which disturbs a sensor that needs a fixed bias, and forms a slow RC with the sensor's capacitance (Chapter 63 met that problem).
 
 An op amp with a feedback resistor holds the sensor at a virtual ground and turns the current into an output voltage of $-IR_F$. The idea fits in one line; the design does not, because the sensor's capacitance sits at the op amp's input, and as far as stability is concerned, that changes everything.
 
@@ -52,7 +52,24 @@ On a single supply the plus input is held at a reference above ground; for speed
 
 <div className="section-heading"><span>02</span><h2>Solve signal gain and frequency-dependent noise gain</h2></div>
 
-KCL at the minus node, with finite gain $A$ so that $v_- = -v_o/A$:
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE TRANSIMPEDANCE AMPLIFIER WITH FINITE GAIN</span>
+
+1. **Elements at the minus node.** The photodiode current $I_{PD}$ enters the node. The diode and input capacitance $C_{IN}$ run from the node to ground. The feedback impedance $Z_F = R_F\parallel C_F$ runs from the node to the output.
+
+2. **Amplifier law.** With the plus input grounded, $V_O = -AV_-$, so $V_- = -V_O/A$.
+
+3. **KCL at the minus node.** Current in from the photodiode equals current out through $C_{IN}$ and $Z_F$:
+<Equation tex={String.raw`I_{PD}=sC_{IN}V_-+\frac{V_--V_O}{Z_F}`}/>
+
+4. **Substitute $V_-$ and multiply by $Z_F$:**
+<Equation tex={String.raw`I_{PD}Z_F=-V_O\left[\frac{sC_{IN}Z_F}{A}+\frac1A+1\right]=-V_O\left[1+\frac{1+sC_{IN}Z_F}{A}\right]`}/>
+   The combination $1 + sC_{IN}Z_F$ is the noise gain: the noninverting gain of $Z_F$ over the impedance $1/sC_{IN}$ to ground.
+
+</div>
+
+The result, with the impedances defined:
 
 <Equation tex={String.raw`Z_F=\frac{R_F}{1+sR_FC_F},\qquad NG(s)=1+sC_{IN}Z_F,\qquad\frac{V_O}{I_{PD}}=-\frac{Z_F}{1+NG(s)/A(s)}`} label="TRANSIMPEDANCE WITH FINITE GAIN"/>
 
@@ -70,7 +87,7 @@ The loop crosses unity where the noise gain meets the open-loop gain. If the noi
 
 <TiaNoiseGainFigure/>
 
-$C_F$ levels the noise gain off at $1 + C_{IN}/C_F$. If it has levelled off before meeting $A(f)$, the crossing is at a 20 dB/decade closing rate and the loop is stable. Setting the levelling point at the crossing gives roughly 45° of phase margin:
+$C_F$ levels the noise gain off at $1 + C_{IN}/C_F$. If it has levelled off before meeting $A(f)$, the crossing is at a 20 dB/decade closing rate and the loop is stable. Setting the levelling point at the crossing gives roughly 45° of phase margin. In equations: the noise gain levels off at $f_z = 1/(2\pi R_FC_F)$ with value about $C_{IN}/C_F$, and the open-loop gain there is $f_t/f_z = 2\pi R_FC_Ff_t$. Setting the two equal, $2\pi R_FC_Ff_t = C_{IN}/C_F$, and solving for $C_F$ gives the first result. The closed-loop bandwidth is about $f_z$; substituting that $C_F$ gives the second:
 
 <Equation tex={String.raw`C_F\approx\sqrt{\frac{C_{IN}}{2\pi R_Ff_t}},\qquad f_{-3\,dB}\approx\sqrt{\frac{f_t}{2\pi R_FC_{IN}}}`} label="TIA COMPENSATION STARTING POINT"/>
 

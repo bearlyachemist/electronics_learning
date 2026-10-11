@@ -5,13 +5,13 @@ import {MosBjtSteeringFigure} from '../../components/MosStudyFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 80</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 75</span><span className="hairline"/>PART III / THE OP AMP</div>
 
 <h1>Inside a bipolar op amp<br/><em>The datasheet, explained by transistors.</em></h1>
 
 <p className="dek">Trace a bipolar input pair, mirror load, gain stage, compensation and output buffer, and connect each to a specification: input bias current, voltage noise, open-loop gain, slew rate, output current and short-circuit protection.</p>
 
-<div className="chapter-meta"><span>50–70 min</span><span>BJT pair and mirrors (Chs. 35–36) · Two-stage amplifier (Ch. 75) · Bandwidth and slew (Ch. 79)</span></div>
+<div className="chapter-meta"><span>50–70 min</span><span>BJT pair and mirrors (Chs. 35–36) · Two-stage amplifier (Ch. 70) · Bandwidth and slew (Ch. 74)</span></div>
 
 </div>
 
@@ -21,7 +21,7 @@ import {MosBjtSteeringFigure} from '../../components/MosStudyFigures';
 
 <div>
 
-The classic general-purpose op amps of the 1970s were all-bipolar, and many precision parts still are. Their architecture is Chapter 75's two-stage amplifier with bipolar transistors in place of MOSFETs: a differential pair with a mirror load, a common-emitter gain stage with a current-source load, a Miller capacitor, and a push–pull output.
+The classic general-purpose op amps of the 1970s were all-bipolar, and many precision parts still are. Their architecture is Chapter 70's two-stage amplifier with bipolar transistors in place of MOSFETs: a differential pair with a mirror load, a common-emitter gain stage with a current-source load, a Miller capacitor, and a push–pull output.
 
 Swapping the transistor type changes the specifications in predictable ways. Bipolar transistors have more $g_m$ per microamp, so lower voltage noise and higher gain; they draw base current, so bias current and current noise; and their steep exponential law makes the input stage saturate after a few tens of millivolts, which, as the opening question hints, sets the slew rate.
 
@@ -41,9 +41,9 @@ Swapping the transistor type changes the specifications in predictable ways. Bip
 
 <InternalAmplifierFigure technology="bjt"/>
 
-This is a teaching architecture, not a replica of a commercial part. An NPN differential pair steers the tail current. A PNP mirror combines the two branch changes at $V_X$ (Chapter 72). An NPN common-emitter stage with a PNP current-source load provides the second stage's gain. The Miller capacitor $C_C$ bridges that stage. Ideal tail and bias generators stand for circuits omitted here.
+This is a teaching architecture, not a replica of a commercial part. An NPN differential pair steers the tail current. A PNP mirror combines the two branch changes at $V_X$ (Chapter 67). An NPN common-emitter stage with a PNP current-source load provides the second stage's gain. The Miller capacitor $C_C$ bridges that stage. Ideal tail and bias generators stand for circuits omitted here.
 
-As in Chapter 75, follow the signal to find the polarity: the left input, on the mirror's diode side, raises $V_X$, and the common-emitter stage inverts it, so the left input is inverting. A complementary emitter-follower output (section 05) buffers the gain stage from the load. Real designs vary this with PNP inputs, folded cascodes, level shifters and Darlington gain stages, but the signal path is recognizably the same.
+As in Chapter 70, follow the signal to find the polarity: the left input, on the mirror's diode side, raises $V_X$, and the common-emitter stage inverts it, so the left input is inverting. A complementary emitter-follower output (section 05) buffers the gain stage from the load. Real designs vary this with PNP inputs, folded cascodes, level shifters and Darlington gain stages, but the signal path is recognizably the same.
 
 </section>
 
@@ -53,7 +53,7 @@ As in Chapter 75, follow the signal to find the polarity: the left input, on the
 
 <Equation tex={String.raw`g_m=\frac{I_C}{U_T},\qquad r_\pi=\frac{\beta}{g_m},\qquad I_B=\frac{I_C}{\beta},\qquad U_T=\frac{k_BT}{q}\approx25.85\text{ mV at 300 K}`}/>
 
-Each line maps to a datasheet entry. $g_m = I_C/U_T$ is the highest transconductance per unit current of any transistor: about 39 mS per milliamp, against roughly 10 mS per milliamp for a MOSFET at 0.2 V overdrive (Chapter 76). That gives a bipolar input stage high gain and low **voltage noise** at modest current. $I_B = I_C/\beta$ is the **input bias current**: tens to hundreds of nanoamps for a simple pair. And because $r_\pi$ is finite, the **input resistance** is finite too, megohms rather than teraohms.
+Each line maps to a datasheet entry. $g_m = I_C/U_T$ is the highest transconductance per unit current of any transistor: about 39 mS per milliamp, against roughly 10 mS per milliamp for a MOSFET at 0.2 V overdrive (Chapter 71). That gives a bipolar input stage high gain and low **voltage noise** at modest current. $I_B = I_C/\beta$ is the **input bias current**: tens to hundreds of nanoamps for a simple pair. And because $r_\pi$ is finite, the **input resistance** is finite too, megohms rather than teraohms.
 
 The pair's steering law is exponential, not square law (Chapter 36):
 
@@ -61,7 +61,7 @@ The pair's steering law is exponential, not square law (Chapter 36):
 
 <MosBjtSteeringFigure/>
 
-Its differential transconductance at balance is $I_T/2U_T$, but it saturates quickly: expanding $\tanh x \approx x - x^3/3$, the gain is compressed by 1% at $v_d$ ≈ 9 mV, and the pair is fully steered by about ±100 mV.
+Its differential transconductance at balance is $I_T/2U_T$ (the slope of $\tanh$ at the origin is 1, times $I_T/2U_T$ from the chain rule), but it saturates quickly: expanding $\tanh x \approx x - x^3/3$, the ratio of actual to linear output is $1 - x^2/3$. Setting $x^2/3 = 0.01$ gives $x$ = 0.173, so the gain is compressed by 1% at $v_d = 2U_Tx$ ≈ 9 mV, and the pair is fully steered by about ±100 mV ($\tanh 2 = 0.96$).
 
 
 
@@ -89,13 +89,13 @@ Constant transconductance does not make every amplifier property temperature ind
 
 <p><strong>Transconductance:</strong> 0.39, 1.93 and 3.87 mS. <strong>Base currents:</strong> 50, 250 and 500 nA.</p>
 
-<p><strong>Through a 100 kΩ source</strong> those base currents drop 5, 25 and 50 mV before any cancellation (Chapter 78). The same stage that gives excellent voltage noise with a 100 Ω microphone is a poor choice for a 100 kΩ sensor.</p>
+<p><strong>Through a 100 kΩ source</strong> those base currents drop 5, 25 and 50 mV before any cancellation (Chapter 73). The same stage that gives excellent voltage noise with a 100 Ω microphone is a poor choice for a 100 kΩ sensor.</p>
 
 <p><strong>Gain.</strong> With a 100 µA tail, the stage's transconductance is about 1.93 mS. Into a 50 kΩ first-stage output resistance that is a gain of 97. A second stage of gain 100 brings the total to about 9700 before loading.</p>
 
 </div>
 
-Bipolar precision parts reduce bias current in two ways. **Super-beta** transistors, with very thin bases, reach $\beta$ of several thousand. **Bias-current cancellation** injects a matched current into each input to supply most of the base current. Both cut the DC current, but cancellation leaves the base current's shot noise, so the input **current noise** remains, and the residual bias currents can have either sign, which defeats the resistor-matching trick of Chapter 78.
+Bipolar precision parts reduce bias current in two ways. **Super-beta** transistors, with very thin bases, reach $\beta$ of several thousand. **Bias-current cancellation** injects a matched current into each input to supply most of the base current. Both cut the DC current, but cancellation leaves the base current's shot noise, so the input **current noise** remains, and the residual bias currents can have either sign, which defeats the resistor-matching trick of Chapter 73.
 
 </section>
 
@@ -103,7 +103,7 @@ Bipolar precision parts reduce bias current in two ways. **Super-beta** transist
 
 <div className="section-heading"><span>04</span><h2>Why bipolar op amps slew slowly</h2></div>
 
-From Chapter 75, the unity-gain frequency is $f_u = g_{m1}/2\pi C_C$, and the slew rate is $SR = I_T/C_C$. Divide one by the other and $C_C$ cancels:
+From Chapter 70, the unity-gain frequency is $f_u = g_{m1}/2\pi C_C$, and the slew rate is $SR = I_T/C_C$. Divide one by the other and $C_C$ cancels:
 
 <Equation tex={String.raw`SR=\frac{I_T}{g_{m1}}\cdot2\pi f_u`} label="SLEW RATE PER UNIT BANDWIDTH"/>
 
@@ -141,7 +141,7 @@ An op amp must also survive a short circuit to ground or a rail:
 
 </div>
 
-**Recovery.** When the output saturates, transistors in the gain and output stages saturate too and store charge. Recovery can take microseconds, longer than the small-signal response suggests (Chapter 79). Rail-to-rail designs use common-emitter output devices to swing closer to the rails, at the cost of a higher open-loop output impedance.
+**Recovery.** When the output saturates, transistors in the gain and output stages saturate too and store charge. Recovery can take microseconds, longer than the small-signal response suggests (Chapter 74). Rail-to-rail designs use common-emitter output devices to swing closer to the rails, at the cost of a higher open-loop output impedance.
 
 **Input range.** An NPN input pair's common-mode range stops about a volt above the negative rail (tail compliance plus $V_{BE}$) and a volt or two below the positive rail. Some bipolar input stages exhibit phase reversal when driven beyond their range: the output jumps to the wrong rail. Check the datasheet's input range, not just the supply.
 
@@ -204,7 +204,7 @@ $SR/2\pi f_u = I_T/g_{m1}$, and for an undegenerated bipolar pair that is $2U_T$
 <summary>2. A bipolar pair runs 50 µA per side with $\beta$ = 200. What bias current flows in each input, and what error does it cause through 100 kΩ?</summary>
 <div>
 
-$I_B$ = 50 µA/200 = **250 nA**, which drops **25 mV** across 100 kΩ, a large offset unless cancelled or matched (Chapter 78).
+$I_B$ = 50 µA/200 = **250 nA**, which drops **25 mV** across 100 kΩ, a large offset unless cancelled or matched (Chapter 73).
 
 </div>
 </details>

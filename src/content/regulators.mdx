@@ -4,7 +4,7 @@ import {ZenerCurveFigure,ZenerBudgetFigure,SeriesRegulatorFigure,ZenerFollowerFi
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 15</span><span className="hairline"/>FOUNDATIONS / DIODES & SUPPLIES</div>
+<div className="eyebrow"><span>CHAPTER 22</span><span className="hairline"/>PART II / DIODES</div>
 
 <h1>Voltage regulators<br/><em>A voltage needs a budget.</em></h1>
 
@@ -112,7 +112,7 @@ If the feedback divider has $R_{\mathrm{top}}$ from output to sense and $R_{\mat
 
 <Equation tex="V_{\mathrm{out}}=V_{\mathrm{ref}}\left(1+\frac{R_{\mathrm{top}}}{R_{\mathrm{bottom}}}\right)" />
 
-A 1.25 V reference, 30 kΩ top resistor and 10 kΩ bottom resistor imply 5 V. Finite loop gain, reference accuracy and input bias currents add error. Internal transistor details will come later (Chapter 44); the key idea here is that the loop continuously changes the pass device rather than relying on a fixed diode drop.
+A 1.25 V reference, 30 kΩ top resistor and 10 kΩ bottom resistor imply 5 V. Finite loop gain, reference accuracy and input bias currents add error. Internal transistor details will come later (Chapter 93); the key idea here is that the loop continuously changes the pass device rather than relying on a fixed diode drop.
 
 The contrast with the shunt regulator is worth stating plainly. The shunt wastes current: it draws its full budget all the time and dumps the unused part in the zener. The series regulator wastes voltage: it draws only what the load needs and drops the excess voltage across the pass device. For anything more than a few milliamps, wasting voltage is far cheaper.
 
@@ -173,7 +173,7 @@ Ripple rejection is frequency-dependent. If PSRR is defined as $20\log_{10}(\tex
 
 A feedback loop has dynamics. Some regulators require particular capacitance and ESR ranges for stability; others permit a broad range. Use effective capacitance at bias and temperature. A large ceramic marked "10 µF" is not automatically an acceptable substitute for every required 10 µF network.
 
-Also check current limit, startup, minimum load, discharge behavior, and reverse-current behavior when input collapses while output remains charged (Chapter 18). Thermal shutdown is a protection feature, not a normal operating target.
+Also check current limit, startup, minimum load, discharge behavior, and reverse-current behavior when input collapses while output remains charged (Chapter 25). Thermal shutdown is a protection feature, not a normal operating target.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A shunt regulator wastes current;<br/>a series regulator wastes voltage.<br/><em>Both need headroom at the worst-case corner.</em></p></div>
 

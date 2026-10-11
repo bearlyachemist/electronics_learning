@@ -4,7 +4,7 @@ import {SmallSignalLab} from '../components/BjtLabs';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 30</span><span className="hairline"/>FOUNDATIONS / BIPOLAR TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 30</span><span className="hairline"/>PART II / BIPOLAR TRANSISTORS</div>
 
 <h1>The small-signal model<br/><em>Linearize the exponential at the bias point.</em></h1>
 
@@ -41,7 +41,7 @@ The transistor gets the same treatment. Around its bias point, every change of b
 Every voltage and current in an amplifier is a sum of a steady part and a small changing part: $v_{BE}$ = $V_{BE}$ + $v_{be}$, $i_C$ = $I_C$ + $i_c$ (capitals for bias, lowercase for signal). Chapter 29 found the bias with DC analysis. For the signal, build an **incremental circuit**:
 
 1. **DC supplies become AC ground.** A fixed voltage has no change, so for signals it is equivalent to ground.
-2. **Large capacitors become shorts** at signal frequencies, and blocking/coupling effects are handled separately (Chapter 22).
+2. **Large capacitors become shorts** at signal frequencies, and blocking/coupling effects are handled separately (Chapter 15).
 3. **Resistors stay resistors.**
 4. **The transistor is replaced by its small-signal model**, whose element values are computed from the bias current.
 
@@ -53,9 +53,13 @@ This separation is legitimate because the small-signal model is linear: superpos
 
 <div className="section-heading"><span>02</span><h2>Derive $g_m$ and $r_e$</h2></div>
 
-From Chapter 26, the collector current depends exponentially on $V_{BE}$: $I_C$ = $I_S$ $e^{V_{BE}/V_T}$. Its slope is the **transconductance**:
+From Chapter 26, the collector current depends exponentially on $V_{BE}$: $I_C$ = $I_S$ $e^{V_{BE}/V_T}$. Separate the base–emitter voltage into its bias value and a small signal, $V_{BE} + v_{be}$, and expand:
 
-<Equation tex="g_m=\frac{dI_C}{dV_{BE}}=\frac{I_S}{V_T}e^{V_{BE}/V_T}=\frac{I_C}{V_T}" label="TRANSCONDUCTANCE"/>
+<Equation tex="I_C+i_c=I_Se^{(V_{BE}+v_{be})/V_T}=I_C\,e^{v_{be}/V_T}=I_C\left(1+\frac{v_{be}}{V_T}+\frac{1}{2}\frac{v_{be}^2}{V_T^2}+\cdots\right)"/>
+
+Subtract the bias current $I_C$ from both sides and keep only the first-order term. The signal current is proportional to the signal voltage, and the constant of proportionality is the **transconductance**, the slope of the exponential at the bias point:
+
+<Equation tex="g_m=\frac{i_c}{v_{be}}=\frac{dI_C}{dV_{BE}}=\frac{I_S}{V_T}e^{V_{BE}/V_T}=\frac{I_C}{V_T}" label="TRANSCONDUCTANCE"/>
 
 In this ideal forward-active BJT model, transistors have the same $g_m$ at the same collector current and temperature, regardless of area or current gain. At 1 mA and 300 K, $g_m$ = 1 mA/25.85 mV = **38.7 mS**: each millivolt of base–emitter change moves the collector current by 38.7 µA.
 
@@ -67,17 +71,19 @@ At 1 mA, $r_e$ = 25.9 Ω; at 10 µA, 2.6 kΩ; at 100 mA, 0.26 Ω. It behaves as 
 
 ### Seen from the base
 
-A change $i_b$ in base current accompanies a change $\beta$ $i_b$ in collector current. The base–emitter voltage change needed is $v_{be}$ = $i_c$/$g_m$, so the base sees a resistance
+The base current is the collector current divided by $\beta$, so a signal $v_{be}$ produces a base-current signal $i_b = i_c/\beta = g_mv_{be}/\beta$ (taking the small-signal $\beta$, $h_{fe} = di_C/di_B$, as constant). The base therefore sees a resistance
 
-<Equation tex="r_\pi=\frac{v_{be}}{i_b}=\frac{\beta}{g_m}=\beta r_e"/>
+<Equation tex="r_\pi=\frac{v_{be}}{i_b}=\frac{v_{be}}{g_mv_{be}/\beta}=\frac{\beta}{g_m}=\beta r_e"/>
 
 At 1 mA with $\beta$ = 100, $r_π$ = 2.59 kΩ. (The exact emitter-resistance convention is discussed below; the grounded-emitter hybrid-π input resistance is $r_π$.)
 
 ### Seen from the collector
 
-The Early effect (Chapter 26) makes the collector current rise slightly with $V_{CE}$. The corresponding small-signal **output resistance** is
+The Early effect (Chapter 26) makes the collector current rise slightly with $V_{CE}$: $I_C = I_Se^{V_{BE}/V_T}(1 + V_{CE}/V_A)$. Hold $V_{BE}$ fixed and differentiate with respect to $V_{CE}$. The reciprocal of that slope is the small-signal **output resistance**:
 
-<Equation tex="r_o=\frac{V_A}{I_C}"/>
+<Equation tex="\frac{1}{r_o}=\frac{\partial I_C}{\partial V_{CE}}=\frac{I_Se^{V_{BE}/V_T}}{V_A}\approx\frac{I_C}{V_A}\quad\Longrightarrow\quad r_o=\frac{V_A}{I_C}"/>
+
+(The approximation drops the factor $1 + V_{CE}/V_A$ in $I_C$, which is within a few percent of 1 when $V_{CE} \ll V_A$.)
 
 With $V_A$ = 100 V at 1 mA, $r_o$ = 100 kΩ. Often large enough to ignore, it limits the gain of high-gain stages and the quality of current sources.
 
@@ -105,7 +111,7 @@ Two cautions. The model is valid only for small signals around the bias point, a
 
 <p className="caption">Figure 1. The exponential collector characteristic and its tangent at the bias point; below, the current change produced by a sinusoidal base–emitter change, compared with the linear prediction.</p>
 
-The tangent’s slope is $g_m$. Its intercept with the voltage axis is always $V_T$ below the bias point—an exponential’s tangent always crosses zero one “scale length” back—so the steepness of the tangent is proportional to the bias current.
+The tangent’s slope is $g_m$. Its equation is $I = I_C + (I_C/V_T)(V - V_{BE})$, which reaches zero at $V = V_{BE} - V_T$. Its intercept with the voltage axis is therefore always $V_T$ below the bias point—an exponential’s tangent always crosses zero one “scale length” back—so the steepness of the tangent is proportional to the bias current.
 
 </section>
 
@@ -118,6 +124,30 @@ Three results cover most transistor circuits. They are the first-model impedance
 <div className="table-wrap">
 
 <table><thead><tr><th>Looking into</th><th>Conditions</th><th>Small-signal impedance</th></tr></thead><tbody><tr><td>Base</td><td>Resistance $R_E$ (to AC ground) in the emitter</td><td>($\beta$ + 1)($r_e$ + $R_E$)</td></tr><tr><td>Emitter</td><td>Resistance $R_B$ (to AC ground) in the base</td><td>$r_e$ + $R_B$/($\beta$ + 1)</td></tr><tr><td>Collector</td><td>Emitter resistance $R_E$, base stiffly held</td><td>≈ $r_o$(1 + $g_m$($R_E$ ∥ $r_π$)), very large</td></tr></tbody></table>
+
+</div>
+
+The first two rows were derived for the follower in Chapter 28 (input resistance $r_\pi + (\beta+1)R_E$, which equals $(\beta+1)(r_e + R_E)$ with $r_\pi = (\beta+1)r_e$; output resistance $(R_B + r_\pi)/(\beta+1) = r_e + R_B/(\beta+1)$). The collector row needs its own derivation, because it is the only one in which $r_o$ matters.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / RESISTANCE LOOKING INTO THE COLLECTOR</span>
+
+1. **Test circuit.** Ground the base for signals (a stiff bias), put $R_E$ from emitter to ground, and drive the collector with a test voltage $v_x$. Find the current $i_x$ that flows into the collector.
+
+2. **Emitter node.** All of $i_x$ flows out of the emitter (the base current returns to ground through $r_\pi$, which is in parallel with $R_E$ because the base is grounded). The emitter voltage is therefore
+<Equation tex="v_e=i_x\,(R_E\parallel r_\pi),\qquad v_{be}=0-v_e=-i_x\,(R_E\parallel r_\pi)"/>
+
+3. **KCL at the collector.** The test current splits between the controlled source and $r_o$. The voltage across $r_o$ is $v_x - v_e$:
+<Equation tex="i_x=g_mv_{be}+\frac{v_x-v_e}{r_o}"/>
+
+4. **Substitute and solve.** Insert $v_{be}$ and $v_e$ from step 2, and multiply through by $r_o$:
+<Equation tex="i_xr_o=-g_mr_o\,i_x(R_E\parallel r_\pi)+v_x-i_x(R_E\parallel r_\pi)"/>
+<Equation tex="R_{out}=\frac{v_x}{i_x}=r_o+(R_E\parallel r_\pi)\left(1+g_mr_o\right)"/>
+
+5. **Simplify.** Because $g_mr_o \gg 1$, the result is approximately $r_o\left[1 + g_m(R_E\parallel r_\pi)\right]$, the table's entry. The mechanism: a rise in $v_x$ pushes more current through $r_o$, the extra current raises $v_e$, and the rise in $v_e$ reduces $v_{be}$, which turns the controlled source down and opposes the change. The emitter resistor is negative feedback that multiplies $r_o$.
+
+6. **Limit.** As $R_E \to \infty$, $R_E\parallel r_\pi \to r_\pi$ and $R_{out} \to r_o(1 + g_mr_\pi) \approx \beta r_o$. No amount of emitter degeneration raises the output resistance beyond about $\beta r_o$, because the base current eventually provides an escape path.
 
 </div>
 

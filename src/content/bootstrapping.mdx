@@ -4,7 +4,7 @@ import {BootstrapLab} from '../components/StageLabs';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 39</span><span className="hairline"/>FOUNDATIONS / AMPLIFIER BUILDING BLOCKS</div>
+<div className="eyebrow"><span>CHAPTER 39</span><span className="hairline"/>PART II / BIPOLAR TRANSISTORS</div>
 
 <h1>Bootstrapping<br/><em>Make a resistor disappear by moving both its ends.</em></h1>
 
@@ -48,7 +48,7 @@ The divider must stay small for DC. The question is whether it can be made large
 
 <div className="section-heading"><span>02</span><h2>The principle: 1/(1 − G)</h2></div>
 
-Take an impedance Z between a node A, which carries the signal v, and a node B. If node B is driven with a scaled copy of the same signal, $v_B$ = G v, the current through Z is
+Take an impedance Z between a node A, which carries the signal v, and a node B. If node B is driven with a scaled copy of the same signal, $v_B$ = G v, then by Ohm's law the current through Z depends only on the voltage *across* Z, which is $v - Gv$. The source driving node A must supply that current, so the impedance it sees is $v$ divided by it:
 
 <Equation tex="i=\frac{v-Gv}{Z}=\frac{v(1-G)}{Z}\qquad\Rightarrow\qquad Z_{\mathrm{eff}}=\frac{v}{i}=\frac{Z}{1-G}" label="BOOTSTRAPPED IMPEDANCE"/>
 
@@ -69,11 +69,11 @@ Applied to a capacitance, the result reads $C_{\mathrm{eff}}$ = C(1 − G): a bo
 
 Split the bias path: the divider $R_1$, $R_2$ sets a DC voltage at a node M, and a resistor $R_3$ carries that voltage from M to the base. For DC, nothing has changed except a small extra drop across $R_3$ from the base current. Now add a capacitor $C_B$ from the emitter to M.
 
-For signals, M now follows the emitter, which follows the base with gain G = $R_E$/($R_E$ + $r_e$) ≈ 0.997. $R_3$ has the signal at both ends:
+For signals, M now follows the emitter, which follows the base with gain G = $R_E$/($R_E$ + $r_e$) ≈ 0.997 (Chapter 28's follower gain; a large $C_B$ makes $v_M = v_e$). $R_3$ runs from the base, at $v$, to M, at $Gv$, which is exactly the bootstrap configuration with $Z = R_3$:
 
 <Equation tex="Z_{R_3,\mathrm{eff}}=\frac{R_3}{1-G}\approx\frac{47\ \mathrm{k\Omega}}{0.0034}\approx14\ \mathrm{M\Omega}"/>
 
-The divider has effectively disappeared from the input. What remains is the transistor itself. But the divider has not vanished from the circuit: through $C_B$ it now loads the *emitter*, so for signals the emitter sees $R_E$ ∥ $R_1$ ∥ $R_2$ = 7.5 kΩ ∥ 69.6 kΩ = 6.8 kΩ, and the base sees ($\beta$ + 1) times that:
+The divider has effectively disappeared from the input. What remains is the transistor itself. But the divider has not vanished from the circuit: through $C_B$ it now loads the *emitter*, so for signals the emitter sees $R_E$ ∥ $R_1$ ∥ $R_2$ = 7.5 kΩ ∥ 69.6 kΩ = 6.8 kΩ, and the base sees ($\beta$ + 1) times that. KCL at the base node: the source current divides between $R_3$ and the transistor's base, two parallel paths:
 
 <Equation tex="Z_{\mathrm{in}}\approx\frac{R_3}{1-G}\ \Big\|\ (\beta+1)\left(r_e+R_E\parallel R_1\parallel R_2\right)\approx14\ \mathrm{M\Omega}\parallel0.69\ \mathrm{M\Omega}\approx0.65\ \mathrm{M\Omega}"/>
 
@@ -119,13 +119,17 @@ A follower’s own $C_π$ sits between base and emitter, both of which move toge
 
 **Frequency range.** The capacitor sets a lower limit, as in the lab. At high frequencies, the follower’s gain falls and acquires phase shift, so the improvement fades there too.
 
-**Noise.** A bootstrapped resistor still generates the thermal noise current of its real value. A 14 MΩ *apparent* impedance built from a 47 kΩ resistor injects the noise current of 47 kΩ, √(14 M/47 k) ≈ 17 times more than a genuine 14 MΩ resistor would. Bootstrapping fixes loading, not noise.
+**Noise.** A bootstrapped resistor still generates the thermal noise current of its real value. A resistor's noise current density is $\sqrt{4kT/R}$, set by its real value. A 14 MΩ *apparent* impedance built from a 47 kΩ resistor therefore injects the noise current of 47 kΩ, $\sqrt{14\text{ M}/47\text{ k}}$ ≈ 17 times more than a genuine 14 MΩ resistor would. Bootstrapping fixes loading, not noise.
 
 **What remains.** Bootstrapping removes one limit and exposes the next. In the follower that limit is $\beta$ times the emitter load; in a guarded cable it is the follower’s gain accuracy; in a collector load it is the next stage’s input impedance.
 
 ### Phase is part of the bootstrap gain
 
-Use the complex follower transfer $G(jω)$, rather than only its magnitude. For $G=|G|e^{-jφ}$:
+Use the complex follower transfer $G(jω)$, rather than only its magnitude. For $G=|G|e^{-jφ}$, the bootstrap result $Z_{eff}/Z = 1/(1-G)$ still holds with phasors, so the multiplier's magnitude is $1/|1 - G|$. Write $1 - G = 1 - |G|\cos φ + j|G|\sin φ$ and take its magnitude, using $\cos^2φ + \sin^2φ = 1$:
+
+<Equation tex="|1-G|^2=(1-|G|\cos φ)^2+|G|^2\sin^2φ=1+|G|^2-2|G|\cos φ"/>
+
+Therefore
 
 <Equation tex="\left|\frac{Z_{eff}}{Z}\right|=\frac{1}{\sqrt{1+|G|^2-2|G|\cos φ}}"/>
 

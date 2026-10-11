@@ -5,7 +5,7 @@ import {FeedbackBlock,FeedbackAmpFigure,SupplyFigure,ThermalFigure,LogicFigure} 
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 46</span><span className="hairline"/>TRANSISTORS / FEEDBACK & CONTROL</div>
+<div className="eyebrow"><span>CHAPTER 114</span><span className="hairline"/>PART VII / LOGIC &amp; TIMING</div>
 
 <h1>Simple BJT & diode logic<br/><em>Digital decisions still obey analog laws.</em></h1>
 
@@ -176,11 +176,11 @@ At LOW, pull-up dissipation is approximately $4.8^2/4700=4.90$ mW. At HIGH, an i
 
 <LogicRiseFigure/>
 
-When the transistor switches off, the collector pull-up charges output capacitance. A first approximation is:
+When the transistor switches off, the collector pull-up charges output capacitance. KCL at the output node with the transistor open: the current through $R_C$ charges $C_L$, so $(V_{CC} - v_o)/R_C = C_L\,dv_o/dt$. This is the RC charging equation, with final value $V_{CC}$ and initial value $V_{OL}$:
 
 <Equation tex="v_o(t)=V_{CC}-(V_{CC}-V_{OL})e^{-t/(R_CC_L)}" />
 
-For 4.7 kΩ and 100 pF, $\tau$ = 470 ns. Starting from 0.2 V, reaching a 2.8 V HIGH threshold with a 5 V supply takes approximately:
+For 4.7 kΩ and 100 pF, $\tau$ = 470 ns. To find when the output crosses a threshold $V_{th}$, set $v_o = V_{th}$, isolate the exponential, $e^{-t/\tau} = (V_{CC} - V_{th})/(V_{CC} - V_{OL})$, and take the logarithm. Starting from 0.2 V, reaching a 2.8 V HIGH threshold with a 5 V supply takes approximately:
 
 <Equation tex="t=-R_CC_L\ln\!\left(\frac{5-2.8}{5-0.2}\right)\approx367\ \mathrm{ns}" />
 
@@ -200,7 +200,7 @@ Keep the analog questions beside the Boolean ones: who supplies or sinks current
 
 A complementary MOS inverter uses a PMOS to pull up and an NMOS to pull down. At valid settled input levels, one device is off, so the ideal channel model has no continuous supply-to-ground path. This removes the static HIGH-state resistor current or LOW-state pull-up dissipation of many bipolar logic examples.
 
-Every transition still moves charge. A load capacitance C switched from zero to $V_{DD}$ draws $CV_{DD}^2$ of energy from the supply: half is stored in C and half is dissipated during charging. Discharge dissipates the stored half. For an activity factor $\alpha$ counting 0-to-1 transitions per clock:
+Every transition still moves charge. Charging a load capacitance C from zero to $V_{DD}$ moves charge $Q = CV_{DD}$ out of the supply, all of it at the constant voltage $V_{DD}$, so the supply delivers $E = QV_{DD} = CV_{DD}^2$. The capacitor ends with $\int_0^{V_{DD}} Cv\,dv = CV_{DD}^2/2$ stored. The other half is dissipated in the PMOS channel during charging, whatever its resistance. Discharge dissipates the stored half. For an activity factor $\alpha$ counting 0-to-1 transitions per clock:
 
 <Equation tex={String.raw`P_{dynamic}=\alpha C_LV_{DD}^2 f`}/>
 

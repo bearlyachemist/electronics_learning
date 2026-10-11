@@ -5,13 +5,13 @@ import {ClosedLoopBodeFigure,SlewDistortionFigure,FullPowerFigure,PhaseMarginSte
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 79</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+<div className="eyebrow"><span>CHAPTER 74</span><span className="hairline"/>PART III / THE OP AMP</div>
 
 <h1>Bandwidth, slew and stability<br/><em>Three different speed limits.</em></h1>
 
 <p className="dek">Use the gain–bandwidth product and the noise gain to find small-signal bandwidth, the slew rate to find the largest clean sine, and the phase margin to predict ringing. Then settle a step and see which limit controls each part of the response.</p>
 
-<div className="chapter-meta"><span>55–75 min + exploration</span><span>Ideal op amps (Ch. 77) · Two-stage compensation (Ch. 75)</span></div>
+<div className="chapter-meta"><span>55–75 min + exploration</span><span>Ideal op amps (Ch. 72) · Two-stage compensation (Ch. 70)</span></div>
 
 </div>
 
@@ -21,7 +21,7 @@ import {ClosedLoopBodeFigure,SlewDistortionFigure,FullPowerFigure,PhaseMarginSte
 
 <div>
 
-"How fast is this op amp?" has at least three answers, and they come from different physics. The **small-signal bandwidth** comes from the dominant-pole compensation of Chapter 75 and is shared between gain and frequency. The **slew rate** is how fast the compensation capacitor can be charged by the limited current available, and it depends on signal amplitude. **Stability** depends on how much phase the loop has left at the frequency where its gain falls to one.
+"How fast is this op amp?" has at least three answers, and they come from different physics. The **small-signal bandwidth** comes from the dominant-pole compensation of Chapter 70 and is shared between gain and frequency. The **slew rate** is how fast the compensation capacitor can be charged by the limited current available, and it depends on signal amplitude. **Stability** depends on how much phase the loop has left at the frequency where its gain falls to one.
 
 A datasheet gives a number for each. This chapter shows how to use them, and why a circuit can satisfy one and fail another at the same frequency.
 
@@ -45,7 +45,7 @@ A compensated op amp's open-loop gain has one dominant pole, very low in frequen
 
 Above $f_p$, typically a few hertz, the gain falls at 20 dB per decade, and $|A| \cdot f$ is constant: the **gain–bandwidth product** $f_t$, where the open-loop gain reaches 1. A part with $A_0 = 10^5$ and $f_p$ = 10 Hz has $f_t$ = 1 MHz: open-loop gain 1000 at 1 kHz, 10 at 100 kHz.
 
-That smooth curve is what Chapter 75's Miller capacitor achieved, and it holds only for small signals. A large step drives the input stage out of its linear range, and then a different limit takes over.
+That smooth curve is what Chapter 70's Miller capacitor achieved, and it holds only for small signals. A large step drives the input stage out of its linear range, and then a different limit takes over.
 
 </section>
 
@@ -53,7 +53,11 @@ That smooth curve is what Chapter 75's Miller capacitor achieved, and it holds o
 
 <div className="section-heading"><span>02</span><h2>Gain–bandwidth and noise gain</h2></div>
 
-Substitute the one-pole $A(f)$ into Chapter 77's closed-loop formula with feedback factor $\beta = 1/NG$:
+Substitute the one-pole $A(f)$ into Chapter 72's closed-loop formula with feedback factor $\beta = 1/NG$. Multiplying numerator and denominator by $1 + jf/f_p$:
+
+<Equation tex={String.raw`\frac{v_o}{v_i}=\frac{A_0}{1+jf/f_p+A_0/NG}=\frac{NG}{1+NG/A_0+jf\,NG/(A_0f_p)}`}/>
+
+With $A_0 \gg NG$ the term $NG/A_0$ is negligible, and $A_0f_p = f_t$. The result is a single pole at $f_t/NG$:
 
 <Equation tex={String.raw`\frac{v_o}{v_i}\approx\frac{NG}{1+jf\,NG/f_t}\qquad\Rightarrow\qquad f_{CL}=\frac{f_t}{NG}`} label="CLOSED-LOOP BANDWIDTH"/>
 
@@ -69,7 +73,7 @@ Between the two curves lies the loop gain. At 10 kHz, a 1 MHz op amp has open-lo
 
 <div className="section-heading"><span>03</span><h2>Slew rate and full-power bandwidth</h2></div>
 
-When the input changes quickly by a large amount, the input stage steers its whole tail current into the compensation capacitor and can deliver no more (Chapter 75). The output then changes at a fixed maximum rate, the **slew rate** $SR = I_T/C_C$, whatever the input does. A sine of peak $V_{pk}$ has maximum slope $2\pi fV_{pk}$ at its zero crossings, so it passes cleanly only if
+When the input changes quickly by a large amount, the input stage steers its whole tail current into the compensation capacitor and can deliver no more (Chapter 70). The output then changes at a fixed maximum rate, the **slew rate** $SR = I_T/C_C$, whatever the input does. A sine of peak $V_{pk}$ has maximum slope $2\pi fV_{pk}$ at its zero crossings, so it passes cleanly only if
 
 <Equation tex={String.raw`2\pi f\,V_{pk}\le SR\qquad\Rightarrow\qquad f_{FP}=\frac{SR}{2\pi V_{pk}}`} label="FULL-POWER BANDWIDTH"/>
 
@@ -113,11 +117,11 @@ With one dominant pole and a second pole at $f_2$, the dominant pole contributes
 
 <p><strong>At gain 10:</strong> crossing at 91 kHz, second-pole lag 24°, <strong>65° of margin</strong>, 4% overshoot. Higher noise gain stabilizes the loop by lowering the crossing frequency, at the cost of bandwidth.</p>
 
-<p>That is why some fast op amps are sold "decompensated", stable only above a minimum gain: they put the dominant pole higher to gain bandwidth, and rely on the user's noise gain for stability. To use one at low signal gain, raise the noise gain without raising the signal gain (Chapter 93).</p>
+<p>That is why some fast op amps are sold "decompensated", stable only above a minimum gain: they put the dominant pole higher to gain bandwidth, and rely on the user's noise gain for stability. To use one at low signal gain, raise the noise gain without raising the signal gain (Chapter 88).</p>
 
 </div>
 
-A rule of thumb links margin and response: 45° gives about 25% overshoot, 60° about 9%, 76° none. Capacitive loads add another pole through the op amp's output resistance and are the commonest cause of unexpected ringing; Chapter 93 is devoted to them.
+A rule of thumb links margin and response: 45° gives about 25% overshoot, 60° about 9%, 76° none. Capacitive loads add another pole through the op amp's output resistance and are the commonest cause of unexpected ringing; Chapter 88 is devoted to them.
 
 </section>
 
@@ -165,7 +169,7 @@ For an ADC driver, test the actual sequence: previous-channel amplitude, switchi
 
 **Small signals** (a few tens of millivolts) measure the linear response: bandwidth, peaking, settling. **Large steps** measure slewing, asymmetry between rising and falling edges, and overload recovery. **Real loads** change both: output current limits and a capacitive load's extra pole do not appear in an unloaded specification.
 
-**Frequency-dependent noise gain.** In transimpedance amplifiers (Chapter 87), integrators and filters, the feedback network contains capacitors, so the noise gain changes with frequency. Their stability must be analyzed by plotting $1/\beta(f)$ against $A(f)$; a single number does not suffice.
+**Frequency-dependent noise gain.** In transimpedance amplifiers (Chapter 82), integrators and filters, the feedback network contains capacitors, so the noise gain changes with frequency. Their stability must be analyzed by plotting $1/\beta(f)$ against $A(f)$; a single number does not suffice.
 
 **Simulation.** To measure phase margin in a simulator, break the loop without disturbing its DC operating point and compute the return ratio. A closed-loop step can confirm the damping but cannot by itself reveal every margin.
 
@@ -185,11 +189,11 @@ A series input resistor can make a differentiator's signal gain flatten without 
 
 <h3>What a feedback capacitor really does</h3>
 
-Take $R_F$ shunted by $C_F$, and a grounded $R_G$ shunted by total summing-node capacitance $C_I$. The noise gain is
+Take $R_F$ shunted by $C_F$, and a grounded $R_G$ shunted by total summing-node capacitance $C_I$. Noise gain is the noninverting gain of the feedback network, $1 + Z_F/Z_G$, which comes from the same KCL at the minus input as Chapter 72 with impedances in place of resistors. Here $Z_F = R_F/(1 + sR_FC_F)$ and $1/Z_G = 1/R_G + sC_I$. The noise gain is
 
 <Equation tex={String.raw`NG(s)=1+\frac{R_F}{1+sR_FC_F}\left(\frac1{R_G}+sC_I\right)=\frac{1+R_F/R_G+sR_F(C_F+C_I)}{1+sR_FC_F}`}/>
 
-Its low-frequency value is $1+R_F/R_G$ and its high-frequency value is $1+C_I/C_F$. Without $C_F$, input capacitance makes noise gain rise; its inverse adds lag to the loop. A chosen feedback capacitor stops that rise before crossover. But with negligible $C_I$, the same capacitor drives noise gain **down toward 1**, which can be unsuitable for a decompensated amplifier. “Put a few pF across feedback” is not a universal stability cure.
+(The second form puts everything over $1 + sR_FC_F$ and adds the numerators.) Its low-frequency value, at $s = 0$, is $1+R_F/R_G$. Its high-frequency value, the ratio of the $s$ coefficients, is $(C_F + C_I)/C_F = 1+C_I/C_F$. Without $C_F$, input capacitance makes noise gain rise; its inverse adds lag to the loop. A chosen feedback capacitor stops that rise before crossover. But with negligible $C_I$, the same capacitor drives noise gain **down toward 1**, which can be unsuitable for a decompensated amplifier. “Put a few pF across feedback” is not a universal stability cure.
 
 <PrecisionLoopFigure/>
 

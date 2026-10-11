@@ -4,7 +4,7 @@ import {BiasLab} from '../components/BjtLabs';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 29</span><span className="hairline"/>FOUNDATIONS / BIPOLAR TRANSISTORS</div>
+<div className="eyebrow"><span>CHAPTER 29</span><span className="hairline"/>PART II / BIPOLAR TRANSISTORS</div>
 
 <h1>Biasing transistor stages<br/><em>Set the quiescent point so it stays put.</em></h1>
 
@@ -40,7 +40,7 @@ Choosing the bias point is half of the job. The other half is making it *stay* t
 
 Feed a ±1 V signal straight into the base of an emitter follower whose emitter resistor goes to ground. On negative half cycles the base–emitter junction is off and the output is zero; even on positive peaks the output is 0.65 V low. Half the signal is lost.
 
-Raise the base to a steady DC level instead—say, half the supply—and add the signal through a capacitor. The capacitor passes the signal (a high-pass filter, Chapter 22) while blocking the DC level of the source. The transistor now operates around a fixed point and responds to signal swings in both directions.
+Raise the base to a steady DC level instead—say, half the supply—and add the signal through a capacitor. The capacitor passes the signal (a high-pass filter, Chapter 15) while blocking the DC level of the source. The transistor now operates around a fixed point and responds to signal swings in both directions.
 
 The **quiescent point** consists of the resting collector current $I_{CQ}$ and the resting terminal voltages. It determines how far the output can swing before cutoff or saturation, what the input and output impedances are (they depend on current through $r_e$, Chapter 30), and how much power the stage wastes.
 
@@ -54,9 +54,23 @@ For the largest symmetric swing, put the emitter near the middle of the supply. 
 
 ### The stiffness rule
 
-The divider is a Thévenin source $V_{TH}$ behind $R_{TH}$ = $R_1$ ∥ $R_2$ (Chapter 1). Looking into the base, the transistor presents ($\beta$ + 1)$R_E$ (Chapter 28). Treat this as a voltage divider between $R_{TH}$ and ($\beta$ + 1)$R_E$:
+The divider is a Thévenin source $V_{TH}$ behind $R_{TH}$ = $R_1$ ∥ $R_2$ (Chapter 1). Looking into the base, the transistor presents ($\beta$ + 1)$R_E$ (Chapter 28). Treat this as a voltage divider between $R_{TH}$ and ($\beta$ + 1)$R_E$.
 
-<Equation tex="R_{TH}\le\frac{(\beta+1)R_E}{10}\qquad\Rightarrow\qquad V_B\ \text{within about 10\% of}\ V_{TH}\ \text{even as}\ \beta\ \text{varies}"/>
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE STIFFNESS RULE</span>
+
+1. **Base loop.** From $V_{TH}$ through $R_{TH}$, across the junction, and down $R_E$: $V_{TH} = I_BR_{TH} + V_{BE} + I_ER_E$. With $I_E = (\beta+1)I_B$:
+<Equation tex="I_B=\frac{V_{TH}-V_{BE}}{R_{TH}+(\beta+1)R_E}"/>
+
+2. **How far the base sags.** The base voltage is $V_B = V_{TH} - I_BR_{TH}$. Measured from the unloaded value, as a fraction of the voltage available across the junction and $R_E$:
+<Equation tex="\frac{V_{TH}-V_B}{V_{TH}-V_{BE}}=\frac{R_{TH}}{R_{TH}+(\beta+1)R_E}"/>
+   This is exactly a divider between $R_{TH}$ and the transistor's input resistance $(\beta+1)R_E$.
+
+3. **Choose the ratio.** Make $R_{TH}$ one tenth of $(\beta+1)R_E$ and the sag is $1/11$, about 9%. Because the sag is already small, a change in $\beta$ changes it only by a fraction of that 9%:
+<Equation tex="R_{TH}\le\frac{(\beta_{\min}+1)R_E}{10}"/>
+
+</div>
 
 Use the *minimum* $\beta$. A divider ten times stiffer than the transistor’s input keeps the base voltage set by the resistors, not by the transistor.
 
@@ -86,11 +100,28 @@ The common-emitter amplifier (Chapter 32) takes its output from the collector, t
 - **Collector voltage**, near the middle of the range it can swing over: up to $V_{CC}$ at cutoff and down to roughly $V_E$ + 0.2 V at saturation.
 - **Emitter voltage** around 1 V or more, so that $V_{BE}$’s variations (tens of millivolts with temperature and current) are small compared with it.
 
-Solving the base loop exactly, with the divider replaced by its Thévenin equivalent:
+Solve the base loop exactly, with the divider replaced by its Thévenin equivalent.
 
-<Equation tex="V_{TH}=I_BR_{TH}+V_{BE}+I_ER_E\quad\Rightarrow\quad I_C=\frac{V_{TH}-V_{BE}}{R_E+R_{TH}/\beta}\ \ (\text{taking }I_E\approx I_C)" label="DIVIDER BIAS"/>
+<div className="derivation">
 
-$\beta$ appears only in the term $R_{TH}$/$\beta$. If that is small compared with $R_E$, $\beta$ hardly matters—which is just the stiffness rule again.
+<span className="tiny-label">DERIVATION / COLLECTOR CURRENT OF THE DIVIDER-BIASED STAGE</span>
+
+1. **Replace the divider** by $V_{TH} = V_{CC}R_2/(R_1+R_2)$ in series with $R_{TH} = R_1\parallel R_2$.
+
+2. **KVL around the base loop**, from $V_{TH}$ to ground through $R_{TH}$, the junction and $R_E$:
+<Equation tex="V_{TH}=I_BR_{TH}+V_{BE}+I_ER_E"/>
+
+3. **Express both currents in terms of $I_C$**, using $I_B = I_C/\beta$ and $I_E = I_C(\beta+1)/\beta$:
+<Equation tex="V_{TH}-V_{BE}=I_C\,\frac{R_{TH}+(\beta+1)R_E}{\beta}"/>
+
+4. **Solve:**
+<Equation tex="I_C=\frac{\beta\,(V_{TH}-V_{BE})}{R_{TH}+(\beta+1)R_E}=\frac{V_{TH}-V_{BE}}{R_E\,(\beta+1)/\beta+R_{TH}/\beta}" label="DIVIDER BIAS"/>
+
+5. **Large-$\beta$ form.** For $\beta \gg 1$, $(\beta+1)/\beta \approx 1$, giving $I_C \approx (V_{TH}-V_{BE})/(R_E + R_{TH}/\beta)$. As $R_{TH}/\beta \to 0$ this reduces to the simple $I_C \approx (V_B - V_{BE})/R_E$.
+
+</div>
+
+$\beta$ appears only in the term $R_{TH}$/$\beta$ (and weakly in $(\beta+1)/\beta$). If that is small compared with $R_E$, $\beta$ hardly matters—which is just the stiffness rule again.
 
 <div className="worked-example">
 
@@ -128,7 +159,11 @@ The green curve is almost flat because the emitter resistor provides **negative 
 
 <div className="section-heading"><span>05</span><h2>Temperature and feedback</h2></div>
 
-$V_{BE}$ at fixed current falls about 2.1 mV/°C (Chapter 26). In the divider stage the base voltage is fixed, so a falling $V_{BE}$ raises $V_E$ and therefore the current:
+$V_{BE}$ at fixed current falls about 2.1 mV/°C (Chapter 26). In the divider stage the base voltage is fixed, so a falling $V_{BE}$ raises $V_E$ and therefore the current. To quantify this, differentiate the divider-bias result with respect to $V_{BE}$:
+
+<Equation tex="\frac{\partial I_C}{\partial V_{BE}}=-\frac{\beta}{R_{TH}+(\beta+1)R_E}\approx-\frac{1}{R_E}"/>
+
+Divide by $I_C \approx (V_{TH}-V_{BE})/R_E = V_E/R_E$ to get the fractional change. The $R_E$ cancels, leaving only the emitter voltage:
 
 <Equation tex="\frac{\Delta I_C}{I_C}\approx\frac{-\Delta V_{BE}}{V_E}=\frac{2.1\ \mathrm{mV/^\circ C}\times\Delta T}{V_E}"/>
 
@@ -136,9 +171,23 @@ With $V_E$ ≈ 0.9 V, a 60 °C rise increases the current by roughly 13–14%: i
 
 ### Collector-to-base feedback
 
-Another way to stabilize bias is to connect the base resistor to the collector instead of the supply. If the current rises, the collector voltage falls, reducing the base current:
+Another way to stabilize bias is to connect the base resistor to the collector instead of the supply. If the current rises, the collector voltage falls, reducing the base current.
 
-<Equation tex="I_C\approx\frac{V_{CC}-V_{BE}}{R_C+R_B/\beta}"/>
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / COLLECTOR-TO-BASE FEEDBACK BIAS</span>
+
+1. **KCL at the collector.** $R_C$ carries both the collector current and the base current that leaves the collector through $R_B$: $I_{R_C} = I_C + I_B = (\beta+1)I_B$.
+
+2. **KVL from the supply to ground** through $R_C$, $R_B$ and the grounded-emitter junction:
+<Equation tex="V_{CC}=(\beta+1)I_BR_C+I_BR_B+V_{BE}"/>
+
+3. **Solve for $I_B$ and multiply by $\beta$:**
+<Equation tex="I_C=\frac{\beta\,(V_{CC}-V_{BE})}{(\beta+1)R_C+R_B}\approx\frac{V_{CC}-V_{BE}}{R_C+R_B/\beta}"/>
+
+4. **Why it cannot saturate hard.** The collector voltage is $V_C = V_{BE} + I_BR_B$, which is always above $V_{BE}$. The collector can never fall below the base, so the base–collector junction never becomes strongly forward-biased.
+
+</div>
 
 With $R_C$ = 7.5 kΩ and $R_B$ = 750 kΩ, $\beta$ = 50 gives 0.63 mA and $\beta$ = 500 gives 1.59 mA. That is far better than the single base resistor (it can never saturate hard), but much worse than the divider with $R_E$. Its advantage is that the emitter can be grounded directly, which is useful at high frequencies. It also lowers the stage’s gain and input impedance, a feedback effect treated later.
 
@@ -157,15 +206,21 @@ Biasing the base from a split supply through a resistor to ground, biasing the e
 3. **Choose $R_C$** for a common-emitter stage so that $V_C$ sits about halfway between $V_{CC}$ and $V_E$ plus a few tenths of a volt—or wherever the expected signal swing needs it to be.
 4. **Design the divider** for $V_B$ = $V_E$ + 0.65 V with $R_{TH}$ ≤ ($\beta_{\mathrm{min}}$ + 1)$R_E$/10.
 5. **Check the extremes**: $\beta$ from minimum to maximum, resistor tolerances, temperature range, and supply variation. Confirm the transistor stays active with the full signal swing superimposed.
-6. **Choose coupling and bypass capacitors** for the lowest signal frequency using the impedances they see (Chapters 22 and 32).
+6. **Choose coupling and bypass capacitors** for the lowest signal frequency using the impedances they see (Chapters 15 and 32).
 
 Expect the exact current to differ from the nominal by several percent: $V_{BE}$ is not exactly 0.65 V, and the divider and emitter resistors have tolerances. A good bias design does not need it to be exact; it needs it to be predictable and to leave margin for the signal.
 
 ### Quantify the remaining β sensitivity
 
-For the unsaturated divider stage, $I_C=\beta(V_{TH}-V_{BE})/[R_{TH}+(\beta+1)R_E]$. Differentiating its logarithm gives:
+For the unsaturated divider stage, $I_C=\beta(V_{TH}-V_{BE})/[R_{TH}+(\beta+1)R_E]$. The useful measure is the fractional change in current per fractional change in $\beta$, $\partial\ln I_C/\partial\ln\beta = (\beta/I_C)\,\partial I_C/\partial\beta$. Take the logarithm, then differentiate with respect to $\beta$:
 
-<Equation tex="\frac{\partial\ln I_C}{\partial\ln\beta}=\frac{R_{TH}+R_E}{R_{TH}+(\beta+1)R_E}" />
+<Equation tex="\ln I_C=\ln\beta+\ln(V_{TH}-V_{BE})-\ln\left[R_{TH}+(\beta+1)R_E\right]"/>
+
+<Equation tex="\frac{\partial\ln I_C}{\partial\beta}=\frac{1}{\beta}-\frac{R_E}{R_{TH}+(\beta+1)R_E}"/>
+
+Multiply by $\beta$ and put both terms over a common denominator:
+
+<Equation tex="\frac{\partial\ln I_C}{\partial\ln\beta}=\frac{R_{TH}+(\beta+1)R_E-\beta R_E}{R_{TH}+(\beta+1)R_E}=\frac{R_{TH}+R_E}{R_{TH}+(\beta+1)R_E}" />
 
 For the chapter’s $R_{TH}=8.91$ kΩ, $R_E=1$ kΩ and β = 100, the sensitivity is 0.0902. A small 10% β change causes only about 0.90% current change locally. Making the divider ten times weaker raises the sensitivity to 0.474; a good voltage ratio does not by itself make a good bias source.
 

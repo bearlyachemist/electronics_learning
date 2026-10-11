@@ -4,7 +4,7 @@ import {SystemsLab} from '../../components/SystemsLab';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 102</span><span className="hairline"/>RF CIRCUITS</div>
+<div className="eyebrow"><span>CHAPTER 104</span><span className="hairline"/>PART V / RF CIRCUITS</div>
 
 <h1>RF impedance and matching networks<br/><em>Think in waves and available power.</em></h1>
 
@@ -54,7 +54,7 @@ Thus maximum available power is obtained at the conjugate match $Z_L=Z_s^*$ for 
 <Equation tex={String.raw`P_L=\frac{|V_s|^2R_L}{(R_s+R_L)^2+(X_s+X_L)^2},\qquad Z_L=Z_s^*`}/>
 For a purely resistive source, this equals matching resistance. For an amplifier, the best source impedance for minimum added noise may differ from the conjugate impedance that maximizes gain. Stability may require another compromise. A matching network chosen from transistor capacitance alone does not establish minimum noise figure or safe unconditional stability.
 
-On a transmission line with real characteristic impedance $Z_0$, the voltage reflection coefficient is $\Gamma=(Z_L-Z_0)/(Z_L+Z_0)$. (At the load, total voltage $V^+ + V^-$ and total current $(V^+ - V^-)/Z_0$ must satisfy Ohm's law for $Z_L$; solving for $V^-/V^+$ gives this ratio. Chapter 104 derives it in full.) A matched load absorbs the incident wave; an unmatched one returns a fraction. For a real reference impedance, the reflected power fraction is $|\Gamma|^2$. Return loss is $-20\log_{10}|\Gamma|$; larger positive return loss is better. The logarithmic S₁₁ magnitude is often shown as a negative dB value, so keep the sign convention explicit.
+On a transmission line with real characteristic impedance $Z_0$, the voltage reflection coefficient is $\Gamma=(Z_L-Z_0)/(Z_L+Z_0)$. (At the load, total voltage $V^+ + V^-$ and total current $(V^+ - V^-)/Z_0$ must satisfy Ohm's law for $Z_L$; solving for $V^-/V^+$ gives this ratio. Chapter 102 derives it in full.) A matched load absorbs the incident wave; an unmatched one returns a fraction. For a real reference impedance, the reflected power fraction is $|\Gamma|^2$. Return loss is $-20\log_{10}|\Gamma|$; larger positive return loss is better. The logarithmic S₁₁ magnitude is often shown as a negative dB value, so keep the sign convention explicit.
 
 <Equation tex={String.raw`RL=-20\log_{10}|\Gamma|,\qquad VSWR=\frac{1+|\Gamma|}{1-|\Gamma|}`}/>
 

@@ -4,7 +4,7 @@ import {RadioFigure,CouplingFigure,BypassLoopFigure} from '../components/AcFigur
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 25</span><span className="hairline"/>FOUNDATIONS / IMPEDANCE & FILTERS</div>
+<div className="eyebrow"><span>CHAPTER 18</span><span className="hairline"/>PART I / AC CIRCUITS &amp; FILTERS</div>
 
 <h1>Thévenin generalized & capacitor applications<br/><em>Put the whole toolkit to work.</em></h1>
 
@@ -22,7 +22,7 @@ import {RadioFigure,CouplingFigure,BypassLoopFigure} from '../components/AcFigur
 
 The answer is a Thévenin argument. The chip draws current in fast bursts. Seen from the chip’s pins, the supply is a source behind an impedance—wiring resistance and, above all, wiring inductance. At the frequencies in those bursts, that impedance is large. The capacitor lowers it right where it matters.
 
-This chapter generalizes the Thévenin equivalent of Chapter 2 to AC circuits and uses it to explain the everyday capacitor jobs: bypassing, coupling, decoupling references, storing energy and damping. It ends by assembling an AM radio, which uses nearly every idea from Chapters 14 to 24.
+This chapter generalizes the Thévenin equivalent of Chapter 2 to AC circuits and uses it to explain the everyday capacitor jobs: bypassing, coupling, decoupling references, storing energy and damping. It ends by assembling an AM radio, which uses nearly every idea from the AC chapters (12 to 17) and the diode chapters (19 to 25).
 
 </div>
 
@@ -60,7 +60,7 @@ The important difference is that **V**<sub>th</sub> and $Z_{\mathrm{th}}$ are fu
 
 ### Maximum power at a single frequency
 
-From the Thévenin form, the conjugate-match result of Chapter 21 follows immediately: a load $Z_L$ = $Z_{\mathrm{th}}$* receives $|\mathbf V_{\mathrm{th,rms}}|^2/(4R_{\mathrm{th}})$. In the example above, a load of 717 + 451j Ω would receive the maximum possible power at 1 kHz in the fixed-frequency model. Away from 1 kHz, recompute the source equivalent and the load impedance; a match at one frequency does not guarantee a match across a band.
+From the Thévenin form, the conjugate-match result of Chapter 14 follows immediately: a load $Z_L$ = $Z_{\mathrm{th}}$* receives $|\mathbf V_{\mathrm{th,rms}}|^2/(4R_{\mathrm{th}})$. In the example above, a load of 717 + 451j Ω would receive the maximum possible power at 1 kHz in the fixed-frequency model. Away from 1 kHz, recompute the source equivalent and the load impedance; a match at one frequency does not guarantee a match across a band.
 
 </section>
 
@@ -126,7 +126,7 @@ These terms describe different parts of the event rather than a universal wavefo
 
 ### The anti-resonance trap
 
-The lab shows a subtlety. The wiring inductance and the bypass capacitance are in parallel as seen by the load—a parallel tank (Chapter 24). With the default values, it resonates near **354 kHz**, where the impedance seen by the load rises to about **6.6 Ω**, roughly fifteen times the bare supply’s 0.44 Ω at that frequency. Even at 100 kHz the bypassed supply (0.138 Ω) is slightly worse than the bare one (0.127 Ω).
+The lab shows a subtlety. The wiring inductance and the bypass capacitance are in parallel as seen by the load—a parallel tank (Chapter 17). With the default values, it resonates near **354 kHz**, where the impedance seen by the load rises to about **6.6 Ω**, roughly fifteen times the bare supply’s 0.44 Ω at that frequency. Even at 100 kHz the bypassed supply (0.138 Ω) is slightly worse than the bare one (0.127 Ω).
 
 The fix is damping, not more capacitance. A capacitor with a deliberately larger ESR (an electrolytic or polymer bulk capacitor), or a small resistor in series with a large capacitor, lowers the tank’s Q. Raise ESR to 0.1 Ω in the lab and the peak drops to about 1.7 Ω. Power-distribution design is the art of keeping the impedance below a target across the entire frequency range of the load current, using bulk, mid-value and small capacitors whose regions overlap and whose anti-resonances are damped.
 
@@ -138,7 +138,7 @@ The fix is damping, not more capacitance. A capacitor with a deliberately larger
 
 ### Coupling capacitors
 
-A series capacitor between stages blocks the DC operating point of one stage from reaching the next, while passing the signal. With the next stage’s input resistance it forms a high-pass filter (Chapter 22); choose the corner well below the lowest signal frequency. A 10 kΩ audio input needs about 0.8 µF for a 20 Hz corner, and several times that for negligible loss at 20 Hz.
+A series capacitor between stages blocks the DC operating point of one stage from reaching the next, while passing the signal. With the next stage’s input resistance it forms a high-pass filter (Chapter 15); choose the corner well below the lowest signal frequency. A 10 kΩ audio input needs about 0.8 µF for a 20 Hz corner, and several times that for negligible loss at 20 Hz.
 
 A coupling capacitor has memory. If the DC level on either side changes—at power-up, for example—the capacitor must charge through the surrounding resistances, and the signal path sees a slow transient with time constant RC. Large coupling capacitors produce slow settling and audible thumps.
 
@@ -170,12 +170,12 @@ A node held at a constant DC voltage, with a capacitor to ground large enough th
 
 The capacitor appears throughout electronics in a handful of recurring roles. Each one is an application of a result you have already derived.
 
-- **Timing.** An RC sets a delay or a frequency through t = −$\tau$ ln(error) (Chapter 6). Oscillators, debouncers and the power-on reset of Chapter 18 work this way.
+- **Timing.** An RC sets a delay or a frequency through t = −$\tau$ ln(error) (Chapter 6). Oscillators, debouncers and the power-on reset of Chapter 25 work this way.
 - **Energy storage and hold-up.** At a constant current I, a capacitor discharging from $V_1$ to $V_2$ lasts t = C($V_1$ − $V_2$)/I. A 1000 µF capacitor at 12 V can hold a 200 mA load above 9 V for **15 ms**, enough to ride through a brief supply dropout or to finish writing data. Stored energy is ½CV², and only the part above the minimum usable voltage is available.
-- **Filtering and smoothing.** The reservoir capacitor of Chapter 14, the RC and LC filters of Chapters 22–24, and bypassing in this chapter.
+- **Filtering and smoothing.** The reservoir capacitor of Chapter 21, the RC and LC filters of Chapters 15–17, and bypassing in this chapter.
 - **Snubbing.** An RC across a switch or an inductor damps the ringing between stray inductance and capacitance. Choosing the snubber resistor near the ringing circuit’s characteristic impedance √(L/C) gives strong damping; the capacitor, several times the stray capacitance, sets the frequency above which the resistor is effective. Charging a snubber capacitor from 0 to V through a resistor dissipates $\tfrac12 C_sV^2$ in that resistor; discharging it dissipates the stored $\tfrac12 C_sV^2$ as well. A full 0-to-V-to-0 cycle can therefore cost $C_sV^2$, depending on the topology.
-- **Sampling and holding.** A capacitor connected briefly to a signal and then isolated holds the value, drooping by $I_{\mathrm{leak}}$·t/C (the peak detector of Chapter 16 is a cousin).
-- **Tuning.** A variable capacitor—mechanical, or a reverse-biased junction whose depletion capacitance depends on voltage (a varactor, Chapter 12)—sets a resonant frequency.
+- **Sampling and holding.** A capacitor connected briefly to a signal and then isolated holds the value, drooping by $I_{\mathrm{leak}}$·t/C (the peak detector of Chapter 23 is a cousin).
+- **Tuning.** A variable capacitor—mechanical, or a reverse-biased junction whose depletion capacitance depends on voltage (a varactor, Chapter 19)—sets a resonant frequency.
 
 </section>
 
@@ -189,7 +189,7 @@ Amplitude-modulated (AM) broadcast radio encodes audio in the amplitude of a hig
 
 ### 1. Select one station with a tank
 
-A parallel LC tank between the antenna and ground has a high impedance only near $f_0$ (Chapter 24). The antenna’s signal current develops a large voltage across the tank for the selected station and a small one for the others.
+A parallel LC tank between the antenna and ground has a high impedance only near $f_0$ (Chapter 17). The antenna’s signal current develops a large voltage across the tank for the selected station and a small one for the others.
 
 With L = 250 µH, tuning to 1 MHz needs C = 1/((2π × 1 MHz)² × 250 µH) = **101 pF**. A variable capacitor from about 40 pF to 365 pF (including stray capacitance) tunes from 1.59 MHz down to 527 kHz, covering the AM band. Because $f_0$ ∝ 1/√C, a 9:1 capacitance range gives only a 3:1 frequency range.
 
@@ -197,7 +197,7 @@ Stations are spaced about 10 kHz apart. Separating them needs a bandwidth near 1
 
 ### 2. Recover the audio with an envelope detector
 
-A diode followed by a parallel RC (Chapter 16) charges to the carrier’s peaks and discharges slowly between them, so its output follows the envelope—the audio. The time constant must be long compared with the 1 µs carrier period but short enough to follow the fastest falling envelope. For audio up to 5 kHz at 80% modulation depth, the standard condition for avoiding diagonal clipping is
+A diode followed by a parallel RC (Chapter 23) charges to the carrier’s peaks and discharges slowly between them, so its output follows the envelope—the audio. The time constant must be long compared with the 1 µs carrier period but short enough to follow the fastest falling envelope. For audio up to 5 kHz at 80% modulation depth, the standard condition for avoiding diagonal clipping is
 
 <Equation tex="RC\leq\frac{\sqrt{1-m^2}}{m\,\omega_m}=\frac{\sqrt{1-0.64}}{0.8\times2\pi\times5\ \mathrm{kHz}}\approx24\ \mu\mathrm s"/>
 

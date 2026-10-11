@@ -1,0 +1,174 @@
+import Equation from '../../components/Equation.astro';
+import {RealComponentPlot,SmithChartFigure,LineImpedancePlot} from '../../components/RfFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 103</span><span className="hairline"/>PART V / RF CIRCUITS</div>
+
+<h1>RF components and the Smith chart<br/><em>Parasitics become the circuit.</em></h1>
+
+<p className="dek">Model capacitors and inductors with their parasitics, define Q and convert between series and parallel forms, derive the input impedance of a terminated line, and build the Smith chart from one bilinear map.</p>
+
+<div className="chapter-meta"><span>55–80 min + practice</span><span>Derivations · Impedance geometry · Matching design</span></div>
+
+</div>
+
+<section id="parasitics">
+
+<div className="section-heading"><span>01</span><h2>Model real components across frequency</h2></div>
+
+Every capacitor has lead and mounting inductance in series with it; every inductor has capacitance between its turns. Chapter 101 explained where those come from. At RF they are not corrections: they decide what the part is.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / SELF-RESONANCE OF A CAPACITOR AND AN INDUCTOR</span>
+
+1. **Capacitor as a series RLC.** Capacitance $C$, equivalent series inductance $L_s$ and resistance $R_s$ carry the same current, so their impedances add:
+<Equation tex={String.raw`Z_C=R_s+j\left(\omega L_s-\frac{1}{\omega C}\right)`}/>
+   The reactance is zero at $\omega_{sr} = 1/\sqrt{L_sC}$, where $|Z| = R_s$, its minimum. Below that the part is capacitive; above it, inductive.
+
+2. **Inductor with winding capacitance.** Inductance $L$ with series resistance $R$, all in parallel with $C_p$:
+<Equation tex={String.raw`Z_L=\frac{(R+j\omega L)\cdot\dfrac{1}{j\omega C_p}}{R+j\omega L+\dfrac{1}{j\omega C_p}}=\frac{R+j\omega L}{1-\omega^2LC_p+j\omega RC_p}`}/>
+   The denominator's real part vanishes at $\omega_{sr} = 1/\sqrt{LC_p}$. There $|Z|$ peaks at about $(\omega L)^2/R$; above it the inductor is capacitive.
+
+</div>
+
+<RealComponentPlot/>
+
+A 100 nF capacitor with 1 nH of mounting inductance resonates at $1/(2\pi\sqrt{10^{-9}\times10^{-7}})$ = 15.9 MHz. At 200 MHz it is an inductor of reactance $2\pi(200\text{ M})(1\text{ n}) - 1/(2\pi(200\text{ M})(100\text{ n}))$ ≈ 1.25 Ω. That is why RF bypassing uses small capacitors in small packages placed directly at the pin: reducing $L_s$ raises the frequency up to which the part bypasses at all. A resistor has the dual problem: shunt capacitance across it means a 10 kΩ, 0.1 pF part is down to half its impedance magnitude by about 280 MHz.
+
+</section>
+
+<section id="q">
+
+<div className="section-heading"><span>02</span><h2>Define Q and convert between series and parallel</h2></div>
+
+Quality factor measures how much energy a reactive element stores compared with what it loses. For a series model, $Q = X/R_s$; for a parallel model, $Q = R_p/X_p$. Both are the ratio of reactive to real power at that frequency.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / SERIES–PARALLEL CONVERSION AT ONE FREQUENCY</span>
+
+1. **Start in series,** $Z = R_s + jX_s$, with $Q = X_s/R_s$. Its admittance is
+<Equation tex={String.raw`Y=\frac{1}{R_s+jX_s}=\frac{R_s-jX_s}{R_s^2+X_s^2}`}/>
+
+2. **Read off the parallel elements.** A parallel $R_p$ and $X_p$ have $Y = 1/R_p + 1/(jX_p)$. Match the real and imaginary parts:
+<Equation tex={String.raw`R_p=\frac{R_s^2+X_s^2}{R_s}=R_s\,(1+Q^2),\qquad X_p=\frac{R_s^2+X_s^2}{X_s}=X_s\left(1+\frac{1}{Q^2}\right)`}/>
+
+3. **Same Q.** $R_p/X_p = (R_s(1+Q^2))/(X_s(1+1/Q^2)) = Q$: the conversion preserves Q, and for $Q \gg 1$ the reactance barely changes while the loss resistance is multiplied by $Q^2$.
+
+4. **Tank bandwidth.** A series RLC driven at $\omega$ has $|Z| = \sqrt{R^2 + X^2}$ with $X = \omega L - 1/(\omega C)$. Half power (current down by $\sqrt2$) occurs where $|X| = R$. Near resonance $X \approx 2L\,\Delta\omega$, so $\Delta\omega = \pm R/(2L)$, a total bandwidth $R/L = \omega_0/Q$:
+<Equation tex={String.raw`B_{3\,dB}=\frac{f_0}{Q},\qquad Q=\frac{\omega_0L}{R}`}/>
+
+</div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / AN INDUCTOR'S Q AND ITS PARALLEL LOSS</span><h3>1 µH with 0.5 Ω effective series resistance at 10 MHz</h3>
+
+<p>$X_s = 2\pi(10\text{ M})(1\ \mu) = 62.8$ Ω, so $Q = 126$. In parallel form, $R_p = 0.5(1 + 126^2)$ ≈ <strong>7.9 kΩ</strong> across an essentially unchanged 62.8 Ω reactance. Resonated with 253 pF, the tank has a 79 kHz bandwidth. The 0.5 Ω must include the skin-effect resistance of Chapter 101, which is often ten times the DC value at this frequency.</p>
+
+</div>
+
+The parallel form is what an active circuit sees across a tank. It is the $R_p$ that an oscillator's negative resistance must overcome (Chapter 105), and the impedance a tuned amplifier's gain is proportional to.
+
+</section>
+
+<section id="lines">
+
+<div className="section-heading"><span>03</span><h2>Derive the input impedance of a terminated line</h2></div>
+
+Chapter 102 described waves on a line as steps bouncing between ends. In sinusoidal steady state the same physics gives a compact formula for what a line does to the impedance at its far end.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / IMPEDANCE TRANSFORMATION BY A LINE</span>
+
+1. **Standing-wave phasors.** Measure distance $d$ back from the load toward the generator. The forward wave grows in phase as we move back, $V^+e^{j\beta d}$, and the reflected wave $\Gamma_LV^+e^{-j\beta d}$, with $\beta = 2\pi/\lambda$. The current is their difference over $Z_0$:
+<Equation tex={String.raw`V(d)=V^+\left(e^{j\beta d}+\Gamma_Le^{-j\beta d}\right),\qquad I(d)=\frac{V^+}{Z_0}\left(e^{j\beta d}-\Gamma_Le^{-j\beta d}\right)`}/>
+
+2. **Reflection coefficient seen at $d$.** Dividing the two terms, $\Gamma(d) = \Gamma_Le^{-j2\beta d}$: the magnitude stays the same and the phase rotates by $2\beta d$, a full turn every half wavelength.
+
+3. **Impedance.** $Z(d) = V/I = Z_0(1 + \Gamma(d))/(1 - \Gamma(d))$. Substitute $\Gamma_L = (Z_L - Z_0)/(Z_L + Z_0)$, multiply numerator and denominator by $(Z_L + Z_0)e^{j\beta d}$, and use $e^{\pm j\theta} = \cos\theta \pm j\sin\theta$:
+<Equation tex={String.raw`Z_{in}=Z_0\,\frac{Z_L+jZ_0\tan\beta\ell}{Z_0+jZ_L\tan\beta\ell}`}/>
+
+4. **Special lengths.**
+   - Half wave, $\tan\beta\ell = 0$: $Z_{in} = Z_L$. The line is invisible at that one frequency.
+   - Quarter wave, $\tan\beta\ell \to \infty$: divide top and bottom by $\tan\beta\ell$ to get $Z_{in} = Z_0^2/Z_L$, an impedance inverter.
+   - Short-circuited stub, $Z_L = 0$: $Z_{in} = jZ_0\tan\beta\ell$, any reactance.
+   - Open stub, $Z_L \to \infty$: $Z_{in} = -jZ_0\cot\beta\ell$.
+
+</div>
+
+<LineImpedancePlot/>
+
+A 100 Ω load on a 50 Ω line looks like 25 Ω a quarter wavelength back and 100 Ω again at a half wavelength. In between it is complex. This is why a length of cable between a mismatched antenna and a transmitter changes the impedance the transmitter sees, and why "just add some cable" changes what an impedance meter reports.
+
+</section>
+
+<section id="smith">
+
+<div className="section-heading"><span>04</span><h2>Derive the Smith chart from one map</h2></div>
+
+Section 03 showed that moving along a line simply rotates $\Gamma$. Plotting impedances in the $\Gamma$ plane therefore turns line transformations into rotations, and the whole passive half-plane of impedances fits inside the unit circle. That plot, with the impedance grid drawn on it, is the Smith chart.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / CIRCLES OF CONSTANT RESISTANCE AND REACTANCE</span>
+
+1. **The map.** Normalize $z = Z/Z_0 = r + jx$. Then $\Gamma = (z - 1)/(z + 1) = u + jv$. Inverting, $z = (1 + \Gamma)/(1 - \Gamma)$. Any $r \ge 0$ gives $|\Gamma| \le 1$, so the passive impedances fill the unit disk; $z = 1$ (matched) is the centre, $z = 0$ is the left edge, $z = \infty$ the right edge.
+
+2. **Separate real and imaginary parts.** Multiply $(1+u+jv)/(1-u-jv)$ by the conjugate of the denominator:
+<Equation tex={String.raw`r=\frac{1-u^2-v^2}{(1-u)^2+v^2},\qquad x=\frac{2v}{(1-u)^2+v^2}`}/>
+
+3. **Constant $r$.** Clear the fraction in the first equation and complete the square in $u$:
+<Equation tex={String.raw`\left(u-\frac{r}{1+r}\right)^2+v^2=\left(\frac{1}{1+r}\right)^2`}/>
+   A circle centred at $(r/(1+r), 0)$ with radius $1/(1+r)$. Every one passes through $\Gamma = 1$.
+
+4. **Constant $x$.** Clear the second fraction and complete the square in $v$:
+<Equation tex={String.raw`(u-1)^2+\left(v-\frac1x\right)^2=\left(\frac1x\right)^2`}/>
+   A circle centred at $(1, 1/x)$, radius $1/|x|$; only the arc inside the unit disk is used. Positive $x$ (inductive) lies in the upper half.
+
+5. **Admittance.** Since $y = 1/z$ corresponds to $-\Gamma$, the same chart reads admittances after a 180° rotation. Adding a shunt element moves along a constant-conductance circle; adding a series element moves along a constant-resistance circle.
+
+</div>
+
+<SmithChartFigure/>
+
+</section>
+
+<section id="matching">
+
+<div className="section-heading"><span>05</span><h2>Match with transformers and stubs</h2></div>
+
+A matching network must move the load's point to the centre. Chapter 104 develops lumped L networks for this; at higher frequencies the line itself is often the most accurate component available.
+
+**Quarter-wave transformer.** From section 03, a quarter-wave line of impedance $Z_T$ presents $Z_T^2/Z_L$. Setting that equal to $Z_0$ gives $Z_T = \sqrt{Z_0Z_L}$. A 100 Ω load is matched to 50 Ω by a quarter wave of 70.7 Ω line. At 1 GHz on a board with effective permittivity 4, a quarter wave is $0.15\text{ m}/4 = 37.5$ mm. The match is exact only at one frequency; it degrades as the electrical length departs from 90°.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A SINGLE SHUNT-STUB MATCH</span><h3>Match 100 Ω to a 50 Ω line with a shorted stub</h3>
+
+<p><strong>Where to put the stub.</strong> $z_L = 2$, so $\Gamma_L = 1/3$. Moving toward the generator keeps $|\Gamma| = 1/3$ and rotates it. A shunt stub can cancel susceptance but not change conductance, so we need a point where the normalized admittance has real part 1. In the Γ plane the $g = 1$ circle is centred at $(-\tfrac12, 0)$ with radius $\tfrac12$. Intersecting it with $|\Gamma| = 1/3$: $u^2 + v^2 = 1/9$ and $u^2 + u + v^2 = 0$ give $u = -1/9$, $v = \pm0.314$.</p>
+
+<p>Rotating clockwise from 0°, the first intersection reached is the lower one, $\Gamma = -\tfrac19 - j0.314$, at an angle of $-109.5°$. So $2\beta d = 109.5°$ and $d = 109.5/720$ = <strong>0.152 λ</strong>. There $y = (1 - \Gamma)/(1 + \Gamma) = (1.111 + j0.314)/(0.889 - j0.314) = 1 + j0.707$.</p>
+
+<p><strong>The stub.</strong> It must add $-j0.707$. A shorted stub has $y = -j\cot\beta\ell$, so $\cot\beta\ell = 0.707$, $\beta\ell = 54.7°$ and $\ell$ = <strong>0.152 λ</strong>.  (That $d$ and $\ell$ come out equal is a coincidence of $|\Gamma| = 1/3$; for other loads they differ.)</p>
+
+</div>
+
+On the chart this design is two moves: a rotation along the $|\Gamma| = 1/3$ circle to the $g = 1$ circle, then a move along that circle to the centre. Lumped L networks, stubs and transformers are all routes between the same two points; the chart shows which route is shortest, and shorter routes are wider in bandwidth.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, derive the self-resonance of a real capacitor, convert a series loss to its parallel equivalent, reproduce the quarter-wave result from the general line formula, and locate $z = 1 + j1$ on the chart from the circle equations.
+
+[Work through three independent problems](/rf-components-smith/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §1.7.15 and Appendix H; standard RF circuit derivations. Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>
