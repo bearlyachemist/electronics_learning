@@ -36,5 +36,43 @@ export const systemsChapters = [
         "Check your understanding"
       ]
     ]
+  },
+  {
+    "id": "precision-noise-grounding",
+    "number": "96",
+    "title": "Noise, grounding and shielding",
+    "href": "/precision-noise-grounding/",
+    "practice": "/precision-noise-grounding/practice/",
+    "group": "Precision systems",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "noise",
+        "Integrate the noise that reaches the measurement"
+      ],
+      [
+        "coupling",
+        "Follow electric, magnetic and shared-impedance coupling"
+      ],
+      [
+        "returns",
+        "Arrange return currents before dividing ground labels"
+      ],
+      [
+        "shields",
+        "Separate shielding from guarding"
+      ],
+      [
+        "detection",
+        "Move the measurement away from its worst noise"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
   }
 ];

@@ -1,0 +1,104 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 96</span><span className="hairline"/>PRECISION SYSTEMS</div>
+
+<h1>Noise, grounding and shielding<br/><em>Give every unwanted signal a physical path.</em></h1>
+
+<p className="dek">Integrate noise over the actual bandwidth, distinguish random noise from coupled interference, and design return paths, shields, guards and synchronous detection for small signals.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="noise">
+
+<div className="section-heading"><span>01</span><h2>Integrate the noise that reaches the measurement</h2></div>
+
+A noisy reading has at least three possible causes: random fluctuations generated inside the circuit, external signals coupled into it, and deterministic drift. A single rms number cannot distinguish them. Start by measuring a spectrum and a time trace with the input terminated in its intended source impedance. A shorted input changes current-noise conversion and can make an amplifier look quieter than it is in service.
+
+For a resistance $R$ at temperature $T$, thermal voltage-noise density is $\sqrt{4kTR}$. At 300 K, 10 kΩ generates about 12.87 nV/√Hz. A 5 nV/√Hz amplifier and 0.5 pA/√Hz current noise flowing through that resistor contribute independent terms; the current term is 5 nV/√Hz. Their root-sum-square is 14.69 nV/√Hz, before feedback-resistor noise.
+
+<Equation tex={String.raw`\sigma_o^2=\int_0^\infty\!\left|H(f)\right|^2S_{in}(f)\,df,\qquad S_{in}=e_n^2+4kTR+i_n^2|Z_S|^2`}/>
+Use one-sided spectral densities in this expression. $H$ includes the applicable noise gain and all filtering. Noise density times the square root of bandwidth is valid only for flat density over the relevant band. Correlated sources require cross-spectral terms; independent resistor and device sources can usually be summed in power.
+
+A first-order low-pass with cutoff $f_c$ has noise-equivalent bandwidth $\pi f_c/2$. A 1 kHz pole therefore passes the same white-noise power as an ideal rectangular 1571 Hz band. The preceding density gives 582 nV rms input-referred, rather than 465 nV from using the −3 dB frequency directly. Output noise at gain 100 is about 58.2 μV rms under the stated model.
+
+<Equation tex={String.raw`B_{EN}=\int_0^\infty\frac{df}{1+(f/f_c)^2}=\frac{\pi}{2}f_c,\qquad \sigma= e_w\sqrt{B_{EN}}`}/>
+Flicker noise density commonly rises as frequency falls. Integrating $S(f)=e_w^2(1+f_k/f)$ from $f_L$ to $f_H$ gives a white term plus $e_w^2f_k\ln(f_H/f_L)$. The lower cutoff represents finite observation time or actual high-pass behavior; integrating an ideal 1/f model to zero gives an unphysical infinity. Datasheet 0.1–10 Hz peak-to-peak noise cannot be converted to an rms number with a universal factor.
+
+</section>
+
+<section id="coupling">
+
+<div className="section-heading"><span>02</span><h2>Follow electric, magnetic and shared-impedance coupling</h2></div>
+
+Electric-field coupling is current through mutual capacitance. A nearby clock can inject $i=C_m\,dv/dt$. With 0.2 pF mutual capacitance and a 3.3 V transition in 1 ns, the ideal instantaneous current is 0.66 mA. The charge per edge is only 0.66 pC, but a high-impedance node can respond strongly. Reduce mutual capacitance with distance, shielding and routing; reduce victim impedance if the sensor permits it.
+
+Magnetic coupling is voltage from changing flux through a loop. A twisted pair reduces effective loop area and alternates its orientation, reducing pickup from fields that are reasonably uniform over the twist pitch. It does not remove a voltage drop shared with a power return. Keep outgoing and returning currents close to each other so their field cancels at a distance.
+
+Shared impedance produces $v=Ri+L\,di/dt$. A 10 mΩ path carrying a 100 mA load step produces 1 mV; a 10 nH path with 100 mA changing in 10 ns produces 0.1 V. The low DC resistance can obscure the larger fast error. Determine whether that voltage appears as a common-mode shift, differential input, reference error or supply disturbance: each has a different transfer function.
+
+<SystemsFlow labels={["Aggressor|edge or load", "Coupling|C, M or Z", "Victim|input / return", "Response|gain and filter"]} caption="Interference is a source, a coupling path and a receiving circuit. Fix the path that actually exists."/>
+Filtering the victim can help only if the interfering energy has not already been rectified or aliased into the wanted band. Input transistors and protection junctions can demodulate RF. Put a balanced RF filter before sensitive inputs when appropriate, then verify its leakage, input impedance, capacitor mismatch and common-mode response.
+
+</section>
+
+<section id="returns">
+
+<div className="section-heading"><span>03</span><h2>Arrange return currents before dividing ground labels</h2></div>
+
+A ground plane is a conductor with distributed impedance, not an infinite zero-volt reservoir. At high frequencies, a signal's return tends to follow the path that minimizes loop inductance, usually near the signal on its adjacent reference plane. Cutting that plane can force a detour, increasing loop area, radiation and crosstalk. Moving a clock over a split to keep it away from an analog label can therefore make the measurement worse.
+
+Separate noisy and sensitive circuits spatially; keep their current loops local. Route sensor returns and reference returns so load current does not flow through the measurement path. A single star junction can be useful at low frequency, but long spokes have inductance. A continuous plane with deliberate placement is often more effective for mixed-signal boards. Follow the converter's specific grounding guidance rather than inventing a universal rule that AGND and DGND must always use separate planes.
+
+Place decoupling across the supply and local return at the device. The loop comprises the device pin, capacitor, return and intervening vias, so minimize that loop. The real capacitor has ESR, ESL and bias-dependent capacitance. Several low-ESR capacitors with different values can produce an impedance antiresonance; inspect the network rather than assuming that more capacitors always lower impedance at every frequency.
+
+For low-frequency sensitive measurements, minimize temperature gradients across dissimilar-metal junctions. Copper-to-connector or solder transitions can produce thermal EMFs. Matched placement, isothermal blocks and avoiding airflow across one input can matter more than using a lower-offset amplifier. Measure polarity-reversed signals to help distinguish sensor voltage from additive thermal EMF, while checking that reversal does not change the sensor itself.
+
+</section>
+
+<section id="shields">
+
+<div className="section-heading"><span>04</span><h2>Separate shielding from guarding</h2></div>
+
+A shield intercepts external electric-field coupling and carries that current to a chosen reference or chassis. A guard surrounds a high-impedance node with a conductor driven close to its voltage, reducing leakage through insulating surfaces. A guard is not a safety earth and its driver has finite stability and current capability. Guard both surfaces or use triaxial cable when leakage through the underside or cable dominates; leave sufficient insulation for the actual voltage.
+
+Connecting a cable shield at one end avoids a low-frequency ground-loop current through that shield in some arrangements. At RF, a floating far end can be a poor shield; chassis bonds at both ends are often needed for high-frequency containment, with system-level ground-current management. These are frequency-dependent design choices. Never disconnect a required protective earth to cure measurement hum; use an appropriate differential or isolated measurement path.
+
+A 10 GΩ leakage path from a 5 V rail injects 0.5 nA. Through a 100 MΩ transimpedance feedback resistor that gives 50 mV output error. A guard within 10 mV of the summing node reduces the ideal leakage to 1 pA and the output contribution to 0.1 mV. Humidity, contamination and connector insulation can dominate the nominal substrate resistance. Clean, dry construction and measured leakage are part of the circuit.
+
+<Equation tex={String.raw`I_{leak}=\frac{V_{near}-V_{node}}{R_{leak}},\qquad V_{error}=I_{leak}R_F`}/>
+A driven guard adds capacitance and may couple guard-driver noise. Keep it outside the intended sensing electrode and test recovery after overload. Shield currents should not be deposited into the same slender conductor that defines a microvolt input reference.
+
+</section>
+
+<section id="detection">
+
+<div className="section-heading"><span>05</span><h2>Move the measurement away from its worst noise</h2></div>
+
+If a sensor can be excited or modulated, synchronous detection translates its response into a known frequency. For $v(t)=A\cos(\omega t+\phi)$ multiplied by $\cos\omega t$, the product contains $A\cos\phi/2$ at DC and another term at $2\omega$. A low-pass retains the DC term; a quadrature channel measures $A\sin\phi/2$. Together they recover amplitude and phase without requiring a perfect phase setting.
+
+<Equation tex={String.raw`\cos(\omega t+\phi)\cos\omega t=\tfrac12\cos\phi+\tfrac12\cos(2\omega t+\phi)`}/>
+This can avoid amplifier drift and low-frequency flicker noise, but it does not reject interference at the same modulation frequency. Excitation feedthrough is coherent and can look exactly like signal. Square-wave reversal uses a different scale factor and samples multiple harmonics; derive the response for the actual waveform. Post-detection bandwidth sets noise and response time. A tenfold reduction in white-noise bandwidth lowers rms noise by $\sqrt{10}$ while slowing the measurement.
+
+On the bench, replace the sensor with a representative impedance, vary bandwidth, turn nearby switching loads on and off, move the cable and observe coherence with clocks. Random white noise falls with the square root of averaging length; a coherent spur or drift need not. Verify input-referred noise by dividing output noise by the signal transfer only where that transfer is valid. A stable zero is useful evidence, but it is not a calibration of gain.
+
+Primary implementation reference: [ADI MT-101, Decoupling Techniques](https://www.analog.com/media/en/training-seminars/tutorials/MT-101.pdf), for local current loops and practical bypass networks.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/precision-noise-grounding/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§8.1, 8.9 and 8.14–8.16; ADI MT-101 (linked above). Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>

@@ -4083,5 +4083,48 @@
       ]
     ],
     "sources": "The Art of Electronics, third edition, §9.10 and Chapter 5"
+  },
+  "precision-noise-grounding": {
+    "title": "Bandwidth as a noise and speed budget",
+    "setup": "A white input density of 10 nV/√Hz is filtered by a first-order unity low-pass. Compare cutoffs; settling is to 1% after a step.",
+    "equation": "\\sigma=e_w\\sqrt{\\pi f_c/2},\\qquad t_{1\\%}=\\ln(100)/(2\\pi f_c)",
+    "columns": [
+      "Cutoff",
+      "Noise rms",
+      "1% settling"
+    ],
+    "rows": [
+      [
+        "10 Hz",
+        "39.63 nV",
+        "73.29 ms"
+      ],
+      [
+        "100 Hz",
+        "125.33 nV",
+        "7.329 ms"
+      ],
+      [
+        "1000 Hz",
+        "396.33 nV",
+        "0.7329 ms"
+      ]
+    ],
+    "analysis": [
+      "A decade more bandwidth gives √10 more noise and ten times faster first-order settling.",
+      "The comparison excludes flicker noise and drift. At sufficiently low cutoff, those mechanisms replace white noise as the limiting error."
+    ],
+    "limits": "An additional ADC digital filter changes both the equivalent noise bandwidth and latency.",
+    "connections": [
+      [
+        "/mos-noise-design/",
+        "Device noise"
+      ],
+      [
+        "/opamp-input-tradeoffs/",
+        "Amplifier selection"
+      ]
+    ],
+    "sources": "The Art of Electronics, Chapter 8, especially §§8.14–8.16"
   }
 }
