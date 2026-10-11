@@ -530,5 +530,47 @@ export const systemsChapters = [
         "Check your understanding"
       ]
     ]
+  },
+  {
+    "id": "adc-integrating-delta-sigma",
+    "number": "109",
+    "title": "Integrating and delta–sigma ADCs",
+    "href": "/adc-integrating-delta-sigma/",
+    "practice": "/adc-integrating-delta-sigma/practice/",
+    "group": "Data converters",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "dual",
+        "Derive dual-slope conversion"
+      ],
+      [
+        "line",
+        "Derive line-frequency rejection and multislope behavior"
+      ],
+      [
+        "feedback",
+        "Follow a delta–sigma stream through charge balance"
+      ],
+      [
+        "shaping",
+        "Derive oversampling and noise shaping separately"
+      ],
+      [
+        "filter",
+        "Read decimation as a frequency response and a delay"
+      ],
+      [
+        "choice",
+        "Choose precision together with bandwidth and latency"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
   }
 ];

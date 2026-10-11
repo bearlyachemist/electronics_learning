@@ -488,5 +488,40 @@
         }
       ]
     }
+  ],
+  "adc-integrating-delta-sigma": [
+    {
+      "tag": "DUAL SLOPE",
+      "title": "Cancel integrator values",
+      "prompt": "An integrating ADC uses 80 ms input integration and a 2.5 V reference; rundown lasts 24 ms. Find the constant input voltage.",
+      "hint": "Use the time ratio.",
+      "solution": [
+        {
+          "text": "Input is 2.5 × 24/80 = 0.75 V. Ideal R, C and common clock frequency cancel; unequal phase errors do not."
+        }
+      ]
+    },
+    {
+      "tag": "DENSITY",
+      "title": "Interpret a one-bit stream",
+      "prompt": "A normalized ±1 feedback stream contains 700 positive decisions and 300 negative decisions. What input average does ideal bounded charge balance indicate?",
+      "hint": "Average the actual feedback levels, not the unsigned bits alone.",
+      "solution": [
+        {
+          "text": "Mean is (700 − 300)/1000 = 0.4. Finite residual state gives a bounded correction; the 0.7 ones fraction is not the signed input."
+        }
+      ]
+    },
+    {
+      "tag": "FILTER DELAY",
+      "title": "A sinc filter is not instantaneous",
+      "prompt": "A sinc³ teaching decimator has modulator clock 128 kHz and M = 128. Find output rate and group delay.",
+      "hint": "Use three boxcar delays at modulator rate.",
+      "solution": [
+        {
+          "text": "Output is 1 kS/s; delay is 3 × 127/(2 × 128000) = 1.4883 ms. Step settling is longer than group delay and additional internal stages may add latency."
+        }
+      ]
+    }
   ]
 }

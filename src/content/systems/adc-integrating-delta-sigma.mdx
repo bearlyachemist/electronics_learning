@@ -1,0 +1,125 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot,PowerCircuit,MatchCircuit} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 109</span><span className="hairline"/>DATA CONVERTERS</div>
+
+<h1>Integrating and delta–sigma ADCs<br/><em>Measure an average by balancing charge.</em></h1>
+
+<p className="dek">Derive dual-slope cancellation and line rejection, follow a delta–sigma feedback stream, and connect oversampling, noise shaping and decimation to precision, bandwidth and latency.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="dual">
+
+<div className="section-heading"><span>01</span><h2>Derive dual-slope conversion</h2></div>
+
+An integrating ADC accumulates input over a time interval rather than deciding only an instantaneous voltage. In a dual-slope converter, integrate the unknown input for a fixed time $T_{int}$ through an input resistor into a capacitor. Then apply a known reference of opposite polarity until the integrator returns to its starting level. Measure that return time.
+
+For constant input and reference, the two charge changes cancel:
+
+<Equation tex={String.raw`\frac{V_{in}T_{int}}{RC}-\frac{V_{ref}T_{deint}}{RC}=0,\qquad V_{in}=V_{ref}\frac{T_{deint}}{T_{int}}`}/>
+The ideal result cancels R and C because both phases use the same components. If both intervals are counted by the same stable clock, its absolute frequency also cancels in their ratio. Component drift between phases, dielectric absorption, integrator leakage, switching charge and unequal paths do not cancel automatically. Auto-zero phases can estimate repeatable offsets, but their sequence and storage errors matter.
+
+For 100 ms integration, 2 V reference and 0.75 V input, return time is 37.5 ms. A 1 MHz counter measures 37500 return ticks against 100000 integration ticks. Maximum conversion time varies with input unless extra phases or a fixed scheduling interval are used. A high-resolution meter can therefore be slow even though its internal counter runs quickly.
+
+<SystemsFlow labels={["Input integrate|fixed time", "Reference return|opposite slope", "Zero crossing|stop counter", "Ratio|counts \u00d7 reference"]} caption="Dual-slope conversion turns voltage into a time ratio using the same integrator in both phases."/>
+A single-slope or Wilkinson converter instead compares a held input against a ramp and measures crossing time. Ramp gain and linearity then directly affect the result unless calibrated. Voltage-to-frequency conversion balances charge in repeated pulses; counting frequency measures an average over the gate interval, while measuring pulse period trades low-frequency response against timing precision. These are useful architectures for particular sensing and isolation problems, not substitutes with identical dynamic behavior.
+
+</section>
+
+<section id="line">
+
+<div className="section-heading"><span>02</span><h2>Derive line-frequency rejection and multislope behavior</h2></div>
+
+Integrating for a rectangular interval averages the input. Its normalized frequency response has the magnitude of a sinc:
+
+<Equation tex={String.raw`|H(f)|=\left|\frac{\sin(\pi fT_{int})}{\pi fT_{int}}\right|`}/>
+Zeros occur at integer multiples of $1/T_{int}$. A 20 ms integration rejects an ideal 50 Hz sinusoid, but does not exactly null 60 Hz. A 100 ms interval contains five 50 Hz cycles and six 60 Hz cycles, nulling both under exact-frequency assumptions. Frequency drift, imperfect timing, nonlinear rectification and pickup outside the integration path reduce actual rejection. This normal-mode rejection differs from common-mode rejection at the input terminals.
+
+A conventional dual-slope integrator can accumulate a large voltage over a long input interval. Multislope schemes inject reference charge repeatedly during integration to keep the integrator bounded, count these reference packets and then measure the remaining residual. The count gives coarse charge balance and a final rundown resolves finer information. The benefit is managing range and speed while preserving the ratio principle; packet accuracy, switching timing and residual measurement become important.
+
+A meter's selectable line-cycle setting often changes rejection, noise and total reading time together. Include auto-zero, settling, range changes and data transfer when estimating measurements per second. A slowly updated display may conceal faster internal phases, and a large nominal reading rate may use shorter integration with worse rejection.
+
+</section>
+
+<section id="feedback">
+
+<div className="section-heading"><span>03</span><h2>Follow a delta–sigma stream through charge balance</h2></div>
+
+A delta–sigma converter uses a feedback DAC and an integrator to keep the difference between input and feedback bounded. In a simple one-bit normalized model, feedback can be +1 or −1. The accumulator tracks the running difference, and a comparator chooses the next feedback level. If the average input is 0.25, the long-term +1 fraction approaches 0.625 because $0.625(1)+0.375(-1)=0.25$.
+
+<Equation tex={String.raw`\bar x-\bar y=\frac{s_{end}-s_{start}}{M},\qquad p_{+}=(1+\bar y)/2`}/>
+The sign of the residual term depends on the state convention; here state accumulates input minus feedback. A bounded state makes the average feedback track input as M grows. The stream's individual bits are not a sequence of accurate one-bit voltage readings. Information lives in their pattern over time, and the output filter converts that pattern into a multi-bit result.
+
+<SystemsLab kind="delta" client:load/>
+The lab shows a first-order discrete accumulator with no analog noise. At rational DC inputs it may produce repeating patterns. This illustrates charge balance and possible tone structure; it does not predict a commercial 24-bit converter's accuracy or spectrum.
+
+The physical loop adds amplifier noise, finite gain, overload limits, sample/hold behavior and reference errors. One-bit feedback is intrinsically free of intermediate DAC weight mismatch because it has only two levels, but those levels must still have correct amplitude and timing. Multi-bit feedback lowers quantization burden and can improve some speed/noise tradeoffs; it introduces DAC element matching, often addressed with calibration or dynamic element matching.
+
+</section>
+
+<section id="shaping">
+
+<div className="section-heading"><span>04</span><h2>Derive oversampling and noise shaping separately</h2></div>
+
+Oversampling spreads approximately white quantization noise over a wider band. Filtering to signal bandwidth B and then decimating retains only a fraction of that noise. With $OSR=f_{mod}/(2B)$, unshaped noise power scales roughly as $1/OSR$: doubling oversampling improves white-noise SNR by about 3 dB under the model.
+
+An ideal first-order delta–sigma linearized loop also shapes quantization error. Replace the nonlinear quantizer with its signal plus additive error e. The integrator and feedback give:
+
+<Equation tex={String.raw`Y(z)=X(z)+(1-z^{-1})E(z)`}/><SystemsPlot kind="delta"/>
+The signal passes with unity in this timing convention; quantization error passes through a high-pass difference. Near DC, $|1-e^{-j\omega}|\approx\omega$, suppressing low-frequency error while increasing it at higher frequencies. A digital low-pass removes much of the high-frequency shaped noise before rate reduction.
+
+For an ideal Lth-order noise transfer $(1-z^{-1})^L$, white-error approximation and large OSR give:
+
+<Equation tex={String.raw`\sigma_{q,inband}^2\simeq\frac{q^2}{12}\frac{\pi^{2L}}{(2L+1)OSR^{2L+1}}`}/>
+First order predicts about 9 dB improvement for doubling OSR; second order about 15 dB. These are ideal asymptotic slopes, not guaranteed device performance. Thermal noise, reference noise, idle tones and real loop dynamics set a floor. Higher-order loops need stability analysis and overload control; writing an impressive noise-transfer polynomial does not prove that a physical modulator remains stable.
+
+Changing output data rate may change digital-filter bandwidth rather than modulator clock. Nominal output word length is not ENOB or noise-free resolution. Compare integrated noise and signal bandwidth under the exact filter and gain settings, including any internal chopper or PGA behavior.
+
+</section>
+
+<section id="filter">
+
+<div className="section-heading"><span>05</span><h2>Read decimation as a frequency response and a delay</h2></div>
+
+A length-M boxcar at modulator rate $f_{mod}$ has response $\sin(\pi fM/f_{mod})/[M\sin(\pi f/f_{mod})]$ in magnitude. Cascading L such stages gives a sinc-L style response with zeros at multiples of $f_{mod}/M$, the decimated output rate in this simple model. Its group delay is approximately $L(M-1)/(2f_{mod})$ before any further stages.
+
+<Equation tex={String.raw`|H(f)|=\left|\frac{\sin(\pi fM/f_{mod})}{M\sin(\pi f/f_{mod})}\right|^L,\qquad t_g=\frac{L(M-1)}{2f_{mod}}`}/>
+For 256 kHz modulator rate, M = 256 and L = 3, output rate is 1 kS/s and group delay about 1.494 ms. The step needs approximately three output periods for the finite filter history to be replaced, before allowing for modulator, amplifier or additional-filter settling. A fresh output word after changing a multiplexer is not necessarily a settled reading of the new channel.
+
+At 1 kS/s, 50/60 Hz are not notch frequencies of this basic sinc filter. Choosing a 10 S/s output can place both at notch multiples if clock and filter structure support it, but increases latency substantially. Some converters provide special filters with simultaneous mains rejection and faster settling; inspect their specified response rather than inferring it from architecture.
+
+A decimator must low-pass before discarding samples, or out-of-band modulator noise folds into the new band. The analog input also needs filtering around frequencies that alias at the modulator sampling rate and must avoid out-of-band overload. Delta–sigma relaxes some analog filter requirements; it does not make arbitrary RF interference harmless.
+
+Idle tones can occur for particular DC inputs and loop patterns. Dither, modulation order and internal scrambling affect them, while reference and supply coupling can add other spurs. Test representative low-level DC and narrowband signals, not only a near-full-scale sine. After overload, measure the time until both the modulator and digital filter recover.
+
+</section>
+
+<section id="choice">
+
+<div className="section-heading"><span>06</span><h2>Choose precision together with bandwidth and latency</h2></div>
+
+For a slowly varying sensor, integrating or delta–sigma conversion can combine excellent averaging, line rejection and precision with modest front-end bandwidth. For a multiplexed fast control loop, SAR may provide simpler deterministic timing. For a wide RF band, pipeline or interleaved architectures may offer suitable throughput. Hybrids can combine these properties, so use measured specifications at the intended settings.
+
+A channel requiring 10 Hz measurement bandwidth and 20 ms response cannot use an arbitrarily narrow high-order output filter simply because its noise number is attractive. Sum analog settling, modulator/filter delay, multiplexing, communication and software timing. Conversely, a high sample rate with unused bandwidth wastes noise and power if a slower architecture meets the signal and timing requirements.
+
+Primary connections: [ADI MT-022, Sigma–Delta ADC Basics](https://www.analog.com/media/en/training-seminars/tutorials/MT-022.pdf) and [ADI MT-023, Advanced Concepts and Applications](https://www.analog.com/media/en/training-seminars/tutorials/MT-023.pdf). The dual-slope, charge-balance and filter examples here are original derivations informed by the textbook's integrating and oversampling sections.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/adc-integrating-delta-sigma/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§13.8–13.10; ADI MT-022 and MT-023 (linked above); original charge, filter and noise-shaping derivations. Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>

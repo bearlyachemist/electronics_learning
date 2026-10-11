@@ -4642,5 +4642,48 @@
       ]
     ],
     "sources": "The Art of Electronics, §13.6; ADI MT-020 and MT-024; original interleaving model"
+  },
+  "adc-integrating-delta-sigma": {
+    "title": "An ideal first-order modulator rewards oversampling",
+    "setup": "Assume white quantization error and first-order NTF at large OSR. Compare in-band error normalized to unshaped total quantization rms q/√12.",
+    "equation": "\\sigma_{band}/(q/\\sqrt{12})\\simeq\\pi/(\\sqrt3\\,OSR^{3/2})",
+    "columns": [
+      "OSR",
+      "Normalized rms",
+      "Reduction from unshaped total rms"
+    ],
+    "rows": [
+      [
+        "16",
+        "0.028341",
+        "30.95 dB"
+      ],
+      [
+        "32",
+        "0.010020",
+        "39.98 dB"
+      ],
+      [
+        "64",
+        "0.0035426",
+        "49.01 dB"
+      ]
+    ],
+    "analysis": [
+      "Doubling OSR reduces this modeled rms by 2√2 and improves the ratio by about 9.03 dB.",
+      "Analog noise and nonwhite quantizer behavior can dominate before the mathematical trend continues."
+    ],
+    "limits": "This asymptotic model is not a prediction of a real device’s ENOB or loop stability.",
+    "connections": [
+      [
+        "/sampling-converter-errors/",
+        "Quantization assumptions"
+      ],
+      [
+        "/precision-calibration/",
+        "Averaging versus drift"
+      ]
+    ],
+    "sources": "The Art of Electronics, §§13.8–13.9; ADI MT-022 and MT-023"
   }
 }
