@@ -160,6 +160,52 @@ Specify an integrator as a window: the shortest and longest times (or highest an
 
 </section>
 
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Compare integration errors and design a calibrated charge measurement</h2></div>
+
+<h3>Current-input and voltage-input integrators have different offset errors</h3>
+
+For an ideal current source into the summing node, input bias current directly adds a ramp: $|dV_o/dt|=|I_B|/C_F$. A constant offset changes the virtual-ground voltage and reset level, but by itself does not create a ramp if the current source has infinite output resistance and no other DC path. A voltage input through $R_{in}$ is different: offset develops a current $V_{OS}/R_{in}$ even when the source is grounded.
+
+<Equation tex={String.raw`\left|\frac{dV_o}{dt}\right|\le\frac{|I_B|+|V_{OS}|/R_{in}+|I_{switch}|+|I_{board}|}{C_F}`}/>
+
+For $R_{in}=2$ MΩ and $C_F=100$ nF, a low-bias part with 2 pA bias but 1 mV offset has a 502 pA worst-case current equivalent, or **5.02 mV/s** drift. A part with 50 pA bias and 10 µV offset totals 55 pA, or 0.55 mV/s. The smaller bias current does not win this voltage-input example. If the signal is a true current source, the comparison can reverse. Include its finite output resistance when that idealization is insufficient.
+
+<h3>Leakage, reset and dielectric memory act on different time scales</h3>
+
+For a constant effective current $I$ with a finite feedback leakage resistance $R_L$, the deviation from reference satisfies
+
+<Equation tex={String.raw`v_o(t)=-IR_L+\left[v_o(0)+IR_L\right]e^{-t/(R_LC_F)}`}/>
+
+For short times it resembles the desired ramp. The fractional accumulated-charge error is approximately $t/(2R_LC_F)$. With $R_L=100$ GΩ and $C_F=100$ nF, the time constant is 10000 s; a 100 s integration has about 0.5% leakage curvature. A 1 pC reset-switch charge on that capacitor causes a 10 µV initial step. Dielectric absorption adds slower history-dependent recovery that one leakage resistor cannot model. Chapter 91 shows why diverting switch leakage away from the summing node can matter more than choosing a still-smaller amplifier bias current.
+
+<h3>The triangle oscillator needs both a ramp and a reliable decision</h3>
+
+For symmetric square-wave levels, both the ramp rate and thresholds scale with output amplitude, producing the frequency cancellation derived above. Unequal source/sink limits or a shifted reference can spoil symmetry. Derive each half-period separately as threshold excursion divided by its actual slope. Comparator propagation delay lets the ramp continue beyond the nominal threshold, increasing amplitude and period. At a 1 V/ms slope, 5 µs delay adds 5 mV of overshoot at each transition. A slow saturating op amp used as the decision element can add much larger, overdrive-dependent delay; a comparator with suitable output levels and hysteresis is easier to characterize.
+
+<h3>A dose monitor measures integrated optical current</h3>
+
+An optically filtered photodiode, current integrator and threshold detector form the engineering basis of the book's UV exposure monitor. The measured quantity is charge, $Q=\int I_{photo}\,dt$, which can be calibrated to optical energy only with the sensor's spectral responsivity, filter transmission and geometry defined. Wavelength weighting matters: equal broadband optical power need not produce equal sensor current. An electronic threshold is an instrument setting, not by itself a biological exposure calibration.
+
+For an original example, 2 nA into 2 µF gives a 1 mV/s ramp and 0.6 V after ten minutes. At one-tenth light level the ramp is 0.1 mV/s; an extra 0.1 nA leakage is now a 50% error. Increasing the capacitor reduces the ramp but does not improve signal-to-leakage ratio. A TIA followed by a calibrated current divider can separate the sensitive input from the large storage capacitor, but adds offset, ratio and range errors.
+
+Another approach integrates on a small capacitor and counts repeated fixed charge increments. With $C=100$ pF and a 1 V threshold excursion, each cycle represents 100 pC; 2 nA gives 20 counts/s and 12000 counts in ten minutes. A 5 µs reset loses about 0.01% of continuous input charge at that rate, but 1 pC reset charge is a 1% error per increment. Counter resolution can improve while analog charge accuracy remains limited. Calibrate the charge packet and include dark current, threshold drift and reset dead time.
+
+<details>
+<summary>Worked self-check: which specification determines a ten-minute hold?</summary>
+<div>
+
+To keep current-induced drift below 1 mV in 600 s on 1 µF, the total unintended current must be below $C\Delta V/t=1.67$ pA. That includes the amplifier, switch, capacitor and board. Quoting a 1 pA typical amplifier current alone does not establish the requirement.
+
+</div>
+</details>
+
+<p className="reference-note">Source connections: TAOE §§4.2.6, 4.3.3, 4.5.5 and 4.8.4; Asadi's integrator and oscillator analyses; Selvam's charge/time conversion principles. Optical-current and charge-packet examples are original.</p>
+
+
+</section>
+
 <section id="check">
 
 <div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>

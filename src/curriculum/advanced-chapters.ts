@@ -1278,6 +1278,10 @@ export const advancedChapters = [
         "Design the capacitor as a real component"
       ],
       [
+        "precision-depth",
+        "Compare integration errors and design a calibrated charge measurement"
+      ],
+      [
         "check",
         "Check your understanding"
       ]

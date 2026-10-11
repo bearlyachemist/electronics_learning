@@ -63,3 +63,5 @@ Completed checkpoint: [85 — Difference amplifiers and resistor CMRR](https://h
 Completed checkpoint: [86 — Instrumentation amplifiers](https://hebert.phd/electronics/opamp-instrumentation/#precision-depth). Added “Design the INA input, protection, range and programmable gain together” with original analysis and worked examples.
 
 Completed checkpoint: [87 — Transimpedance amplifiers](https://hebert.phd/electronics/opamp-transimpedance/#precision-depth). Added “Apply sensitive feedback to troubleshooting and precision DMMs” with original analysis and worked examples.
+
+Completed checkpoint: [88 — Practical op-amp integrators](https://hebert.phd/electronics/opamp-integrator/#precision-depth). Added “Compare integration errors and design a calibrated charge measurement” with original analysis and worked examples.
