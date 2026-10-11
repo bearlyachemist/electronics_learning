@@ -4040,5 +4040,48 @@
       ]
     ],
     "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8; Selvam, Analog Function Circuits, measurement functions; AoE chapter 13"
+  },
+  "precision-references": {
+    "title": "Reference drift at three input levels",
+    "setup": "A 4.096 V, 16-bit ADC sees a fixed input. Its reference rises by 80 ppm after calibration. Use the first-order ratio model; one code is 62.5 μV.",
+    "equation": "\\Delta D\\simeq-D\\,80\\times10^{-6}",
+    "columns": [
+      "Nominal input",
+      "Nominal code",
+      "Code change"
+    ],
+    "rows": [
+      [
+        "0.512 V",
+        "8192",
+        "−0.65536"
+      ],
+      [
+        "2.048 V",
+        "32768",
+        "−2.62144"
+      ],
+      [
+        "3.584 V",
+        "57344",
+        "−4.58752"
+      ]
+    ],
+    "analysis": [
+      "The error grows with input because the reference changes the ruler. It is a slope error, not a fixed input offset.",
+      "At zero input this contribution vanishes in the ideal ratio model, although ADC offset, amplifier drift and reference-return disturbances can still produce nonzero readings."
+    ],
+    "limits": "Use the exact transfer function at endpoints. A single calibration coefficient does not remove later temperature drift.",
+    "connections": [
+      [
+        "/opamp-dc-errors/",
+        "Build an error budget"
+      ],
+      [
+        "/opamp-function-design/",
+        "Follow the complete chain"
+      ]
+    ],
+    "sources": "The Art of Electronics, third edition, §9.10 and Chapter 5"
   }
 }

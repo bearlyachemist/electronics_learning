@@ -1,0 +1,104 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 95</span><span className="hairline"/>PRECISION SYSTEMS</div>
+
+<h1>Precision voltage references<br/><em>The ruler is part of the measurement.</em></h1>
+
+<p className="dek">Derive bandgap behavior, choose shunt or series references, and carry drift, noise, loading and ratiometric cancellation through a complete converter budget.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="architecture">
+
+<div className="section-heading"><span>01</span><h2>Choose what must stay constant</h2></div>
+
+A 16-bit converter reports a ratio to its reference. If its reference changes by 0.1%, adding more output bits merely describes the wrong ratio more finely. A reference is the ruler for the measurement: a power regulator supplies energy, while a precision reference establishes a voltage whose errors must be small and understood.
+
+For an ideal unipolar converter, let $V_S$ be the full input span and $D$ the unsigned code. Away from the endpoints:
+
+<Equation tex={String.raw`D\simeq 2^N\frac{V_{in}}{V_{ref}},\qquad \frac{\delta D}{D}\simeq\frac{\delta V_{in}}{V_{in}}-\frac{\delta V_{ref}}{V_{ref}}`}/>
+The minus sign matters. A rising reference makes the same input look smaller. Reference error is a gain error; it approaches zero in input-referred volts near zero input, unlike converter offset. A bipolar converter may use a different scale factor and coding, but the ratio dependence remains.
+
+A **shunt reference** regulates its terminal voltage by drawing the unused current. A feed resistor must supply the load plus the minimum reference current at the lowest supply, while staying below reference current and dissipation limits at the highest supply. A **series reference** controls the current delivered from its input to its output; it has dropout, quiescent current and source/sink limitations. Three terminals do not guarantee that it can absorb current returned by a load.
+
+<SystemsFlow labels={["Supply|energy", "Reference|voltage ruler", "ADC|input / ruler", "Code|ratio"]} caption="The reference determines the scale; its ground terminal determines where that scale begins."/>
+Use the reference datasheet's load range, recommended capacitor and stability conditions. A quiet reference that rings after each ADC conversion can create a repeatable code error even if its long-term DC voltage is excellent.
+
+</section>
+
+<section id="bandgap">
+
+<div className="section-heading"><span>02</span><h2>Derive temperature cancellation</h2></div>
+
+A forward-biased bipolar junction has a base-emitter voltage that usually decreases with temperature at a specified current. Two matched junctions operated at different current densities have a voltage difference proportional to absolute temperature. With density ratio $m$ and thermal voltage $V_T=kT/q$:
+
+<Equation tex={String.raw`\Delta V_{BE}=V_T\ln m,\qquad V_{BG}=V_{BE}+a\Delta V_{BE},\qquad a=-\frac{dV_{BE}/dT}{(k/q)\ln m}`}/>
+The first term is commonly called CTAT, the second PTAT. At $m=8$, $(k/q)\ln m$ is about 179 μV/K. If the junction slope at the chosen operating point is −1.8 mV/K, the first-order coefficient is $a\approx10.05$. At 300 K, the difference is about 53.8 mV. Adding ten times that difference to a roughly 0.65 V junction gives about 1.19 V.
+
+The calculation cancels the local slope; it does not cancel curvature over all temperatures. Junction current changes, resistor ratios, amplifier offset and package stress perturb the result. Practical bandgap references use trimming and sometimes curvature correction, then amplify or divide the internal voltage to produce a convenient output. The extrapolated silicon bandgap voltage is the physical origin of the name, not a promise that every reference outputs exactly 1.2 V.
+
+A buried-zener reference instead uses a controlled reverse-breakdown junction, often with temperature compensation; precision versions can need more voltage and current than low-voltage bandgaps. A heated reference stabilizes its internal temperature, trading power and warm-up time for reduced sensitivity to ambient temperature. Floating-gate references store charge; their stability, operating restrictions and sensitivity to physical conditions must be taken from their specifications. Architecture narrows the search, but measured and guaranteed performance decides the part.
+
+</section>
+
+<section id="budget">
+
+<div className="section-heading"><span>03</span><h2>Translate every specification into volts</h2></div>
+
+Consider a hypothetical 4.096 V reference, a 16-bit converter and an application that reaches full scale. One code is 62.5 μV; half a code is 31.25 μV or 7.63 ppm. This is a demanding **absolute** requirement. A 0.02% initial reference tolerance is 819.2 μV, already 13.1 codes. Initial tolerance can be calibrated; temperature changes after calibration cannot be removed by the original calibration coefficient.
+
+A 2 ppm/K slope allowance over 40 K gives 80 ppm, or 327.68 μV, about 5.24 codes. A 10 μV rms integrated reference-noise specification is 0.16 code rms at full scale. Do not add an rms noise value directly to a guaranteed drift limit and label the sum a confidence interval. Keep deterministic bounds, statistical variation and random noise in separate columns.
+
+<Equation tex={String.raw`\epsilon_{ref,ppm}=10^6\frac{\delta V_{ref}}{V_{ref}},\qquad \delta V_{in,eq}\simeq V_{in}\epsilon_{ref},\qquad \sigma_{in,ref}=\left|\frac{V_{in}}{V_{ref}}\right|\sigma_{ref}`}/>
+The last equation uses fractional error in the middle term and volts in the noise term. It also assumes that input and reference fluctuations are uncorrelated. If both are produced by the same source, a covariance term can cancel or reinforce them.
+
+Check whether temperature coefficient is a fitted slope or a box specification: a box value divides the maximum excursion over a stated temperature interval by that interval and nominal voltage. It does not guarantee a perfectly linear slope between arbitrary nearby temperatures. Long-term drift, thermal hysteresis after a temperature cycle, soldering shift and humidity sensitivity describe different mechanisms. Allow warm-up, document calibration conditions and avoid extrapolating a typical aging graph into a guaranteed service-life bound.
+
+</section>
+
+<section id="loading">
+
+<div className="section-heading"><span>04</span><h2>Design static and dynamic loading</h2></div>
+
+For a 2.5 V shunt on a 3.0–3.6 V supply, suppose the load draws at most 100 μA and the reference needs at least 200 μA. The feed resistor must satisfy $R\le(3.0-2.5)/(300\,\mu\mathrm A)=1.67$ kΩ. Choose 1.5 kΩ before tolerances: at 3.0 V it supplies 333 μA, leaving 233 μA for the reference at maximum load. At 3.6 V with no load it supplies 733 μA. Check that current, the 1.83 mW reference dissipation, feed-resistor dissipation and all tolerance corners fit the actual part.
+
+A converter reference input can be a switched-capacitor load. If a conversion removes charge $Q$ from a local capacitor $C$, its immediate droop is $Q/C$. Taking a teaching charge impulse of 50 pC from 1 μF gives 50 μV: already 0.8 code for the earlier 16-bit span. Recharge current and the reference's output impedance determine the following recovery. The average current $Qf_s$ is only 50 μA at 1 MS/s; a DC load test alone misses the transient requirement.
+
+<Equation tex={String.raw`\Delta V=\frac{Q}{C},\qquad I_{avg}=Qf_s,\qquad V_{pin}(s)=V_{source}(s)-I_{load}(s)Z_{out}(s)`}/>
+Increasing capacitance lowers impulse droop but may slow startup, alter stability or cause ringing with package inductance. Use the converter manufacturer's specified reference-drive network, including buffer, reservoir capacitor, ESR and routing. Place the reservoir at the reference pins; connect its return to the reference return with a short path. A capacitor at the reference source several centimeters away is separated from the ADC by inductance.
+
+Kelvin sensing means observing the voltage where it matters rather than at the point that delivers current. A 20 mΩ shared return carrying a 10 mA changing current creates 200 μV, or 3.2 codes. If that voltage lies between the reference ground and the ADC reference return, a perfect reference die cannot correct it. Four-wire routing or careful local reference returns can remove shared path drops; they do not remove amplifier offset or magnetic coupling.
+
+</section>
+
+<section id="ratio">
+
+<div className="section-heading"><span>05</span><h2>Cancel a reference by measuring a ratio</h2></div>
+
+A resistive bridge excited by the same voltage used as the ADC reference can reject slow excitation variation. Suppose bridge output is $V_{in}=\alpha V_{exc}$ and $V_{ref}=V_{exc}$, after matching any scale factors. Then $D\simeq2^N\alpha$: excitation disappears algebraically.
+
+The cancellation requires the **same actual voltage**, not merely two rails with the same label. Lead resistance can change the voltage delivered to a remote bridge. Sense the excitation at the bridge terminals where possible; a gain stage with an independent reference, unequal filtering delays or time-multiplexed sampling can break the cancellation. Reference noise at frequencies outside the bridge signal path does not necessarily cancel either.
+
+For a 350 Ω bridge excited at 3.3 V, power is about 31.1 mW. Ratiometric readout rejects excitation gain error but does not reject heating caused by that power. A temperature-sensitive sensor can change its resistance as excitation changes, so the ideal fixed-$\alpha$ assumption must be checked. Reducing excitation lowers self-heating while also reducing signal amplitude and changing the noise budget.
+
+Before committing the design, measure reference startup under maximum load, conversion-synchronous ripple, thermal settling and output change after a load step. Repeat at temperature extremes. Average readings only after determining that the residual is random: an averaging filter will faithfully retain a repeatable ground or calibration error.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/precision-references/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §9.10 (reference technologies and applications), with Chapter 5 precision-design connections. Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>

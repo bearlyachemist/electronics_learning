@@ -1,0 +1,37 @@
+{
+  "precision-references": [
+    {
+      "tag": "CURRENT BUDGET",
+      "title": "Choose a shunt resistor",
+      "prompt": "A 2.048 V shunt needs 150 μA, the load needs 80 μA, and supply ranges from 2.7 to 3.3 V. Find the maximum feed resistance and the high-supply no-load reference current for 2.7 kΩ.",
+      "hint": "Use minimum supply for the current guarantee; maximum supply with no load for stress.",
+      "solution": [
+        {
+          "text": "The upper resistance is (2.7 − 2.048)/230 μA = 2.835 kΩ. At 3.3 V a 2.7 kΩ feed supplies 463.7 μA. Check resistor tolerance, reference voltage tolerance and maximum permitted current."
+        }
+      ]
+    },
+    {
+      "tag": "GAIN ERROR",
+      "title": "Reference drift in codes",
+      "prompt": "A 12-bit ADC uses 2.5 V. The reference changes by +60 ppm while a fixed input is at 75% of nominal span. Estimate the code change.",
+      "hint": "Reference error scales the code with the opposite sign.",
+      "solution": [
+        {
+          "text": "Nominal code is approximately 3072; its change is −3072 × 60 ppm = −0.1843 code. The input-referred voltage error is −112.5 μV. The digital output may or may not change by one code depending on its distance to a transition."
+        }
+      ]
+    },
+    {
+      "tag": "DYNAMIC LOAD",
+      "title": "Size a first-pass reservoir",
+      "prompt": "A reference charge impulse is 80 pC. What ideal capacitance limits its immediate droop to 20 μV? Why is this not a complete design?",
+      "hint": "Use charge conservation before adding the drive impedance.",
+      "solution": [
+        {
+          "text": "C ≥ 80 pC / 20 μV = 4 μF. Check effective capacitance under bias, ESR/ESL, recovery before the next conversion and reference-buffer stability. An ideal capacitor-only calculation omits those constraints."
+        }
+      ]
+    }
+  ]
+}

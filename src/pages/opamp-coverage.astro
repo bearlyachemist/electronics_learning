@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import {chapters} from '../curriculum/chapters';
 import coverage from '../content/opamp-coverage.json';
 import {advancedChapters} from '../curriculum/advanced-chapters';
 import {sitePath} from '../lib/site-path';
@@ -13,7 +14,7 @@ const label=(id:string)=>{const c=opamps.find(c=>c.id===id)!;return `${c.number}
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="topbar"><a class="brand" href={sitePath('/')}><span class="brand-icon" aria-hidden="true">∿</span> the analog notebook<span class="brand-dot">.</span></a><span class="edition">OP AMPS <span> / </span> PRECISION</span><a class="top-link" href={sitePath('/opamp-ideal/')}>Start at Chapter 77 ↗</a></header>
 <div class="book-shell">
-<aside class="sidebar"><a class="course-label" href={sitePath('/')}>FOUNDATIONS <span>94 CHAPTERS</span></a><p class="sidebar-title">Op amps and precision</p><nav aria-label="Op-amp chapters">{opamps.map(c=><a href={sitePath(c.href)}>{c.number} · {c.title}</a>)}</nav></aside>
+<aside class="sidebar"><a class="course-label" href={sitePath('/')}>FOUNDATIONS <span>{chapters.length} CHAPTERS</span></a><p class="sidebar-title">Op amps and precision</p><nav aria-label="Op-amp chapters">{opamps.map(c=><a href={sitePath(c.href)}>{c.number} · {c.title}</a>)}</nav></aside>
 <main id="main">
 <div class="chapter-hero"><div class="eyebrow"><span>TOPIC GUIDE</span><span class="hairline"/>CHAPTERS 77–94</div><h1>Op amps and precision<br/><em>Find the circuit, then follow its limits.</em></h1><p class="dek">A topic-by-topic route through feedback, practical applications and precision design. This guide maps all sections and numbered subsections of The Art of Electronics, third edition, Chapters 4 and 5 to original explanations, worked examples, schematics and practice in this notebook.</p></div>
 <div class="guide-intro"><p>Read Chapters 77–82 for the ideal model, real errors and internal construction; Chapters 83–94 develop the circuits. The explanations also draw on Johan Huijsing’s <em>Operational Amplifiers: Theory and Design</em> and Farzin Asadi’s <em>Applied Op Amp Circuits</em>, with filter and function-circuit connections where useful.</p><p>Source numbers below refer to the books; linked numbers refer to this website. The text, example values and drawings are original. Historic instrument case studies teach architectural principles; device-selection tables compare design classes rather than reproduce dated prices or availability.</p><p><a href={sitePath('/opamp-active-filters/')}>Go directly to the expanded Sallen–Key derivation →</a></p></div>
