@@ -14,7 +14,8 @@
     "check:advanced": "node scripts/check-advanced.mjs",
     "check:synthesis": "node scripts/check-synthesis.mjs",
     "check:practical": "node scripts/check-practical.mjs",
-    "check:precision": "node scripts/check-precision.mjs"
+    "check:precision": "node scripts/check-precision.mjs",
+    "check:systems": "node scripts/check-systems.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "latest",

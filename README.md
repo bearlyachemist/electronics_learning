@@ -19,7 +19,7 @@ Open the local address printed by Astro, normally http://127.0.0.1:4321/.
 
 The published notebook lives at https://hebert.phd/electronics/. It is a static
 section of the existing Cloudflare Pages site; the personal homepage has no link
-to it. All 94 chapters and their practice pages are included, with interactive
+to it. All 117 chapters and their practice pages are included, with interactive
 experiments running in the browser.
 
 Push updates to `main` in this repository to deploy automatically. GitHub Actions
@@ -90,7 +90,7 @@ React island modules, and font assets under `/electronics`.
 | Current sharing in parallel BJTs | /current-sharing/ | /current-sharing/practice/ |
 | Capacitance & the Miller effect | /miller-effect/ | /miller-effect/practice/ |
 
-Practice is separate from illustrative material. A circuit may be static, interactive, linked to a plot, or part of a worked explanation without requiring an attached problem. There are 371 practice problems with hints and worked solutions; grading is by self-assessment.
+Practice is separate from illustrative material. A circuit may be static, interactive, linked to a plot, or part of a worked explanation without requiring an attached problem. There are 440 practice problems with hints and worked solutions; grading is by self-assessment.
 
 ## Organization
 
@@ -109,6 +109,10 @@ The current figures use fixed, deliberately authored topologies. A general circu
 The original divider figures save settings locally. The newer experiments reset on navigation. There are no accounts or learning-progress tracking yet. Google Fonts are optional external assets with system-font fallbacks.
 
 
+
+The expansion notes below retain their original checkpoint numbering where
+applicable. Current chapter order is defined by `src/curriculum/parts.ts` and
+the [published contents](https://hebert.phd/electronics/contents/).
 
 ## Feedback and control
 
@@ -133,9 +137,9 @@ are verified against DC KCL/KVL, independent nodal equations and numerical slope
 
 ## Textbook synthesis across the complete book
 
-Every one of the 94 reading chapters includes a Design synthesis section,
+Every one of the 117 reading chapters includes a Design synthesis section,
 with an original worked design, equation, three numerical cases, practical
-limits and cross-links. The 282 cases extend the chapter examples and compare
+limits and cross-links. The 351 cases extend the chapter examples and compare
 operating conditions rather than replacing the separate practice notebooks.
 See [the synthesis coverage index](docs/synthesis-coverage.md) for the chapter
 map, source roles and verification scope. These sections are independent of
@@ -156,4 +160,18 @@ circuit relationships; `npm test` also checks the figure models and arithmetic.
 
 ## Op-amp and precision topic guide
 
-The [published guide](https://hebert.phd/electronics/opamp-coverage/) maps all 26 top-level sections and 113 numbered subsections of TAOE Chapters 4–5 to Chapters 77–94. The full coverage pass adds original derivations, numerical operating points, solved self-checks and 13 additional teaching visuals. Each chapter was independently committed, verified and pushed. `check:precision` verifies the guide and critical connections in the new schematics; precision tests also check strict math and complex feedback KCL.
+The [published guide](https://hebert.phd/electronics/opamp-coverage/) maps all 26 top-level sections and 113 numbered subsections of TAOE Chapters 4–5 to Chapters 72–89. The full coverage pass adds original derivations, numerical operating points, solved self-checks and 13 additional teaching visuals. Each chapter was independently committed, verified and pushed. `check:precision` verifies the guide and critical connections in the new schematics; precision tests also check strict math and complex feedback KCL.
+
+
+## Precision through digital systems
+
+The [systems guide](https://hebert.phd/electronics/systems-coverage/) links 23
+chapters on precision measurement, power conversion, electromagnetics and RF,
+transmission lines, differential pairs, ADC/DAC architectures and digital
+interfaces. They add 69 independent problems and 69 synthesis cases. See
+[the systems coverage index](docs/systems-coverage.md) for chapter numbers,
+reference roles, model limits and verification.
+
+`npm run check:systems` checks the rendered guide, contents, chapter labels
+and six critical circuit topologies. The test suite also verifies contiguous
+numbering and part membership, antenna power integration and snubber energy.
