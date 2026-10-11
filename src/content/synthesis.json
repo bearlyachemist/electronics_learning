@@ -4298,5 +4298,48 @@
       ]
     ],
     "sources": "The Art of Electronics, §§9.6.6–9.6.10; TI SLVA372"
+  },
+  "power-control-layout": {
+    "title": "Compensation changes cycle-to-cycle current error",
+    "setup": "Ideal peak-current loop with m₁ = 0.2 A/μs and m₂ = 0.4 A/μs. Compare added slopes.",
+    "equation": "\\lambda=(m_a-m_2)/(m_1+m_a)",
+    "columns": [
+      "Added slope",
+      "Multiplier",
+      "Perturbation behavior"
+    ],
+    "rows": [
+      [
+        "0",
+        "−2",
+        "Alternates and grows"
+      ],
+      [
+        "0.1 A/μs",
+        "−1",
+        "Marginal boundary"
+      ],
+      [
+        "0.2 A/μs",
+        "−0.5",
+        "Alternates and decays"
+      ]
+    ],
+    "analysis": [
+      "This mechanism is sampled at switching frequency and differs from the outer voltage-loop phase margin.",
+      "A stable inner loop still needs an appropriate outer compensation and operating-range test."
+    ],
+    "limits": "Actual controllers may use internal adaptive compensation; inspect the architecture and sense scaling.",
+    "connections": [
+      [
+        "/power-buck-converters/",
+        "Averaged buck plant"
+      ],
+      [
+        "/mosfet-power/",
+        "Gate and switching losses"
+      ]
+    ],
+    "sources": "The Art of Electronics, §9.6; original sampled-ramp derivation; TI implementation notes"
   }
 }

@@ -1,0 +1,97 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot,PowerCircuit} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 101</span><span className="hairline"/>POWER CIRCUITS</div>
+
+<h1>Power control, protection and layout<br/><em>The switching loop is part of the schematic.</em></h1>
+
+<p className="dek">Explain current-mode control and slope compensation, design startup and fault behavior, and trace ringing, EMI and thermal limits back to physical current loops.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="current">
+
+<div className="section-heading"><span>01</span><h2>Separate voltage control from current control</h2></div>
+
+A voltage-mode converter compares its output error with a ramp to set PWM duty. A current-mode converter uses an inner measurement of inductor or switch current: each cycle ends when the sensed ramp reaches the requested level. The outer voltage loop requests current, and the inner loop helps enforce it. Peak-current control does not make the output capacitor disappear; it changes the plant seen by the outer loop.
+
+Cycle-by-cycle current limiting compares against the current sense signal. Peak switch limit is not the same as average output current. Sense resistance, amplifier gain, leading-edge spikes, blanking interval and propagation delay affect the actual peak. If current rises at 2 A/μs and the total turn-off delay is 50 ns, it increases by another 0.1 A after the threshold crossing. Inductor saturation can steepen the ramp and make the overshoot worse.
+
+<Equation tex={String.raw`\Delta I_{delay}=\frac{V_L}{L}t_{delay},\qquad V_{sense}=I_{pk}R_s`}/>
+A 20 mΩ sense resistor at 3 A gives 60 mV. Its rms dissipation depends on the waveform, not just the peak. Kelvin connections keep load-current trace drops out of the sense voltage. Filtering rejects switching spikes, but delay in that filter changes current limiting and loop dynamics; use the controller's approved network.
+
+</section>
+
+<section id="slope">
+
+<div className="section-heading"><span>02</span><h2>Derive why peak-current control may alternate cycles</h2></div>
+
+For a simple fixed-frequency CCM peak-current loop, let the on-current slope be $m_1>0$, the magnitude of the off-current slope $m_2>0$, and an added compensation ramp have slope $m_a$ in equivalent current units. Perturbing the current at the start of a cycle shifts the trip time. The next-cycle perturbation is multiplied by:
+
+<Equation tex={String.raw`\lambda=\frac{m_a-m_2}{m_1+m_a},\qquad |\lambda|<1\ \Rightarrow\ m_a>\frac{m_2-m_1}{2}`}/>
+Without added slope, $\lambda=-m_2/m_1$. A buck with $D>0.5$ has a steeper falling slope than rising slope, so the magnitude can exceed one. Successive cycles alternate high and low peaks: a subharmonic near half the switching frequency can appear even when the slow outer loop seems well compensated.
+
+For a 12-to-8 V buck using 20 μH, $m_1=0.2$ A/μs and $m_2=0.4$ A/μs. No compensation gives multiplier −2. A compensation slope of 0.2 A/μs gives −0.5 and damps the perturbation in this ideal model. At exactly 0.1 A/μs it gives −1, the marginal boundary. Controllers may implement internal, adaptive or different ramp strategies; map their ramp into the sense units before using this teaching equation. It does not replace the complete sampled-data design.
+
+<SystemsFlow labels={["Voltage error|current request", "Current ramp|PWM trip", "Power stage|stored energy", "Output|charge balance"]} caption="The inner current loop and outer voltage loop have different stability and saturation limits."/>
+An average-current controller regulates a filtered current signal instead of the instantaneous peak. Hysteretic and constant-on-time controllers use other timing laws. Do not assume that every controller is described by this peak-current recurrence.
+
+</section>
+
+<section id="faults">
+
+<div className="section-heading"><span>03</span><h2>Define startup, overload and shutdown states</h2></div>
+
+Soft-start ramps a reference or limits commanded current. Charging the output capacitor requires $I=C\,dv/dt$ in addition to load current. For 220 μF charged to 5 V over 5 ms, capacitor current is 0.22 A. A constant-power load can draw substantial current at low startup voltage and prevent the rail reaching regulation; test the actual load's undervoltage behavior.
+
+Undervoltage lockout should prevent operation when gate drive or control bias is inadequate. Hysteresis avoids repeated attempts around the threshold. A battery's internal resistance can make input voltage collapse under startup current, then recover when the converter shuts off, producing oscillatory startup. Include cable resistance and input capacitance in the test.
+
+Current limit can act as constant current, foldback, hiccup or latch-off. Foldback reduces short-circuit heating but may fail to start a heavy capacitive load. Hiccup reduces average fault dissipation but generates repeated pulses into a persistent short. Specify what recovers automatically and what needs a reset. Add a fuse or other upstream protection when required to manage wiring faults independently of the converter controller.
+
+An output overvoltage can follow a failed feedback connection or damaged switch. Independent monitoring and a disconnect or crowbar may be appropriate when the load cannot tolerate it. A crowbar needs a source and protective device that can safely clear the resulting current. Reverse polarity, externally driven outputs and stored energy after shutdown are additional operating states, each with an explicit current path.
+
+</section>
+
+<section id="ringing">
+
+<div className="section-heading"><span>04</span><h2>Find the parasitic oscillator before choosing a snubber</h2></div>
+
+Switch-node ringing often involves loop inductance and device capacitance. A first estimate is $f_r=1/(2\pi\sqrt{L_pC_p})$. At 10 nH and 200 pF it is about 112.5 MHz: far above a 500 kHz switching repetition rate. Edge rate excites that resonance. Measuring it with a long probe ground adds inductance and can change the apparent circuit.
+
+<Equation tex={String.raw`f_r=\frac{1}{2\pi\sqrt{L_pC_p}},\qquad Z_r=\sqrt{L_p/C_p},\qquad P_{snub}\sim C_{snub}V_{step}^2f_s`}/>
+The characteristic impedance here is about 7.07 Ω. It is a starting scale for damping resistance, not a universal optimal snubber. An RC snubber trades ringing reduction for charging loss. A 1 nF snubber across a 12 V switching excursion at 500 kHz has a 72 mW energy-per-cycle scale under full charge/discharge assumptions. Verify resistor pulse power, actual voltage excursion and temperature.
+
+A useful experiment adds a known capacitance and observes the new ringing frequency to estimate the original parasitic capacitance and inductance. Because devices have nonlinear capacitance, the result is an operating-point estimate. First improve the current loop; then tune damping under the intended voltages and load. A slower gate edge can reduce ringing and EMI while increasing overlap loss. Measure that trade rather than judging only the waveform's appearance.
+
+</section>
+
+<section id="layout">
+
+<div className="section-heading"><span>05</span><h2>Route the current difference between switching states</h2></div>
+
+Draw on-state and off-state current paths and subtract them. The path whose current changes abruptly is the high-frequency commutation loop. In a buck it chiefly includes the input bypass and switching devices; the output inductor current is comparatively continuous. In a boost, diode/switch commutation and output bypass form the abrupt output loop. Small physical loop area reduces parasitic inductance and magnetic radiation.
+
+Keep the switch-node copper compact because it has large voltage slew and capacitively couples to nearby conductors. Keep feedback and current-sense routes away from it. Place gate drivers close, return driver current locally and avoid sharing their return inductance with a precision sense path. A Kelvin source connection can keep power-current source inductance out of the gate loop.
+
+Conducted EMI propagates along power and signal cables; radiated EMI escapes through electric and magnetic fields. Shielded inductors can reduce one magnetic source but cannot repair a large commutation loop. Spread-spectrum switching redistributes spectral peaks and may help some measurements; it does not remove total noise energy and can complicate precision sampling. Input filters need damping and an interaction check with converter input impedance.
+
+Start verification with short-loop probing, input/output current and thermal measurements. Exercise startup, shutdown, short circuit, load removal and input dips. A low-ESR ceramic output can raise peak currents and create new resonances. Practical implementation references: [TI, Layout Guidelines for the bq2570x Switching Charger](https://www.ti.com/lit/an/slua808/slua808.pdf) and [TI, Minimizing Switching Ringing at TPS53355 and TPS53353 Family Devices](https://www.ti.com/lit/an/slua831a/slua831a.pdf). Use controller-specific layouts and component limits when translating these principles into hardware.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/power-control-layout/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §9.6 and §9.13; TI layout and ringing reports (linked above); original current-loop and energy calculations. Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>

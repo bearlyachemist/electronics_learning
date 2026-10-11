@@ -208,5 +208,40 @@
         }
       ]
     }
+  ],
+  "power-control-layout": [
+    {
+      "tag": "SLOPE",
+      "title": "Test a sampled current loop",
+      "prompt": "An ideal peak-current loop has m₁ = 0.1 A/μs and m₂ = 0.3 A/μs. Find the minimum compensation slope for stability and the multiplier at mₐ = 0.2 A/μs.",
+      "hint": "Use the cycle-to-cycle multiplier.",
+      "solution": [
+        {
+          "text": "The strict stability condition is mₐ > 0.1 A/μs. At 0.2 A/μs, λ = (0.2 − 0.3)/(0.1 + 0.2) = −1/3. Perturbations alternate and shrink in this ideal model."
+        }
+      ]
+    },
+    {
+      "tag": "STARTUP",
+      "title": "A capacitor eats the current budget",
+      "prompt": "A 470 μF output ramps to 3.3 V in 3 ms. The normal load draws 0.2 A. Estimate required current during the linear ramp.",
+      "hint": "Add capacitor current and load current.",
+      "solution": [
+        {
+          "text": "Capacitor current is 0.517 A; total is 0.717 A. Include load dependence on voltage, tolerance and converter current-limit behavior."
+        }
+      ]
+    },
+    {
+      "tag": "PARASITICS",
+      "title": "Locate a ringing frequency",
+      "prompt": "A switching loop has 20 nH and 500 pF equivalent capacitance. Estimate resonance and characteristic impedance.",
+      "hint": "Use the LC resonance and √(L/C).",
+      "solution": [
+        {
+          "text": "Frequency is 50.33 MHz; impedance is 6.325 Ω. These are model scales, not a complete RC-snubber prescription."
+        }
+      ]
+    }
   ]
 }

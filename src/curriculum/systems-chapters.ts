@@ -226,5 +226,43 @@ export const systemsChapters = [
         "Check your understanding"
       ]
     ]
+  },
+  {
+    "id": "power-control-layout",
+    "number": "101",
+    "title": "Power control, protection and layout",
+    "href": "/power-control-layout/",
+    "practice": "/power-control-layout/practice/",
+    "group": "Power circuits",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "current",
+        "Separate voltage control from current control"
+      ],
+      [
+        "slope",
+        "Derive why peak-current control may alternate cycles"
+      ],
+      [
+        "faults",
+        "Define startup, overload and shutdown states"
+      ],
+      [
+        "ringing",
+        "Find the parasitic oscillator before choosing a snubber"
+      ],
+      [
+        "layout",
+        "Route the current difference between switching states"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
   }
 ];
