@@ -454,5 +454,43 @@ export const systemsChapters = [
         "Check your understanding"
       ]
     ]
+  },
+  {
+    "id": "adc-successive-approximation",
+    "number": "107",
+    "title": "Successive-approximation ADCs",
+    "href": "/adc-successive-approximation/",
+    "practice": "/adc-successive-approximation/practice/",
+    "group": "Data converters",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "search",
+        "Perform a conversion one decision at a time"
+      ],
+      [
+        "capacitors",
+        "Derive a charge-redistribution trial DAC"
+      ],
+      [
+        "thermal",
+        "Trade sampling noise against charge and settling"
+      ],
+      [
+        "reference",
+        "Design the trial DAC reference as a dynamic load"
+      ],
+      [
+        "throughput",
+        "Budget the whole acquisition and data path"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
   }
 ];

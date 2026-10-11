@@ -1,0 +1,101 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot,PowerCircuit,MatchCircuit} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 107</span><span className="hairline"/>DATA CONVERTERS</div>
+
+<h1>Successive-approximation ADCs<br/><em>A binary search becomes a charge experiment.</em></h1>
+
+<p className="dek">Follow every SAR decision, derive a capacitive trial DAC, and connect comparator noise, acquisition, reference drive, multiplexing and serial readout to actual throughput.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="search">
+
+<div className="section-heading"><span>01</span><h2>Perform a conversion one decision at a time</h2></div>
+
+A successive-approximation register converter holds an input, tries a DAC code, asks a comparator which side of that trial the held input occupies, and keeps or clears the current bit. It starts with the most significant bit and progressively halves the remaining interval. Ideally an N-bit result needs N comparator decisions, plus acquisition and timing overhead. This reuses hardware rather than making every threshold decision in parallel.
+
+For a 4-bit converter with 1 V reference and held input 0.68 V, try 0.5 V: keep the MSB. Try 0.75 V: clear the next bit. Try 0.625 V: keep the next bit. Try 0.6875 V: clear the final bit. Result is binary 1010, code 10. Under the floor-bin convention, the result locates the input in [0.625, 0.6875) V; midpoint reconstruction is 0.65625 V. The comparator has answered four yes/no questions, not measured four analog voltages independently.
+
+<Equation tex={String.raw`V_{trial}=V_{ref}\sum_{k=1}^{N}b_k2^{-k},\qquad b_k\in\{0,1\}`}/><SystemsFlow labels={["Track / hold|one input sample", "Trial DAC|binary weight", "Comparator|above / below", "SAR logic|keep / clear"]} caption="Each decision updates the trial DAC for the next comparison. The held input must remain valid throughout the conversion."/>
+A SAR ADC can provide low latency and deterministic conversion timing, making it useful for multiplexed measurement and control. These are architectural tendencies, not universal specifications: pipelined-SAR and digitally filtered SAR products can have additional latency or different timing. Read the actual conversion-start, acquisition and data-ready definitions.
+
+</section>
+
+<section id="capacitors">
+
+<div className="section-heading"><span>02</span><h2>Derive a charge-redistribution trial DAC</h2></div>
+
+A conceptual capacitor array has binary weights plus a dummy unit capacitor, making total capacitance $C_T=2^NC_u$. For one sampling convention, the common top plate is initially held at zero while bottom plates sample $V_{in}$. After opening the top-plate clamp, reconnect bottom plates to zero. Conserved charge makes the top-plate voltage approximately $-V_{in}$. Switching selected bottoms to $V_{ref}$ then adds a weighted voltage.
+
+<Equation tex={String.raw`Q_T=\sum_i C_i(V_x-V_{b,i}),\qquad V_x=-V_{in}+\frac{V_{ref}}{C_T}\sum_i b_iC_i`}/>
+The comparator observes the sign of this residual. At a correct decision, the trial sum is close to the input. This derivation names the sampling convention; other SARs use differential arrays, top-plate sampling, monotonic switching, split capacitors or other common-mode trajectories. Their internal node voltages and reference charge differ even though the binary-search idea is the same.
+
+Capacitor mismatch perturbs bit weights and produces INL/DNL. At a major transition, errors in large weights can matter much more than unit-capacitor noise. Splitting the array reduces physical capacitor count or area but introduces bridge-capacitor ratio accuracy and parasitic sensitivity. Digital calibration can estimate internal weight errors, but it does not eliminate every external reference or driver error.
+
+A comparator offset shifts its effective comparison boundary, contributing mainly to offset in a simple model. Comparator noise creates probabilistic decisions near thresholds. Incomplete DAC settling before a comparison creates a bit-dependent error that can become nonlinear. The earliest trials involve large charge changes, while late decisions demand the smallest residual resolution. Timing must satisfy both.
+
+</section>
+
+<section id="thermal">
+
+<div className="section-heading"><span>03</span><h2>Trade sampling noise against charge and settling</h2></div>
+
+An ideal capacitor sampled through a resistive switch acquires thermal voltage variance approximately $kT/C$ under the simple equilibrium model. Increasing capacitance lowers sampled noise, but increases the charge the source and reference must move. A large sampling capacitor may therefore improve internal noise while making the external driver harder to design.
+
+<Equation tex={String.raw`\sigma_{sample}\simeq\sqrt{kT/C},\qquad C>\frac{12kT}{q^2}\quad\text{if }\sigma_{sample}<q/\sqrt{12}`}/>
+For 300 K, 3.3 V span and 16 bits, this one-term requirement gives roughly 19.6 pF. It is not a recommended ADC capacitance: comparator noise, capacitor ratios, differential topology, bandwidth and other sampling phases change the complete budget. Allocating all quantization-noise-equivalent variance to one source leaves no allowance for the others.
+
+A buffer should settle the ADC's switched load without instability. A small series resistor can isolate the amplifier and damp kickback; a local capacitor can provide transient charge. But the network must recharge within acquisition time. Slew-rate recovery and amplifier distortion need to be measured at the intended input frequency and common mode, not inferred solely from nominal GBW.
+
+For 16 bits with 1 kΩ effective source and 30 pF sampling capacitance, the first-order full-span acquisition requirement is about 353.5 ns. If acquisition is only 200 ns, that model predicts residual $e^{-200/30}=0.00127$ of the step, roughly 83 codes for a full-span transition. Repeated sampling of one slowly changing input can conceal a problem that appears when the multiplexer changes channels.
+
+</section>
+
+<section id="reference">
+
+<div className="section-heading"><span>04</span><h2>Design the trial DAC reference as a dynamic load</h2></div>
+
+Reference current is conversion synchronized and can depend on input code and switching sequence. A SAR reference may draw small average current but require large short charge packets. The local reference capacitor supplies those packets; the reference source or buffer replenishes it. Reference impedance during the trials can modulate bit weights and produce distortion or code-dependent errors.
+
+If a teaching packet is 100 pC and an effective 4.7 μF local capacitor supplies it, immediate ideal droop is 21.3 μV. Against a 3.3 V 16-bit span that is about 0.423 code at full scale. Average current is only 100 μA at 1 MS/s, which would look benign in a steady-load test. Actual timing, multiple packets and recovery determine whether the droop affects a decision.
+
+<Equation tex={String.raw`\Delta V_{ref}=Q/C_{ref},\qquad I_{ref,avg}=Qf_s`}/>
+Use the converter's approved reference circuit, capacitor type, ESR and placement. A buffer must be stable with that capacitive load and able to source or sink the specified transient current. Match the reference return to the ADC's actual reference ground; avoid routing switching or digital-return current through it. Check startup and recovery after an overrange input because those states can disturb the reference differently from normal conversion.
+
+For differential SAR inputs, common-mode constraints determine whether a fully differential driver or two buffers can deliver the specified span. Some inputs have separate common-mode pins; others expect a fixed internal or external bias. Do not assume that a differential ±reference span permits either input pin to leave its allowed supply range.
+
+</section>
+
+<section id="throughput">
+
+<div className="section-heading"><span>05</span><h2>Budget the whole acquisition and data path</h2></div>
+
+If acquisition takes $t_a$, conversion takes $t_c$ and nonoverlapped transfer/reset adds $t_o$, then the simple maximum repetition rate is $1/(t_a+t_c+t_o)$. Some devices overlap readout with acquisition or use an internal asynchronous conversion clock; others impose quieter intervals for best performance. The device timing diagram, not the SPI clock's headline frequency, sets available throughput.
+
+A four-channel multiplexer on a 1 MS/s ADC gives at most 250 kS/s per channel before extra settling and discarded conversions. The channels are not sampled simultaneously. Time skew matters when computing phase, power or a ratio from changing signals. An array of simultaneous sample-and-hold circuits or separate ADCs may be required.
+
+A 16-bit result at 1 MS/s carries 16 Mbit/s of payload. If each transaction has eight command/status bits as well, it requires at least 24 Mbit/s without gaps. Chip-select overhead, busy polling, synchronization and controller DMA behavior add limits. At long board routes, SPI timing includes round-trip clock/data propagation and output-valid delay, so a fast electrical waveform does not guarantee correct bit capture.
+
+Validate largest channel steps, sine-wave distortion, reference ripple, supply sensitivity and output timing. Compare low source resistance against the intended sensor impedance. Check offset and gain separately from missing codes and distortion; an apparently quiet DC output can still have wrong trial weights.
+
+Primary architecture connection: [ADI MT-021, Successive Approximation ADCs](https://www.analog.com/media/en/training-seminars/tutorials/MT-021.pdf). The binary search, charge conservation and numerical budgets here are original teaching examples.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/adc-successive-approximation/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §13.7; ADI MT-021 (linked above); original binary-search and capacitor-charge analysis. Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>

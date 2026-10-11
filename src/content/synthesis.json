@@ -4556,5 +4556,48 @@
       ]
     ],
     "sources": "The Art of Electronics, Chapter 13; ADI MT-001; original acquisition example"
+  },
+  "adc-successive-approximation": {
+    "title": "Multiplexer settling depends on the previous channel",
+    "setup": "A first-order SAR input has 1 kΩ source and 30 pF capacitance. After a full-span channel step, compare acquisition times for a 16-bit code span.",
+    "equation": "\\epsilon=e^{-t/30\\,\\mathrm{ns}},\\qquad E_{codes}=65536\\epsilon",
+    "columns": [
+      "Acquisition",
+      "Residual fraction",
+      "Code-equivalent residual"
+    ],
+    "rows": [
+      [
+        "100 ns",
+        "0.035674",
+        "2337.89"
+      ],
+      [
+        "200 ns",
+        "0.0012726",
+        "83.40"
+      ],
+      [
+        "400 ns",
+        "0.0000016196",
+        "0.1061"
+      ]
+    ],
+    "analysis": [
+      "A largest channel step reveals errors that repeated conversion of a steady voltage may hide.",
+      "Doubling acquisition time squares the exponential residual in this simple model; a real amplifier’s recovery tail may behave differently."
+    ],
+    "limits": "Switch resistance and amplifier nonlinear settling are not included.",
+    "connections": [
+      [
+        "/sampling-converter-errors/",
+        "Acquisition and jitter"
+      ],
+      [
+        "/precision-references/",
+        "Dynamic reference drive"
+      ]
+    ],
+    "sources": "The Art of Electronics, §13.7; ADI MT-021; original RC example"
   }
 }

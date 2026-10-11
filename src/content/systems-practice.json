@@ -418,5 +418,40 @@
         }
       ]
     }
+  ],
+  "adc-successive-approximation": [
+    {
+      "tag": "SEARCH",
+      "title": "Trace five trial bits",
+      "prompt": "For an ideal 5-bit SAR with 1 V reference and input 0.43 V, determine the trials and result under the floor-bin convention.",
+      "hint": "Start at half scale and keep a bit only if its trial does not exceed input.",
+      "solution": [
+        {
+          "text": "Trials are 0.5 reject, 0.25 keep, 0.375 keep, 0.4375 reject, 0.40625 keep. Code is 01101 = 13, bin [0.40625, 0.4375) V."
+        }
+      ]
+    },
+    {
+      "tag": "REFERENCE",
+      "title": "Conversion charge and droop",
+      "prompt": "A SAR draws an 80 pC reference packet at 500 kS/s from 2.2 μF effective capacitance. Find average current and immediate ideal droop.",
+      "hint": "Average demand and impulse response are different.",
+      "solution": [
+        {
+          "text": "Average current is 40 μA; droop is 36.36 μV. Recovery, ESR/ESL and code dependence still need verification."
+        }
+      ]
+    },
+    {
+      "tag": "TIMING",
+      "title": "A serial link limits throughput",
+      "prompt": "An ADC transaction uses 16 result bits plus 8 status bits. A 12 MHz serial clock supports no overlap and 0.5 μs overhead. Find maximum transaction rate.",
+      "hint": "Include the bits and the gap.",
+      "solution": [
+        {
+          "text": "Clocking takes 24/12 MHz = 2 μs. Total is 2.5 μs, allowing 400 ktransactions/s before conversion/acquisition constraints."
+        }
+      ]
+    }
   ]
 }
