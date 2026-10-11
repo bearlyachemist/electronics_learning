@@ -145,3 +145,25 @@ Seven interactive figures and five static figures. Assumptions:
 - Bootstrapping and Miller: small-signal hybrid-π models solved by complex nodal analysis (stages.mjs `nodal`); no base resistance; C_π set from f_T = 400 MHz in the Miller lab.
 
 The transistor chapters now run through Chapter 41 with 182 problems in practice.json and the divider page (207 including the feedback chapters). Tests added in tests/stages.test.mjs check mirror closed forms (2/β, β-helper, Wilson, Widlar log law, area ratio), Early-effect output resistance, the tanh law and degenerated steering, active-load gain V_A/2V_T, class B crossover and the π/4 efficiency bound, AB and feedback THD reduction, Darlington gain β₁β₂ + β₁ + β₂ and compound-pair saturation, ballast equalization and hogging, the nodal solver against an RC low-pass, bootstrap improvement, and the Miller estimate against the exact pole.
+
+## Chapters 57–94: MOS circuit studies and op amps
+
+Twenty MOSFET chapters develop bias, diode loads, mirrors and ratio scaling,
+degeneration, standard/wide-swing cascodes, common-source stages, followers,
+common gate, cascode gain, differential steering/range/mirror loads, class-AB
+outputs, two-stage gain and noise. Each includes explicit DC assumptions,
+multiple operating points, incremental equations and compliance limits.
+
+Six op-amp foundation chapters derive ideal and finite-gain feedback, signed DC
+errors, bandwidth/slew/stability, original BJT/CMOS teaching constructions and
+input-technology tradeoffs. Twelve applications cover noninverting, summing,
+difference, instrumentation, TIA, integration, differentiation, Sallen–Key,
+precision rectification/peak hold, MOS current servos, capacitive loads and
+nonlinear function/system design. These add 114 separate worked practice
+problems, for 371 across the 94-chapter book.
+
+See `textbook-reference-map.md` for the six supplied sources and inspected
+sections. The numerical engines are original long-channel/local teaching models
+with independent KCL/KVL and slope checks, not commercial-device guarantees.
+`check:advanced` validates section targets, strict practice math and critical net
+relationships that a disconnected-pin checker alone cannot verify.

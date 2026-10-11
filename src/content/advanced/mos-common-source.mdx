@@ -1,0 +1,229 @@
+import Equation from '../../components/Equation.astro';
+import {MosStageFigure} from '../../components/MosAnalogFigures';
+import {MosLab} from '../../components/MosAnalogLabs';
+import {CsDesignCircuit,CsBodeFigure,CsDistortionFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 64</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>The resistor-loaded common-source amplifier<br/><em>From a specification to a working stage.</em></h1>
+
+<p className="dek">Design a complete common-source amplifier to a specification: choose the operating point from the gain, find the distortion from the load voltage, place every low- and high-frequency corner, and allocate the signal swing in both directions.</p>
+
+<div className="chapter-meta"><span>60–80 min + exploration</span><span>Bias atlas (Ch. 57) · Degeneration (Ch. 61) · Miller effect (Ch. 41)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">You need lower distortion from a common-source stage. Should you raise the overdrive?</p></div>
+
+<div>
+
+Chapter 57 asked what operating point a given circuit has. A designer asks the reverse: given a gain, a load, a supply, an output amplitude and a bandwidth, what circuit? This chapter answers that question for the simplest MOS voltage amplifier, a single transistor with a resistor in its drain.
+
+On the way, three results emerge that are easy to state and surprising the first time. The gain is set by a **voltage**, the drop across the drain resistor divided by the overdrive. The distortion at a given output amplitude does **not** depend on the overdrive at all. And the bandwidth is usually set not by the transistor but by the Miller-multiplied capacitance from its drain back to its gate.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The specification → The gain is set by a voltage → Design the operating point → Distortion is set by the load voltage → Place the frequency corners → Allocate the swing in both directions → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>The specification</h2></div>
+
+We will design a stage to meet this specification:
+
+| Requirement | Value |
+|---|---|
+| Supply | 5 V, single |
+| Midband voltage gain | about −8, into a 10 kΩ load, AC coupled |
+| Source | 10 kΩ signal source |
+| Output amplitude | 1 V peak |
+| Bandwidth | at least 20 Hz to 200 kHz |
+| Device | $V_T$ ≈ 1 V; any $k$ can be had by choosing $W/L$ |
+
+<MosStageFigure mode="cs"/>
+
+The core is the grounded-source stage above: a transistor converts gate voltage to drain current, and the drain resistor converts current back to voltage. Everything else in the final circuit, the bias divider, source resistor and three capacitors, serves to set and stabilize the operating point without disturbing the signal.
+
+</section>
+
+<section id="gain">
+
+<div className="section-heading"><span>02</span><h2>The gain is set by a voltage</h2></div>
+
+The midband gain is $-g_m$ times the total resistance at the drain. With an AC-coupled load and the transistor's own $r_o$ included:
+
+<Equation tex={String.raw`A_v=-g_m\,(R_D\parallel R_L\parallel r_o)=-g_mR_D'`}/>
+
+Substitute $g_m = 2I_D/u$ (Chapter 57) and the transistor seems to disappear:
+
+<Equation tex={String.raw`|A_v|=\frac{2\,I_DR_D'}{u}\qquad\text{unloaded: }|A_v|=\frac{2\,V_{R_D}}{u}`} label="GAIN FROM A VOLTAGE RATIO"/>
+
+The unloaded gain is twice the DC voltage across the drain resistor divided by the overdrive. The bipolar version, Chapter 32's $V_{R_C}/25$ mV, has the same form; a BJT behaves like a MOSFET with an "overdrive" of $2V_T$ ≈ 50 mV. To get gain from a MOSFET you can spend supply voltage on $R_D$ or reduce the overdrive. You cannot do it by choosing a "high-gain transistor", because $k$ does not appear.
+
+Two ceilings remain. The supply limits $V_{R_D}$: with 5 V and room left for swing, perhaps 2 V. And $r_o$ limits $R_D'$: as $R_D \to \infty$, $|A_v| \to g_mr_o = 2/(\lambda u)$, the **intrinsic gain**, about 100 for $\lambda$ = 0.02 V⁻¹ and $u$ = 1 V.
+
+</section>
+
+<section id="design">
+
+<div className="section-heading"><span>03</span><h2>Design the operating point</h2></div>
+
+<CsDesignCircuit/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / THE DC DESIGN</span><h3>Gain −8 into 10 kΩ from 5 V</h3>
+
+<p><strong>Allocate the supply.</strong> Put the drain at 3 V, so $V_{R_D}$ = 2 V, leaving 2 V above the drain for upward swing and 3 V below for the transistor and source resistor.</p>
+
+<p><strong>Choose the current and resistor.</strong> At 1 mA, $R_D$ = 2 kΩ. With $r_o$ ≈ 50 kΩ, $R_D'$ = 2 k ∥ 10 k ∥ 50 k = 1.61 kΩ. A gain of 8 then needs $g_m$ = 8/1.61 kΩ ≈ 5 mS.</p>
+
+<p><strong>Find the overdrive and size the device.</strong> $u = 2I_D/g_m$ = 0.4 V, so $k = 2I_D/u^2$ = <strong>12.5 mA/V²</strong>. Check: $|A_v|$ = 2 × 1.61 V / 0.4 V = 8.06.</p>
+
+<p><strong>Stabilize the bias.</strong> Choose $R_S$ = 500 Ω (0.5 V at 1 mA), bypassed by $C_S$ so the signal gain is unaffected. At DC, $g_mR_S$ = 2.5, so threshold spread is divided by 3.5 (Chapter 57). The gate must sit at $V_S + V_T + u$ = 0.5 + 1 + 0.4 = <strong>1.9 V</strong>: a divider of 3.1 MΩ over 1.9 MΩ draws 1 µA and presents 1.18 MΩ to the source.</p>
+
+<p><strong>Check the region.</strong> $V_{DS}$ = 3 − 0.5 = 2.5 V against $u$ = 0.4 V. Saturation holds with 2.1 V of margin, which is the room available for downward signal swing at the drain.</p>
+
+</div>
+
+</section>
+
+<section id="distortion">
+
+<div className="section-heading"><span>04</span><h2>Distortion is set by the load voltage</h2></div>
+
+For a gate signal $a\cos\omega t$, the square law adds a current $\tfrac12 ka^2\cos^2\omega t$: a DC shift and a second harmonic of relative size $a/(4u)$. Now ask the designer's question, the distortion at a given **output** amplitude $v_{out} = |A_v|a$, and substitute the gain from section 02:
+
+<Equation tex={String.raw`\frac{H_2}{H_1}=\frac{a}{4u}=\frac{v_{out}}{4u\,|A_v|}=\frac{v_{out}}{8\,I_DR_D'}`} label="SQUARE-LAW DISTORTION AT FIXED OUTPUT"/>
+
+The overdrive has cancelled. A larger $u$ makes the transistor more linear, but it lowers the gain in exactly the same proportion, so you must drive it harder, and the distortion at the output is unchanged. That answers the opening question: raising the overdrive alone does not help. Only the product $I_DR_D'$, the AC load voltage, matters.
+
+<CsDistortionFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / DOES THE DESIGN MEET 1 V AT LOW DISTORTION?</span><h3>$I_DR_D'$ = 1 mA × 1.61 kΩ = 1.61 V</h3>
+
+<p>At 1 V peak output, $H_2/H_1$ = 1/(8 × 1.61) = <strong>7.8%</strong>. That is clearly audible, and far from a precision amplifier. The specification did not state a distortion limit; a real one would.</p>
+
+<p>The options are all costly. More current into the same load means less $R_D$ and less gain, unless the supply is raised. Unbypassed degeneration reduces distortion at fixed output by $1 + g_mR_{S1}$ (Chapter 61), but reduces gain by the same factor: 200 Ω unbypassed halves both. A single transistor cannot give high gain, large swing and low distortion from 5 V at once. Overall negative feedback around a higher-gain amplifier can, which is the motivation for the op-amp chapters.</p>
+
+</div>
+
+<MosLab kind="gain" client:load/>
+
+<p className="caption">Live lab. A sine wave through the full square-law and triode model on a 5 V supply with $k$ = 2 mA/V². Set the drain resistor to 2 kΩ and the gate bias to 2 V, so $V_{R_D}$ = 2 V. Raise the input until the output peak is about 1 V and read the second harmonic: the formula predicts $1/(8 × 2)$ = 6.3%, and the lab shows a little less, about 5.2%, because channel-length modulation adds a slight negative feedback. Then set the bias to 1.5 V with 4 kΩ. The overdrive is now only 0.5 V, but the drop across the resistor is also only 1 V, and at 1 V output the second harmonic roughly doubles, to about 11%. The overdrive did not decide the distortion; the load voltage did.</p>
+
+</section>
+
+<section id="frequency">
+
+<div className="section-heading"><span>05</span><h2>Place the frequency corners</h2></div>
+
+Each capacitor in the circuit sets one corner. Treat them one at a time, assuming the corners are well separated.
+
+**Low frequencies.** The input coupling capacitor sees the source plus the divider: $f = 1/[2\pi C_{in}(R_{sig} + R_1\parallel R_2)]$ = 1/(2π × 0.1 µF × 1.19 MΩ) = 1.3 Hz. The output capacitor sees $R_D + R_L$: 1/(2π × 1 µF × 12 kΩ) = 13 Hz. The bypass capacitor is subtler. It removes degeneration only above the frequency where its reactance is small compared with the resistance looking into the source, $R_S \parallel (1/g_m)$. That gives a zero at $1/(2\pi R_SC_S)$ = 3.2 Hz and a pole at $(1 + g_mR_S)/(2\pi R_SC_S)$ = 11 Hz. Below the zero, the gain falls by $1 + g_mR_S$ = 3.5.
+
+**High frequencies.** The gate–drain capacitance $C_{gd}$ connects the input to an output that moves $A_v$ times as far in the opposite direction. Seen from the gate, it looks like $C_{gd}(1 + |A_v|)$, the Miller effect of Chapter 41. With $C_{gs}$ = 10 pF and $C_{gd}$ = 2 pF:
+
+<Equation tex={String.raw`C_{in}\approx C_{gs}+C_{gd}\,(1+|A_v|)=10+2\times9.06=28.1\ \text{pF}`}/>
+
+That capacitance is driven by $R_{sig} \parallel R_1 \parallel R_2$ = 9.9 kΩ, so the input pole is at 1/(2π × 9.9 kΩ × 28.1 pF) = **570 kHz**. At the output, 20 pF of load and drain capacitance against $R_D'$ = 1.61 kΩ gives 4.9 MHz. The input pole dominates, and 2 pF of feedback capacitance contributes twice as much as 10 pF across the input.
+
+<CsBodeFigure/>
+
+The response meets the 200 kHz specification comfortably, but the 20 Hz end only just: the combined low-frequency −3 dB point is about 19 Hz. Two cautions. The Miller estimate freezes the gain at its midband value; near the output pole it overstates the input capacitance slightly. And the corners were treated independently. When two corners are within a factor of a few of each other, as the bypass pole (11 Hz) and output coupling (13 Hz) are here, the actual −3 dB frequency lies above both, here about 19 Hz. Spread them further apart, or compute the combined response, as the plot does. Raising $C_S$ to 470 µF and $C_{out}$ to 4.7 µF would move the low corner to about 4 Hz.
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Allocate the swing in both directions</h2></div>
+
+Centering the drain at half the supply is not automatically right, because the two directions run out for different reasons.
+
+**Upward**, the drain rises as the current falls. With an AC-coupled load the signal current divides between $R_D$ and $R_L$, so the output can rise only until the transistor's current has fallen to zero: a peak of $I_DR_D'$ = 1.61 V. The DC drop across $R_D$ (2 V) does not set this limit; the load does.
+
+**Downward**, the drain falls until $V_{DS}$ reaches the instantaneous overdrive. The source is bypassed and stays at 0.5 V; the overdrive at the negative output peak is about $u + a$ = 0.52 V. So the drain can fall from 3 V to about 1.0 V, a 2 V swing.
+
+The 1 V specification fits in both directions, with the upward direction closer to its limit. Before then, though, the square law has already made the waveform lopsided, as the lab shows: the negative output peaks (gate high) are stretched and the positive peaks compressed.
+
+Finally, a resistor-loaded stage inherits every spread in its bias. Test the corners. For threshold alone, ±0.2 V moves the current between 0.72 and 1.29 mA even with $g_mR_S$ = 2.5, and the drain by about ±0.57 V. At the low-current corner the upward swing limit $I_DR_D'$ falls to 1.16 V; at the high-current corner the drain sits at 2.4 V and can fall to about 1.2 V. The 1 V specification still fits both, with little to spare. A 1.5 kΩ source resistor (gate at 2.9 V) would cut the spread to ±12%, at the cost of a volt of headroom.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Gain is $2I_DR_D'/u$; distortion at a given output is $v_{out}/(8I_DR_D')$; bandwidth is usually <em>the Miller-multiplied $C_{gd}$</em> against the source resistance. A single stage trades all three against supply voltage.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Would doubling the gate bias double the output signal?</summary>
+<div>
+
+No, and it may destroy it. Raising the gate raises the current and $g_m$, but also the drop across $R_D$, so the drain falls toward the saturation edge (Chapter 57). The gain rises only until the drain meets the edge, then collapses in triode. The output amplitude depends on the operating point and the available swing, not on the bias magnitude.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why does raising the overdrive not reduce distortion at a fixed output amplitude?</summary>
+<div>
+
+Distortion is $a/(4u)$ for gate amplitude $a$, and $a = v_{out}/|A_v|$ with $|A_v| = 2I_DR_D'/u$. The $u$ in the gain cancels the $u$ in the distortion, leaving $v_{out}/(8I_DR_D')$. A larger overdrive needs a proportionally larger input, so the transistor sees the same relative excursion.
+
+</div>
+</details>
+
+<details>
+<summary>3. At $g_m$ = 2 mS, $r_o$ = 50 kΩ, $R_D$ = 2 kΩ and an AC-coupled 10 kΩ load, what is the gain?</summary>
+<div>
+
+$R_D'$ = 2 k ∥ 10 k ∥ 50 k = 1.61 kΩ, so $A_v$ = −2 mS × 1.61 kΩ = **−3.23**. Without the load it would be −3.85; without $r_o$ either, −4.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why does 2 pF of gate–drain capacitance matter more than 10 pF of gate–source capacitance?</summary>
+<div>
+
+The gate–source capacitance sees only the input voltage. The gate–drain capacitance sees the input minus the output, which is $(1 + |A_v|)$ times the input. With a gain of 8 it draws as much current as 18 pF to ground would: the Miller effect. A cascode (Chapter 69) holds the drain still and removes most of it.
+
+</div>
+</details>
+
+<details>
+<summary>5. The upward output swing is 1.61 V even though $R_D$ drops 2 V. Why?</summary>
+<div>
+
+The transistor's current can fall at most to zero, a change of $I_D$ = 1 mA. With the load AC coupled, that change flows through $R_D \parallel R_L$ = 1.67 kΩ (1.61 kΩ including $r_o$), not through $R_D$ alone. The load "steals" some of the signal current, so the upward swing is $I_DR_D'$.
+
+</div>
+</details>
+
+<details>
+<summary>6. Two low-frequency corners at 11 Hz and 13 Hz. Why is the actual −3 dB frequency higher than either?</summary>
+<div>
+
+At a single corner the gain is 3 dB down. With two corners near each other, at 13 Hz the first contributes nearly 2.5 dB of loss and the second 3 dB, so the response is about 5.5 dB down. The combined −3 dB point moves up to where the two together lose 3 dB, near 20 Hz. Spreading corners apart, by a factor of 5 to 10, keeps the dominant one in control.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§3.2.3–3.2.6; Huijsing, <em>Operational Amplifiers</em>, 3rd ed., chapter 4. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-common-source/practice/">Open practice →</a></div>

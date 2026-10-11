@@ -1,0 +1,210 @@
+import Equation from '../../components/Equation.astro';
+import {OpAmpFigure} from '../../components/OpAmpFigures';
+import {OpAmpLab} from '../../components/OpAmpLabs';
+import {TiaNoiseGainFigure,TiaStepFigure,TiaNoiseFigure} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 87</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Transimpedance amplifiers<br/><em>Turn a current into a voltage without letting the input move.</em></h1>
+
+<p className="dek">Convert a photodiode's current to a voltage at a virtual ground. Find why the detector's capacitance makes the noise gain rise with frequency, choose the feedback capacitor for fast settling, and budget the noise and dynamic range of a real receiver.</p>
+
+<div className="chapter-meta"><span>55–75 min + exploration</span><span>Bandwidth and stability (Ch. 79) · Common gate (Ch. 68) · Input technologies (Ch. 82)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Adding a capacitor across the feedback resistor lowers a transimpedance amplifier's bandwidth. Can it make the measurement settle faster?</p></div>
+
+<div>
+
+Many sensors produce a current: photodiodes, photomultipliers, ionization chambers, some gas sensors. The simplest current-to-voltage converter is a resistor, but a resistor lets its voltage change with the current, which disturbs a sensor that needs a fixed bias, and forms a slow RC with the sensor's capacitance (Chapter 68 met that problem).
+
+An op amp with a feedback resistor holds the sensor at a virtual ground and turns the current into an output voltage of $-IR_F$. The idea fits in one line; the design does not, because the sensor's capacitance sits at the op amp's input, and as far as stability is concerned, that changes everything.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Define current direction and capacitance → Solve signal gain and frequency-dependent noise gain → See the stability problem → Compare three feedback capacitors → Budget noise and dynamic range → Protect the summing node's capacitance budget → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Define current direction and capacitance</h2></div>
+
+<OpAmpFigure mode="tia"/>
+
+The photodiode injects $I_{PD}$ into the minus input, the plus input is grounded, and the feedback network is $R_F$ in parallel with $C_F$. Everything capacitive at the minus input, the photodiode's junction capacitance, the op amp's input capacitance and the wiring, is lumped as $C_{IN}$. Feedback holds the minus input at 0 V, so the photodiode operates at zero bias (photovoltaic mode) and its current flows through $R_F$: a positive injected current makes the output go negative.
+
+On a single supply the plus input is held at a reference above ground; for speed the photodiode is often reverse biased, which lowers its capacitance but adds dark current. Both are details of the same circuit.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Solve signal gain and frequency-dependent noise gain</h2></div>
+
+KCL at the minus node, with finite gain $A$ so that $v_- = -v_o/A$:
+
+<Equation tex={String.raw`Z_F=\frac{R_F}{1+sR_FC_F},\qquad NG(s)=1+sC_{IN}Z_F,\qquad\frac{V_O}{I_{PD}}=-\frac{Z_F}{1+NG(s)/A(s)}`} label="TRANSIMPEDANCE WITH FINITE GAIN"/>
+
+With infinite gain the transimpedance is just $-Z_F$: $R_F$ at low frequency, rolled off by $C_F$. The interesting quantity is the noise gain. At DC it is 1: with the input current source removed, nothing but $R_F$ connects the output to the minus input, and nothing connects the minus input to ground. But $C_{IN}$ does connect it to ground at higher frequencies, and the noise gain rises:
+
+<Equation tex={String.raw`NG(f)\approx\begin{cases}1 & f\ll\dfrac{1}{2\pi R_F(C_{IN}+C_F)}\\[6pt] 1+\dfrac{C_{IN}}{C_F} & f\gg\dfrac{1}{2\pi R_FC_F}\end{cases}`}/>
+
+</section>
+
+<section id="stability">
+
+<div className="section-heading"><span>03</span><h2>See the stability problem</h2></div>
+
+The loop crosses unity where the noise gain meets the open-loop gain. If the noise gain is still rising there, at 20 dB per decade, while $A(f)$ is falling at 20 dB per decade, their closing rate is 40 dB per decade: the loop phase is near −180° and the circuit rings or oscillates. Without $C_F$ the noise gain rises without limit and a TIA with any significant input capacitance is unstable.
+
+<TiaNoiseGainFigure/>
+
+$C_F$ levels the noise gain off at $1 + C_{IN}/C_F$. If it has levelled off before meeting $A(f)$, the crossing is at a 20 dB/decade closing rate and the loop is stable. Setting the levelling point at the crossing gives roughly 45° of phase margin:
+
+<Equation tex={String.raw`C_F\approx\sqrt{\frac{C_{IN}}{2\pi R_Ff_t}},\qquad f_{-3\,dB}\approx\sqrt{\frac{f_t}{2\pi R_FC_{IN}}}`} label="TIA COMPENSATION STARTING POINT"/>
+
+The second result is the useful one for planning: the achievable bandwidth grows only as the square root of the op amp's $f_t$, and falls as the square root of $R_F$ and of the input capacitance.
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>04</span><h2>Compare three feedback capacitors</h2></div>
+
+<TiaStepFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / 1 MΩ, 50 pF, A 1 MHz OP AMP</span><h3>Choose $C_F$</h3>
+
+<p><strong>Starting point.</strong> $C_F = \sqrt{50\text{ pF}/(2\pi × 1\text{ MΩ} × 1\text{ MHz})}$ = 2.8 pF, and the bandwidth $\sqrt{1\text{ MHz}/(2\pi × 1\text{ MΩ} × 50\text{ pF})}$ ≈ 56 kHz.</p>
+
+<p><strong>Three choices.</strong> $C_F$ = 1 pF: noise-gain plateau 51, crossing while still rising; 52% overshoot, 65 µs to settle within 1%. $C_F$ = 2.8 pF: plateau 19; 15% overshoot, <strong>25 µs</strong>. $C_F$ = 10 pF: plateau 6, feedback pole 16 kHz; no overshoot, but 43 µs.</p>
+
+<p>That answers the opening question. Going from 1 pF to 2.8 pF lowers the ideal bandwidth, $1/(2\pi R_FC_F)$, from 159 kHz to 56 kHz, yet the measurement settles in less than half the time, because the ringing is gone. Judge a TIA by its settling to the required accuracy, not by its −3 dB frequency.</p>
+
+<p><strong>Practical $C_F$.</strong> 2.8 pF is comparable to the stray capacitance across a resistor's body (0.1–0.3 pF) and the board. Real designs often end up with a nominal 2.2 or 2.7 pF part plus the parasitics, then verify with a pulse.</p>
+
+</div>
+
+<OpAmpLab kind="tia" client:load/>
+
+<p className="caption">Live lab. $R_F$ = 1 MΩ, $C_{IN}$ = 50 pF, $A_0 = 10^5$. Sweep the feedback capacitance from 1 pF to 100 pF and watch the peaking near 50–100 kHz disappear while the bandwidth falls. Then raise the op amp's GBW at a fixed $C_F$ of 3 pF and note that the bandwidth improves only slowly.</p>
+
+</section>
+
+<section id="noise">
+
+<div className="section-heading"><span>05</span><h2>Budget noise and dynamic range</h2></div>
+
+<TiaNoiseFigure/>
+
+Three noise sources compete, and the input capacitance reorders them with frequency.
+
+**The feedback resistor** adds a current noise $\sqrt{4kT/R_F}$ in parallel with the signal: 0.129 pA/√Hz for 1 MΩ. A larger $R_F$ gives more transimpedance and **less** current noise, the reason TIAs use the largest $R_F$ the bandwidth allows.
+
+**The op amp's voltage noise** is multiplied by the noise gain, which rises toward $1 + C_{IN}/C_F$. Referred to the input as a current, it is about $e_n \cdot 2\pi fC_{IN}$: 10 nV/√Hz with 50 pF at 50 kHz is 0.16 pA/√Hz, as large as the resistor's. This "$e_nC$ noise" is why low-capacitance detectors and low-voltage-noise op amps matter in fast receivers.
+
+**The op amp's current noise** adds directly to the signal. A FET-input part's femtoamps are negligible; a bipolar part's picoamps would dominate.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / RANGE AND SIGNAL-TO-NOISE</span><h3>1 MΩ, ±4.5 V output</h3>
+
+<p><strong>Range.</strong> 10 nA, 1 µA and 10 µA give −10 mV, −1 V and −10 V. The output can reach only about ±4.5 V, so the largest measurable current is 4.5 µA. Dark current and the op amp's offset (say 1 nA and 1 mV) add 1 nA + 1 nA to every reading.</p>
+
+<p><strong>Shot noise.</strong> A 1 µA photocurrent carries shot noise $\sqrt{2qI}$ = 0.57 pA/√Hz, larger than the resistor's 0.13. Above about 50 nA this receiver is limited by the light's own statistics, the best any receiver can do.</p>
+
+<p><strong>Integrated.</strong> Over the 56 kHz bandwidth, the resistor alone contributes $0.129 × \sqrt{56\,000 × 1.57}$ ≈ 38 pA rms, and the $e_nC$ term a similar amount. A 10 nA signal is about 200 times the noise.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Protect the summing node's capacitance budget</h2></div>
+
+**Board capacitance is circuit.** A centimetre of trace or a sensor cable adds picofarads to $C_{IN}$ and changes the compensation. A long cable is not even lumped; it can resonate. Mount the detector as close to the op amp as possible, and guard the summing node.
+
+**Bigger $R_F$ is not free.** It raises transimpedance and lowers current noise, but narrows the range, lowers the bandwidth ($\propto 1/\sqrt{R_F}$) and makes the circuit more sensitive to leakage across the board. A 1 GΩ resistor needs a guarded, clean layout.
+
+**Overload.** A bright flash drives the output to a rail. Recovery from saturation can take far longer than the small-signal settling time; some receivers clamp the output or the summing node with diodes. Specify the dynamic range including recovery from the largest expected pulse.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A TIA's noise gain rises from 1 to $1 + C_{IN}/C_F$; <em>$C_F$ must level it off before it meets the open-loop gain</em>. Start from $C_F \approx \sqrt{C_{IN}/2\pi R_Ff_t}$, and judge the result by its settling and its noise, not its −3 dB point.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why can a feedback capacitor make a TIA settle faster?</summary>
+<div>
+
+Without enough $C_F$ the loop crosses unity while the noise gain is still rising, leaving little phase margin and causing ringing that takes a long time to decay. $C_F$ restores phase margin. Its lower ideal bandwidth costs less settling time than the ringing it removes: 25 µs instead of 65 µs in the example.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why is the noise gain 1 at DC but $1 + C_{IN}/C_F$ at high frequency?</summary>
+<div>
+
+At DC only $R_F$ connects the output to the minus input and nothing connects the minus input to ground, so the op amp acts as a follower for its own errors. At high frequency $C_{IN}$ and $C_F$ form a capacitive divider from the output to ground, with the minus input at its midpoint, giving a noninverting gain of $1 + C_{IN}/C_F$.
+
+</div>
+</details>
+
+<details>
+<summary>3. With $R_F$ = 10 MΩ, $C_{IN}$ = 20 pF and a 10 MHz op amp, estimate $C_F$ and the bandwidth.</summary>
+<div>
+
+$C_F \approx \sqrt{20\text{ pF}/(2\pi × 10\text{ MΩ} × 10\text{ MHz})}$ ≈ **0.18 pF**, about the stray capacitance of the resistor itself. Bandwidth $\approx\sqrt{10\text{ MHz}/(2\pi × 10\text{ MΩ} × 20\text{ pF})}$ ≈ **89 kHz**.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why does a larger feedback resistor lower the TIA's input-referred current noise?</summary>
+<div>
+
+The resistor's thermal current noise is $\sqrt{4kT/R_F}$, which falls as $R_F$ rises, while the signal's conversion gain rises as $R_F$. Signal-to-noise improves as $\sqrt{R_F}$, at the cost of range and bandwidth.
+
+</div>
+</details>
+
+<details>
+<summary>5. What is "$e_nC$ noise"?</summary>
+<div>
+
+The op amp's voltage noise $e_n$ appears across the input capacitance $C_{IN}$ and drives a noise current $e_n\cdot2\pi fC_{IN}$ through it, which the feedback resistor converts to output noise. It grows with frequency and with detector capacitance and often dominates a fast photodiode receiver.
+
+</div>
+</details>
+
+<details>
+<summary>6. Above what photocurrent is a 1 MΩ receiver limited by shot noise rather than by its feedback resistor?</summary>
+<div>
+
+When $\sqrt{2qI}$ exceeds $\sqrt{4kT/R_F}$, that is $I > 2kT/(qR_F)$ = 0.052 V/1 MΩ ≈ **52 nA**. Above that, the light's own Poisson statistics dominate.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §4.3.1C (current-to-voltage converters) and the transimpedance-amplifier material of their chapter 4x; Asadi, <em>Applied Op Amp Circuits</em>, chapter 5 (input impedance). Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-transimpedance/practice/">Open practice →</a></div>

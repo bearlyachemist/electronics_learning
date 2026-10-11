@@ -1,0 +1,210 @@
+import Equation from '../../components/Equation.astro';
+import {OpAmpLab} from '../../components/OpAmpLabs';
+import {TechNoiseFigure,ChopperBlockFigure,LowFreqNoiseFigure} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 82</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Choose BJT, JFET, CMOS or chopper inputs<br/><em>Pick the amplifier for the source, not for the datasheet's headline.</em></h1>
+
+<p className="dek">Compare input technologies by their total noise and DC error with the actual source impedance and bandwidth, find where each wins, see how chopping removes offset and flicker noise, and turn the comparison into a selection procedure.</p>
+
+<div className="chapter-meta"><span>45–60 min + exploration</span><span>MOS noise (Ch. 76) · DC errors (Ch. 78) · Bipolar and CMOS internals (Chs. 80–81)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Why can the op amp with the lowest voltage noise be the noisiest choice for a high-resistance sensor?</p></div>
+
+<div>
+
+Op-amp selection guides sort parts by their headline numbers: lowest noise, lowest offset, highest speed. Each headline is measured under conditions chosen to flatter it. A 1 nV/√Hz bipolar amplifier is measured with a zero-ohm source; a femtoamp CMOS amplifier's noise is quoted at 10 kHz, far above its flicker corner.
+
+The useful question is: with my source, my bandwidth and my temperature range, which amplifier gives the smallest total error? The last six chapters supplied the pieces. This one puts them together into a method.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Include source impedance in every comparison → Build a frequency-aware input budget → Compare devices across source resistance → Chopping and auto-zeroing → Choose against the actual measurement → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Include source impedance in every comparison</h2></div>
+
+An op amp's input is characterized by four quantities: voltage noise $e_n$, current noise $i_n$, offset voltage and bias current. The source contributes its own thermal noise and turns both currents into voltages. Different input technologies sit at different points in this space:
+
+| Input | Voltage noise | Current noise | Bias current | Typical strength |
+|---|---|---|---|---|
+| Bipolar | lowest, 1–10 nV/√Hz | high, 0.3–3 pA/√Hz | 1–500 nA | low-impedance sources |
+| JFET | 3–20 nV/√Hz | very low, 1–10 fA/√Hz | pA, doubling per 10 °C | 10 kΩ – 100 MΩ sources |
+| CMOS | 5–50 nV/√Hz, high $1/f$ | lowest, ~1 fA/√Hz | fA–pA | very high impedance, low power |
+| Chopper / auto-zero | 10–50 nV/√Hz, no $1/f$ | modest, with spikes | pA–nA, with spikes | DC precision |
+
+These are typical ranges, not limits; the next sections show how to compare specific parts.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Build a frequency-aware input budget</h2></div>
+
+For a source impedance $Z_S(f)$, the total input-referred noise density is
+
+<Equation tex={String.raw`e_{tot}^2(f)=e_n^2(f)+i_n^2(f)\,|Z_S(f)|^2+4k_BT\,\mathrm{Re}\,Z_S(f)`} label="TOTAL INPUT NOISE"/>
+
+assuming uncorrelated amplifier noise sources and a passive source. For a resistive source, the voltage-noise and current-noise terms are equal at the **optimum source resistance**
+
+<Equation tex={String.raw`R_{opt}=\frac{e_n}{i_n}`}/>
+
+Near $R_{opt}$ the amplifier adds the least noise relative to the source. A bipolar part with 1 nV/√Hz and 2 pA/√Hz has $R_{opt}$ = 500 Ω; a JFET with 5 nV/√Hz and 5 fA/√Hz has $R_{opt}$ = 1 MΩ. Matching the amplifier to the source impedance matters more than minimizing either $e_n$ or $i_n$ alone.
+
+For DC accuracy, use Chapter 78's signed bias-current terms, offset, drift and CMRR. Total output noise also includes the feedback resistors' noise and the frequency-dependent noise gain; integrate the noise power through the actual circuit's response.
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Compare devices across source resistance</h2></div>
+
+<TechNoiseFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / TWO AMPLIFIERS, THREE SOURCES</span><h3>A: 2 nV/√Hz, 1 pA/√Hz. B: 8 nV/√Hz, 0.01 pA/√Hz. 300 K.</h3>
+
+<p><strong>100 Ω source</strong> (1.29 nV/√Hz thermal): A gives 2.4, B 8.1 nV/√Hz. A is clearly better.</p>
+
+<p><strong>10 kΩ source</strong> (12.9 nV/√Hz): A gives 16.4 (its current noise adds 10 nV/√Hz through 10 kΩ), B 15.2. Nearly a tie, both dominated by the resistor.</p>
+
+<p><strong>1 MΩ source</strong> (129 nV/√Hz): A gives <strong>1008</strong>, because 1 pA/√Hz through 1 MΩ is 1 µV/√Hz. B gives 129, essentially the resistor alone.</p>
+
+<p>That answers the opening question: A, the "low-noise" amplifier, is eight times noisier than B with the 1 MΩ source. The DC picture is worse still: if A's bias current is 100 nA and B's 2 pA, the 1 MΩ source produces a 100 mV offset with A and 2 µV with B.</p>
+
+</div>
+
+<OpAmpLab kind="noise" client:load/>
+
+<p className="caption">Live lab. Set voltage noise to 2 nV/√Hz and current noise to 1 pA/√Hz (amplifier A), then sweep the source resistance and note where the curve leaves the flat region. Change to 8 nV/√Hz and 0.01 pA/√Hz (amplifier B) and repeat. The crossing of the two totals is the source resistance above which B wins.</p>
+
+</section>
+
+<section id="chopper">
+
+<div className="section-heading"><span>04</span><h2>Chopping and auto-zeroing</h2></div>
+
+For DC and very-low-frequency measurements, two errors dominate everything else: offset drift and $1/f$ noise. Both are slow. Two techniques remove slow errors by refusing to let the signal stay slow inside the amplifier.
+
+<ChopperBlockFigure/>
+
+A **chopper** modulates the input up to the chopping frequency, amplifies it there, and demodulates it back; the amplifier's own offset and flicker noise are modulated up and filtered away. An **auto-zero** amplifier periodically disconnects its input, measures its own offset on a capacitor, and subtracts it. Both reach offsets of a few microvolts and drifts of a few nanovolts per degree:
+
+<LowFreqNoiseFigure/>
+
+Neither is free. Chopping leaves ripple and spikes at $f_{ch}$ (often tens to hundreds of kilohertz) that must be filtered, and switching charge injection appears as input current spikes that can disturb a high-impedance source. Auto-zeroing folds high-frequency noise down into the baseband, raising the white noise floor. "Zero drift" is a product category, not literally zero error.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A SLOW BRIDGE MEASUREMENT</span><h3>350 Ω strain-gauge bridge, 0.1–10 Hz, 50 °C range</h3>
+
+<p>The bridge's source resistance is about 350 Ω, near the bipolar part's $R_{opt}$, so its 3 nV/√Hz floor looks ideal. But in the 0.1–10 Hz band its flicker region contributes noise, and its drift, say 0.5 µV/°C, adds <strong>25 µV</strong> over 50 °C.</p>
+
+<p>A chopper with 20 nV/√Hz and no $1/f$ region integrates to about <strong>0.06 µV rms</strong> over 0.1–10 Hz, and its drift of 0.02 µV/°C adds only 1 µV. The bridge's own thermal noise (2.4 nV/√Hz) is far below both amplifiers' floors here. For this slow measurement, the chopper wins by drift, not by noise density.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>Choose against the actual measurement</h2></div>
+
+A practical procedure:
+
+1. **Characterize the source:** its impedance, including how it varies with frequency, signal and temperature, and its signal range.
+2. **State the requirements:** resolution and accuracy, bandwidth (or settling time), temperature range, supply, load and power.
+3. **Compute the budget** for each candidate under those conditions: noise integrated over the band, DC errors at the worst-case temperature, common-mode and output ranges.
+4. **Check the side effects:** input capacitance for a photodiode, chopping spikes for a high-impedance source, phase reversal or protection leakage near the rails.
+
+Some typical outcomes:
+
+- **pH electrode** (about 1 GΩ, DC): bias current dominates everything. An electrometer-grade CMOS or JFET part with femtoamp bias, guarded inputs and a clean board.
+- **Dynamic microphone** (about 200 Ω, audio band): voltage noise dominates. A low-noise bipolar part.
+- **Photodiode** (high resistance, tens of picofarads, kHz–MHz): current noise and input capacitance both matter, and the capacitance shapes the noise gain (Chapter 87). A JFET or low-capacitance CMOS part.
+- **Thermocouple or bridge** (low resistance, DC): drift and $1/f$ noise dominate. A chopper or auto-zero part.
+
+Source impedance is often complex: a piezoelectric sensor is mostly capacitance, a photodiode is capacitance in parallel with a large resistance, a filter network varies with frequency. Use $Z_S(f)$ in the budget when a single resistance does not describe it.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Compare amplifiers by <em>total</em> error with your source: $e_n$ matters for low impedances, $i_n$ and bias current for high ones, drift and $1/f$ noise for slow measurements. $R_{opt} = e_n/i_n$ tells you which kind of source an amplifier was made for.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why can the lowest-voltage-noise amplifier be the noisiest choice for a high-resistance sensor?</summary>
+<div>
+
+Low-voltage-noise bipolar inputs usually have high current noise. Through a high source resistance, $i_nR_S$ dominates: 1 pA/√Hz through 1 MΩ is 1 µV/√Hz, far above both the amplifier's 2 nV/√Hz and the resistor's own 129 nV/√Hz.
+
+</div>
+</details>
+
+<details>
+<summary>2. What is the optimum source resistance of an amplifier with $e_n$ = 4 nV/√Hz and $i_n$ = 0.4 pA/√Hz?</summary>
+<div>
+
+$R_{opt} = e_n/i_n$ = 4 nV/0.4 pA = **10 kΩ**. Near that source resistance its voltage and current noise contribute equally and its noise relative to the source is smallest.
+
+</div>
+</details>
+
+<details>
+<summary>3. How does a chopper remove offset drift?</summary>
+<div>
+
+It modulates the signal to a high frequency before the amplifier, and demodulates it after. The amplifier's offset and $1/f$ noise are added between the two modulators, so the second modulator moves them up to the chopping frequency, where a low-pass filter removes them, while it moves the signal back to DC.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why might a chopper amplifier be a poor choice for a 1 GΩ electrode?</summary>
+<div>
+
+Its input switches inject charge, appearing as current spikes and an average bias current that can be nanoamps, much larger than an electrometer CMOS part's femtoamps. Through 1 GΩ, even 1 pA is 1 mV. Its low drift is wasted if bias current dominates.
+
+</div>
+</details>
+
+<details>
+<summary>5. A 350 Ω bridge measured from 0.1 to 10 Hz over 50 °C: why can a chopper with 20 nV/√Hz beat a bipolar part with 3 nV/√Hz?</summary>
+<div>
+
+Over 0.1–10 Hz, the bipolar part's $1/f$ noise and especially its offset drift (25 µV over 50 °C at 0.5 µV/°C) dominate. The chopper has no $1/f$ region and drifts only about 1 µV, so its total error is far smaller despite its higher white noise floor.
+
+</div>
+</details>
+
+<details>
+<summary>6. Why must the budget use the source impedance at the frequency of interest?</summary>
+<div>
+
+Many sources are reactive: a photodiode's capacitance makes its impedance fall with frequency, a piezoelectric sensor is mostly capacitive. Current noise multiplies $|Z_S(f)|$, and only the real part of $Z_S$ produces thermal noise. A single DC resistance can badly misestimate both.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§5.10–5.11 (choosing precision and auto-zero op amps) and §8.4 (noise); Huijsing, <em>Operational Amplifiers</em>, 3rd ed., chapter 6. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-input-tradeoffs/practice/">Open practice →</a></div>

@@ -1,0 +1,212 @@
+import Equation from '../../components/Equation.astro';
+import {MosStageFigure} from '../../components/MosAnalogFigures';
+import {MosCases} from '../../components/MosAnalogLabs';
+import {TelescopicCircuit,CascodeLoadGainFigure,CascodeMillerFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 69</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>The MOS cascode voltage amplifier<br/><em>Common source below, common gate above.</em></h1>
+
+<p className="dek">Stack a common-gate device on a common-source device. Derive the stage's transconductance and output resistance, find out when the enormous unloaded gain is real and when the load erases it, and see how holding the middle node still removes the Miller capacitance.</p>
+
+<div className="chapter-meta"><span>50–70 min</span><span>Cascode mirror (Ch. 62) · Active loads (Ch. 65) · Common gate (Ch. 68)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">A cascode has a 5 MΩ output resistance. Will that help if the next stage loads it with 10 kΩ?</p></div>
+
+<div>
+
+Chapter 62 put a cascode on a current mirror to raise its output resistance. The same structure with a signal on the lower gate becomes an amplifier: the lower transistor converts the input voltage to a current, and the upper transistor passes that current to the output while holding the lower drain nearly still.
+
+Two benefits follow. The output resistance rises by the intrinsic gain $g_mr_o$, so with a high-impedance load the voltage gain can reach thousands. And because the lower drain barely moves, its gate–drain capacitance is no longer multiplied by the stage gain. But both benefits depend on the rest of the circuit, and quoting the unloaded gain of a loaded stage is one of the commonest errors in analog design.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Treat the middle node as a circuit node → Distinguish effective transconductance from resistance → Compare unloaded and useful loaded gains → Hold the middle node still → Compare against alternatives on equal terms → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Treat the middle node as a circuit node</h2></div>
+
+<MosStageFigure mode="cascode"/>
+
+The lower gate is the input; the upper gate is held at a fixed bias $V_B$; a current source $I_{LOAD}$ supplies the drain current from above. The node between the two transistors, $X$, is the upper device's source and the lower device's drain.
+
+Bias is a headroom problem, exactly as in Chapters 62–63. Choose $V_X$ a margin above the lower overdrive, then set $V_B = V_X + V_T + u_2$. The output must stay above $V_X + u_2$, and below whatever limit the load imposes. With $u_1 = u_2$ = 1 V, $V_T$ = 1 V and $V_X$ = 1.2 V, $V_B$ = 3.2 V and the output must stay above 2.2 V. If the load is a PMOS current source on 5 V with 1 V of overdrive, the output must stay below 4 V: centered at 3.1 V, the stage has only ±0.9 V of swing.
+
+As with the active load of Chapter 65, an ideal current-source load does not by itself define the DC output. In practice the stage sits inside a feedback loop.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Distinguish effective transconductance from resistance</h2></div>
+
+Split the analysis into two numbers. The **output resistance** looking down into the stack, with the input at AC ground, is the cascode result of Chapter 62:
+
+<Equation tex={String.raw`R_c=r_{o1}+r_{o2}+(g_{m2}+g_{mb2})\,r_{o1}r_{o2}\approx g_{m2}r_{o2}\,r_{o1}`}/>
+
+The **effective transconductance** $G_m$ is the output current per volt of input with the output shorted to AC ground. KCL at node $X$ gives
+
+<Equation tex={String.raw`G_m=g_{m1}\,\frac{g_{m2}+g_{mb2}+g_{o2}}{g_{m2}+g_{mb2}+g_{o1}+g_{o2}}\approx g_{m1}`}/>
+
+Nearly all of $M_1$'s signal current reaches the output, because the upper device's source is a much easier path ($1/g_{m2}$) than $M_1$'s own $r_{o1}$. The voltage gain is then $G_m$ times whatever resistance the output node actually sees:
+
+<Equation tex={String.raw`A_v=-G_m\,(R_c\parallel R_L)`} label="CASCODE VOLTAGE GAIN"/>
+
+$R_L$ here means everything else connected to the output: the load current source's own output resistance, the next stage's input, and any AC-coupled load. It is never infinite.
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Compare unloaded and useful loaded gains</h2></div>
+
+The table uses $k$ = 2 mA/V², $\lambda$ = 0.02 V⁻¹, identical devices, no body effect and an ideal infinite-resistance load:
+
+<MosCases kind="cascode"/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / FROM −10 000 TO −16</span><h3>1 mA cascode, $g_m$ = 2 mS, $r_o$ = 50 kΩ</h3>
+
+<p><strong>Ideal load:</strong> $R_c$ = 5.10 MΩ, $G_m$ = 1.98 mS, so $A_v$ ≈ <strong>−10 100</strong>.</p>
+
+<p><strong>A simple PMOS current-source load</strong> with $r_{oP}$ = 50 kΩ: the output sees 5.10 M ∥ 50 k = 49.5 kΩ, so $A_v$ ≈ <strong>−98</strong>. The load's own 50 kΩ, not the cascode's 5 MΩ, sets the gain.</p>
+
+<p><strong>Add an AC-coupled 10 kΩ load:</strong> 49.5 k ∥ 10 k = 8.3 kΩ, so $A_v$ ≈ <strong>−16.5</strong>. A plain common-source stage with the same load would give $−g_m(50\text{ k} \parallel 50\text{ k} \parallel 10\text{ k})$ = −14.3. The cascode's 5 MΩ is almost irrelevant.</p>
+
+<p>With 10 pF at the output, the three cases have output poles at 3.1 kHz, 321 kHz and 1.9 MHz. Each has the same gain–bandwidth product, $G_m/2\pi C$ ≈ 32 MHz.</p>
+
+</div>
+
+<CascodeLoadGainFigure/>
+
+So the answer to the opening question is no. A high output resistance is useful only if nothing else at the node is lower. To use a cascode's resistance, the load must be cascoded too:
+
+<TelescopicCircuit/>
+
+With PMOS cascodes above as well as NMOS cascodes below, both resistances are about $g_mr_o^2$ and the gain is about $\tfrac12(g_mr_o)^2$. At 0.25 mA and 0.5 V of overdrive ($g_m$ = 1 mS, $r_o$ = 200 kΩ), each side is about 40 MΩ and the gain about −20 000. This "telescopic" stack is the gain stage of many high-precision CMOS op amps. It needs four overdrives plus margins of headroom: in 5 V with wide-swing biasing, the output can range from about 1.1 V to 3.9 V.
+
+</section>
+
+<section id="miller">
+
+<div className="section-heading"><span>04</span><h2>Hold the middle node still</h2></div>
+
+In a common-source stage the gate–drain capacitance $C_{gd}$ connects the input to an output that moves $A_v$ times as far in the opposite direction, so the input sees $C_{gd}(1 + |A_v|)$ (Chapter 64). In a cascode, $M_1$'s drain is node $X$, which moves only by
+
+<Equation tex={String.raw`\frac{v_x}{v_{in}}\approx-\frac{g_{m1}}{g_{m2}+g_{mb2}}\approx-1`}/>
+
+for identical devices. $C_{gd1}$ is then multiplied by only about 2, whatever the overall gain:
+
+<Equation tex={String.raw`C_{in}\approx C_{gs1}+C_{gd1}\left(1+\frac{g_{m1}}{g_{m2}}\right)\approx C_{gs1}+2C_{gd1}`}/>
+
+<CascodeMillerFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / MORE GAIN AND MORE BANDWIDTH</span><h3>10 kΩ source, 50 kΩ active load, $C_{gs}$ = 1 pF, $C_{gd}$ = 0.2 pF, 0.5 pF at the output</h3>
+
+<p><strong>Common source:</strong> gain −50, $C_{in}$ = 1 + 0.2 × 51 = 11.2 pF, input pole 1.4 MHz. The −3 dB bandwidth is <strong>1.4 MHz</strong>.</p>
+
+<p><strong>Cascode:</strong> gain −98, $C_{in}$ = 1 + 0.2 × 2 = 1.4 pF, input pole 11 MHz; the output pole (49.5 kΩ, 0.5 pF) is at 6.4 MHz. Together they give a −3 dB bandwidth of <strong>5.2 MHz</strong>.</p>
+
+<p>The cascode has twice the gain and nearly four times the bandwidth. The internal node $X$ adds a third pole, at about $g_{m2}/2\pi C_X$; with 0.5 pF there that is above 600 MHz, far out of the way.</p>
+
+</div>
+
+This Miller suppression, not the gain, is often the reason a discrete designer adds a cascode: a common-gate transistor above a high-gain input device, or a common-base BJT above a common-emitter stage (Chapter 41), makes a wideband amplifier from a slow transistor.
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>Compare against alternatives on equal terms</h2></div>
+
+**Headroom.** Each cascode device costs at least an overdrive plus margin. On a 1.8 V supply a telescopic stack may leave almost no swing; there, designers use two simpler stages instead (Chapter 75), or a "folded" cascode that turns the signal current around through a PMOS common-gate device so the two halves do not stack.
+
+**Gain boosting.** An auxiliary amplifier can drive the cascode gate to hold node $X$ even more firmly, multiplying $R_c$ by its own gain. The auxiliary amplifier's bandwidth and stability then become part of the design.
+
+**Sensitivity.** A node with megohms of resistance is sensitive to everything: leakage currents, probe capacitance, mismatch between the NMOS and PMOS current sources. As with the active load, the DC output must be set by feedback.
+
+**Verify in three ways.** A DC sweep to check every device's saturation margin; an AC sweep to find the actual poles, including node $X$; and a large-signal step to see whether the internal node overloads. The cascode's local feedback does not guarantee the stability of any larger loop around it.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A cascode's gain is $G_m$ times <em>everything at the output in parallel</em>; its megohms matter only if the load is cascoded too. Its other gift, holding the input device's drain still, removes the Miller capacitance whatever the load.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Will a 5 MΩ cascode output resistance help if the next stage loads it with 10 kΩ?</summary>
+<div>
+
+Barely. The output node's resistance is 5 MΩ ∥ 10 kΩ ≈ 10 kΩ, so the gain is about $G_m × 10$ kΩ, almost the same as a plain common-source stage's. The cascode still helps bandwidth, by suppressing the input Miller capacitance, but not gain.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why is $G_m$ slightly less than $g_{m1}$?</summary>
+<div>
+
+Part of $M_1$'s signal current flows back through its own $r_{o1}$ instead of into the upper device's source. The split is set by $g_{o1}$ against $g_{m2} + g_{mb2} + g_{o2}$; since $g_{m2}$ is about 100 times $g_{o1}$, about 1% is lost.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why must the load be cascoded for the stage's gain to approach $(g_mr_o)^2/2$?</summary>
+<div>
+
+The gain is $G_m$ times the parallel combination of the resistance looking down ($\approx g_mr_o^2$) and looking up. A simple current-source load presents only $r_o$, which dominates the parallel combination. Only a cascoded load, also presenting $\approx g_mr_o^2$, lets the full resistance appear.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why is the lower device's gate–drain capacitance multiplied by only about 2?</summary>
+<div>
+
+The lower drain is node $X$, the upper device's source. The upper device acts as a follower-like common-gate stage holding $X$ at about $−(g_{m1}/g_{m2})v_{in}$, roughly $−v_{in}$. The voltage across $C_{gd1}$ is therefore about $2v_{in}$, not $(1 + |A_v|)v_{in}$.
+
+</div>
+</details>
+
+<details>
+<summary>5. With $u_1 = u_2$ = 1 V, $V_T$ = 1 V and a 0.2 V margin, what are $V_X$, $V_B$ and the minimum output?</summary>
+<div>
+
+$V_X = u_1 + 0.2$ = 1.2 V, $V_B = V_X + V_T + u_2$ = 3.2 V, and the output must stay above $V_X + u_2$ = **2.2 V**, against 1.0 V for an uncascaded stage.
+
+</div>
+</details>
+
+<details>
+<summary>6. Loading the cascode with 10 kΩ raised its output pole from 3 kHz to 1.9 MHz. Did it make the stage faster?</summary>
+<div>
+
+Only by giving up gain in the same proportion. The gain–bandwidth product, $G_m/2\pi C$ ≈ 32 MHz, is unchanged. In a feedback circuit with a given closed-loop gain, the bandwidth is about the same either way.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §2.4.4 (cascode) and §3.2; Huijsing, <em>Operational Amplifiers</em>, 3rd ed., §§4.3 and 7.4 (telescopic and folded cascodes). Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-cascode-amplifier/practice/">Open practice →</a></div>

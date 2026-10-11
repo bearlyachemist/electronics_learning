@@ -1,0 +1,223 @@
+import Equation from '../../components/Equation.astro';
+import {MosDifferentialFigure} from '../../components/MosAnalogFigures';
+import {OpAmpFigure} from '../../components/OpAmpFigures';
+import {OpAmpLab} from '../../components/OpAmpLabs';
+import {FeedbackBlockFigure,LoopGainErrorFigure,SaturationFigure,OptionalInverterCircuit} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 77</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Ideal op amps and feedback<br/><em>Derive the virtual short; don't assume it.</em></h1>
+
+<p className="dek">Start from a differential amplifier with finite gain, close a negative-feedback loop around it, and derive the "golden rules" as limits. Then find exactly where they fail: saturation, wrong polarity, and the difference between signal gain and noise gain.</p>
+
+<div className="chapter-meta"><span>50–70 min + exploration</span><span>Feedback (Ch. 42) · Two-stage amplifier (Ch. 75)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">An op amp has a gain of 100 000. Does that mean its two inputs are always within microvolts of each other?</p></div>
+
+<div>
+
+Chapter 75 built an amplifier with a gain of thousands from a handful of transistors. Package that, add an output stage and some protection, and you have an operational amplifier: a differential voltage amplifier with enormous, poorly controlled gain. Nobody uses that gain directly. It is fuel for negative feedback, which trades it for a gain set by two resistors.
+
+Every op-amp textbook gives two rules: no current flows into the inputs, and with negative feedback the output does whatever it takes to make the two inputs equal. This chapter derives the second rule from a finite-gain model, because knowing where it comes from tells you exactly when it stops being true.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>State the amplifier law and its domain → Obtain the rules from finite gain → Watch the virtual short fail → Check the feedback polarity → Use a repeatable solving order → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>State the amplifier law and its domain</h2></div>
+
+<OpAmpFigure mode="noninv"/>
+
+An op amp has two inputs, two supply pins and one output. Within its linear range it obeys
+
+<Equation tex={String.raw`v_o=A\,(v_+-v_-)`}/>
+
+with $A$ typically $10^5$ to $10^7$ at DC, falling with frequency (Chapter 79). The ideal op amp takes four limits: infinite gain, infinite input resistance, zero output resistance and unlimited bandwidth. A real one also has finite output swing, finite output current and an input common-mode range. Supply pins are omitted from these drawings for clarity, but every node voltage is measured from the same reference, and the output can never go beyond the rails.
+
+The op amp itself is the transistor circuit of Chapter 75: the differential pair converts $v_+ - v_-$ into a current, the following stages turn it into a large output voltage.
+
+<MosDifferentialFigure mode="mirror"/>
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Obtain the rules from finite gain</h2></div>
+
+<FeedbackBlockFigure/>
+
+In the noninverting circuit, the divider returns a fraction $\beta = R_G/(R_G + R_F)$ of the output to the minus input, so $v_- = \beta v_o$. Substitute into the amplifier law:
+
+<Equation tex={String.raw`v_o=A(v_i-\beta v_o)\quad\Rightarrow\quad \frac{v_o}{v_i}=\frac{A}{1+A\beta}=\frac1\beta\cdot\frac{1}{1+1/T},\qquad T=A\beta`} label="CLOSED-LOOP GAIN WITH FINITE A"/>
+
+The quantity $T = A\beta$ is the **loop gain**: break the loop anywhere, inject a signal, and $T$ is how much comes back around. When $T \gg 1$, the closed-loop gain approaches $1/\beta = 1 + R_F/R_G$, set entirely by the resistors. The error is $1/(1 + T)$:
+
+<LoopGainErrorFigure/>
+
+Now the differential input: $v_+ - v_- = v_o/A$. For any output the op amp can actually produce, a few volts, this is microvolts. That is the "virtual short": the inputs are nearly equal **because** the loop has adjusted the output until they are. It is not a connection, carries no current, and holds only while the loop works.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / HOW IDEAL IS "IDEAL"?</span><h3>$R_F$ = 100 kΩ, $R_G$ = 10 kΩ, so $1/\beta$ = 11</h3>
+
+<p>With $A_0$ = $10^3$, $10^4$ and $10^5$, the loop gains are 91, 909 and 9091, and the closed-loop gains are <strong>10.880, 10.988 and 10.999</strong>: errors of 1.1%, 0.11% and 0.011%. Each factor of ten in open-loop gain buys one more correct digit.</p>
+
+<p>At 0.1 V input and $A_0 = 10^5$, the output is 1.09988 V and the differential input is $v_o/A$ = <strong>11.0 µV</strong>. Treating it as zero changes the answer by 0.011%.</p>
+
+<p>Note what the output must supply: 1.1 V across 110 kΩ of feedback divider, 10 µA, plus any load current. "No current into the inputs" says nothing about the output's current.</p>
+
+</div>
+
+</section>
+
+<section id="saturation">
+
+<div className="section-heading"><span>03</span><h2>Watch the virtual short fail</h2></div>
+
+The derivation assumed the op amp's output could reach $v_i/\beta$. Ask for more than it can deliver and the loop breaks:
+
+<SaturationFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A REQUEST THE OUTPUT CANNOT MEET</span><h3>Gain 11, output limited to +4.5 V, input 1 V</h3>
+
+<p>The circuit asks for 11 V. The output stops at 4.5 V, so the divider puts 4.5/11 = <strong>0.409 V</strong> on the minus input while the plus input is at 1 V. The inputs now differ by <strong>0.591 V</strong>, about 50 000 times the "virtual short" value. No equation that assumed $v_+ = v_-$ applies until the input comes back below 0.409 V.</p>
+
+<p>This also answers the opening question. A large open-loop gain makes the inputs nearly equal only when negative feedback is working, which needs a stable loop, an output within its range, and inputs within their common-mode range. Open loop, as a comparator, or with the output clipped, the inputs can differ by volts.</p>
+
+</div>
+
+Saturated op amps also take time to recover: internal nodes have been driven to their limits and must return. A circuit that clips occasionally can show errors for microseconds after each clip (Chapter 79).
+
+</section>
+
+<section id="polarity">
+
+<div className="section-heading"><span>04</span><h2>Check the feedback polarity</h2></div>
+
+Feedback is negative when a rising output pushes the differential input in the direction that makes the output fall. In the noninverting amplifier, a rising output raises $v_-$, which reduces $v_+ - v_-$: negative. Swap the two input pins and the same rising output raises $v_+$, increasing the difference: positive feedback. The output then runs to a rail and stays there. The algebra still gives $1/\beta$ as a "solution", but it is an unstable equilibrium, like a pencil balanced on its point. Always trace the polarity before solving.
+
+<OptionalInverterCircuit/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / ONE CIRCUIT, TWO GAINS</span><h3>The switchable inverter</h3>
+
+<p><strong>Switch to ground.</strong> The plus input is at 0 V (no current flows in its 20 kΩ). Negative feedback holds the minus input at 0 V too, a <em>virtual ground</em>. The input current is $v_i/R_{IN}$, it must all flow through $R_F$ (no current enters the op amp), so $v_o = -v_iR_F/R_{IN}$ = <strong>−v_i</strong>.</p>
+
+<p><strong>Switch to the input.</strong> The plus input is at $v_i$, so feedback holds the minus input at $v_i$. Now $R_{IN}$ has $v_i$ at both ends: no current. Then $R_F$ carries no current either, and $v_o = v_i$: gain <strong>+1</strong>.</p>
+
+<p>The same result comes from superposition: the minus-input path gives −1 times $v_i$, and the plus-input path gives $(1 + R_F/R_{IN}) = 2$ times $v_i$. With both present, −1 + 2 = +1. Feedback polarity is negative in both positions, because the feedback resistor goes to the minus input either way.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>Use a repeatable solving order</h2></div>
+
+1. **Identify the feedback polarity.** Trace a rising output around the loop.
+2. **Write node equations** at the inputs, with the ideal rules if the loop gain is large, or with finite $A$ if accuracy matters.
+3. **Solve for the output.**
+4. **Check the limits:** output swing, output current (feedback network plus load), input common-mode range.
+5. **Check dynamics:** loop stability, bandwidth, slew rate.
+
+If any check fails, go back and use a model that includes the failure.
+
+### Signal gain and noise gain
+
+The loop gain depends on $\beta$, which is set by the feedback network with the signal sources turned off. For an inverting amplifier with $R_{IN}$ and $R_F$, the signal gain is $-R_F/R_{IN}$, but with the input grounded the feedback divider is the same as a noninverting amplifier's:
+
+<Equation tex={String.raw`\text{signal gain}=-\frac{R_F}{R_{IN}},\qquad \text{noise gain}=\frac1\beta=1+\frac{R_F}{R_{IN}}`}/>
+
+**Noise gain** is the gain from a disturbance at the op amp's input (offset, noise) to the output, and it, not the signal gain, sets the loop gain. An inverter with gain −10 has noise gain 11, so its loop gain and its bandwidth are those of a gain-of-11 noninverting stage. A circuit can have a signal gain of zero and a noise gain of 100. Chapters 78–79 use this distinction constantly.
+
+Feedback does not create power or perfect accuracy. It reduces errors generated inside the loop by the loop gain. Errors that look like input signals, such as offset voltage and the noise of the input resistors, are amplified by the noise gain along with the signal.
+
+<OpAmpLab kind="feedback" client:load/>
+
+<p className="caption">Live lab. A single-pole op amp in a noninverting circuit. Set the gain to 1, then 100, and watch the closed-loop bandwidth fall by the same factor. Lower the DC open-loop gain until the low-frequency closed-loop gain visibly misses the requested value; then calculate the error from $1/(1 + T)$.</p>
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Closed-loop gain is $(1/\beta)/(1 + 1/T)$. The virtual short is <em>a result of working negative feedback</em>, valid only while the loop gain is large, the output is in range and the polarity is right.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. When may the two inputs be treated as equal?</summary>
+<div>
+
+When the op amp is in a stable negative-feedback loop with large loop gain, its output is within its swing range, and its inputs are within their common-mode range. Then $v_+ - v_- = v_o/A$ is microvolts. Open loop, saturated or with positive feedback, the inputs can differ by volts.
+
+</div>
+</details>
+
+<details>
+<summary>2. Does the virtual short carry current?</summary>
+<div>
+
+No. It is a statement about voltages, a consequence of feedback, not a wire. Current flowing into one input node must leave through the external components connected to it; apply KCL at each input node separately.
+
+</div>
+</details>
+
+<details>
+<summary>3. An inverting amplifier has gain −10. What is its noise gain, and why does it matter?</summary>
+<div>
+
+$1 + R_F/R_{IN}$ = **11**. It sets the loop gain ($A/11$), hence the accuracy and the bandwidth, and it multiplies the op amp's offset and noise. An inverter of gain −10 therefore has the bandwidth of a noninverting amplifier of gain 11.
+
+</div>
+</details>
+
+<details>
+<summary>4. What fails when the output saturates?</summary>
+<div>
+
+The loop: the output can no longer change to correct the input, so the differential input is no longer small. Any analysis that assumed $v_+ = v_-$ is invalid until the output returns to its linear range, and recovery takes extra time.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why check the input common-mode range separately from the output swing?</summary>
+<div>
+
+The output can be within its range while the inputs are not. In a follower on a single 5 V supply, an input of 4.8 V may be beyond the input stage's common-mode window (Chapter 71), even though the output could reach 4.8 V. Outside that window the input stage is not biased correctly and the gain collapses or the polarity can even invert.
+
+</div>
+</details>
+
+<details>
+<summary>6. Why does the switchable inverter give +1 with the switch to the input?</summary>
+<div>
+
+Both inputs then sit at $v_i$, so the input resistor has no voltage across it and carries no current; the feedback resistor therefore carries none either, and the output equals the minus input, $v_i$. Equivalently, the inverting path contributes −1 and the noninverting path $+2$.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§4.1–4.3; Asadi, <em>Applied Op Amp Circuits</em>, chapter 1; Huijsing, <em>Operational Amplifiers</em>, 3rd ed., chapter 1. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-ideal/practice/">Open practice →</a></div>

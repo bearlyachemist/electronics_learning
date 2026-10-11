@@ -1,0 +1,218 @@
+import Equation from '../../components/Equation.astro';
+import {OpAmpFigure} from '../../components/OpAmpFigures';
+import {OpAmpLab} from '../../components/OpAmpLabs';
+import {AcNoninvCircuit,AcNoninvBodeFigure,ImpedanceScaleFigure,BootstrapBiasCircuit} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 83</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Noninverting amplifiers and buffers<br/><em>Gain without loading the source.</em></h1>
+
+<p className="dek">Design a buffer and a gain stage with explicit budgets: the resistor scale that balances noise, bias error and output current; AC coupling that keeps a DC path and does not amplify offset; bootstrapping to keep input impedance high; and the settling an ADC driver really needs.</p>
+
+<div className="chapter-meta"><span>55–75 min + exploration</span><span>Ideal op amps (Ch. 77) · DC errors (Ch. 78) · Bandwidth and slew (Ch. 79)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">A unity-gain follower's equation is simply $v_{out} = v_{in}$. Can it oscillate?</p></div>
+
+<div>
+
+The noninverting amplifier is the op amp's most natural configuration. The signal goes straight into a high-impedance input, so the source is not loaded; the gain is $1 + R_F/R_G$, never less than one; and with no resistors at all it becomes the follower, the universal buffer.
+
+Its equation fits on a sticky note. Its design does not. Which resistor values? What happens to the op amp's offset if the input is AC coupled? How high is the input impedance once a bias path is added? And will a follower driving an ADC actually settle? This chapter works through those questions with numbers.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Begin with a valid feedback connection → Design from noise gain and current → Compare three impedance scales → AC coupling and the bias return → Buffer the actual source and destination → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Begin with a valid feedback connection</h2></div>
+
+<OpAmpFigure mode="noninv"/>
+
+The input drives the plus terminal; the divider $R_F$, $R_G$ feeds a fraction $\beta = R_G/(R_F + R_G)$ of the output back to the minus terminal. With large loop gain,
+
+<Equation tex={String.raw`G=NG=1+\frac{R_F}{R_G},\qquad G_{actual}=\frac{G}{1+G/A_0}`}/>
+
+For this circuit the signal gain and the noise gain are the same. The follower is the limit $R_F = 0$, $R_G = \infty$: output wired directly to the minus input. Build it that way, not by shorting $R_F$ while leaving $R_G$ in place, which would load the output for no reason.
+
+The input impedance is that of the op amp's plus input, megohms to teraohms, in parallel with its input capacitance and any bias resistor you add. The output must supply both the load current and the divider current.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Design from noise gain and current</h2></div>
+
+Choose the **ratio** for the gain. Then choose the **scale**, the actual resistor values, from three competing costs:
+
+<Equation tex={String.raw`e_{n,div}=\sqrt{4k_BT\,(R_F\parallel R_G)},\qquad V_{err}=I_B\,(R_F\parallel R_G),\qquad I_{out}=\frac{V_O}{R_L}+\frac{V_O}{R_F+R_G}`}/>
+
+High values increase thermal noise, bias-current error and the time constants formed with stray capacitance. Low values increase the current the output must supply and the power. There is a sweet spot:
+
+<ImpedanceScaleFigure/>
+
+The divider's noise equals a 5 nV/√Hz op amp's at $R_G$ ≈ 1.6 kΩ. Much below that, the op amp dominates and smaller resistors buy nothing but current. Much above, the resistors dominate.
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Compare three impedance scales</h2></div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / GAIN 11 AT THREE SCALES</span><h3>$R_G/R_F$ = 1 k/10 k, 10 k/100 k, 100 k/1 M</h3>
+
+<p><strong>Divider current at 2 V out:</strong> 182, 18.2 and 1.82 µA.</p>
+
+<p><strong>Noise:</strong> $R_F\parallel R_G$ = 0.909, 9.09 and 90.9 kΩ, giving 3.9, 12.3 and 38.8 nV/√Hz at the input. Only the first is comparable to a good op amp's own noise.</p>
+
+<p><strong>Bias error</strong> with 50 nA into the minus input and no matching resistor: 45, 455 and 4545 µV at the input, ×11 at the output: 0.5, 5 and 50 mV.</p>
+
+<p><strong>Parasitics:</strong> 3 pF across the inputs forms a pole with $R_F\parallel R_G$ at 58 MHz, 5.8 MHz and 580 kHz. The last is close enough to the loop crossing to erode phase margin; a small capacitor across $R_F$ restores it.</p>
+
+<p>All three have the same gain, finite-gain error (0.011% at $A_0 = 10^5$) and bandwidth ($f_t/11$). Only the middle one is a reasonable compromise for a general-purpose part.</p>
+
+</div>
+
+<OpAmpLab kind="feedback" client:load/>
+
+<p className="caption">Live lab. Gain-of-$NG$ noninverting stage with a single-pole op amp. At $NG$ = 11 and a 1 MHz GBW, read the bandwidth; then set $NG$ = 1 (a follower) and confirm it rises tenfold. The slew-limit readout reminds you that a 1 V peak at 100 kHz needs 0.63 V/µs whatever the small-signal bandwidth.</p>
+
+</section>
+
+<section id="ac">
+
+<div className="section-heading"><span>04</span><h2>AC coupling and the bias return</h2></div>
+
+<AcNoninvCircuit/>
+
+When the source has a DC level you do not want, put a capacitor in series with the input. Two details then matter.
+
+**The plus input needs a DC path.** Its bias current must flow somewhere. Without $R_B$, it charges $C_{in}$ until the output saturates. $R_B$ and $C_{in}$ form a high-pass filter, $f = 1/(2\pi R_BC_{in})$, and $R_B$ also sets the input impedance at signal frequencies.
+
+**The offset need not be amplified.** With $R_G$ to ground, the op amp's offset appears at the output multiplied by 11. Put $C_G$ in series with $R_G$, and at DC the circuit is a follower: the offset appears with gain 1. At signal frequencies $C_G$ is a short and the gain is 11.
+
+<AcNoninvBodeFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / PLACE THE LOW-FREQUENCY CORNERS</span><h3>Audio band, 20 Hz to 20 kHz, gain 11</h3>
+
+<p>$R_B$ = 100 kΩ and $C_{in}$ = 1 µF give 1.6 Hz. $R_G$ = 10 kΩ and $C_G$ = 10 µF give a zero at 1.6 Hz, where the gain starts falling toward 1. Both are a decade below 20 Hz, so the passband is flat to within 0.1 dB at 20 Hz. The op amp's 1 MHz GBW gives a 91 kHz top end.</p>
+
+<p><strong>Offsets.</strong> With a 1 mV op amp offset and 50 nA of bias current: the plus input sees 50 nA × 100 kΩ = 5 mV, the minus input sees 50 nA × 100 kΩ (through $R_F$, since $C_G$ blocks DC to ground) = 5 mV. They largely cancel, and the DC output error is about 1 mV, not the 11 mV that a DC-coupled gain of 11 would give.</p>
+
+</div>
+
+### Keeping the input impedance high
+
+$R_B$ sets the input impedance at signal frequencies, so a 100 kΩ bias resistor gives a 100 kΩ input, wasting the op amp's megohms. **Bootstrapping** recovers it:
+
+<BootstrapBiasCircuit/>
+
+Split $R_B$ into two halves and drive their midpoint from the output through a capacitor. Since the output follows the input, the upper resistor has almost no signal voltage across it: with a loop gain of 10 000 the follower's gain is 0.9999, and the upper 51 kΩ looks like 51 kΩ / 0.0001 = 510 MΩ. At DC the bias path is an ordinary 102 kΩ. The bootstrapped network has a gentle peak near its corner frequency, which a small resistor in series with $C_B$ tames. With FET-input op amps, whose bias current is picoamps, simply using a 10 MΩ bias resistor is often easier.
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>Buffer the actual source and destination</h2></div>
+
+**Capacitive loads.** The answer to the opening question is yes. A follower has noise gain 1, the lowest possible, so its loop crosses unity at the highest frequency and is the most vulnerable to extra poles. A capacitive load forms such a pole with the op amp's output resistance; a few hundred picofarads can make a follower ring or oscillate. Choose a unity-gain-stable part rated for the load, or isolate the load (Chapter 93).
+
+**Single supply.** On a single supply, the signal must sit at mid-supply. Bias the plus input from a mid-supply reference, and return $R_G$ (through $C_G$) to ground or to the same reference; returning it to ground without $C_G$ changes the DC gain and drives the output toward a rail.
+
+**ADC drivers.** An ADC's sampling capacitor, connected suddenly to the buffer, draws a charge pulse. The usual fix is a small RC between buffer and ADC: the capacitor supplies the charge, the resistor isolates the op amp from it.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / SETTLE A 16-BIT ADC IN 1 µs</span><h3>30 pF sampling capacitor, RC filter of $R$ and 1 nF</h3>
+
+<p>When the sampling capacitor connects, charge sharing with the 1 nF reservoir disturbs the voltage by up to 30/1030 ≈ 2.9%. That disturbance must decay to half an LSB, $2^{-17}$ of full scale, within the 1 µs acquisition time.</p>
+
+<p>It takes $\ln(0.029 × 2^{17}) = \ln(3800)$ ≈ 8.2 time constants. So $RC \le$ 1 µs/8.2 = 122 ns, and with 1 nF, $R \le$ <strong>122 Ω</strong>. The op amp must stay stable driving 122 Ω and 1 nF, and recover from the disturbance within the same time; a part with ample bandwidth and capacitive-load capability is needed.</p>
+
+</div>
+
+Judge a buffer by the error it adds to the whole measurement: source loading, bias current through the source, output current, swing, common-mode range and settling, together.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Choose the ratio for gain and <em>the scale for noise, bias error and current</em>. AC-couple with a DC return and a capacitor under $R_G$; bootstrap the return when input impedance matters; and give a follower the phase margin its noise gain of 1 demands.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Can a unity-gain follower oscillate?</summary>
+<div>
+
+Yes. Its noise gain is 1, so its loop gain crosses unity at the op amp's full $f_t$, where additional poles (output resistance with a capacitive load, internal poles of a decompensated part) have the most effect. A follower is the most demanding configuration for stability.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why choose the resistor scale separately from the ratio?</summary>
+<div>
+
+The ratio sets the gain. The scale sets the divider's thermal noise, the bias-current error, the output current and power, and the time constants with parasitic capacitance. Gain 11 with 1 k/10 k and with 100 k/1 M are electrically very different circuits.
+
+</div>
+</details>
+
+<details>
+<summary>3. Where does the divider current come from?</summary>
+<div>
+
+From the op amp's output. The minus input draws essentially nothing, so all of $v_o/(R_F + R_G)$ flows from the output through the divider to ground, adding to the load current.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why must an AC-coupled noninverting input have a resistor to ground?</summary>
+<div>
+
+The plus input's bias current needs a DC path. Without one, it charges the coupling capacitor steadily, the input voltage drifts until the output saturates. The resistor provides the path and, with the capacitor, sets the low-frequency corner.
+
+</div>
+</details>
+
+<details>
+<summary>5. What does a capacitor in series with $R_G$ do?</summary>
+<div>
+
+It makes the DC gain 1 while leaving the signal gain at $1 + R_F/R_G$ above its corner frequency. The op amp's offset and bias-current errors are then not multiplied by the signal gain.
+
+</div>
+</details>
+
+<details>
+<summary>6. How does bootstrapping raise the input impedance?</summary>
+<div>
+
+The bias resistor's lower end is driven, through a capacitor, by the output, which follows the input almost exactly. With almost no signal voltage across it, the resistor draws almost no signal current, so it appears as $R/(1 - A_v)$, hundreds of megohms, while still providing a DC path.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§4.2.2–4.2.3, 4.3.1B (follower with bootstrap) and 4.6.1 (single-supply AC amplifiers); Asadi, <em>Applied Op Amp Circuits</em>, chapters 2, 5 and 6. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-noninverting/practice/">Open practice →</a></div>

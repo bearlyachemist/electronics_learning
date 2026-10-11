@@ -1,0 +1,240 @@
+import Equation from '../../components/Equation.astro';
+import {MosMirrorFigure} from '../../components/MosAnalogFigures';
+import {MosCases,MosLab} from '../../components/MosAnalogLabs';
+import {MirrorResistorCircuit,MirrorOutputFigure,MirrorSupplyFigure,MirrorMismatchFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 59</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>The basic MOS current mirror<br/><em>Convert a current to a voltage, then back again.</em></h1>
+
+<p className="dek">Solve the reference device, derive the output's compliance and resistance, see where the reference current comes from, and separate the three ways a copy goes wrong: unequal devices, unequal drain voltages and an imperfect reference.</p>
+
+<div className="chapter-meta"><span>55–75 min + exploration</span><span>Diode-connected loads (Ch. 58) · BJT mirrors (Ch. 35)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Two identical MOSFETs sit at the same gate–source voltage. When will they still carry different currents?</p></div>
+
+<div>
+
+A current mirror is the most-used circuit inside an analog IC. It distributes bias currents to every stage, provides the high-resistance loads that give amplifiers their gain, and converts a differential pair's two currents into one output. Chapter 35 built it from bipolar transistors; the MOS version is simpler, because the gates draw no current.
+
+The idea is two conversions that undo each other. A diode-connected transistor turns the reference current into a gate voltage. A second, identical transistor turns that same voltage back into a current. Whatever nonlinearity the first conversion has, the second undoes exactly, provided the two devices are identical and operate identically. The rest of the chapter is about that proviso.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>The reference branch establishes $V_{GS}$ → Copy the law, including its voltage dependence → Output resistance and compliance → Low, matched and high output voltages → Where the reference comes from → Matching → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>The reference branch establishes $V_{GS}$</h2></div>
+
+<MirrorResistorCircuit/>
+
+$M_1$ is diode connected, so it is in saturation whenever it conducts (Chapter 58). The gate draws no current, so all of $I_{REF}$ flows in $M_1$'s channel, and $M_1$ settles at whatever $V_{GS}$ makes $\tfrac12 k(V_{GS} - V_T)^2 = I_{REF}$. With $k$ = 2 mA/V², $V_T$ = 1 V and 1 mA, that is $u$ = 1 V and $V_{GS}$ = 2.0 V.
+
+$M_2$ has the same gate and source voltages. If it is identical and also in saturation, it carries the same current, whatever its drain voltage (in the $\lambda$ = 0 model). The output is a current sink whose value is set by the reference.
+
+Two voltages matter and they are easily confused. The **gate** sits at 2.0 V. The output's **compliance**, the lowest drain voltage at which $M_2$ stays in saturation, is the overdrive $u$ = 1 V, not $V_{GS}$. Below 1 V, $M_2$ enters triode and the copy fails.
+
+<MosMirrorFigure/>
+
+The figure above replaces the resistor with an ideal reference current source, which is how mirrors are drawn when the reference's origin is not the point. Section 05 returns to where real reference currents come from.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Copy the law, including its voltage dependence</h2></div>
+
+Write both saturation currents with all their parameters and divide. Since the gate–source voltage $V_{REF}$ is shared:
+
+<Equation tex={String.raw`\frac{I_{OUT}}{I_{REF}}=\underbrace{\frac{k_2}{k_1}}_{\text{geometry}}\;\underbrace{\left(\frac{V_{REF}-V_{T2}}{V_{REF}-V_{T1}}\right)^2}_{\text{threshold}}\;\underbrace{\frac{1+\lambda V_{OUT}}{1+\lambda V_{REF}}}_{\text{drain voltage}}`} label="THE MIRROR RATIO, BOTH DEVICES SATURATED"/>
+
+Three independent mechanisms are visible, and each has a different cure:
+
+1. **Geometry and mobility**, $k_2/k_1$. Deliberately unequal $W/L$ makes a ratioed mirror (Chapter 60). Accidental inequality is random mismatch.
+2. **Threshold**. A difference $\Delta V_T$ changes the current by $-2\Delta V_T/u$ to first order: the smaller the overdrive, the larger the error.
+3. **Drain voltage**. The reference device sits at $V_{DS} = V_{REF}$; the output sits wherever the load puts it. With $\lambda \ne 0$ the ratio is exactly 1 only when $V_{OUT} = V_{REF}$.
+
+The first two are **device** errors, fixed by layout and sizing. The third is a **circuit** error: two perfect transistors still disagree if their drains differ. That answers the opening question. Section 03 measures the third error; section 06 the first two.
+
+<div className="margin-note">
+
+**Why no base-current error?** The bipolar mirror of Chapter 35 loses $2/\beta$ of its current to the two bases. MOS gates draw only leakage at DC, so that error is absent. It returns at high frequency, where the gate capacitance must be charged, and in the cascode and Wilson variants it is replaced by other effects.
+
+</div>
+
+</section>
+
+<section id="output">
+
+<div className="section-heading"><span>03</span><h2>Output resistance and compliance</h2></div>
+
+Differentiate the saturated output current with respect to its drain voltage at fixed gate voltage:
+
+<Equation tex={String.raw`g_{ds}=\frac{\partial I_D}{\partial V_{DS}}=\lambda\,\tfrac12ku^2=\lambda I_0,\qquad r_o=\frac{1}{\lambda I_0}=\frac{1+\lambda V_{DS}}{\lambda I_D}\approx\frac{1}{\lambda I_D}`}/>
+
+Here $I_0$ is the current without the modulation factor. The small-signal resistance looking into the mirror's output is $r_o$ of $M_2$. Looking into the reference side, you see only the diode connection, $1/g_{m1}$: a mirror has a low-impedance input and a high-impedance output, which is exactly what a current-processing block needs.
+
+<MirrorOutputFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / HOW GOOD A CURRENT SOURCE IS IT?</span><h3>1 mA mirror, $\lambda$ = 0.02 V⁻¹, output between 1.5 and 4 V</h3>
+
+<p>With $\lambda$ included, the reference device settles at $V_{REF}$ = 1.98 V, slightly below 2 V, because its own drain voltage boosts its current. The output therefore equals $I_{REF}$ exactly at $V_{OUT}$ = 1.98 V. The slope is $g_{ds} = \lambda I_0 \approx$ 19.2 µS, so $r_o$ ≈ 52 kΩ.</p>
+
+<p>At $V_{OUT}$ = 4 V the current is 1.039 mA, <strong>+3.9%</strong>. At 1.5 V it is about 0.990 mA, <strong>−1.0%</strong>. Over a 2.5 V swing the current changes by about 5%.</p>
+
+<p>Compare a resistor. To vary by only 5% while its voltage swings 2.5 V, a resistor current source would need 50 V across it and a 50 kΩ resistor: an impractical 55 V supply for a 1 mA source. The mirror does it with 1 V of headroom. That is why every active load and bias network in an IC is a transistor current source.</p>
+
+</div>
+
+When $\lambda$ is set by channel length, the designer has a knob: $\lambda$ falls roughly as $1/L$. Doubling $L$ (and $W$, to keep $k$) roughly doubles $r_o$, at the cost of area and capacitance. For much larger output resistance without long devices, Chapter 62 stacks a cascode on top.
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>04</span><h2>Low, matched and high output voltages</h2></div>
+
+Three output voltages, with $\lambda$ = 0.02 V⁻¹, solved with the full region-aware law (the reference device includes its own modulation):
+
+<MosCases kind="mirror"/>
+
+At 0.2 V the output device is in triode and delivers a fraction of the reference: the copy has failed, not merely degraded. At 2 V it nearly matches. At 4 V channel-length modulation adds about 4%.
+
+<MosLab kind="mirror" client:load/>
+
+<p className="caption">Live lab. $k$ = 2 mA/V², $V_T$ = 1 V; both devices use the same region-aware channel law. Set $\lambda$ to zero and sweep the output down through the knee; restore $\lambda$ and compare the slope above the knee. Then add source resistors and predict, before looking, how they move the knee and change the slope. Chapter 61 explains the result.</p>
+
+</section>
+
+<section id="reference">
+
+<div className="section-heading"><span>05</span><h2>Where the reference comes from</h2></div>
+
+A mirror does not create current; it copies one. In the complete circuit the reference is a resistor from the supply, and the reference branch is itself a small bias problem: a resistor in series with a diode-connected MOSFET.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / SIZE THE REFERENCE RESISTOR</span><h3>1 mA from 5 V, and its supply sensitivity</h3>
+
+<p>At 1 mA, $V_{GS}$ = 2.0 V, so $R_{REF}$ = (5 − 2) V / 1 mA = <strong>3.0 kΩ</strong>.</p>
+
+<p>Now let the supply change by $\Delta V_{DD}$. The change divides between $R_{REF}$ and the diode's incremental resistance $1/g_m$ = 500 Ω, so $\Delta I = \Delta V_{DD}/(R + 1/g_m)$ = $\Delta V_{DD}$/3.5 kΩ. That is 0.29 mA per volt, or <strong>29% per volt</strong>. A 5% supply tolerance (±0.25 V) moves every mirrored current by ±7%.</p>
+
+</div>
+
+<MirrorSupplyFigure/>
+
+Temperature acts on the reference too. The threshold falls by about 2 mV/°C, which raises the current, while mobility falls roughly as $T^{-1.5}$, which lowers $k$ and the current. At large overdrive mobility wins and the current falls with temperature; at small overdrive the threshold wins and it rises. Between them is a bias point with nearly zero temperature coefficient, but it is process dependent and rarely where you want to operate.
+
+Precision references therefore derive the current from a stable voltage, typically a bandgap reference of about 1.2 V forced across a resistor by a feedback loop (Chapter 92 builds one with an op amp). Self-biased circuits that make the reference from the mirror itself, the "$\beta$ multiplier", remove the supply dependence but have a second stable state at zero current and need a start-up circuit.
+
+</section>
+
+<section id="matching">
+
+<div className="section-heading"><span>06</span><h2>Matching</h2></div>
+
+Even drawn identically, two transistors differ randomly in threshold and in $k$. For small differences the relative current error is
+
+<Equation tex={String.raw`\frac{\Delta I}{I}\approx\frac{\Delta k}{k}-\frac{2\,\Delta V_T}{u}`} label="FIRST-ORDER MISMATCH"/>
+
+The threshold term is divided by overdrive. A mirror run at 0.2 V of overdrive is five times more sensitive to threshold mismatch than one at 1 V. For integrated devices, mismatch shrinks with area: the standard deviation of $\Delta V_T$ between a pair is approximately $A_{VT}/\sqrt{WL}$, where $A_{VT}$ is a process constant of a few mV·µm. Bigger transistors match better, but they cost area and add capacitance.
+
+<MirrorMismatchFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / CHOOSE OVERDRIVE AND AREA FOR 1% MATCHING</span><h3>$A_{VT}$ = 5 mV·µm, $\sigma_k$ = 0.5%</h3>
+
+<p>We want a 1σ current mismatch of 1%. Allocate most of it to threshold: say 0.85% from $V_T$ and 0.5% from $k$, which combine as $\sqrt{0.85^2 + 0.5^2}$ ≈ 1%.</p>
+
+<p>At $u$ = 0.5 V, the threshold term needs $2\sigma_{V_T}/0.5 \le 0.0085$, so $\sigma_{V_T} \le$ 2.1 mV. Then $\sqrt{WL} \ge 5/2.13$ = 2.35 µm, so $WL \ge$ <strong>5.5 µm²</strong> per device.</p>
+
+<p>At $u$ = 0.2 V the same budget needs $\sigma_{V_T} \le$ 0.85 mV and $WL \ge$ 35 µm², six times the area. Low overdrive saves 0.3 V of headroom, but at the price of much larger devices. This trade between headroom, matching and area recurs in every precision MOS circuit.</p>
+
+</div>
+
+Systematic errors need different cures. Place the two devices close together, in the same orientation, so process gradients affect both equally; for the best results split each into interleaved halves in a common-centroid layout. Keep them at the same temperature: a 1 °C difference shifts $V_T$ by 2 mV, about 0.4% at 1 V overdrive. Discrete MOSFETs, even from the same reel, can differ in threshold by hundreds of millivolts, so a mirror built from separate parts is not a precision circuit unless you use a monolithic matched pair or add source degeneration (Chapter 61).
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A mirror copies its reference exactly only when the devices match <em>and</em> their drains sit at the same voltage. Its compliance is one overdrive, its output resistance is $r_o$, and it inherits every fault of its reference.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. What is the minimum output voltage of a simple NMOS mirror, and why is it not $V_{GS}$?</summary>
+<div>
+
+The output device needs $V_{DS} \ge V_{GS} - V_T = u$ to stay in saturation. Its source is grounded, so its drain must stay above $u$, 1 V in the example. The gate voltage, 2 V, is irrelevant to the drain's lower limit; it only fixes how much current flows.
+
+</div>
+</details>
+
+<details>
+<summary>2. Two perfectly matched devices, $\lambda$ = 0.02 V⁻¹, $V_{REF}$ = 2 V, output at 4 V. What is the error and how could you remove it?</summary>
+<div>
+
+The ratio is $(1 + 0.02 × 4)/(1 + 0.02 × 2)$ = 1.08/1.04, a +3.8% error, caused purely by unequal drain voltages. Remove it by forcing the output drain to equal the reference drain (a cascode does this automatically, Chapter 62), or reduce $\lambda$ with longer channels.
+
+</div>
+</details>
+
+<details>
+<summary>3. The output threshold is 10 mV higher than the reference's, at 1 V overdrive. Which way does the current move, and by how much?</summary>
+<div>
+
+Down. At the shared gate voltage the output device has 10 mV less overdrive, so its current falls by about $2 × 0.01/1$ = 2%. At 0.25 V overdrive the same mismatch would cost 8%.
+
+</div>
+</details>
+
+<details>
+<summary>4. A 3 kΩ resistor from a 5 V supply sets a 1 mA reference. Why does a 0.1 V supply change move the output by almost 3%?</summary>
+<div>
+
+Nearly all of the supply change appears across the resistor, because the diode-connected device's incremental resistance (500 Ω) is much smaller than 3 kΩ. The reference current changes by 0.1 V / 3.5 kΩ = 29 µA, and the mirror faithfully copies that change. A mirror cannot be better than its reference.
+
+</div>
+</details>
+
+<details>
+<summary>5. What resistance do you see looking into the input (reference) side and into the output side?</summary>
+<div>
+
+The input is a diode connection: about $1/g_m$, 500 Ω at 1 mA in the example. The output is the drain of a transistor with a fixed gate: $r_o$ ≈ 52 kΩ. This low-in, high-out property makes a mirror a good current-domain building block: it accepts a current without much voltage change and delivers it almost regardless of load voltage.
+
+</div>
+</details>
+
+<details>
+<summary>6. Why does reducing overdrive make matching worse even though the transistors themselves are unchanged?</summary>
+<div>
+
+The current depends on $(V_{GS} - V_T)^2$. A fixed threshold error $\Delta V_T$ is a larger fraction of a smaller $u$, so its effect on the current, $2\Delta V_T/u$, grows. Reducing overdrive saves headroom and raises $g_m/I_D$, but you must buy back matching with larger device area.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §3.2 and §2.3.7 (bipolar mirrors); Huijsing, <em>Operational Amplifiers</em>, 3rd ed., chapter 4. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-current-mirror/practice/">Open practice →</a></div>

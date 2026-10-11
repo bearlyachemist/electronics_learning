@@ -1,0 +1,195 @@
+import Equation from '../../components/Equation.astro';
+import {MosDifferentialFigure} from '../../components/MosAnalogFigures';
+import {OtaCurrentFigure,OtaTransferFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 72</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>Mirror-loaded differential stages<br/><em>Fold both halves into one output.</em></h1>
+
+<p className="dek">Load a differential pair with a current mirror, the five-transistor stage at the heart of CMOS op amps. Follow the signal currents into a single output, derive its gain, offset, common-mode rejection and output range, and treat the mirror as the signal path it is.</p>
+
+<div className="chapter-meta"><span>50–70 min</span><span>Differential pair (Chs. 70–71) · Active loads (Ch. 65)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">A resistor-loaded pair's single-ended gain is $g_mR_D/2$. Why does the mirror-loaded stage give a single-ended gain of $g_m$ times its load, with no factor of ½?</p></div>
+
+<div>
+
+A resistor-loaded differential pair wastes half its signal when you take the output from one drain: the other drain's equal and opposite change goes unused. A differential output collects both, but most later stages want a single-ended signal.
+
+Replace the two drain resistors with a PMOS current mirror and both problems vanish together. The mirror copies the left branch's current change to the right side, where it adds to the right branch's own change. One output now receives the full differential current, and since the mirror and the right NMOS are both current sources, that output sees only their output resistances, tens of kilohms. Five transistors give a single-ended gain of 50 or more, with good common-mode rejection. This is the first stage of almost every CMOS op amp.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Follow the left current into the right load → Add currents, not voltage gains → Offset and the balanced output voltage → Compare current, gain and voltage margins → Treat the mirror as a signal path → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Follow the left current into the right load</h2></div>
+
+<MosDifferentialFigure mode="mirror"/>
+
+The left PMOS is diode connected and carries $M_1$'s drain current; the right PMOS copies it. The right drain is the output, a node where a PMOS current source and an NMOS current source meet.
+
+Assume a matched 1 : 1 mirror, an ideal tail, all devices saturated, and enough supply for the diode-connected device. The left node is low impedance (a diode connection, about $1/g_{mP}$). The output is high impedance, and, as with every active load (Chapter 65), its DC voltage depends on tiny current imbalances: in an amplifier, overall feedback sets it.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Add currents, not voltage gains</h2></div>
+
+<OtaCurrentFigure/>
+
+Follow the signal currents. A differential input raises $M_1$'s current by $i = g_{m0}v_d/2$ and lowers $M_2$'s by $i$. The mirror delivers $M_1$'s increase to the right side, so the PMOS output device now sources $I_T/2 + i$ while $M_2$ sinks only $I_T/2 - i$. The difference, $2i$, has nowhere to go but into the output node:
+
+<Equation tex={String.raw`i_{out}=2i=g_{m0}\,v_d,\qquad A_d=\frac{v_{out}}{v_d}\approx+g_{m0}\,(r_{oN}\parallel r_{oP}\parallel R_L)`} label="MIRROR-LOADED PAIR: SINGLE-ENDED GAIN"/>
+
+That answers the opening question. The resistor-loaded single drain receives only $i$, so its gain is $g_{m0}R_D/2$. The mirror routes the left branch's $i$ to the right side, so the single output receives $2i$, the full differential transconductance $g_{m0}$. Add currents first, and only then multiply by the node resistance.
+
+With $\lambda$ = 0.02 V⁻¹, $I_T$ = 2 mA and $k$ = 2 mA/V² for every device, $g_{m0}$ = 2 mS and each output device's $r_o$ ≈ 50 kΩ, so $A_d$ ≈ 2 mS × 25 kΩ = **+50**. Like the active load, this gain is independent of current: $A_d = 2/[(\lambda_N + \lambda_P)u_0]$.
+
+<OtaTransferFigure/>
+
+The output range is set by the two output devices. $M_2$ needs $V_O \ge V_S + u_N$; the PMOS needs $V_O \le V_{DD} - u_P$. The left node sits at $V_L = V_{DD} - V_{TP} - u_P$, and $M_1$ needs $V_L - V_S \ge u_N$ too.
+
+</section>
+
+<section id="offset">
+
+<div className="section-heading"><span>03</span><h2>Offset and the balanced output voltage</h2></div>
+
+The transfer curve crosses zero input at exactly $V_{out} = V_L$, the diode-connected node's voltage. That is not a coincidence. At balance both NMOS currents are equal, and the right PMOS copies the left PMOS's current exactly only when their drain voltages are equal, which is when the output sits at $V_L$. Any other output voltage needs a small differential input to make up the PMOS mirror's channel-length-modulation error.
+
+This makes a design rule. If the stage that follows has an input voltage equal to $V_L$ (for example, a common-source PMOS second stage whose gate–source voltage equals the mirror's), the first stage has **zero systematic offset**. Chapter 75 uses exactly this choice.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / SYSTEMATIC AND RANDOM OFFSET</span><h3>The 2 mA stage, gain 50</h3>
+
+<p><strong>Systematic.</strong> Suppose the next stage forces the output to 2.5 V instead of $V_L$ = 3.02 V. The output PMOS then has 0.52 V more across it than its reference, so it sources about $\lambda × 0.52$ ≈ 1% more current, 10 µA. To cancel that, the pair must deliver a net 10 µA the other way. Since the output receives $g_{m0}v_d$, that needs $v_d$ = 10 µA / 2 mS = <strong>5 mV</strong> of systematic offset.</p>
+
+<p><strong>Random.</strong> Threshold mismatch in the input pair enters directly; mismatch in the PMOS mirror enters through the ratio $g_{mP}/g_{mN}$: $V_{OS} \approx \Delta V_{TN} + (g_{mP}/g_{mN})\Delta V_{TP}$. With 3 mV in each and equal transconductances, the RSS is about <strong>4.2 mV</strong>. A mirror-loaded pair has no resistor-mismatch term, but its load transistors contribute in proportion to their transconductance, which is why designers bias mirror devices at large overdrive (small $g_m$).</p>
+
+</div>
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>04</span><h2>Compare current, gain and voltage margins</h2></div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / HEADROOM AND SIGNAL RANGE</span><h3>$I_T$ = 2 mA, $k_N = k_P$ = 2 mA/V², $|V_T|$ = 1 V, 5 V, $V_C$ = 2.5 V</h3>
+
+<p>Each branch carries 1 mA at 1 V of overdrive. The shared source is at 0.5 V and the left node at 5 − 1 − 1 = 3 V, so $M_1$ has 2.5 V of margin. The output can range from $V_S + u_N$ = 1.5 V to $V_{DD} - u_P$ = 4 V.</p>
+
+<p>A 10 mV differential input produces a net 20 µA into the 25 kΩ output: 0.5 V. A 40 mV input would ask for 2 V, which from 3 V hits the 1.5 V floor. The pair's current steering is still almost perfectly linear at 40 mV (its linear range is ±0.28 V), but the output has run out of room. A high-gain stage is overloaded by its output long before its input.</p>
+
+</div>
+
+At tail currents of 0.5, 1 and 2 mA with the same devices, $g_{m0}$ is 1.00, 1.41 and 2.00 mS and each $r_o$ is 200, 100 and 50 kΩ, so the unloaded gains are **+100, +71 and +50**. Here more current gives **less** gain, because $u_0$ rises with current in fixed-size devices. At constant overdrive (scaling the widths with current) the gain would stay constant and only the speed would change.
+
+### Common-mode rejection from one output
+
+A common-mode input changes both NMOS currents equally, by about $v_c/2r_T$ each. The mirror copies the left change to the right, where it cancels the right change. To first order, the output does not move: the mirror performs the subtraction that a differential output would. The residual comes from the mirror's imperfection, and works out to
+
+<Equation tex={String.raw`\mathrm{CMRR}\approx 2\,g_{mP}\,r_T\cdot g_{m0}\,(r_{oN}\parallel r_{oP})`}/>
+
+With $g_{mP}$ = 2 mS, $r_T$ = 50 kΩ and the gain of 50, that is 200 × 50 = 10 000, or **80 dB** from a single-ended output. A resistor-loaded pair's single drain gave only 40 dB with the same tail (Chapter 71). Mismatch reduces this in practice, but the improvement is real.
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>Treat the mirror as a signal path</h2></div>
+
+Half the output current arrives directly from $M_2$; the other half arrives through the mirror, which has a pole at the diode-connected node, $p_m = g_{mP}/C_m$, where $C_m$ is the gate capacitance of both PMOS devices plus the drain capacitances. The output current is therefore
+
+<Equation tex={String.raw`i_{out}=g_{m0}v_d\cdot\frac{1+s/2p_m}{1+s/p_m}`}/>
+
+a pole at $p_m$ and a zero at $2p_m$, a "doublet". At $p_m$ the gain falls by at most 6 dB and the phase lags by up to 19°. With $g_{mP}$ = 2 mS and 2 pF, $p_m$ is 160 MHz, harmless; in a micropower design with $g_{mP}$ = 20 µS and 0.5 pF it is 6 MHz, and must be included in the op amp's stability calculation (Chapter 79). The same delay makes the common-mode cancellation imperfect at high frequency.
+
+**Headroom.** The diode-connected PMOS costs a full $V_{TP} + u_P$ of headroom in the left branch, which is one reason low-voltage op amps use folded-cascode input stages instead.
+
+**Polarity.** With the input ordered left minus right, the gain is positive. A common-source second stage inverts it. When you label an op amp's plus and minus inputs, follow the actual current and voltage changes through every stage; do not assume.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>The mirror adds the two halves' current changes, so one output receives the full $g_{m0}v_d$: gain $g_{m0}(r_{oN} \parallel r_{oP})$, common-mode cancellation by the mirror, and <em>zero systematic offset when the output sits at the mirror's own voltage</em>.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why is the mirror-loaded single-ended gain twice the resistor-loaded single-drain gain for the same load resistance?</summary>
+<div>
+
+The resistor-loaded drain receives only its own branch's change, $g_{m0}v_d/2$. The mirror copies the other branch's equal and opposite change to the output side, where it adds, so the output receives $g_{m0}v_d$. The factor of ½ is recovered by current addition.
+
+</div>
+</details>
+
+<details>
+<summary>2. At what output voltage is the systematic offset zero, and why?</summary>
+<div>
+
+At $V_{out} = V_L$, the diode-connected node's voltage. Only there do the two PMOS devices have equal drain–source voltages, so the mirror copies exactly. At any other output, channel-length modulation makes the copy slightly wrong, and a small input is needed to compensate.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does a mirror-loaded pair have good single-ended CMRR?</summary>
+<div>
+
+A common-mode input changes both branch currents equally. The mirror copies the left change and delivers it to the output, where it cancels the right branch's identical change. The subtraction that a differential output would do happens inside the stage. Only the mirror's imperfection, about $1/(2g_{mP}r_T)$, gets through.
+
+</div>
+</details>
+
+<details>
+<summary>4. A 40 mV input overloads the stage even though the pair is linear to ±0.28 V. Why?</summary>
+<div>
+
+The output, not the input, runs out of range. At a gain of 50, 40 mV demands a 2 V output change, more than the ~1.5 V between the quiescent point and either compliance limit. High-gain stages are always output-limited; the pair's linear range matters only when the stage is inside a feedback loop that keeps its input tiny.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why does more tail current give less gain in fixed-size devices?</summary>
+<div>
+
+The gain is $2/[(\lambda_N + \lambda_P)u_0]$. In fixed devices, $u_0$ grows as the square root of current, so the gain falls. If the widths scale with the current so that $u_0$ stays fixed, the gain stays constant and only the speed improves.
+
+</div>
+</details>
+
+<details>
+<summary>6. What does the mirror's pole do to the frequency response?</summary>
+<div>
+
+Half the signal current is delayed by the mirror pole $p_m = g_{mP}/C_m$, giving a pole–zero doublet at $p_m$ and $2p_m$. It costs at most 6 dB and about 19° of phase near $p_m$. In fast, high-current designs it is far out of the way; in micropower designs it can erode an op amp's phase margin.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Huijsing, <em>Operational Amplifiers</em>, 3rd ed., §§4.3 and 7.4 (CMOS input stages); Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§2.3.8 and 4.4. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-mirror-loaded-differential/practice/">Open practice →</a></div>

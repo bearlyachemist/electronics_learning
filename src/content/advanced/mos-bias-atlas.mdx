@@ -1,0 +1,260 @@
+import Equation from '../../components/Equation.astro';
+import {MosCases,MosLab} from '../../components/MosAnalogLabs';
+import {BiasAtlasCircuit,OutputFamilyFigure,GainVsGateFigure,ThresholdSpreadFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 57</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>MOSFET bias: an operating-point atlas<br/><em>A gain calculation starts with a current.</em></h1>
+
+<p className="dek">Solve a gate-biased NMOS stage with drain and source resistors, decide which region it is in, read its transconductance from the operating point, and make the bias survive part-to-part spread before choosing a signal swing.</p>
+
+<div className="chapter-meta"><span>60–80 min + exploration</span><span>MOSFET physics (Ch. 52) · Common-source basics (Ch. 53)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Raise the gate voltage of a common-source stage and its transconductance goes up. Can the voltage gain go down?</p></div>
+
+<div>
+
+Every small-signal number for a MOSFET, whether $g_m$, $r_o$, gain or output resistance, is the slope of a curve at one point. That point is set by the DC circuit: the gate voltage, the resistors and the supply. Change the point and every slope changes with it.
+
+This chapter is an atlas of those points for one simple circuit. We solve it by hand, see it on the device curves, sweep it, and then ask the two questions a designer must answer before quoting any gain. Will the bias stay put when the transistor is replaced? And how far can the signal move before the transistor leaves the region where the gain formula applies?
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Draw the DC constraints → Intersect device law and load line → Compare three gate biases → Make the current survive spread → Separate bias margin from signal margin → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Draw the DC constraints</h2></div>
+
+<BiasAtlasCircuit/>
+
+At DC the capacitors are open circuits, so the circuit has three facts. The gate draws no current, so the divider sets $V_G$ = 5 V × 2/(3 + 2) = 2.0 V exactly. Every ampere that enters the drain leaves the source, so one current $I_D$ flows through both $R_D$ and $R_S$. And the transistor relates that current to its two controlling voltages, $V_{GS}$ and $V_{DS}$.
+
+We use the long-channel law with $u = V_{GS} - V_T$, the **overdrive**:
+
+<Equation tex={String.raw`I_D=\begin{cases}0 & u\le 0\ \text{(cutoff)}\\[2pt] k\left(uV_{DS}-\tfrac12V_{DS}^2\right) & 0\le V_{DS}\le u\ \text{(triode)}\\[2pt] \tfrac12 k\,u^2\,(1+\lambda V_{DS}) & V_{DS}\ge u\ \text{(saturation)}\end{cases}`} label="THE DEVICE LAW USED IN CHAPTERS 57–76"/>
+
+Here $k = \mu_n C_{ox} W/L$. Unless stated otherwise, $k$ = 2 mA/V², $V_T$ = 1 V and $\lambda$ = 0. In saturation the slope of the current with gate voltage is the transconductance:
+
+<Equation tex={String.raw`g_m=\frac{\partial I_D}{\partial V_{GS}}=k\,u=\sqrt{2kI_D}=\frac{2I_D}{u}`}/>
+
+The three forms say the same thing three ways. At fixed $k$, more current means more $g_m$, but only as its square root. At fixed current, a smaller overdrive means more $g_m$. A bipolar transistor's $g_m = I_C/V_T$ is the limit of this formula with an "overdrive" of $2V_T$ ≈ 50 mV. A MOSFET biased at a few hundred millivolts of overdrive has several times less $g_m$ per milliampere.
+
+<div className="margin-note">
+
+**Watch the factor of two.** Some books write $I_D = K(V_{GS}-V_T)^2$, absorbing the ½ into $K$; others use $\beta$ or $k'W/L$. Our $k$ is twice their $K$. Before using a number from a datasheet or another text, check which convention it uses by evaluating one current. A silent factor of two moves the bias point by 40% in overdrive.
+
+</div>
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Intersect the device law with the load line</h2></div>
+
+Kirchhoff's voltage law around the drain and gate loops gives the circuit's half of the problem:
+
+<Equation tex={String.raw`V_{GS}=V_G-I_DR_S,\qquad V_{DS}=V_{DD}-I_D(R_D+R_S)`}/>
+
+The second equation is the **load line**: a straight line on the $I_D$–$V_{DS}$ plane from $V_{DD}/(R_D+R_S)$ on the current axis to $V_{DD}$ on the voltage axis. The transistor's curve for the actual $V_{GS}$ crosses it at the operating point.
+
+<OutputFamilyFigure/>
+
+The figure shows the method, but by hand we use algebra. **Assume** a region, solve that region's equation, then **test** its inequality. If the test fails, the assumption was wrong and you try the next region; a failed test never produces a "slightly wrong" answer, only a wrong one.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A QUADRATIC WITH ONE PHYSICAL ROOT</span><h3>$V_G$ = 2 V, $R_S$ = 500 Ω</h3>
+
+<p>Work in mA, V and kΩ, so $k/2$ = 1 mA/V². Assume saturation: $I_D = (V_G - V_T - I_DR_S)^2 = (1 - 0.5I_D)^2$. Expanding, $0.25I_D^2 - 2I_D + 1 = 0$, so $I_D = (2 \pm \sqrt{3})/0.5$, which is 0.536 mA or 7.46 mA.</p>
+
+<p>The 7.46 mA root makes $V_{GS} = 2 - 3.73 = -1.73$ V, below threshold. It solves the squared equation but describes a "negative overdrive" that the square law does not allow: the device would be cut off. Reject it. The physical root is <strong>0.536 mA</strong>.</p>
+
+<p>Now the node voltages: $V_S$ = 0.268 V, $V_D = 5 - 0.536 × 2$ = 3.93 V, $V_{DS}$ = 3.66 V. The overdrive is $u = 2 - 0.268 - 1$ = 0.732 V. Test: $V_{DS}$ = 3.66 V ≥ 0.732 V, so saturation holds with 2.93 V of margin.</p>
+
+<p>Finally, the slopes: $g_m = ku$ = 1.46 mS, and with the source resistor unbypassed the gain is $-g_mR_D/(1+g_mR_S)$ = −2.93/1.73 = <strong>−1.69</strong>. With $C_S$ fitted the source is grounded for signals and the gain is $-g_mR_D$ = <strong>−2.93</strong>.</p>
+
+</div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / AN ASSUMPTION THAT FAILS</span><h3>$V_G$ = 3 V, $R_S$ = 0</h3>
+
+<p>Assume saturation: $u$ = 2 V, so $I_D = \tfrac12 k u^2$ = 4 mA. Then $V_D = 5 - 4 × 2 = -3$ V. A drain below ground in a circuit whose lowest voltage is 0 V is impossible, and in any case $V_{DS}$ = −3 V is not ≥ 2 V. Reject saturation.</p>
+
+<p>Assume triode: $I_D = k(2V_{DS} - V_{DS}^2/2)$ and $V_{DS} = 5 - 2I_D$. In mA and V the first is $I_D = 4V_{DS} - V_{DS}^2$ and the second is $I_D = (5 - V_{DS})/2$. Equating them gives $2V_{DS}^2 - 9V_{DS} + 5 = 0$, so $V_{DS}$ = 0.649 V or 3.85 V. The second root fails the triode test (3.85 V > $u$ = 2 V). The first passes: $V_D$ = 0.649 V, $I_D$ = <strong>2.18 mA</strong>.</p>
+
+<p>The transistor conducts more current than at 2 V, but it is now a voltage-controlled resistor of about 300 Ω, not a current source. Its drain barely responds to the gate: the local gain is only −0.39.</p>
+
+</div>
+
+If the body is a separate terminal tied to ground (as in an integrated circuit) rather than to the source, a positive $V_S$ also raises the threshold: $V_T = V_{T0} + \gamma\left(\sqrt{2\phi_F + V_{SB}} - \sqrt{2\phi_F}\right)$. The procedure is the same, but the equation is no longer a simple quadratic, so the lab solves it numerically.
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Compare three gate biases</h2></div>
+
+Here are the three intersections from the figure, with $R_S$ = 0 and $\lambda$ = 0:
+
+<MosCases kind="bias"/>
+
+Read across the rows. The 1.5 V bias draws only 0.25 mA and has $g_m$ = 1 mS: a quiet stage with gain −2 and lots of room above and below the drain. The 2 V bias quadruples the current, doubles $g_m$ and gives gain −4 with the drain at 3 V. The 3 V bias is in triode. These are three tangents to **one** nonlinear transfer curve, not three settings of a gain knob.
+
+<GainVsGateFigure/>
+
+Now the opening question has its answer. In saturation, gain $= -g_mR_D = -kuR_D$ rises linearly with overdrive, but the drain voltage falls as $\tfrac12 k u^2 R_D$. Eventually the drain meets the saturation edge, $V_D = u$, and beyond it the curves on the output characteristic crowd together. The steepest point, with gain about −5.4, sits right at the edge. That is exactly where a design should **not** sit, because any signal would push it into triode.
+
+<MosLab kind="bias" client:load/>
+
+<p className="caption">Live lab. 5 V supply, $R_D$ = 2 kΩ, $\lambda$ = 0.02 V⁻¹. The solver is region-aware: it finds the true intersection, including triode and cutoff, and includes the body effect when the body coefficient is nonzero (body grounded). Add source resistance and watch both the current and the slope of the transfer curve drop.</p>
+
+</section>
+
+<section id="spread">
+
+<div className="section-heading"><span>04</span><h2>Make the current survive part-to-part spread</h2></div>
+
+Threshold voltage is the least predictable MOSFET parameter. A discrete small-signal part may specify $V_T$ anywhere from 0.8 to 3 V; even matched integrated devices drift by about −2 mV/°C. A bias that sets $V_{GS}$ directly therefore sets the current only loosely. Differentiate the saturation law with a source resistor present:
+
+<Equation tex={String.raw`\frac{\partial I_D}{\partial V_T}=-\frac{g_m}{1+g_mR_S}`} label="BIAS SENSITIVITY TO THRESHOLD"/>
+
+With $R_S$ = 0 a 0.1 V threshold shift moves the current by $g_m × 0.1$ V = 0.2 mA, 20% of the 1 mA bias. A source resistor divides that by $1 + g_mR_S$. This is the same negative feedback that stabilizes bipolar emitter-resistor bias (Chapter 29): if the current rises, $V_S$ rises, and $V_{GS}$ falls to oppose it.
+
+<ThresholdSpreadFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / TRADE GATE VOLTAGE FOR STABILITY</span><h3>Keep 1 mA within ±20% over $V_T$ = 0.7–1.3 V</h3>
+
+<p>Without a source resistor the current is $(V_G - V_T)^2$ mA. To give 1 mA at $V_T$ = 1 V we need $V_G$ = 2 V, and the current then ranges from $(1.3)^2$ = 1.69 mA to $(0.7)^2$ = 0.49 mA. That is +69% / −51%: not acceptable.</p>
+
+<p>Add $R_S$ = 1 kΩ. Holding 1 mA at nominal threshold now needs $V_G = V_T + u + I_DR_S$ = 1 + 1 + 1 = 3 V, so change the divider to $R_1$ = 2 MΩ, $R_2$ = 3 MΩ. At $V_T$ = 0.7 V solve $I = (2.3 - I)^2$, giving 1.20 mA; at 1.3 V solve $I = (1.7 - I)^2$, giving 0.80 mA. The spread is now ±20%.</p>
+
+<p>Check the cost. The drain sits at 5 − 2 = 3 V and the source at 1 V, so $V_{DS}$ = 2 V against $u$ = 1 V: still in saturation, but with less margin than before. Unbypassed, the gain is $-g_mR_D/(1+g_mR_S)$ = −4/3 = −1.33. With $C_S$ across $R_S$ the signal gain returns to −4 while the DC current keeps its stability. A capacitor separates the DC feedback from the signal path.</p>
+
+</div>
+
+<div className="margin-note">
+
+**Why not just pick a better transistor?** You can buy matched pairs and trim. But stabilizing a quantity with a ratio of resistors is cheaper and survives temperature, ageing and replacement. Every later chapter that needs a precise current, including mirrors, degenerated sources and feedback loops, uses the same idea in a more refined form.
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>Separate bias margin from signal margin</h2></div>
+
+A positive saturation margin at the quiescent point says the stage is an amplifier **when no signal is present**. A signal moves the operating point along the load line, and it can leave the region on either side.
+
+**Upward**, the drain can rise until the current reaches zero: $V_D = V_{DD}$, reached when the gate falls by $u$. **Downward**, the drain meets the edge when $V_D = u + v_g$, where $v_g$ is the instantaneous gate excursion. Both the drain and the edge move, so you cannot simply subtract $u$ from $V_D$. For the 2 V bias, solve $5 - 2(1 + v_g)^2 = 1 + v_g$: the edge is reached at $v_g$ = +0.351 V, with $V_D$ = 1.35 V. So the drain can fall 1.65 V or rise 2 V.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / CHOOSING THE BIAS FOR SWING</span><h3>Center the drain between its two limits</h3>
+
+<p>With $R_S$ = 0, $R_D$ = 2 kΩ and $V_{DD}$ = 5 V, the quiescent drain is $5 - 2u^2$. A simple centering rule puts it midway between the supply and the quiescent saturation boundary: $5 - 2u^2 = (5 + u)/2$. This gives $4u^2 + u - 5 = 0$, so <strong>$u$ = 1.00 V</strong>, $V_G$ = 2 V, $I_D$ = 1 mA and $V_D$ = 3 V.</p>
+
+<p>This rule is approximate because, as shown above, the edge moves with the signal. The exact limits at this bias are +2.0 V and −1.65 V of drain swing. Push harder and the square law shows itself before the edge does.</p>
+
+</div>
+
+That square law is the second limit. With gate signal $v_g$, the drain current changes by
+
+<Equation tex={String.raw`\Delta i_D=k\left(u\,v_g+\tfrac12v_g^2\right)=g_mv_g\left(1+\frac{v_g}{2u}\right)`}/>
+
+The bracket is the distortion: a sine input produces a second harmonic of relative size $v_g/(4u)$. At the 2 V bias ($u$ = 1 V) a 0.1 V gate peak gives 2.5% second harmonic and an output that swings −0.42 V / +0.38 V. A 0.25 V peak gives 6.3%, an output of −1.13 V / +0.88 V, and a visibly lopsided waveform. Large overdrive buys linearity; small overdrive buys $g_m$ per milliampere. That tension runs through every MOS chapter that follows.
+
+| Gate peak | 2nd harmonic $v_g/4u$ | Drain down / up | Region at peak |
+|---|---|---|---|
+| 0.05 V | 1.3% | −0.21 / +0.20 V | saturation |
+| 0.10 V | 2.5% | −0.42 / +0.38 V | saturation |
+| 0.25 V | 6.3% | −1.13 / +0.88 V | saturation |
+| 0.40 V | 10% | clipped | triode at the negative drain peak |
+
+Finally, nominal headroom is consumed by everything you did not plot: supply tolerance, resistor tolerance, the threshold spread above and temperature. Before calling a circuit an amplifier, test its bias at the corners, then confirm that the largest intended signal still fits at every corner.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Solve the bias, <em>test the region</em>, then read the slopes. A gain is only as good as the operating point it was measured at, and only for signals small enough to stay there.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Answer each question before opening it. The practice page has full numerical problems.
+
+<details>
+<summary>1. Why is the saturation-only answer at a 3 V gate invalid, rather than just inaccurate?</summary>
+<div>
+
+It predicts 4 mA, which through 2 kΩ needs an 8 V drop from a 5 V supply. The drain would have to sit at −3 V, which fails the saturation test $V_{DS} \ge u$ and is impossible in the circuit anyway. A failed region test means the equation does not describe the circuit at all. The triode equation gives the real answer, 2.18 mA with the drain at 0.65 V.
+
+</div>
+</details>
+
+<details>
+<summary>2. In the 500 Ω example, why reject the 7.46 mA root?</summary>
+<div>
+
+It gives $V_{GS} = 2 - 7.46 × 0.5 = -1.73$ V, below threshold. The squared equation cannot tell the difference between positive and negative overdrive, but the device law is zero for negative overdrive, so that root belongs to an equation the transistor does not obey. Always back-substitute a root to check that $u$ > 0.
+
+</div>
+</details>
+
+<details>
+<summary>3. Does a positive saturation margin prove low distortion?</summary>
+<div>
+
+No. The margin only says the operating point is in saturation. Inside saturation the transfer is still a parabola, and the second-harmonic distortion is about $v_g/(4u)$. A 0.25 V gate signal at 1 V overdrive gives 6% distortion while staying fully in saturation.
+
+</div>
+</details>
+
+<details>
+<summary>4. Doubling $k$ at fixed gate voltage: what happens to the bias and the gain?</summary>
+<div>
+
+With $R_S$ = 0 the current doubles (2 mA at 2 V) and the drain falls to 1 V. That is now equal to $u$ = 1 V, exactly at the saturation edge. The small-signal gain $-kuR_D$ doubles to −8 on paper, but the stage has no room to swing. A "better" transistor broke the bias. Bias designs should depend on resistors, not on $k$.
+
+</div>
+</details>
+
+<details>
+<summary>5. How does a source resistor reduce sensitivity to threshold? What is the cost, and how can you avoid it?</summary>
+<div>
+
+A rise in current raises $V_S = I_DR_S$, which lowers $V_{GS}$ and opposes the rise. This divides $\partial I_D/\partial V_T$ by $1 + g_mR_S$. The cost is a higher required gate voltage, less drain headroom, and gain reduced by the same factor $1 + g_mR_S$. A bypass capacitor across $R_S$ keeps the DC feedback but removes it at signal frequencies, restoring the gain.
+
+</div>
+</details>
+
+<details>
+<summary>6. With the body grounded and $R_S$ > 0, what changes?</summary>
+<div>
+
+The source sits above the body by $V_S$, which raises the threshold through the body effect. At DC that lowers the current slightly. For signals, a source that moves relative to the body produces an additional current $g_{mb}v_{sb}$ that also opposes the gate, so the degeneration factor becomes $1 + (g_m + g_{mb})R_S$. Tying body to source, as discrete MOSFETs do internally, removes the effect.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§3.2 and 3.6; Huijsing, <em>Operational Amplifiers</em>, 3rd ed., chapter 4. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-bias-atlas/practice/">Open practice →</a></div>

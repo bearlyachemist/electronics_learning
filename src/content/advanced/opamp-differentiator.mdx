@@ -1,0 +1,181 @@
+import Equation from '../../components/Equation.astro';
+import {OpAmpFigure} from '../../components/OpAmpFigures';
+import {DiffBodeFigure,DiffRingFigure,DiffNoiseFigure} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 89</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Band-limited differentiators<br/><em>A derivative needs a bandwidth.</em></h1>
+
+<p className="dek">Swap the integrator's resistor and capacitor and the op amp differentiates, until its rising gain meets the falling open-loop gain and the circuit rings. Derive the resonance, bound the derivative with two components, and see why every useful differentiator has a defined bandwidth.</p>
+
+<div className="chapter-meta"><span>40–55 min</span><span>RC differentiators (Ch. 7) · Integrators (Ch. 88) · Stability (Ch. 79)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">An op-amp differentiator is made from one capacitor and one resistor. Why does it ring, even with a clean input?</p></div>
+
+<div>
+
+Put a capacitor at the input of an inverting amplifier and a resistor in its feedback, and the input current is $C\,dV/dt$: the output is the input's derivative. It is the mirror image of the integrator, and in a sense its opposite in temperament. The integrator ignores high frequencies and accumulates low ones; the differentiator amplifies high frequencies without limit.
+
+That has two consequences. Noise, which is mostly fast, is amplified far more than any slow signal. And the circuit's noise gain rises with frequency, exactly as in the transimpedance amplifier of Chapter 87, which makes the bare circuit nearly unstable. Both are fixed by the same two components.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Bound the derivative at both ends → Use impedances before approximating → Find the resonance → Compare three input slopes → Noise and a defined bandwidth → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Bound the derivative at both ends</h2></div>
+
+<OpAmpFigure mode="differentiator"/>
+
+The virtual ground holds the minus input at 0 V, so the current through $C_{IN}$ is $C_{IN}\,dV_I/dt$, and $R_F$ turns it into $V_O = -R_FC_{IN}\,dV_I/dt$. The practical circuit adds two components: $R_{IN}$ in series with $C_{IN}$, which caps the input current at high frequency, and $C_F$ across $R_F$, which rolls off the feedback. Between them, they turn an ideal differentiator, whose gain rises forever, into a band-limited one.
+
+A mathematically sharp step has an infinite derivative. Real edges have finite rise times, and real circuits finite bandwidths, so neither ever happens; but an unlimited differentiator gets close enough to saturate on every fast edge.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Use impedances before approximating</h2></div>
+
+With $Z_{IN} = R_{IN} + 1/sC_{IN}$ and $Z_F = R_F \parallel 1/sC_F$, the inverting gain $-Z_F/Z_{IN}$ is
+
+<Equation tex={String.raw`H(s)=-\frac{sR_FC_{IN}}{(1+sR_{IN}C_{IN})(1+sR_FC_F)}`} label="BAND-LIMITED DIFFERENTIATOR"/>
+
+When both denominator terms are near 1, $V_O \approx -R_FC_{IN}\,dV_I/dt$. Above $1/(2\pi R_{IN}C_{IN})$ the input capacitor is a short and the gain levels off at $-R_F/R_{IN}$; above $1/(2\pi R_FC_F)$ the feedback capacitor rolls it off. If the two corners coincide, the circuit differentiates up to that frequency and then falls at 20 dB per decade, with no flat region in between.
+
+</section>
+
+<section id="resonance">
+
+<div className="section-heading"><span>03</span><h2>Find the resonance</h2></div>
+
+Now the opening question. With only $C_{IN}$ and $R_F$, the noise gain $1 + Z_F/Z_{IN} = 1 + sR_FC_{IN}$ rises at 20 dB per decade from $1/(2\pi R_FC_{IN})$. The op amp's open-loop gain falls at 20 dB per decade. Where they cross, the closing rate is 40 dB per decade and the phase margin is nearly zero. Model the op amp as $A = \omega_t/s$ and the closed loop becomes a second-order resonator:
+
+<Equation tex={String.raw`\frac{V_O}{V_I}=\frac{-sR_FC_{IN}}{1+\dfrac{s}{\omega_t}+\dfrac{s^2R_FC_{IN}}{\omega_t}},\qquad f_0=\frac{1}{2\pi}\sqrt{\frac{\omega_t}{R_FC_{IN}}},\qquad Q=\sqrt{\omega_tR_FC_{IN}}`}/>
+
+<DiffBodeFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A RESONATOR YOU DID NOT ASK FOR</span><h3>$R_F$ = 100 kΩ, $C_{IN}$ = 1 nF, $f_t$ = 1 MHz</h3>
+
+<p>$R_FC_{IN}$ = 100 µs and $\omega_t = 2\pi × 10^6$ s⁻¹. So $f_0 = \sqrt{6.28 \times 10^6/10^{-4}}/2\pi$ = <strong>40 kHz</strong> and $Q = \sqrt{628}$ = <strong>25</strong>. Any disturbance near 40 kHz is amplified 25 times and rings for about $Q/\pi f_0$ ≈ 200 µs. The input does not have to contain 40 kHz: every edge, and the op amp's own noise, excites it.</p>
+
+<p><strong>The fix.</strong> Add $R_{IN}$ = 10 kΩ and $C_F$ = 100 pF. Both time constants are 10 µs, both corners 16 kHz. The noise gain now levels off at $1 + R_F/R_{IN}$ = 11 well below the crossing, the loop has ample phase margin, and the circuit differentiates cleanly up to about 16 kHz.</p>
+
+</div>
+
+<DiffRingFigure/>
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>04</span><h2>Compare three input slopes</h2></div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / RAMPS, SINES AND EDGES</span><h3>The compensated differentiator: $R_FC_{IN}$ = 100 µs, corners at 16 kHz</h3>
+
+<p><strong>Ramps.</strong> Slopes of 100, 1000 and 10 000 V/s give outputs of −10 mV, −0.1 V and −1 V, once the 10 µs transients have settled, as long as the ramp itself stays within the input range.</p>
+
+<p><strong>Sines.</strong> At 1 kHz the exact gain is 0.626, against the ideal derivative's 0.628. At 10 kHz it is 4.5, against 6.28: both poles already matter. At 100 kHz it is 1.55 and falling. The circuit is a differentiator below about 3 kHz, within 3%.</p>
+
+<p><strong>Edges.</strong> A 1 V edge rising in 1 µs has a derivative of $10^6$ V/s, which "should" give −100 V. It is far outside the differentiating band; the actual output is a pulse limited by the 16 kHz poles and by the output swing. A differentiator measures the slopes of slow signals; it does not measure fast edges.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>Noise and a defined bandwidth</h2></div>
+
+<DiffNoiseFigure/>
+
+Noise contains energy at all frequencies, and a differentiator's gain is proportional to frequency, so it weights the fastest noise the most. A 1% noise floor on a sensor can become a derivative far larger than the signal's. The fix is always the same: decide the bandwidth over which the derivative is needed, and limit the circuit to it. The compensation components above do exactly that, and the filtered derivative appears with a small, predictable delay.
+
+**Where differentiators are useful:** edge detection and pulse shaping (deliberately), the D term of a PID controller (always with a roll-off, "filtered derivative"), rate feedback in a servo, and pre-emphasis. For estimating the rate of change of a noisy measurement, a band-limited analog derivative or a properly filtered numerical estimate after sampling is preferable to a bare differentiator.
+
+**Practical points.** The source's resistance adds to $R_{IN}$; stray capacitance adds to $C_F$. A large transient can overload the op amp, and its recovery is unrelated to the intended response. Verify with a sine sweep and with a pulse of realistic rise time, against the full transfer function including the op amp's finite gain.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A bare $C_{IN}$–$R_F$ differentiator is a resonator with $Q = \sqrt{\omega_tR_FC_{IN}}$. Add $R_{IN}$ and $C_F$ to <em>give the derivative a defined bandwidth</em>; it then stays stable and stops amplifying noise it was never meant to measure.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why does a bare op-amp differentiator ring?</summary>
+<div>
+
+Its noise gain, $1 + sR_FC_{IN}$, rises at 20 dB per decade and meets the op amp's open-loop gain, falling at 20 dB per decade, with almost no phase margin. The closed loop is a second-order resonator with $Q = \sqrt{\omega_tR_FC_{IN}}$, 25 in the example, and any edge or noise excites it.
+
+</div>
+</details>
+
+<details>
+<summary>2. With $R_F$ = 47 kΩ, $C_{IN}$ = 2.2 nF and a 10 MHz op amp, where is the resonance and what is its Q?</summary>
+<div>
+
+$R_FC_{IN}$ = 103 µs. $f_0 = \sqrt{2\pi × 10^7/1.03×10^{-4}}/2\pi$ ≈ **124 kHz**, and $Q = \sqrt{6.28×10^7 × 1.03×10^{-4}}$ ≈ **80**. A faster op amp makes the resonance higher and sharper, not better.
+
+</div>
+</details>
+
+<details>
+<summary>3. What do $R_{IN}$ and $C_F$ each do?</summary>
+<div>
+
+$R_{IN}$ limits the input branch's admittance at high frequency, so the noise gain levels off at $1 + R_F/R_{IN}$ instead of rising forever; that restores phase margin. $C_F$ rolls off the signal gain above $1/(2\pi R_FC_F)$, limiting noise and high-frequency gain.
+
+</div>
+</details>
+
+<details>
+<summary>4. A 1 V edge rises in 1 µs into a differentiator with $R_FC_{IN}$ = 100 µs. Why is the output not −100 V?</summary>
+<div>
+
+The edge's frequency content lies far above the differentiator's band (16 kHz), where its gain has been capped and then rolled off. The output is a limited pulse, and in any case the op amp's swing would clip at a few volts.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why must a derivative term in a controller be filtered?</summary>
+<div>
+
+An unfiltered derivative amplifies measurement noise in proportion to frequency, producing large, useless actuator commands. A roll-off above the frequencies where the derivative's phase lead is needed keeps the benefit and limits the noise.
+
+</div>
+</details>
+
+<details>
+<summary>6. Over what frequency range does the compensated example differentiate within about 3%?</summary>
+<div>
+
+Up to roughly 3 kHz. At 1 kHz the gain is within 0.4% of the ideal; at 10 kHz, where the 16 kHz poles are close, it is 28% low. Choose the corners about ten times above the highest frequency you need to differentiate.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §4.5.7 (differentiators) and §4.9 (compensation); Asadi, <em>Applied Op Amp Circuits</em>, chapter 4. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-differentiator/practice/">Open practice →</a></div>

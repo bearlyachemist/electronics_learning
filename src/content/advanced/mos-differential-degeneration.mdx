@@ -1,0 +1,202 @@
+import Equation from '../../components/Equation.astro';
+import {MosDifferentialFigure} from '../../components/MosAnalogFigures';
+import {MosCases,MosLab} from '../../components/MosAnalogLabs';
+import {DegenSteeringFigure,DegenGmFigure,SplitTailCircuit} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 73</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>Degenerated MOS differential pairs<br/><em>Trade transconductance for range.</em></h1>
+
+<p className="dek">Add a resistor to each source of a differential pair, derive the exact current-sharing relation, and measure what degeneration buys (a wider, flatter, more resistor-defined transconductance) against what it costs in gain, headroom and noise. Then remove the headroom cost with a split tail.</p>
+
+<div className="chapter-meta"><span>45–60 min + exploration</span><span>Differential pair (Chs. 70–71) · Source degeneration (Ch. 61)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Does source degeneration increase the differential input at which all the current ends up in one branch?</p></div>
+
+<div>
+
+Chapter 61 degenerated a single transistor: a source resistor divided its transconductance by $1 + g_mR_S$ and made it more linear and more predictable. A differential pair benefits in the same ways. Its linear range, otherwise fixed by the overdrive, can be extended as far as the designer likes, and its transconductance becomes increasingly set by resistors rather than by $k$.
+
+Filters, mixers and the input stages of instrumentation amplifiers all need a transconductor that converts a large differential voltage to a current accurately. A degenerated pair is the simplest one. As always, the resistor's DC drop costs headroom; but in a differential circuit there is a trick that avoids it.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Keep two source voltages distinct → Write the exact input–current relation → Compare linearity and compliance together → Degenerate without a DC drop → Choose resistors from a complete budget → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Keep two source voltages distinct</h2></div>
+
+<MosDifferentialFigure mode="degenerated"/>
+
+Each transistor's source connects through its own resistor $R_S$ to the tail node. The two transistor sources are no longer at the same voltage: they differ by $(I_1 - I_2)R_S$, and that difference opposes the applied gate difference. Part of every input change is absorbed by the resistors instead of reaching the gate–source voltages.
+
+At balance each branch carries $I_T/2$ and each resistor drops $I_TR_S/2$. The transistor sources sit at $V_C - V_T - u_0$ as before, but the tail node is lower by that drop. Degeneration does not change the balanced overdrive; it lowers the common-mode window's floor.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Write the exact input–current relation</h2></div>
+
+Go around the loop from one gate to the other: down through $M_1$'s $V_{GS}$ and $R_S$, up through the other $R_S$ and $M_2$'s $V_{GS}$. The thresholds cancel, leaving
+
+<Equation tex={String.raw`v_d=\sqrt{\frac{2I_1}{k}}-\sqrt{\frac{2(I_T-I_1)}{k}}+(2I_1-I_T)\,R_S`} label="EXACT DEGENERATED STEERING (IDEAL TAIL)"/>
+
+The right side increases monotonically with $I_1$, so for any $v_d$ there is exactly one $I_1$ between 0 and $I_T$, easily found numerically. Two results follow directly. Differentiating at balance gives the transconductance, and setting $I_1 = I_T$ gives the full-steering input:
+
+<Equation tex={String.raw`G_{md}=\frac{\partial(I_1-I_2)}{\partial v_d}\Big|_0=\frac{g_{m0}}{1+g_{m0}R_S},\qquad |v_{d,\text{full}}|=\sqrt{\frac{2I_T}{k}}+I_TR_S`}/>
+
+So the answer to the opening question is yes: the full-steering input grows by $I_TR_S$, the whole tail current through one resistor.
+
+<DegenSteeringFigure/>
+
+With strong degeneration ($g_{m0}R_S \gg 1$), $G_{md} \to 1/R_S$: the pair converts voltage to current with the accuracy of a resistor. That is what a filter or instrumentation transconductor wants.
+
+<DegenGmFigure/>
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Compare linearity and compliance together</h2></div>
+
+Take $I_T$ = 2 mA, $k$ = 2 mA/V², $R_S$ = 500 Ω, $R_D$ = 1 kΩ, $V_T$ = 1 V, 5 V and $V_C$ = 2.5 V:
+
+<MosCases kind="diff-degenerated"/>
+
+At balance $g_{m0}$ = 2 mS and $g_{m0}R_S$ = 1, so $G_{md}$ = 1 mS and the drain-to-drain gain is +1, half the undegenerated +2.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / RANGE, LINEARITY AND THE HEADROOM TRAP</span><h3>$R_S$ = 0, 250, 500 and 1000 Ω</h3>
+
+<p><strong>Transconductance and range.</strong> $G_{md}$ = 2.00, 1.33, 1.00 and 0.67 mS. Full steering at 1.41, 1.91, 2.41 and 3.41 V.</p>
+
+<p><strong>Linearity at equal output.</strong> Drive each pair to the same 1 mA peak current difference, half the tail. The input amplitude needed is 0.51, 0.76, 1.01 and 1.51 V, and the third harmonic falls from <strong>0.86%</strong> to 0.58%, 0.44% and <strong>0.30%</strong>. Degeneration helps, but at an output swing this large (half the tail) the transistors' own nonlinearity still contributes; the improvement grows at smaller fractions of the tail.</p>
+
+<p><strong>The trap.</strong> At $V_C$ = 2.5 V the transistor sources sit at 0.5 V, and with 500 Ω each resistor drops 0.5 V, leaving the tail node at <strong>0 V</strong>. A tail transistor that needs 0.3 V cannot work. The table's currents are the ideal steering law; real hardware needs $V_C$ ≥ 2.8 V, preferably more. The lower common-mode limit is now</p>
+
+</div>
+
+<Equation tex={String.raw`V_C\ge V_T+u_0+\frac{I_TR_S}{2}+u_T`}/>
+
+The upper limit, set by the input devices' drains, is unchanged. Large resistors can close the common-mode window completely.
+
+<MosLab kind="differential" client:load/>
+
+<p className="caption">Live lab. Set 500 Ω per source at a 2.5 V common mode and read the headroom indicator: it should report a failure even though the ideal curves look fine. Raise the common mode until it clears, near 2.8 V. Then compare the steering curve's shape and full-steering point at 0 and 1000 Ω.</p>
+
+</section>
+
+<section id="split">
+
+<div className="section-heading"><span>04</span><h2>Degenerate without a DC drop</h2></div>
+
+<SplitTailCircuit/>
+
+Split the tail in two, one $I_T/2$ sink under each source, and connect the two sources with a single resistor of $2R_S$. At balance both sources sit at the same voltage, no current flows through the resistor, and it costs no headroom at all. For a differential signal, the resistor's midpoint stays still by symmetry, so each half sees $R_S$ to a virtual ground: exactly the same $G_{md}$ and steering law as before.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / RECOVER THE COMMON-MODE WINDOW</span><h3>$I_T$ = 2 mA, $R_S$ = 1 kΩ equivalent</h3>
+
+<p>With per-source resistors, the floor is $V_T + u_0 + I_TR_S/2 + u_T$ = 1 + 1 + 1 + 0.3 = 3.3 V, and with $V_D$ = 4 V the ceiling is 5 V: a 1.7 V window. With a split tail and a 2 kΩ resistor between the sources, the floor drops back to 2.3 V: a 2.7 V window, the same as the undegenerated pair.</p>
+
+<p><strong>The cost.</strong> Common-mode rejection and offset now depend on how well the two half-tails match. A mismatch $\Delta I$ between them must flow through the resistor as a differential current, and the input must cancel it: an input offset of about $\Delta I/G_{md}$. Each tail's noise also enters differentially rather than as common mode. Two sinks at $I_T/2$ also need their own headroom each.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>Choose resistors from a complete budget</h2></div>
+
+**The limit of resistor-defined transconductance.** $G_{md} = g_{m0}/(1 + g_{m0}R_S)$ approaches $1/R_S$ only slowly: at $g_{m0}R_S$ = 4 it is still 20% below. The remainder depends on $k$, temperature and current. For precise transconductance, put the transistor inside a feedback loop that forces the input voltage across the resistor (an op-amp-driven transconductor, Chapter 92).
+
+**Offset.** A threshold mismatch still has to be cancelled by an equal input voltage: degeneration does not reduce the input-referred threshold offset. It reduces the current imbalance that a given input produces, which is a different statement. Resistor mismatch adds an offset of about $(\Delta R_S/R_S) \cdot I_TR_S/2$.
+
+**Noise.** Each resistor adds $\sqrt{4kTR_S}$ in series with its gate. Two 1 kΩ resistors add 5.8 nV/√Hz to the input, comparable to the transistors' own noise at these currents (Chapter 76).
+
+**Gain.** A degenerated pair has lower gain than an undegenerated one with the same load. In an op amp, use degeneration where linearity or input range matters and recover the gain in a later stage.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Degeneration divides a pair's transconductance by $1 + g_{m0}R_S$ and extends full steering by $I_TR_S$, making it approach $1/R_S$. A split tail with $2R_S$ between the sources <em>keeps the benefit without the DC drop</em>.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Does degeneration increase the full-steering input? By how much?</summary>
+<div>
+
+Yes, by $I_TR_S$. At full steering one device carries the whole tail, so one resistor drops $I_TR_S$ and the other none; the input must supply that difference on top of the undegenerated $\sqrt{2I_T/k}$. With 2 mA and 500 Ω, from 1.41 V to 2.41 V.
+
+</div>
+</details>
+
+<details>
+<summary>2. With $g_{m0}$ = 2 mS and $R_S$ = 250 Ω, what is $G_{md}$?</summary>
+<div>
+
+$g_{m0}R_S$ = 0.5, so $G_{md}$ = 2/1.5 = **1.33 mS**. With equal drain resistors, the drain-to-drain gain is $G_{md}R_D$.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does the per-source-resistor pair lose common-mode range at the bottom but not at the top?</summary>
+<div>
+
+The resistors sit between the transistor sources and the tail, so their DC drop lowers the tail node relative to the inputs. The tail needs its compliance voltage, so the inputs must be higher. The top limit is set by the input devices' drain–source voltage, which the resistors do not affect.
+
+</div>
+</details>
+
+<details>
+<summary>4. How does a split tail avoid the DC drop, and why is $G_{md}$ unchanged?</summary>
+<div>
+
+With a separate $I_T/2$ sink under each source, the two sources are at the same voltage at balance, so no DC current flows in the resistor between them. For differential signals the resistor's midpoint is a virtual ground, so each side sees half of $2R_S$, that is $R_S$, the same degeneration as before.
+
+</div>
+</details>
+
+<details>
+<summary>5. Does degeneration reduce input offset caused by threshold mismatch?</summary>
+<div>
+
+No. The input must still supply a voltage equal to the threshold difference to rebalance the currents; that voltage is the offset, and it is the same with or without degeneration. Degeneration only reduces how much current imbalance a given offset voltage produces.
+
+</div>
+</details>
+
+<details>
+<summary>6. Why does the third-harmonic improvement look modest in the worked example?</summary>
+<div>
+
+The comparison drove every pair to a current swing of half the tail, a large signal for which the transistors' own square-law curvature still matters even with degeneration. Distortion falls much faster with degeneration at smaller output fractions, and an op amp's feedback normally keeps the input stage's signal far smaller than this.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Huijsing, <em>Operational Amplifiers</em>, 3rd ed., §4.1; Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§2.3.8 and 3.2. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-differential-degeneration/practice/">Open practice →</a></div>

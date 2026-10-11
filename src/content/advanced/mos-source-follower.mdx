@@ -1,0 +1,204 @@
+import Equation from '../../components/Equation.astro';
+import {MosStageFigure} from '../../components/MosAnalogFigures';
+import {MosCases,MosLab} from '../../components/MosAnalogLabs';
+import {FollowerBufferCircuit,FollowerTransferFigure,FollowerSlewFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 66</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>The resistor-loaded source follower<br/><em>Copy a voltage, change its impedance.</em></h1>
+
+<p className="dek">Solve the follower's output rather than assuming a fixed gate–source drop, derive its gain and output resistance with body effect, and find the two limits a small-signal analysis hides: the follower lags by more than a threshold, and it can push current but cannot pull it.</p>
+
+<div className="chapter-meta"><span>45–65 min + exploration</span><span>Bias atlas (Ch. 57) · Emitter follower (Ch. 28)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">A source follower's gain is often quoted as "about 1". With a grounded body and a 2 kΩ load, is it 0.98, 0.9, or 0.7?</p></div>
+
+<div>
+
+The emitter follower of Chapter 28 copies its base voltage to its emitter, one $V_{BE}$ lower, with a gain close to one and a much lower output impedance. The MOS source follower does the same job with an important advantage, an input that draws no DC current at all, and two disadvantages: its $g_m$ is much lower per milliampere, and in an integrated circuit its body is often stuck at ground.
+
+Both disadvantages show up in the gain. The answer to the question above is the third choice, and this chapter explains why.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Current determines the gate–source drop → Differentiate all source-dependent terms → Compare gate biases and body connections → Use it as a buffer → Check drive, swing and source impedance → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Current determines the gate–source drop</h2></div>
+
+<MosStageFigure mode="follower"/>
+
+The drain is at the 5 V supply, the load $R_L$ runs from source to ground, and the output is the source. If the gate rises, the current rises, and the rising source reduces $V_{GS}$, opposing the rise. That is 100% negative feedback: the entire output voltage is subtracted from the input. With a separate body terminal at ground, there is a second feedback path, because a rising source also raises the threshold.
+
+The rule of thumb "the source sits one threshold below the gate" is missing a term. The transistor needs an overdrive to carry the load current, and that current depends on the output itself. With $\lambda$ = 0, KCL at the source is
+
+<Equation tex={String.raw`\frac{V_S}{R_L}=\tfrac12 k\,\bigl[V_G-V_S-V_T(V_S)\bigr]^2,\qquad V_T(V_S)=V_{T0}+\gamma\left(\sqrt{2\phi_F+V_S}-\sqrt{2\phi_F}\right)`}/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / SOLVE THE OUTPUT</span><h3>$V_G$ = 3 V, $R_L$ = 2 kΩ, $k$ = 2 mA/V², $V_T$ = 1 V, body tied to source</h3>
+
+<p>In mA, V and kΩ: $V_S/2 = (2 - V_S)^2$, so $2V_S^2 - 9V_S + 8 = 0$ and $V_S = (9 - \sqrt{17})/4$ = <strong>1.219 V</strong>. (The other root, 3.28 V, would need a negative overdrive; reject it.)</p>
+
+<p>The current is 0.61 mA and the overdrive $u$ = 3 − 1.219 − 1 = 0.781 V. So the source is not 1 V below the gate but 1.78 V below it: the threshold plus the overdrive needed to supply 0.61 mA.</p>
+
+</div>
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Differentiate all source-dependent terms</h2></div>
+
+For small signals, write KCL at the source. The channel delivers $g_m(v_g - v_s)$ from the gate drive, minus $g_{mb}v_s$ from the body effect (body at AC ground), minus $g_{ds}v_s$ through $r_o$ (drain at AC ground). That current flows into $R_L$:
+
+<Equation tex={String.raw`A_v=\frac{v_s}{v_g}=\frac{g_m}{g_m+g_{mb}+g_{ds}+1/R_L},\qquad R_{out}=\frac{1}{g_m+g_{mb}+g_{ds}}`} label="SOURCE FOLLOWER GAIN AND OUTPUT RESISTANCE"/>
+
+$R_{out}$ is the resistance looking into the source, excluding $R_L$; the stage's Thévenin output resistance is $R_{out} \parallel R_L$. Two things keep the gain below one.
+
+**The load.** Even with no body effect, $A_v = g_mR_L/(1 + g_mR_L)$. At 1.56 mS and 2 kΩ, $g_mR_L$ = 3.1 and the gain is 0.76. An emitter follower at 0.61 mA has $g_m$ = 24 mS and a gain of 0.98 into the same load. A MOSFET's lower $g_m$ per milliampere costs it directly here.
+
+**The body effect.** Even with an infinite load (and some other way of keeping the current flowing; see Chapter 67), the gain can only approach
+
+<Equation tex={String.raw`A_{v,\max}=\frac{g_m}{g_m+g_{mb}}=\frac{1}{1+\eta},\qquad \eta=\frac{g_{mb}}{g_m}=\frac{\gamma}{2\sqrt{2\phi_F+V_S}}`}/>
+
+With $\gamma$ = 0.4 √V and $V_S$ = 1.06 V, $\eta$ = 0.155 and the ceiling is 0.87. A grounded-body follower can never exceed it, however large the load and however much current it carries.
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Compare gate biases and body connections</h2></div>
+
+<FollowerTransferFigure/>
+
+The table solves the full nonlinear equation for three gate voltages with $R_L$ = 2 kΩ, $\gamma$ = 0.4 √V and $2\phi_F$ = 0.6 V (body grounded):
+
+<MosCases kind="follower"/>
+
+With the body tied to the source instead, the same gates give outputs of 0.500, 1.219 and 2.000 V and local gains of 0.667, 0.757 and 0.800. The grounded-body outputs are lower (0.44, 1.06, 1.76 V) and so are the gains (0.58, 0.67, 0.72). That answers the opening question: 0.67 at a 3 V gate, a long way from "about 1".
+
+The gain also varies with the operating point, which means distortion. At a 3 V gate bias with the body tied to the source, a 1 V peak input gives a 0.75 V peak output with 2.1% second harmonic. A common-source stage delivering the same output from a 2 V load voltage would have about 4.7% (Chapter 64). The follower's 100% feedback helps, but does not make it perfect.
+
+<MosLab kind="follower" client:load/>
+
+<p className="caption">Live lab. Set the sink current to zero to reproduce this chapter's resistor-only follower, and choose a 2 kΩ load. Compare the two curves (body grounded and body following the source) and read the local gain at a few gate voltages. Then raise the load resistance to 100 kΩ and watch the gain rise toward its body-effect ceiling, while the current falls. Adding sink current previews Chapter 67.</p>
+
+</section>
+
+<section id="buffer">
+
+<div className="section-heading"><span>04</span><h2>Use it as a buffer</h2></div>
+
+<FollowerBufferCircuit/>
+
+The point of a follower is impedance transformation. Its input draws no current; its output looks like a source of resistance $1/g_m$.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A HIGH-IMPEDANCE SENSOR AND A LOW-IMPEDANCE LOAD</span><h3>100 kΩ source, 2 kΩ load</h3>
+
+<p><strong>Directly connected:</strong> the load and source form a divider, 2/(100 + 2) = <strong>0.020</strong>. Only 2% of the sensor's signal reaches the load.</p>
+
+<p><strong>Through the follower</strong> (body tied to source, gate biased at 3 V): no current flows in the 100 kΩ, so the gate sees the full sensor signal, and the follower's gain into 2 kΩ is <strong>0.76</strong>. That is 38 times more signal.</p>
+
+<p><strong>Output resistance:</strong> $1/g_m$ = 640 Ω, in parallel with the 2 kΩ load, 485 Ω. The follower has transformed a 100 kΩ source into a 640 Ω one, a factor of 156, while losing 24% of the signal. An emitter follower would lose less signal, but it would draw base current through the 100 kΩ, about 6 µA here, which at a β of 100 shifts the input by 0.6 V. The MOSFET's zero gate current is the reason to choose it.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>Check drive, swing and source impedance</h2></div>
+
+**It can push but not pull.** The NMOS can source as much current as its overdrive allows, but it cannot sink any. When the output must fall faster than the load can discharge it, the transistor simply turns off:
+
+<FollowerSlewFigure/>
+
+The rising edges reach 90% in about 1.2 µs; the falling edges follow the $R_LC_L$ = 10 µs exponential and take eight times longer. A small-signal analysis (about 900 Ω of output resistance at the upper operating point, so a 0.9 µs time constant) would predict the same speed in both directions. It is roughly right for small steps and badly wrong for the large falling one. Chapter 67 adds a current sink to pull the output down; Chapter 74 adds a complementary device.
+
+**Swing.** The output can rise until the transistor runs out of drain headroom; with the drain at 5 V, that limit is far away. Downward, the output can fall to 0 V only if the gate can go to $V_T$ or below; the current then stops and the load holds the output at ground. In between, the output is always at least $V_T + u$ below the gate, so a follower driven from a 5 V gate cannot reach much above 3–3.5 V.
+
+**Input impedance at high frequency.** The gate draws no DC current, but $C_{gs}$ is bootstrapped: its far end, the source, follows the gate with gain $A_v$, so it presents only $C_{gs}(1 - A_v)$. $C_{gd}$, from gate to the fixed drain, appears in full. A follower is a light capacitive load, which is another reason it is used as a buffer.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A source follower's gain is $g_m/(g_m + g_{mb} + g_{ds} + 1/R_L)$, often 0.6–0.8, not 1. It sits a threshold <em>plus an overdrive</em> below its gate, and it can source current but not sink it.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why does a grounded body stop the source from following the gate one-for-one?</summary>
+<div>
+
+As the source rises, the source–body voltage rises, so the threshold rises. Part of each gate increment is used up raising the threshold rather than raising the output. For small signals this is the extra conductance $g_{mb}$ in the denominator, capping the gain at $1/(1 + \eta)$, typically 0.8–0.9.
+
+</div>
+</details>
+
+<details>
+<summary>2. The source sits 1.78 V below a 3 V gate although the threshold is 1 V. Where did the other 0.78 V go?</summary>
+<div>
+
+It is the overdrive required for the transistor to carry the load current, 0.61 mA here, from $I_D = \tfrac12 ku^2$. A follower's gate–source drop is $V_T + \sqrt{2I_D/k}$, and since $I_D = V_S/R_L$ depends on the output, so does the drop.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does a MOS follower into 2 kΩ have a gain of 0.76 while an emitter follower at the same current has 0.98?</summary>
+<div>
+
+Both have $A_v ≈ g_mR_L/(1 + g_mR_L)$. At 0.61 mA the MOSFET's $g_m$ is 1.56 mS, the BJT's 24 mS. The MOSFET's $g_mR_L$ is only 3.1, the BJT's 47. A MOSFET has much less transconductance per unit current, unless biased at very small overdrive.
+
+</div>
+</details>
+
+<details>
+<summary>4. A follower drives a large capacitor. Why are its rising and falling edges so different?</summary>
+<div>
+
+Rising, the transistor's overdrive increases and it supplies whatever current the capacitor demands, limited only by the square law. Falling, the overdrive goes negative, the transistor turns off, and only the load resistor discharges the capacitor, with time constant $R_LC_L$. The follower is a one-way current source for large signals.
+
+</div>
+</details>
+
+<details>
+<summary>5. What is the follower's output resistance at 0.61 mA with the body tied to the source, and with it grounded?</summary>
+<div>
+
+Tied to source: $1/g_m$ = 1/1.56 mS ≈ **640 Ω**. Grounded: the engine's operating point gives about **590 Ω**, because $g_{mb}$ adds to $g_m$ in the denominator (at a slightly different current). The body effect lowers the gain but also slightly lowers the output resistance.
+
+</div>
+</details>
+
+<details>
+<summary>6. Why is a follower's input capacitance smaller than $C_{gs} + C_{gd}$?</summary>
+<div>
+
+The source follows the gate, so the voltage across $C_{gs}$ changes only by $(1 - A_v)$ times the input change, and $C_{gs}$ draws correspondingly less current. This bootstrapping is the opposite of the Miller effect in a common-source stage, where $C_{gd}$ is multiplied.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §3.2.6 (source followers); Huijsing, <em>Operational Amplifiers</em>, 3rd ed., chapter 4. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-source-follower/practice/">Open practice →</a></div>

@@ -6,7 +6,8 @@ the repository's Actions tab, selecting the `main` branch.
 
 The workflow installs dependencies from the lockfile, runs the numerical tests
 and TypeScript check, builds for `/electronics`, and verifies every page's local
-links and assets. Only after those checks pass does it replace
+links, assets, schematic connections and the new chapters' critical feedback
+topologies and practice math. Only after those checks pass does it replace
 `public/electronics` in `bearlyachemist/hebert.phd` and push a commit to that
 repository's `main` branch. The existing Cloudflare Pages integration deploys
 that commit. Identical output produces no host commit.

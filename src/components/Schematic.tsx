@@ -128,17 +128,17 @@ export type FetKind='njfet'|'pjfet'|'nmos'|'pmos';
 export function fetPins({at:p,kind='nmos',flip=false,vflip=false,rotate=0}:TriOpts&{kind?:FetKind}){
   const sx=flip?-1:1,sTop=(kind[0]==='p')!==vflip;
   const top:Pt=[p[0]+14*sx,p[1]-40],bot:Pt=[p[0]+14*sx,p[1]+40],R=(q:Pt)=>rotPt(q,p,rotate);
-  return {g:R([p[0]-30*sx,p[1]]),d:R(sTop?bot:top),s:R(sTop?top:bot)};
+  return {g:R([p[0]-30*sx,p[1]]),d:R(sTop?bot:top),s:R(sTop?top:bot),b:R([p[0]+34*sx,p[1]])};
 }
-export function Fet({at:p,kind='nmos',flip=false,vflip=false,rotate=0,color=ink}:TriOpts&{kind?:FetKind}){
+export function Fet({at:p,kind='nmos',flip=false,vflip=false,rotate=0,color=ink,bodyExternal=false}:TriOpts&{kind?:FetKind;bodyExternal?:boolean}){
   const P=fetPins({at:p,kind,flip,vflip,rotate}),sx=flip?-1:1,sTop=(kind[0]==='p')!==vflip,sy=sTop?-1:1,n=kind[0]==='n';
   const legs=`M0 -12 H14 V-40 M0 12 H14 V40`;
   const body=kind.endsWith('jfet')
     ?<><path d={`M0 -18 V18 ${legs} M-30 0 H-16 V${10*sy} H0`}/><path d={n?`M-4 ${10*sy} l-8 -4.5 v9 Z`:`M-14 ${10*sy} l8 -4.5 v9 Z`} fill={color} stroke="none"/></>
-    :<><path d={`M-30 0 H-9 M-9 -14 V14 ${legs} M0 0 H14 V${12*sy}`}/><path d="M0 -18 V-7 M0 -5.5 V5.5 M0 7 V18" strokeWidth="3"/>
+    :<><path d={`M-30 0 H-9 M-9 -14 V14 ${legs} ${bodyExternal?'M0 0 H34':`M0 0 H14 V${12*sy}`}`}/><path d="M0 -18 V-7 M0 -5.5 V5.5 M0 7 V18" strokeWidth="3"/>
       <path d={n?'M2 0 l8 -4.5 v9 Z':'M12 0 l-8 -4.5 v9 Z'} fill={color} stroke="none"/></>;
   // The JFET gate sits near the source end, a common way to show which end is the source.
-  return <g data-pins={pins(P.g,P.d,P.s)}><g transform={`translate(${p[0]} ${p[1]}) rotate(${rotate}) scale(${sx} 1)`} fill="none" stroke={color} strokeWidth={SW}>{body}</g></g>;
+  return <g data-pins={bodyExternal?pins(P.g,P.d,P.s,P.b):pins(P.g,P.d,P.s)}><g transform={`translate(${p[0]} ${p[1]}) rotate(${rotate}) scale(${sx} 1)`} fill="none" stroke={color} strokeWidth={SW}>{body}</g></g>;
 }
 // Op-amp: triangle with inputs on the left. By default the inverting (−) input is on top.
 export function opAmpPins({at:p,plusTop=false}:{at:Pt;plusTop?:boolean}){

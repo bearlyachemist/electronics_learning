@@ -1,0 +1,238 @@
+import Equation from '../../components/Equation.astro';
+import {OpAmpFigure} from '../../components/OpAmpFigures';
+import {LogTransferFigure,SchmittCircuit,SchmittFigure,WienStartupFigure,SignalChainFigure} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 94</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Analog functions and a complete design<br/><em>From one feedback element to a working instrument.</em></h1>
+
+<p className="dek">Let a nonlinear feedback element define the function: a logarithm from a junction, a decision from positive feedback, a sine wave from a controlled loop gain. Then put the book's pieces together into one complete measurement chain, and close every budget before calling it done.</p>
+
+<div className="chapter-meta"><span>70–90 min</span><span>The op-amp chapters (77–93)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">An analog circuit computes exactly the right function on paper. What stops it from being an accurate instrument?</p></div>
+
+<div>
+
+Every circuit so far used feedback to make an op amp linear. Feedback can just as well make it nonlinear, in a controlled way: put a diode in the feedback path and the circuit computes a logarithm; apply feedback to the plus input and it makes decisions; let the loop gain be exactly one at one frequency and it oscillates.
+
+The last section of the book then does what an engineer does with all of this: takes a sensor, a specification and a handful of op-amp circuits, and connects them into an instrument. The interesting part is not the connection. It is checking, stage by stage, that every range, error, noise and settling budget still closes once the pieces load and limit each other.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Let the feedback element define the function → Logarithms from a junction → Decisions from positive feedback → Sine waves from a controlled loop → Design a complete measurement chain → Close every budget → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Let the feedback element define the function</h2></div>
+
+<OpAmpFigure mode="log"/>
+
+In an inverting amplifier, the input current $V_I/R_{IN}$ must flow through the feedback element, and the output becomes whatever voltage that element needs to carry it. A resistor gives a linear function. A diode, whose current is exponential in its voltage, gives the inverse: a **logarithm**. In the drawing, positive input current flows through the diode toward a negative output; with the minus input at virtual ground, $V_O = -V_D$.
+
+The same principle builds antilog amplifiers (swap the diode and resistor), multipliers (add two logs, take the antilog) and true-rms converters. The functions are exact only as far as the element follows its law, which is the theme of this chapter.
+
+</section>
+
+<section id="log">
+
+<div className="section-heading"><span>02</span><h2>Logarithms from a junction</h2></div>
+
+With the junction law $I = I_Se^{V_D/nU_T}$:
+
+<Equation tex={String.raw`V_O\approx-nU_T\ln\frac{V_I}{R_{IN}I_S},\qquad\Delta V_O=-nU_T\ln\frac{I_2}{I_1}\approx-59\ \text{mV per decade at 25 °C}`} label="LOG AMPLIFIER"/>
+
+A log amplifier compresses six decades of current, 1 nA to 1 mA, into about 0.36 V. That is its value: photodiode receivers, dB meters and audio compressors all need it. But two terms in the equation are temperature sensitive:
+
+<LogTransferFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / WHERE THE LOG STOPS BEING ACCURATE</span><h3>A transistor log stage, 10 nA to 100 µA</h3>
+
+<p><strong>Ideal.</strong> Two decades from 10 nA to 1 µA and two more to 100 µA give −118 mV per two decades at 25 °C.</p>
+
+<p><strong>Leakage.</strong> At 10 nA, 1 nA of leakage (op amp bias current, board, protection) is a 10% current error, which the log turns into $59\text{ mV} × \log_{10}(1.1)$ = 2.5 mV: a 10% error in the quantity measured. At 100 µA the same leakage is invisible. The bottom of the range is set by leakage.</p>
+
+<p><strong>Temperature.</strong> $I_S$ roughly doubles every 10 °C, shifting the whole curve, and $U_T = kT/q$ changes the slope by 0.34% per °C. A precision log amplifier uses a second, matched transistor carrying a reference current: the difference of the two junction voltages cancels $I_S$, leaving $U_T\ln(I/I_{REF})$, and a gain that rises with temperature (a thermistor or a PTAT resistor) cancels $U_T$.</p>
+
+</div>
+
+</section>
+
+<section id="decide">
+
+<div className="section-heading"><span>03</span><h2>Decisions from positive feedback</h2></div>
+
+Feed the output back to the **plus** input and the op amp stops being a linear amplifier. Its output goes to one rail or the other and stays there until the input crosses a threshold that depends on which rail it is at. That is a Schmitt trigger: a comparator with hysteresis.
+
+<SchmittCircuit/>
+
+<SchmittFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / SET THE THRESHOLDS</span><h3>5 V supply, $R_1$ = $R_2$ = 10 kΩ, $R_3$ = 82 kΩ</h3>
+
+<p>With the output at 0 V, the plus input is a divider of 10 kΩ to 5 V against 10 kΩ ∥ 82 kΩ to ground: 2.36 V. With the output at 5 V it is 2.64 V. The input must rise above 2.64 V to switch the output low, and fall below 2.36 V to switch it back: 0.28 V of hysteresis, centered at 2.5 V.</p>
+
+<p>Noise on the input smaller than 0.28 V peak-to-peak cannot cause chatter. A window comparator, two comparators with thresholds above and below a range, tells whether a signal is inside the range; the same hysteresis rule applies to each.</p>
+
+</div>
+
+An op amp can be used as a comparator, but slowly: it saturates and must recover, and some op amps misbehave with large differential inputs. Dedicated comparators switch in nanoseconds and have outputs designed for logic levels.
+
+</section>
+
+<section id="oscillate">
+
+<div className="section-heading"><span>04</span><h2>Sine waves from a controlled loop</h2></div>
+
+A Wien-bridge network (a series RC feeding a parallel RC) passes exactly 1/3 of its input, with zero phase shift, at $f_0 = 1/(2\pi RC)$. Follow it with a noninverting amplifier of gain $K$ and close the loop: at $f_0$ the loop gain is $K/3$. The closed loop's characteristic equation is
+
+<Equation tex={String.raw`s^2+(3-K)\,\omega_0\,s+\omega_0^2=0`}/>
+
+so $K < 3$ gives a decaying response, $K > 3$ a growing one, and only $K = 3$ exactly gives a steady sine. No resistor ratio holds $K$ at exactly 3, so a real oscillator starts with $K$ slightly above 3 and uses a control loop to bring it down as the amplitude grows:
+
+<WienStartupFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A 1 kHz OSCILLATOR</span><h3>$C$ = 10 nF, 2 V peak</h3>
+
+<p>$R = 1/(2\pi × 1\text{ kHz} × 10\text{ nF})$ = 15.9 kΩ. The amplifier needs gain 3, say $R_F$ = 20 kΩ and $R_G$ = 10 kΩ, with a small extra gain (a few percent) that the control element removes.</p>
+
+<p><strong>Amplitude control.</strong> Classic designs use a small incandescent lamp or thermistor in $R_G$, whose resistance rises with the output's rms value, or a JFET used as a voltage-controlled resistor driven by a rectified and filtered copy of the output. The control loop's time constant must be many cycles long, or it will modulate the sine within each cycle and distort it.</p>
+
+<p><strong>Slew and noise.</strong> 2 V at 1 kHz needs only 0.013 V/µs. Distortion is set by the control loop's ripple and the amplifier's linearity, not its speed.</p>
+
+</div>
+
+Letting the op amp clip instead of controlling $K$ also limits the amplitude, but the waveform is then a distorted sine. The rule from Chapter 79 holds here in reverse: an oscillator is a loop deliberately placed at zero phase margin, and keeping it there needs active control.
+
+</section>
+
+<section id="chain">
+
+<div className="section-heading"><span>05</span><h2>Design a complete measurement chain</h2></div>
+
+**The specification.** Measure the strain on a 350 Ω full bridge, excited by 5 V, whose output at full scale is ±5 mV (1 mV/V), with 0.1% of full-scale accuracy, from DC to 100 Hz, into a 16-bit ADC with a 0–5 V range.
+
+<SignalChainFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / THE CHAIN, STAGE BY STAGE</span><h3>From ±5 mV on 2.5 V to a 16-bit code</h3>
+
+<p><strong>Gain and reference.</strong> To use ±1 V of the ADC's range around its center, the gain is 1 V/5 mV = 200. An INA with first-stage gain 20 and subtractor gain 10 keeps its internal outputs at 2.5 ± 0.05 V, well inside their range (Chapter 86). Its reference pin is driven by a buffered divider from the 5 V excitation, so the output's center is half the excitation.</p>
+
+<p><strong>Ratiometric measurement.</strong> The ADC's reference is the same 5 V excitation. If the excitation drifts by 1%, the bridge's output, the INA's reference and the ADC's full scale all drift by 1%, and the digital code does not change. A ratiometric chain needs no precision reference.</p>
+
+<p><strong>Filter.</strong> A second-order Butterworth low-pass at 100 Hz (Chapter 90) sets the noise bandwidth to about 111 Hz and attenuates interference, including 50/60 Hz harmonics above the band, before the ADC samples.</p>
+
+<p><strong>ADC driver.</strong> A rail-to-rail op amp and an RC charge reservoir settle the ADC's sampling kickback to half an LSB within its acquisition time (Chapter 83).</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Close every budget</h2></div>
+
+Now the budget, referred to the ADC's input. One LSB is 5 V/65 536 = 76 µV; the 0.1% accuracy target is 1 mV of the ±1 V full scale.
+
+| Error source | At the INA input | At the ADC | Comment |
+|---|---|---|---|
+| Bridge + INA white noise, 10.3 nV/√Hz × √111 Hz | 0.11 µV rms | 22 µV rms | 0.3 LSB rms: fine |
+| Offset, zero-drift INA, 5 µV | 5 µV | 1.0 mV | equals the whole target: calibrate at zero strain |
+| Offset drift, 0.05 µV/°C × 40 °C | 2 µV | 0.4 mV | remains after calibration |
+| Gain resistor 0.05%, 10 ppm/°C | — | 0.5 + 0.4 mV at full scale | calibrate gain, or buy a better resistor |
+| Excitation drift | cancelled | — | ratiometric |
+| Common mode 2.5 V × CMRR 110 dB | 8 µV, constant | — | becomes part of the offset; calibrated out |
+
+After a zero and a full-scale calibration, the remaining errors (drift, gain-resistor temperature coefficient, noise) add to about 0.8 mV worst case: inside the 1 mV target, but only just. The budget also says where to spend money next: on the gain resistor's temperature coefficient, not on a quieter amplifier.
+
+That answers the opening question. A circuit that computes the right function is a necessary start. An instrument also needs every error enumerated, referred to one place, compared with the requirement, and checked at the extremes: of temperature, of common mode, of signal, and in time, after an overload.
+
+**Validate in stages:** DC operating points and internal ranges, resistor ratios, AC response with finite-gain op amps, transients and settling, noise integrated over the real bandwidth. The MOSFET and op-amp chapters provide the models, but every connection between stages creates a new loading, range or feedback question. State each one explicitly before calling the design complete.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A feedback element defines a function; <em>a budget defines an instrument</em>. Enumerate every error, refer it to one place, compare it with the specification, and check it at every extreme before connecting the last wire.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. What stops a mathematically correct analog function from being an accurate instrument?</summary>
+<div>
+
+Its elements only approximately obey their laws (junction saturation currents change with temperature, components have tolerances and drift), and every real stage adds offset, leakage, noise, range limits and settling time. Accuracy comes from a complete error budget, calibration where errors are repeatable, and checks at every extreme.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why does a log amplifier's accuracy fail at low currents?</summary>
+<div>
+
+Leakage currents (op-amp bias, protection diodes, board) add to the input current. At 10 nA, 1 nA of leakage is a 10% error in the measured quantity, about 2.5 mV in the logarithmic output. The log compresses the signal, but not the relative error.
+
+</div>
+</details>
+
+<details>
+<summary>3. How does a matched reference transistor improve a log amplifier?</summary>
+<div>
+
+Subtracting the reference junction's voltage from the signal junction's gives $U_T\ln(I/I_{REF})$: the saturation current $I_S$, which roughly doubles every 10 °C, cancels if the two transistors are matched and at the same temperature. The remaining $U_T$ dependence is corrected with a temperature-dependent gain.
+
+</div>
+</details>
+
+<details>
+<summary>4. In the Schmitt trigger, what sets the hysteresis?</summary>
+<div>
+
+The output swing times the attenuation of the positive-feedback divider: about $V_{swing}\,(R_1 \parallel R_2)/R_3$, 0.28 V with 10 kΩ, 10 kΩ and 82 kΩ on 5 V. Choose it larger than the input noise's peak-to-peak value.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why can a Wien-bridge oscillator not simply use a gain of exactly 3?</summary>
+<div>
+
+With $K$ exactly 3 the oscillation neither grows nor decays, so it would never start, and any tolerance would make it decay ($K < 3$) or grow until clipping ($K > 3$). A real oscillator starts above 3 and uses an amplitude-control loop to bring the effective gain to exactly 3 at the desired amplitude.
+
+</div>
+</details>
+
+<details>
+<summary>6. What does "ratiometric" mean in the bridge chain, and what does it save?</summary>
+<div>
+
+The bridge's excitation and the ADC's reference are the same voltage. The bridge's output is proportional to the excitation, and the ADC measures relative to its reference, so excitation changes cancel in the digital result. The chain needs no precision voltage reference.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Selvam, <em>Analog Function Circuits</em>, chapters 2–3 (log, antilog and nonlinear function circuits); Asadi, <em>Applied Op Amp Circuits</em>, chapters 7 and 9 (comparators, Schmitt triggers, oscillators); Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§4.3.2, 7.1.5 and 5.1–5.5 (comparators, sine oscillators, precision design). Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-function-design/practice/">Open practice →</a></div>

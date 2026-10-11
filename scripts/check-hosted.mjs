@@ -1,3 +1,4 @@
+import {chapters} from '../src/curriculum/chapters.ts';
 import {readdir, readFile, stat} from 'node:fs/promises';
 import {resolve, join, dirname} from 'node:path';
 
@@ -41,7 +42,8 @@ async function walk(dir) {
   }
 }
 await walk(root);
-if (pages !== 112) problems.push(`Expected 112 chapter/practice pages; found ${pages}.`);
+if (pages !== chapters.length*2) problems.push(`Expected ${chapters.length*2} chapter/practice pages; found ${pages}.`);
+for (const c of chapters) for (const href of [c.href,c.practice]) if (!await exists(join(root,href,'index.html'))) problems.push(`Missing curriculum page: ${href}`);
 if (problems.length) {
   console.error(problems.join('\n'));
   process.exitCode = 1;

@@ -1,0 +1,209 @@
+import Equation from '../../components/Equation.astro';
+import {MosOutputFigure} from '../../components/MosAnalogFigures';
+import {CrossoverFigure,CrossoverGainFigure,ClassAbBiasCircuit,OutputPowerFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 74</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>Complementary MOS output followers<br/><em>One device pushes, the other pulls.</em></h1>
+
+<p className="dek">Combine an NMOS and a PMOS follower into a push–pull output that can both source and sink current. See where crossover distortion comes from, set the class-AB idle current with a gate spread and a replica bias, and budget the power at the amplitude where the transistors run hottest.</p>
+
+<div className="chapter-meta"><span>50–70 min</span><span>Source followers (Chs. 66–67) · BJT push–pull (Ch. 37)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Tie the gates of an NMOS and a PMOS follower together and drive them with a small sine wave. What comes out?</p></div>
+
+<div>
+
+A single source follower can push current but not pull it (Chapter 66), and adding a current sink lets it pull only as much as the sink's standing current (Chapter 67). To drive a real load in both directions, without burning a large idle current, use two followers of opposite polarity: an NMOS that sources current from the positive rail and a PMOS that sinks it to the negative rail.
+
+That is the MOS version of Chapter 37's push–pull stage. Its problem is the handover. Near zero output, each device needs its threshold voltage before it conducts at all, and if nothing provides it, the output sits still while the input wanders through a dead zone. The cure, class-AB bias, has its own subtleties for MOSFETs, whose thresholds are both large and uncertain.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Give the two gates distinct commands → See the crossover → Set the idle current from the gate spread → Generate the spread with replicas → Compare three class-AB biases → Budget the power → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Give the two gates distinct commands</h2></div>
+
+<MosOutputFigure/>
+
+The NMOS $M_N$ has its drain on $+V_S$ and sources current into the output; the PMOS $M_P$ has its drain on $-V_S$ and sinks current from it. Their sources join at the output. A bias network above them provides two **separate** gate voltages, $V_{GN} = V_{in} + V_B/2$ and $V_{GP} = V_{in} - V_B/2$, a fixed spread $V_B$ apart.
+
+Assume each body is tied to its own source, complementary devices with equal $k$ and threshold magnitude, and enough drain headroom. Then the stage is symmetric: whatever the NMOS does for positive outputs, the PMOS does for negative ones.
+
+</section>
+
+<section id="crossover">
+
+<div className="section-heading"><span>02</span><h2>See the crossover</h2></div>
+
+Now the opening question. With the gates tied ($V_B$ = 0) and the output at zero, the NMOS has $V_{GS} = V_{in}$ and the PMOS $V_{SG} = -V_{in}$. Neither conducts until $|V_{in}| > V_T$. For a small sine wave below the threshold, **nothing** comes out. For a larger one, the output follows the input with a threshold missing from every half-cycle:
+
+<CrossoverFigure/>
+
+The local gain shows the defect most clearly:
+
+<CrossoverGainFigure/>
+
+Even with a gate spread of exactly $2V_T$, class B, each device turns on just as the other turns off, with zero current and therefore zero $g_m$ at the handover. The output resistance $1/g_m$ is momentarily infinite and the local gain falls to zero; averaged over the central ±0.5 V the gain is only 0.64. Crossover distortion is worst, in relative terms, for **small** signals, because the dip is a larger fraction of the waveform. That is the opposite of most distortion mechanisms, and it is especially audible.
+
+</section>
+
+<section id="bias">
+
+<div className="section-heading"><span>03</span><h2>Set the idle current from the gate spread</h2></div>
+
+Give each device a little overdrive at zero output: class AB. With both devices conducting the same idle current $I_Q$,
+
+<Equation tex={String.raw`V_B=V_{TN}+|V_{TP}|+u_N+u_P,\qquad I_Q=\tfrac12k_Nu_N^2=\tfrac12k_Pu_P^2`} label="CLASS-AB GATE SPREAD"/>
+
+For matched devices $V_B = 2(V_T + u)$. Around zero both devices conduct, their source conductances add, and the output resistance is
+
+<Equation tex={String.raw`R_{out}\approx\frac{1}{g_{mN}+g_{mP}}=\frac{1}{2\sqrt{2kI_Q}}`}/>
+
+As the output moves away from zero, one device takes more current and the other less, until the second turns off and the first carries the whole load. A single quiescent $R_{out}$ does not describe the whole waveform, but keeping both devices on through the crossing removes the gain dip.
+
+The relationship between spread and current is steep. With $k$ = 20 mA/V² and 0.1 mA idle, $u$ = 0.1 V; adding 20 mV to the spread raises each overdrive by 10 mV and the current by 21%. Worse, $V_T$ falls by about 2 mV/°C. A fixed spread from a resistor chain would let the idle current run away as the output devices warm, the MOS analog of bipolar thermal runaway.
+
+</section>
+
+<section id="replica">
+
+<div className="section-heading"><span>04</span><h2>Generate the spread with replicas</h2></div>
+
+<ClassAbBiasCircuit/>
+
+The cure is to make the spread out of transistors like the output devices. A bias current flows through a diode-connected NMOS $M_3$ and a diode-connected PMOS $M_4$ in series. Around the loop formed by the four gate–source voltages,
+
+<Equation tex={String.raw`V_{GS3}+V_{SG4}=V_{GSN}+V_{SGP}`}/>
+
+If $M_N$ and $M_P$ are $n$ times as wide as $M_3$ and $M_4$, and all four have the same threshold (same process, same temperature), the equation is satisfied with the output devices carrying $n$ times the bias current: $I_Q = nI_{bias}$. The thresholds cancel. When the output devices warm, the replicas must warm with them, which means thermal coupling: mounting them on the same die or heat sink.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / SIZE THE REPLICA</span><h3>1 mA idle from a 50 µA bias</h3>
+
+<p>$n = I_Q/I_{bias}$ = 20: each output device is 20 unit cells, each replica one. If the output devices have $k$ = 20 mA/V², the replicas have 1 mA/V², and both run at the same overdrive, $\sqrt{2 × 0.05/1}$ = 0.316 V. The spread is $2(1 + 0.316)$ = 2.63 V.</p>
+
+<p>Check tracking: if every threshold falls by 50 mV with temperature, the replicas' spread falls by 100 mV and the output devices' required spread falls by exactly the same amount. The idle current stays at 1 mA. Without the replicas, a fixed 2.63 V spread at 50 mV lower thresholds would give $u$ = 0.366 V and $I_Q$ = 1.34 mA, 34% more, and more heating.</p>
+
+</div>
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>05</span><h2>Compare three class-AB biases</h2></div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / IDLE CURRENT, OUTPUT RESISTANCE AND DRIVE</span><h3>±5 V rails, $k_N = k_P$ = 20 mA/V², $|V_T|$ = 1 V</h3>
+
+<p>At idle currents of 0.1, 0.5 and 1 mA, the overdrive is 0.100, 0.224 and 0.316 V and the gate spread 2.20, 2.45 and 2.63 V. Each device's $g_m$ is 2.0, 4.5 and 6.3 mS, so the output resistance near zero is <strong>250, 112 and 79 Ω</strong>. The idle power drawn from 10 V is 1, 5 and 10 mW.</p>
+
+<p><strong>Driving the crest.</strong> A 2 V peak into 1 kΩ needs 2 mA. With the PMOS nearly off at the positive crest, the NMOS needs $u = \sqrt{2 × 2/20}$ = 0.447 V, so its gate must reach 2 + 1 + 0.447 = 3.45 V. Its drain–source voltage is 3 V, well above 0.447 V: saturated. But the stage that drives these gates must swing to 3.45 V; a driver limited to ±3 V would clip the output first. The rails are rarely the swing limit of a follower output; the gate drive is.</p>
+
+</div>
+
+The output sits at least $V_T + u$ below the NMOS gate and above the PMOS gate. With the gate drive limited to the same rails, a complementary follower can never swing closer than about $V_T + u$ to either rail. Rail-to-rail outputs use common-source output devices instead (drains at the output), at the cost of a high output impedance that needs feedback (Chapter 81).
+
+</section>
+
+<section id="power">
+
+<div className="section-heading"><span>06</span><h2>Budget the power</h2></div>
+
+<OutputPowerFigure/>
+
+For a sine output of peak $V_{pk}$ into $R_L$, each rail delivers half-wave current pulses. The average supply power and the load power are
+
+<Equation tex={String.raw`P_{supply}=\frac{2V_SV_{pk}}{\pi R_L}+2V_SI_Q,\qquad P_{load}=\frac{V_{pk}^2}{2R_L}`}/>
+
+and the transistors dissipate the difference. Differentiating, the dissipation is greatest at $V_{pk} = 2V_S/\pi$, about 64% of full swing, where it equals $2V_S^2/(\pi^2R_L)$ plus the idle power. On ±5 V into 100 Ω that is 51 mW + 10 mW. A stage rated only for its full-output dissipation will overheat at two-thirds volume.
+
+<div className="margin-note">
+
+**Real output stages need more.** Source resistors (a few ohms in power stages) add local feedback that stabilizes the idle current and improves sharing between paralleled devices. Short-circuit protection limits the gate drive when the output current exceeds a safe value. Large power MOSFETs have hundreds of picofarads of gate capacitance that the driver must charge at the signal's slew rate. And inside an op amp, global feedback reduces the remaining crossover error by the loop gain, only as long as the loop has bandwidth to spare at the crossover's harmonic frequencies.
+
+</div>
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A complementary follower needs a gate spread of $2(V_T + u)$ to avoid crossover. Generate it from <em>replicas of the output devices</em>, so the idle current tracks $n I_{bias}$ instead of the thresholds, and rate the stage for the dissipation peak at $2V_S/\pi$.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. What comes out of a complementary follower with tied gates driven by a 0.5 V sine?</summary>
+<div>
+
+Nothing (with 1 V thresholds). Each device needs its gate a threshold beyond its source before it conducts; with the output at zero and the input within ±1 V, neither does. Larger inputs pass with a threshold removed from each half-cycle: severe crossover distortion.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why does class B (spread exactly $2V_T$) still distort?</summary>
+<div>
+
+At the handover both devices carry almost no current, so their transconductances, and hence the stage's output conductance, approach zero. The output resistance $1/g_m$ momentarily becomes large compared with the load and the gain dips. Class AB keeps both devices conducting through the crossing.
+
+</div>
+</details>
+
+<details>
+<summary>3. For matched devices with $V_T$ = 0.8 V, $k$ = 10 mA/V² and $I_Q$ = 0.2 mA, what spread is needed?</summary>
+<div>
+
+$u = \sqrt{2 × 0.2/10}$ = 0.2 V, so $V_B = 2(0.8 + 0.2)$ = **2.0 V**.
+
+</div>
+</details>
+
+<details>
+<summary>4. How does a replica bias keep the idle current constant as thresholds drift?</summary>
+<div>
+
+The spread is generated by diode-connected devices of the same type as the output devices. Their gate–source voltages contain the same thresholds, so any threshold change alters the generated spread by exactly the amount the output devices need. The loop equation then fixes the output current at $n I_{bias}$, independent of $V_T$, provided all four devices share a temperature.
+
+</div>
+</details>
+
+<details>
+<summary>5. On ±12 V rails with 3 mA of idle current, what is the idle power?</summary>
+<div>
+
+$24\text{ V} × 3\text{ mA}$ = **72 mW**, dissipated in the output devices (and any source resistors) even with no signal.
+
+</div>
+</details>
+
+<details>
+<summary>6. Why is the transistor dissipation largest at about two-thirds of full output, not at full output?</summary>
+<div>
+
+The dissipation is the supply power minus the load power. Supply power grows linearly with amplitude, load power as its square. Their difference peaks where the derivatives are equal, at $V_{pk} = 2V_S/\pi$. At full output the load takes a larger share of the supply power, and the transistors less.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §2.4.1 (push–pull) and §3.5 (power MOSFET circuits); Huijsing, <em>Operational Amplifiers</em>, 3rd ed., chapter 5 (output stages). Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-complementary-output/practice/">Open practice →</a></div>

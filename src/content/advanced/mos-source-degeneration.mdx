@@ -1,0 +1,224 @@
+import Equation from '../../components/Equation.astro';
+import {MosMirrorFigure} from '../../components/MosAnalogFigures';
+import {MosCases,MosLab} from '../../components/MosAnalogLabs';
+import {DegenSmallSignalFigure,DegenLinearityFigure,DegenGainSpreadFigure,DegenMismatchFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 61</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>Source degeneration in MOS circuits<br/><em>A resistor that makes the transistor matter less.</em></h1>
+
+<p className="dek">Derive local feedback from source-node KCL, including body effect and output conductance, and measure the four things degeneration buys (predictable gain, linearity, output resistance and matching) against the headroom it costs.</p>
+
+<div className="chapter-meta"><span>55–75 min + exploration</span><span>Bias atlas (Ch. 57) · Mirrors (Chs. 59–60) · BJT degeneration (Ch. 32)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">A source resistor cuts a stage's gain from −9 to −5. Why would a designer ever pay that price?</p></div>
+
+<div>
+
+Everything about a MOSFET that we would like to depend on, its threshold, its $k$, its transconductance, varies from part to part and with temperature. A resistor in the source lead makes the circuit depend on those quantities less and on the resistor more.
+
+The mechanism is local negative feedback. If the drain current rises, the source voltage rises with it, the gate–source voltage falls, and the rise is opposed. Chapter 32 met the same idea as emitter degeneration in a bipolar stage. This chapter derives it carefully for the MOSFET, where the body effect and the output resistance both enter, and then counts its benefits one by one.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>A current increase moves its own gate reference → Keep drain and source equations together → Four things degeneration buys → Degenerated mirrors and their price → DC, AC and noise are different questions → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>A current increase moves its own gate reference</h2></div>
+
+<MosMirrorFigure mode="degenerated"/>
+
+Each source in this mirror has a resistor to ground; the bodies are assumed tied to their own sources. Suppose the output device's current tries to rise, perhaps because its drain voltage rose or its threshold is a little low. Its source voltage $I_DR_S$ rises, its $V_{GS}$ falls, and the current is pulled back. The gate voltage the reference branch provides must now cover $V_{GS}$ **plus** the source drop.
+
+That last sentence is the price, and it comes first. A 500 Ω resistor carrying 1 mA uses 0.5 V of supply. A current sink needs its drain above $I_DR_S + u$; a mirror's reference needs a gate voltage of $V_T + u + I_DR_S$. Degeneration can only stabilize a bias that has room to exist. Check that the operating point is feasible before computing any feedback factor.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Keep drain and source equations together</h2></div>
+
+<DegenSmallSignalFigure/>
+
+With the body grounded, $v_{bs} = -v_s$, and the drain current is the sum of three terms:
+
+<Equation tex={String.raw`i_d=g_m(v_g-v_s)-g_{mb}v_s+g_{ds}(v_d-v_s)`}/>
+
+The source and drain resistors close the loop: $v_s = i_dR_S$ and $v_d = -i_dR_D'$, where $R_D' = R_D \parallel R_L$ is the external drain resistance (not $r_o$, which is already the $g_{ds}$ term). Substituting both and solving for $v_d/v_g$:
+
+<Equation tex={String.raw`A_v=-\frac{g_mR_D'}{1+g_{ds}R_D'+(g_m+g_{mb}+g_{ds})R_S}\;\approx\;-\frac{R_D'}{R_S+1/g_m}`} label="DEGENERATED COMMON-SOURCE GAIN"/>
+
+The approximation holds when $g_{ds}$ and $g_{mb}$ are small. It says the gain is the ratio of the drain resistance to the total resistance in the source path: the external $R_S$ plus the transistor's own "intrinsic source resistance" $1/g_m$. When $R_S \gg 1/g_m$ the transistor drops out entirely and $A_v \to -R_D'/R_S$, a ratio of two resistors.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / THE FULL FORMULA AND ITS SHORTCUT</span><h3>$g_m$ = 2 mS, $r_o$ = 50 kΩ, $R_D$ = 5 kΩ, $R_S$ = 500 Ω</h3>
+
+<p>Without degeneration: $A_v = -g_mR_D/(1 + g_{ds}R_D)$ = −10/1.1 = <strong>−9.09</strong>.</p>
+
+<p>With 500 Ω and no body effect: the denominator is 1 + (20 µS)(5 kΩ) + (2.02 mS)(500 Ω) = 1 + 0.1 + 1.01 = 2.11, so $A_v$ = <strong>−4.74</strong>. The shortcut $-R_D/(R_S + 1/g_m)$ = −5/1.0 = −5.0 is within 6%.</p>
+
+<p>With a grounded body and $g_{mb}$ = 0.2 $g_m$: add (0.4 mS)(500 Ω) = 0.2 to the denominator, giving −10/2.31 = <strong>−4.33</strong>. The body effect strengthens the feedback, since a rising source also raises the threshold.</p>
+
+</div>
+
+### Looking into the drain
+
+Now hold the gate and body at AC ground and push a test current $i$ into the drain. The source rises to $iR_S$, so $v_{gs} = -iR_S$, and the controlled source pulls $(g_m + g_{mb})iR_S$ **against** the test current. The difference must flow through $r_o$, which needs extra drain voltage:
+
+<Equation tex={String.raw`R_{out}=r_o+R_S+(g_m+g_{mb})\,r_oR_S\;\approx\;r_o\,(1+g_mR_S)`} label="OUTPUT RESISTANCE OF A DEGENERATED SOURCE"/>
+
+With the numbers above, $R_{out}$ = 50 + 0.5 + (2 mS)(50 kΩ)(0.5 kΩ) = **100.5 kΩ**, double the undegenerated 50 kΩ. The same factor $1 + g_mR_S$ that divides the gain multiplies the output resistance. That is the general signature of negative feedback.
+
+</section>
+
+<section id="benefits">
+
+<div className="section-heading"><span>03</span><h2>Four things degeneration buys</h2></div>
+
+**1. Predictable gain.** If the current is set by a bias circuit, $g_m = \sqrt{2kI_D}$ varies with $k$, and so does an undegenerated gain. With degeneration the fractional sensitivity of gain to $g_m$ is divided by $1 + g_mR_S$:
+
+<Equation tex={String.raw`\frac{dA_v/A_v}{dg_m/g_m}=\frac{1}{1+g_mR_S}`}/>
+
+<DegenGainSpreadFigure/>
+
+**2. Linearity.** The square law's distortion comes from $g_m$ changing during the signal. Degeneration makes the effective transconductance $g_m/(1+g_mR_S)$ insensitive to $g_m$, and so to the signal:
+
+<DegenLinearityFigure/>
+
+For the same gate signal, the second-harmonic distortion falls by $(1 + g_mR_S)^2$: one factor because the transistor sees a smaller $v_{gs}$, another because its nonlinearity is itself suppressed by the loop. At 1 mA with $u$ = 1 V and a 0.1 V gate signal, the second harmonic is 2.5% with no source resistor, 0.63% with 500 Ω ($g_mR_S$ = 1) and 0.10% with 2 kΩ ($g_mR_S$ = 4). For the same **output** amplitude the improvement is one factor of $1 + g_mR_S$, because you must drive the degenerated stage harder.
+
+**3. Output resistance.** As derived above, a degenerated current sink has output resistance $r_o(1 + g_mR_S)$. A 2 kΩ source resistor at 2 mS makes a 50 kΩ device look like 250 kΩ.
+
+**4. Matching.** This is the subject of the next section, and for current mirrors it is often the main reason to degenerate.
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>04</span><h2>Degenerated mirrors and their price</h2></div>
+
+In a degenerated mirror, a threshold mismatch $\Delta V_T$ must now be absorbed by both the overdrive and the source drop. To first order, the relative current error is
+
+<Equation tex={String.raw`\frac{\Delta I}{I}\approx-\frac{2\,\Delta V_T/u}{1+g_mR_S}+\frac{\Delta R_S}{R_S}\cdot\frac{-g_mR_S}{1+g_mR_S}`}/>
+
+The threshold term shrinks with degeneration; a resistor mismatch term appears and grows toward the resistor mismatch itself. With good resistors (0.1–1%) and poorly matched transistors, degeneration is a large net win:
+
+<DegenMismatchFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A MIRROR FROM TWO DISCRETE MOSFETS</span><h3>Thresholds 1.0 V and 1.2 V, $k$ = 20 mA/V², 1 mA</h3>
+
+<p>Two separately packaged small-signal MOSFETs can easily differ by 0.2 V in threshold. With no source resistors, the reference device needs $u = \sqrt{2 × 1/20}$ = 0.32 V, so $V_{GS}$ = 1.32 V. The output device, with a 1.2 V threshold, gets only 0.12 V of overdrive and carries $10 × 0.116^2$ = <strong>0.135 mA</strong>. It is not a mirror at all.</p>
+
+<p>Add 2.2 kΩ to each source. The reference now sits at $V_G$ = 1.0 + 0.32 + 2.2 = 3.52 V. For the output solve $I = 10(3.52 - 1.2 - 2.2I)^2$, which gives <strong>0.915 mA</strong>: an 8.5% error, set mostly by the 2.2 V that each resistor drops. The first-order estimate, 126%/(1 + 6.3 × 2.2) = 8.5%, agrees.</p>
+
+<p>The price is 2.2 V of headroom on both sides. A discrete mirror is really a pair of matched resistors with transistors to hold their voltages.</p>
+
+</div>
+
+Here is the effect on the systematic, drain-voltage error. The table uses a 1 mA reference, $k$ = 2 mA/V², $V_T$ = 1 V, $\lambda$ = 0.02 V⁻¹ and 500 Ω in each source:
+
+<MosCases kind="degenerated"/>
+
+Compare it with the undegenerated table in Chapter 59: above the knee the current changes less with output voltage (higher $R_{out}$), but the knee itself has moved up by the 0.5 V source drop, so the 0.2 V point fails more completely.
+
+<MosLab kind="mirror" client:load/>
+
+<p className="caption">Live lab. Set the two source resistors to 500 Ω and sweep the output voltage. Before moving the slider further, predict how the slope above the knee and the knee voltage will change at 1 kΩ. The reference gate voltage is recomputed for each setting.</p>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>DC, AC and noise are different questions</h2></div>
+
+**Separating DC from AC.** A capacitor across $R_S$ keeps the DC feedback (stable bias) while removing degeneration at signal frequencies (high gain). Chapter 57 used this. But the capacitor creates a zero and a pole: below roughly $1/(2\pi R_SC_S)$ the stage has its low degenerated gain; above roughly $(1 + g_mR_S)/(2\pi R_SC_S)$ it has its full gain; in between the gain rises at 20 dB/decade. With $R_S$ = 500 Ω, $g_m$ = 2 mS and 10 µF, the transition runs from 32 Hz to 64 Hz. Choose $C_S$ so the whole transition is below the signal band, and remember that the bypassed stage has lost the linearity benefit too.
+
+**Partial bypassing.** Split $R_S$ into an unbypassed part, which sets the AC gain and linearity, and a bypassed part, which adds only DC feedback. This is the most common practical arrangement.
+
+**Noise.** $R_S$ contributes thermal noise $\sqrt{4kTR_S}$ directly in series with the input, adding to the transistor's own noise. At 500 Ω that is 2.9 nV/√Hz. In a low-noise input stage, degeneration is used sparingly, or replaced by global feedback that does not put a resistor in series with the input (Chapter 76).
+
+**Headroom, again.** The resistor's DC drop is the one cost that cannot be bypassed away. In low-voltage circuits, where every 100 mV counts, designers get high output resistance from cascodes instead (Chapter 62), which cost about one overdrive rather than a resistor drop.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Source degeneration divides every transistor-dependent quantity by $1 + g_mR_S$ and multiplies output resistance by the same factor. It costs gain and headroom, and <em>buys predictability</em>.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why can the gain approach $-R_D/R_S$, independent of the transistor?</summary>
+<div>
+
+The gain is $-R_D'/(R_S + 1/g_m)$. When $R_S$ is much larger than $1/g_m$, the transistor's contribution to the denominator becomes negligible. Physically, the transistor forces its source to follow its gate (like a follower), so the signal current is set by the gate voltage across $R_S$, and that current flows through $R_D$.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why must you write KCL at both the drain and the source, rather than adding $R_S$ to a memorized formula?</summary>
+<div>
+
+Because $r_o$ connects drain to source, the current through it depends on $v_d - v_s$, and both nodes move. Dropping either node's motion loses the $g_{ds}R_D'$ term or the $g_{ds}R_S$ term. For large gains or large $R_S$ these terms matter; for example they are what limits a degenerated current source's output resistance to $r_o(1 + g_mR_S)$ rather than infinity.
+
+</div>
+</details>
+
+<details>
+<summary>3. A 1 mA current sink has $R_S$ = 500 Ω and 0.5 V of overdrive. What is its minimum drain voltage?</summary>
+<div>
+
+The source sits at 0.5 V and the channel needs another 0.5 V to stay in saturation, so the drain must stay above **1.0 V**. Without degeneration the compliance would be 0.5 V. Degeneration traded half a volt of swing for a higher output resistance and better matching.
+
+</div>
+</details>
+
+<details>
+<summary>4. Degeneration reduced second-harmonic distortion by a factor of 4 for the same gate signal. Why is the improvement only a factor of 2 for the same output amplitude?</summary>
+<div>
+
+With $g_mR_S$ = 1, the gain is halved, so to get the same output you must double the gate signal. Distortion of a square law grows in proportion to signal amplitude, giving back one factor of 2. The net improvement at fixed output is $1 + g_mR_S$.
+
+</div>
+</details>
+
+<details>
+<summary>5. When does adding source resistance make a mirror's matching worse?</summary>
+<div>
+
+When the resistors match worse than the transistors' thresholds do, relative to the overdrive. The resistor term approaches $\Delta R/R$ for large $g_mR_S$. If the transistors are well matched integrated devices at large overdrive and the resistors are poorly matched, the threshold term was already small and degeneration mostly adds resistor error, plus headroom loss.
+
+</div>
+</details>
+
+<details>
+<summary>6. A bypass capacitor restores the gain. What does it not restore?</summary>
+<div>
+
+It restores the signal gain but removes the signal-frequency benefits: the linearity improvement, the gain predictability and the boosted output resistance at those frequencies. It keeps only the DC bias stability. It also introduces a low-frequency transition region whose position depends on $g_m$.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§2.3.4 and 3.2; Huijsing, <em>Operational Amplifiers</em>, 3rd ed., chapter 4. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-source-degeneration/practice/">Open practice →</a></div>

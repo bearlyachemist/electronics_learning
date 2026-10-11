@@ -1,0 +1,222 @@
+import Equation from '../../components/Equation.astro';
+import {InternalAmplifierFigure} from '../../components/OpAmpFigures';
+import {TwoNodeModelFigure,TwoStageBodeFigure,PoleSplitFigure,TwoStageStepFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 75</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>Build a two-stage MOS voltage amplifier<br/><em>Gain from two stages, stability from one capacitor.</em></h1>
+
+<p className="dek">Join a mirror-loaded differential pair to a common-source gain stage, find which input is which, and compensate the result. Derive pole splitting from a two-node model, see the right-half-plane zero and how a resistor removes it, and design for a phase margin you can verify in a step response.</p>
+
+<div className="chapter-meta"><span>70–90 min</span><span>Mirror-loaded pair (Ch. 72) · Active loads (Ch. 65) · Miller effect (Ch. 41)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Two stages give gains of 50 and 100. Connect the result as a unity-gain follower. Will it settle, or oscillate?</p></div>
+
+<div>
+
+Every block needed for an op amp is now on the table: a differential pair that converts an input difference to a current, a mirror that collects that current into one node, an active-loaded stage that turns current into a large voltage, and bias networks for all of them. Chained together, two stages give a gain in the thousands.
+
+But a high-gain amplifier with more than one significant pole, placed inside a feedback loop, oscillates unless it is deliberately made slow at the right frequencies. This chapter builds the classic two-stage CMOS amplifier and compensates it with a single capacitor that, through the Miller effect, does two jobs at once.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Connect transconductance to voltage gain → Multiply gains and find the polarity → Two high-impedance nodes, two poles → Split the poles with one capacitor → Design for phase margin → Close a real feedback loop → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Connect transconductance to voltage gain</h2></div>
+
+<InternalAmplifierFigure technology="mos"/>
+
+The first stage is Chapter 72's mirror-loaded NMOS pair: it converts $v_d$ into a current $g_{m1}v_d$ delivered to node $V_X$, whose resistance $R_1$ is the parallel output resistance of $M_2$ and $M_4$. The second stage is a common-source NMOS with a PMOS current-source load: it converts $V_X$ into a current $g_{m2}V_X$ delivered to the output, whose resistance $R_2$ is again two transistors' $r_o$ in parallel. $C_C$, the compensation capacitor, connects $V_X$ to the output.
+
+The tail current, the PMOS bias $V_{BP}$ and the sources' and bodies' connections stand for circuits that must exist in a real design; here they are ideal. The drawing is an original teaching construction, not any particular commercial device.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Multiply gains and find the polarity</h2></div>
+
+At low frequency the two stages simply multiply:
+
+<Equation tex={String.raw`A_0=(g_{m1}R_1)(g_{m2}R_2)`} label="DC OPEN-LOOP GAIN"/>
+
+With $g_{m1}$ = 1 mS, $R_1$ = 50 kΩ, $g_{m2}$ = 4 mS and $R_2$ = 25 kΩ, the stage gains are 50 and 100, so $A_0$ = 5000 (74 dB). Under feedback, a 1 V output then needs only 200 µV between the inputs. Here $g_{m1}$ is the whole first stage's differential-to-single-ended transconductance, $g_{m0}$ in Chapter 72, not one branch's.
+
+**Polarity.** Raise the left gate. The mirror makes $V_X$ rise (Chapter 72). The common-source second stage inverts, so the output falls. The left gate is therefore the **inverting** input and the right gate the noninverting one: the "plus" input is the gate on the side opposite the mirror's diode. Always trace the signal; a wrong label turns negative feedback into positive feedback.
+
+</section>
+
+<section id="poles">
+
+<div className="section-heading"><span>03</span><h2>Two high-impedance nodes, two poles</h2></div>
+
+<TwoNodeModelFigure/>
+
+Both $V_X$ and the output are high-impedance nodes, and each has capacitance: $C_1$ (mostly the second-stage gate, here 0.5 pF) and $C_2$ (the load, here 10 pF). Without $C_C$, they form two poles:
+
+<Equation tex={String.raw`f_1=\frac{1}{2\pi R_1C_1}\approx6.4\text{ MHz},\qquad f_2=\frac{1}{2\pi R_2C_2}\approx640\text{ kHz}`}/>
+
+Each contributes up to 90° of phase lag. By the time the open-loop gain has fallen from 5000 to 1, near 140 MHz, the phase is within about 3° of −180°. In a unity-gain follower the loop gain is the open-loop gain, so at that frequency the fed-back signal returns inverted twice: positive feedback, with a gain of one. That answers the opening question: uncompensated, it oscillates.
+
+</section>
+
+<section id="split">
+
+<div className="section-heading"><span>04</span><h2>Split the poles with one capacitor</h2></div>
+
+Writing KCL at both nodes of the two-node model with $C_C$ included gives
+
+<Equation tex={String.raw`\frac{v_{out}}{v_d}=\frac{A_0\,(1-sC_C/g_{m2})}{1+s\,a+s^2b},\qquad\begin{aligned}a&=R_1(C_1+C_C)+R_2(C_2+C_C)+g_{m2}R_1R_2C_C\\ b&=R_1R_2\,[C_1C_2+C_C(C_1+C_2)]\end{aligned}`}/>
+
+When the term $g_{m2}R_1R_2C_C$ dominates $a$, the two roots separate widely:
+
+<Equation tex={String.raw`p_1\approx\frac{1}{2\pi\,g_{m2}R_2\,R_1C_C},\qquad p_2\approx\frac{g_{m2}C_C}{2\pi\,[C_1C_2+C_C(C_1+C_2)]}\approx\frac{g_{m2}}{2\pi\,(C_1+C_2)}`}/>
+
+Two things happen at once. Seen from node $X$, $C_C$ is multiplied by the second stage's gain (the Miller effect), so $p_1$ moves **down**, dramatically. And at high frequency $C_C$ short-circuits the second stage's gate to its drain, turning it into a diode connection with resistance $1/g_{m2}$ at the output, so $p_2$ moves **up**. This is pole splitting:
+
+<PoleSplitFigure/>
+
+Between the two poles, the gain falls at 20 dB per decade from a single dominant pole and crosses unity at
+
+<Equation tex={String.raw`f_u=A_0\,p_1\approx\frac{g_{m1}}{2\pi C_C}`} label="UNITY-GAIN FREQUENCY"/>
+
+That is Chapter 65's gain–bandwidth product, $g_m/2\pi C$, for the first stage driving an effective capacitance $C_C$. The second stage's gain has dropped out.
+
+### The right-half-plane zero
+
+The numerator $1 - sC_C/g_{m2}$ is a zero in the right half plane, at $f_z = g_{m2}/(2\pi C_C)$. At high frequency, current can flow forward through $C_C$ directly into the output, opposing the second stage's inverted current. A right-half-plane zero lifts the magnitude like an ordinary zero but adds phase **lag** like a pole: the worst of both. With $g_{m2}$ = 4 mS and $C_C$ = 5 pF, $f_z$ = 127 MHz, uncomfortably close to $p_2$.
+
+The cure is a nulling resistor $R_Z$ in series with $C_C$. The zero moves to $1/[2\pi C_C(1/g_{m2} - R_Z)]$: at $R_Z = 1/g_{m2}$ = 250 Ω it goes to infinity, and with $R_Z$ larger it becomes a helpful left-half-plane zero. $R_Z$ itself is usually a MOSFET in triode, so it can track $g_{m2}$ with process and temperature.
+
+</section>
+
+<section id="design">
+
+<div className="section-heading"><span>05</span><h2>Design for phase margin</h2></div>
+
+Stability is judged by the **phase margin**: 180° plus the open-loop phase at the unity-gain frequency. About 45° is the bare minimum, 60° a common target. The exact two-node model gives:
+
+| $C_C$ | Unity-gain frequency | Phase margin | With $R_Z = 1/g_{m2}$ |
+|---|---|---|---|
+| 1 pF | 75 MHz | 24° | 30° |
+| 2 pF | 53 MHz | 34° | 44° |
+| 5 pF | 28 MHz | 51° | 64° |
+| 10 pF | 15 MHz | 62° | 76° |
+
+<TwoStageBodeFigure/>
+
+More compensation means more margin, but a lower unity-gain frequency and a lower slew rate. The usual rule places $p_2$ at about 2.2 times $f_u$ for 60° of margin, which with $p_2 \approx g_{m2}/2\pi C_2$ and $f_u = g_{m1}/2\pi C_C$ gives
+
+<Equation tex={String.raw`C_C\gtrsim 2.2\,\frac{g_{m1}}{g_{m2}}\,C_2`}/>
+
+Here 2.2 × (1/4) × 10 pF = 5.5 pF, consistent with the table. The ratio $g_{m2}/g_{m1}$ is a design lever: a second stage with more transconductance than the first lets the amplifier be faster for the same load.
+
+<TwoStageStepFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A COMPLETE COMPENSATION BUDGET</span><h3>Gain, bandwidth, slew and settling</h3>
+
+<p><strong>Choose $C_C$ = 5 pF with $R_Z$ = 250 Ω.</strong> Phase margin 64°, $f_u$ = 28 MHz (the estimate $g_{m1}/2\pi C_C$ gives 32 MHz). The follower overshoots about 6%.</p>
+
+<p><strong>Slew rate.</strong> During a large step the pair steers its whole tail current into $C_C$, so $SR = I_T/C_C$. If $g_{m1}$ = 1 mS comes from a pair at $u_0$ = 0.2 V, then $I_T = g_{m1}u_0$ = 200 µA, and $SR$ = 200 µA/5 pF = <strong>40 V/µs</strong>. A 2 V step slews for 50 ns before the small-signal response takes over. The second stage must also supply $C_C$ and $C_2$ at that rate: $(5 + 10)\text{ pF} × 40\text{ V/µs}$ = 600 µA, so its bias current must exceed 600 µA or it will slew asymmetrically.</p>
+
+<p><strong>Accuracy.</strong> As a follower the closed-loop gain error is $1/(1 + A_0)$ = 0.02% at DC, rising with frequency as $A$ falls: at 1 MHz the loop gain is about 28, an error of about 3.5%.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Close a real feedback loop</h2></div>
+
+**Internal DC levels.** The second stage's gate is node $X$, so $V_X$ must equal the second stage's $V_{GS}$: with $V_{T2}$ = 1 V and $u_2$ = 0.4 V, $V_X$ = 1.4 V. Check that this lies inside the first stage's output window. If the second stage were a PMOS with the same $V_{SG}$ as the mirror, $V_X$ would sit exactly at the mirror's voltage and the first stage's systematic offset would vanish (Chapter 72); that is why many CMOS op amps use a PMOS second stage with an NMOS input pair, or vice versa.
+
+**Overload.** In normal feedback the input difference is microvolts. During overload or slewing it can be volts, internal nodes pin to their limits, and recovery takes time. A closed-loop output that looks valid does not prove that every internal node is in its intended region.
+
+**Output drive.** The second stage is class A: it can sink current up to its bias plus whatever the input stage can steer, but source only its PMOS bias current. Driving a heavy or capacitive load needs a class-AB output (Chapter 74), which adds another stage and another pole.
+
+These are the reasons an op amp is more than a differential pair with a large gain label. It needs bias generation, compensation, output drive and overload recovery. Chapter 77 begins the op-amp chapters with the ideal model; Chapters 79–81 restore these real properties one at a time.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Two stages multiply their gains, and their two poles would make a feedback loop oscillate. A Miller capacitor <em>splits the poles</em>, giving a unity-gain frequency of $g_{m1}/2\pi C_C$, and a nulling resistor removes its right-half-plane zero.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Which gate is the noninverting input, and how do you know?</summary>
+<div>
+
+Trace a change. Raising the gate on the mirror's diode side raises $V_X$, and the inverting second stage lowers the output: that gate is inverting. The other gate, on the output side of the mirror, is noninverting. Labels must follow the signal path, never assumption.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why does the uncompensated amplifier oscillate as a follower?</summary>
+<div>
+
+Its two poles (640 kHz and 6.4 MHz) add almost 180° of phase lag well before the loop gain falls to 1. At the unity-gain frequency the fed-back signal is nearly in phase with the input, so the loop sustains itself.
+
+</div>
+</details>
+
+<details>
+<summary>3. Explain pole splitting in two sentences.</summary>
+<div>
+
+Seen from the first-stage output, $C_C$ is multiplied by the second stage's gain, so the first pole moves far down. At high frequency $C_C$ connects the second stage's gate to its drain, making it look like a $1/g_{m2}$ resistor at the output, so the second pole moves up.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why does the unity-gain frequency not depend on the second stage's gain?</summary>
+<div>
+
+Above $p_1$, the first stage's current flows almost entirely into $C_C$, which the second stage holds at virtual ground on one side. The output voltage is then $g_{m1}v_d/(sC_C)$, independent of $g_{m2}R_2$, which crosses unity at $g_{m1}/2\pi C_C$.
+
+</div>
+</details>
+
+<details>
+<summary>5. What does the right-half-plane zero do, and how does a nulling resistor fix it?</summary>
+<div>
+
+It comes from signal feeding forward through $C_C$ to the output. It adds phase lag while flattening the magnitude, eroding phase margin. A resistor $R_Z = 1/g_{m2}$ in series with $C_C$ moves the zero to infinity; a larger $R_Z$ makes it a phase-boosting left-half-plane zero.
+
+</div>
+</details>
+
+<details>
+<summary>6. With a 200 µA tail and $C_C$ = 5 pF, what is the slew rate, and what must the second stage supply?</summary>
+<div>
+
+$SR = I_T/C_C$ = **40 V/µs**. The output node must then charge $C_C$ and the 10 pF load at that rate, which takes $15\text{ pF} × 40\text{ V/µs}$ = 600 µA; the second stage's bias must exceed that or it, rather than the first stage, will limit the slew rate.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Huijsing, <em>Operational Amplifiers</em>, 3rd ed., §§7.2–7.4 (Miller compensation, CMOS two-stage design); Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§4.4 and 4.9 (op-amp compensation). Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-two-stage-amplifier/practice/">Open practice →</a></div>

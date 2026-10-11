@@ -1,0 +1,211 @@
+import Equation from '../../components/Equation.astro';
+import {InternalAmplifierFigure} from '../../components/OpAmpFigures';
+import {RailToRailInputFigure,RroOutputCircuit,RroSwingFigure,LeakageTempFigure} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 81</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Inside a CMOS op amp<br/><em>Picoamp inputs, rail-to-rail claims, and their conditions.</em></h1>
+
+<p className="dek">Assemble a CMOS op amp from the MOSFET studies, then follow its distinctive specifications to their transistors: tiny bias current and its temperature dependence, input range near the rails with complementary pairs, outputs that reach the rails only at light load, and flicker noise.</p>
+
+<div className="chapter-meta"><span>50–70 min</span><span>Two-stage amplifier (Ch. 75) · Noise and g<sub>m</sub>/I<sub>D</sub> (Ch. 76) · Bipolar internals (Ch. 80)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">A CMOS op amp's gates draw almost no current. Does that make it accurate near both supply rails?</p></div>
+
+<div>
+
+Most op amps made today are CMOS. They run from 1.8 V or 5 V supplies, draw microamps, have inputs that take picoamps, and are advertised as "rail-to-rail". Each of those claims comes from a specific circuit choice, and each holds under specific conditions.
+
+This chapter builds the CMOS op amp from the MOSFET chapters (57–76) and then examines four of its specifications closely. It also compares the result with the bipolar op amp of Chapter 80, because choosing between them (Chapter 82) depends on exactly these differences.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Build the op amp from the MOS studies → Translate device parameters into amplifier behavior → Input range and complementary pairs → Rail-to-rail outputs and their load → Bias current, leakage and temperature → Treat rail range and low noise as separate goals → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Build the op amp from the MOS studies</h2></div>
+
+<InternalAmplifierFigure technology="mos"/>
+
+This is Chapter 75's amplifier: an NMOS pair with a PMOS mirror load (Chapter 72), an NMOS common-source gain stage with a PMOS current-source load (Chapter 65), and a Miller capacitor that splits the poles. The ideal tail and fixed PMOS bias stand for real bias networks (Chapters 59–63). The bodies are drawn tied to their sources to keep the algebra simple; in a substrate-based process the NMOS bodies are grounded, which shifts thresholds and changes the input range.
+
+The gates draw only leakage at DC, which is the CMOS op amp's great advantage for high-impedance sources. They still present capacitance, sit behind protection diodes that leak, and have voltage ratings.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Translate device parameters into amplifier behavior</h2></div>
+
+<Equation tex={String.raw`g_m=\frac{2I_D}{u},\qquad A_0\approx g_{m1}R_1\,g_{m2}R_2,\qquad f_u\approx\frac{g_{m1}}{2\pi C_C},\qquad SR=\frac{I_T}{C_C}=u_0\cdot2\pi f_u`}/>
+
+The last relation is Chapter 80's slew rate per unit bandwidth with $I_T/g_{m1} = u_0$ for a MOS pair. At 0.2 V of overdrive that is four times the bipolar value: CMOS op amps slew faster for the same bandwidth, and pay for it in voltage noise and offset, because $g_m$ per microamp is lower.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / THREE INPUT-PAIR DESIGNS AT 50 µA PER SIDE</span><h3>Overdrive 0.1, 0.2 and 0.4 V, $C_C$ = 20 pF</h3>
+
+<p>$g_m = 2I_D/u$ = 1.0, 0.5 and 0.25 mS per device. (Each overdrive needs a different device width at the same current, not a different gate voltage on the same device.) The first-stage transconductance $g_{m1}$ is the same as one device's, so $f_u = g_{m1}/2\pi C_C$ = <strong>8.0, 4.0 and 2.0 MHz</strong>.</p>
+
+<p>The slew rate is $I_T/C_C$ = 100 µA / 20 pF = <strong>5 V/µs</strong> in all three. So the lowest overdrive gives the most bandwidth and the least noise for the same slew rate, but needs the widest devices, with more capacitance and worse matching relative to signal (Chapter 59).</p>
+
+</div>
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Input range and complementary pairs</h2></div>
+
+An NMOS input pair needs its gates a $V_{GS}$ plus a tail compliance above the negative rail. On a 3.3 V supply with $V_T$ = 0.7 V, 0.2 V of overdrive and 0.15 V for the tail, the lowest common-mode input is about 1.05 V. If the mirror's reference drain is at 2.4 V, the input devices leave saturation above about 3.1 V. A sensor whose output sits at 0.2 V cannot drive this input at all.
+
+A PMOS pair has the mirror-image range: it works down to below ground and stops about a volt short of the top rail. Put both in parallel, with their output currents combined, and the input works from rail to rail:
+
+<RailToRailInputFigure/>
+
+The total transconductance is not constant: it doubles in the middle, where both pairs are on. Since $f_u \propto g_{m1}$, the unity-gain frequency doubles too, and the phase margin falls. Offset changes as the input crosses from one pair to the other, because the two pairs have different offsets: a common-mode-dependent offset that looks like poor CMRR. Good rail-to-rail input stages use constant-$g_m$ circuits that reduce each pair's tail current where both conduct, or avoid the problem with a single pair and an internal charge pump that lifts its supply above the rail.
+
+That answers the opening question: zero DC gate current does not by itself give accurate operation near the rails. Near the rails only one pair works, the input stage's characteristics change, and the CMRR specification often excludes the transition region.
+
+</section>
+
+<section id="output">
+
+<div className="section-heading"><span>04</span><h2>Rail-to-rail outputs and their load</h2></div>
+
+A source-follower output (Chapter 74) can never get closer to a rail than one $V_{GS}$, because its gate would have to go beyond the rail. CMOS op amps instead use **common-source** output devices, with drains at the output:
+
+<RroOutputCircuit/>
+
+With no load, a saturated common-source device can pull its drain to within millivolts of its source, the rail. With a load current $I_L$, it is a resistance $R_{on}$ in triode, and the output stops short by $I_LR_{on}$:
+
+<RroSwingFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / HOW RAIL-TO-RAIL IS IT?</span><h3>3.3 V supply, output devices with 50 Ω on-resistance</h3>
+
+<p><strong>Light load</strong> (100 kΩ to mid-supply, 16 µA): the output reaches within 1 mV of either rail, plus a few millivolts of internal headroom.</p>
+
+<p><strong>2 kΩ load to mid-supply:</strong> at a 3.2 V output the load draws 0.8 mA, so the PMOS drops 40 mV. Swing: about 0.05 V to 3.25 V.</p>
+
+<p><strong>200 Ω load:</strong> about 6.6 mA at the extremes, a 0.33 V drop. Swing: about 0.33 V to 2.97 V. The output is still "rail-to-rail" in the advertisement, but not in this circuit.</p>
+
+<p>The common-source output also has a high open-loop output resistance, kilohms rather than tens of ohms. Feedback divides it by the loop gain, which falls with frequency, so at high frequency the output impedance rises and interacts with capacitive loads (Chapter 93).</p>
+
+</div>
+
+</section>
+
+<section id="leakage">
+
+<div className="section-heading"><span>05</span><h2>Bias current, leakage and temperature</h2></div>
+
+A MOS gate's own leakage is tiny, but every input is protected by diodes to the rails, and their reverse leakage is the real bias current. Diode leakage roughly doubles every 10 °C:
+
+<LeakageTempFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A HIGH-IMPEDANCE SENSOR AT TEMPERATURE</span><h3>100 kΩ source, noise gain 100</h3>
+
+<p>At 25 °C, 1 pA through 100 kΩ is 100 nV: negligible. At 85 °C the bias current is $2^6$ = 64 times larger, 64 pA, and the error 6.4 µV, 0.64 mV at the output.</p>
+
+<p>Now add a slightly contaminated circuit board with 1 nA of surface leakage into the input node: 100 µV at the input, <strong>10 mV at the output</strong>, far more than the op amp itself. At picoamp levels, the assembly sets the accuracy: guard rings, clean boards, and keeping the input node off the board entirely in extreme cases.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Treat rail range and low noise as separate goals</h2></div>
+
+**Flicker noise.** CMOS input devices have far higher $1/f$ noise than bipolar ones; corner frequencies of 1–10 kHz are common (Chapter 76). Large input devices lower it, at the cost of capacitance. For DC precision, auto-zero and chopper CMOS amplifiers modulate the input and remove both offset and flicker noise (Chapter 82), introducing switching artifacts of their own.
+
+**Mismatch.** CMOS offsets are typically millivolts untrimmed, larger than bipolar's, because threshold matching is poorer than $V_{BE}$ matching. Trimming at the factory or auto-zeroing brings them to microvolts.
+
+**Low voltage.** Every overdrive and threshold eats into a 1.8 V supply. Designs there use weak inversion, wide-swing biasing (Chapter 63), and single-stage or folded architectures rather than stacked cascodes.
+
+**The complete comparison.** A CMOS op amp is not simply "better" than a bipolar one: it trades voltage noise and offset for bias current, slew rate and supply range. Chapter 82 turns these trades into a selection method.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>CMOS op amps offer picoamp inputs (doubling every 10 °C), rail-to-rail inputs <em>with a transconductance and offset that change across the range</em>, and outputs that reach the rails only at light load.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Does negligible gate current guarantee accurate operation near both rails?</summary>
+<div>
+
+No. Input accuracy near the rails depends on the input stage's common-mode range. A single NMOS pair stops working about a volt above the negative rail; a complementary pair works rail to rail but changes transconductance and offset at the transition, and the CMRR is often specified only away from it.
+
+</div>
+</details>
+
+<details>
+<summary>2. On 3.3 V with $V_T$ = 0.7 V, 0.2 V overdrive and 0.15 V tail compliance, what is an NMOS pair's lowest common-mode input?</summary>
+<div>
+
+$V_T + u + u_T$ = 0.7 + 0.2 + 0.15 = **1.05 V** above the negative rail. A PMOS pair, or a complementary pair, is needed to go lower.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does a complementary input stage's unity-gain frequency change across the input range?</summary>
+<div>
+
+$f_u = g_{m1}/2\pi C_C$, and in the middle of the range both pairs contribute transconductance, doubling $g_{m1}$. Near either rail only one pair works. Without a constant-$g_m$ circuit, $f_u$ (and the phase margin, noise and offset) varies with common mode.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why can a common-source output stage reach the rails when a source-follower stage cannot?</summary>
+<div>
+
+A source follower's output is one $V_{GS}$ away from its gate, and its gate cannot go beyond the rail, so the output stops a threshold plus an overdrive short. A common-source device's output is its drain, which can approach its source (the rail) to within $I_LR_{on}$, without any gate voltage beyond the rail.
+
+</div>
+</details>
+
+<details>
+<summary>5. A CMOS op amp's bias current is 1 pA at 25 °C. Roughly what is it at 105 °C?</summary>
+<div>
+
+Doubling every 10 °C over 80 °C is $2^8$ = 256 times: about **256 pA**. Board leakage often grows faster still.
+
+</div>
+</details>
+
+<details>
+<summary>6. Why do CMOS op amps typically slew faster than bipolar ones of the same bandwidth?</summary>
+<div>
+
+$SR = (I_T/g_{m1})\cdot2\pi f_u$. For a MOS pair $I_T/g_{m1} = u_0$, typically 0.1–0.5 V; for a bipolar pair it is $2U_T$ ≈ 52 mV. The MOS pair needs more tail current for the same transconductance, and that current charges $C_C$ faster.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Huijsing, <em>Operational Amplifiers</em>, 3rd ed., chapters 6–8 (rail-to-rail input and output stages, CMOS topologies); Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §5.9 (RRIO op amps). Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-cmos-internals/practice/">Open practice →</a></div>

@@ -1,0 +1,201 @@
+import Equation from '../../components/Equation.astro';
+import {InstrumentationFigure} from '../../components/OpAmpFigures';
+import {InaDiamondFigure,InaCmrrGainFigure,BridgeInaCircuit} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 86</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Instrumentation amplifiers<br/><em>Buffer, amplify the difference, then subtract.</em></h1>
+
+<p className="dek">Derive the three-op-amp instrumentation amplifier, see why gain in its first stage multiplies the CMRR, map the internal voltages that limit its range, and design a bridge amplifier with a proper reference, bias return and input filter.</p>
+
+<div className="chapter-meta"><span>55–75 min</span><span>Difference amplifiers (Ch. 85) · Noninverting amplifiers (Ch. 83)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">An instrumentation amplifier's output is comfortably within its range. Can one of its internal amplifiers be saturated anyway?</p></div>
+
+<div>
+
+Chapter 85's difference amplifier had two weaknesses: its inputs loaded the sources unequally, which spoiled its CMRR, and its CMRR was limited by resistor matching. The instrumentation amplifier fixes both. Two noninverting buffers present high, equal impedances to the sources; a single resistor between them sets a differential gain without touching the common mode; and a difference amplifier at the end subtracts.
+
+It is the standard front end for bridges, thermocouples, biopotential electrodes and any sensor whose signal is a small difference. It also has a subtle failure mode, the one in the question above, which datasheets describe with a peculiar diamond-shaped graph.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Inspect the internal outputs → Keep common mode at unity gain → Gain multiplies the CMRR → Move gain from one stage to another → Design a bridge amplifier → Give the reference a real driver → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Inspect the internal outputs</h2></div>
+
+<InstrumentationFigure/>
+
+The two input op amps are noninverting stages with equal feedback resistors $R$. Their minus inputs are joined through a single gain resistor $R_G$. The final stage is a matched-ratio difference amplifier that forms $V_B - V_A$, the difference of the two internal outputs.
+
+Feedback holds each minus input at its own plus input's voltage, $V_1$ and $V_2$. So $R_G$ has exactly $V_2 - V_1$ across it and carries $(V_2 - V_1)/R_G$. That same current must flow through both $R$ resistors (the op amp inputs take none), so the internal outputs spread apart by $(V_2 - V_1)(1 + 2R/R_G)$. The inputs draw only bias current, but that current still needs a DC path to ground through the source.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Keep common mode at unity gain</h2></div>
+
+<Equation tex={String.raw`V_B-V_A=G_1\,(V_2-V_1),\qquad G_1=1+\frac{2R}{R_G},\qquad G=G_1G_D`} label="THREE-OP-AMP INA GAIN"/>
+
+Now apply a common-mode voltage alone, $V_1 = V_2 = V_C$. Both minus inputs sit at $V_C$, no current flows in $R_G$, and both internal outputs equal $V_C$: the first stage passes common mode at **unity** gain. With both together,
+
+<Equation tex={String.raw`V_A=V_C-\frac{G_1v_d}{2},\qquad V_B=V_C+\frac{G_1v_d}{2}`}/>
+
+One resistor, $R_G$, sets the differential gain; there is nothing to match in the first stage. All the common-mode rejection happens in the final subtractor, which now receives a difference $G_1$ times larger than the original.
+
+</section>
+
+<section id="cmrr">
+
+<div className="section-heading"><span>03</span><h2>Gain multiplies the CMRR</h2></div>
+
+The subtractor's common-mode gain is set by its resistor mismatch (Chapter 85) and is the same whatever $G_1$ is, because the common mode reaches it unamplified. Its differential input has been multiplied by $G_1$. So the overall CMRR is
+
+<Equation tex={String.raw`\mathrm{CMRR}_{INA}\approx G_1\cdot\mathrm{CMRR}_{subtractor}`}/>
+
+<InaCmrrGainFigure/>
+
+With a 0.1% subtractor (66 dB) and a first-stage gain of 100, the INA reaches about 106 dB, a hundred times better than the difference amplifier alone, with the same resistors. That is why INA datasheets show CMRR rising with gain. The source-impedance problem of Chapter 85 also disappears: the sources drive op amp inputs of gigaohms, so a 100 Ω difference in source resistance no longer matters at DC.
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>04</span><h2>Move gain from one stage to another</h2></div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / THE INTERNAL OUTPUTS LIMIT THE RANGE</span><h3>$R$ = 10 kΩ, $R_G$ = 2 kΩ ($G_1$ = 11), unity subtractor, 5 V supply</h3>
+
+<p>At $V_C$ = 2.5 V, differential inputs of 10, 100 and 400 mV give internal outputs of 2.445/2.555, 1.95/3.05 and <strong>0.30/4.70 V</strong>, and final outputs (relative to the reference) of 0.11, 1.10 and 4.40 V.</p>
+
+<p>If the internal op amps can swing only from 0.2 to 4.5 V, the 400 mV case fails: $V_B$ would need 4.70 V. The final output, 4.40 V above a 0 V reference, might itself be valid, so nothing at the output warns you. That answers the opening question: yes.</p>
+
+<p>Raise the common mode instead and the limits close in from the other side: at $V_C$ = 4 V even the 100 mV case needs $V_B$ = 4.55 V, beyond the 4.5 V swing, and many input op amps would already be outside their common-mode range. Every one of these limits depends on both the signal and the common mode.</p>
+
+</div>
+
+<InaDiamondFigure/>
+
+**Distributing the gain.** For a total gain of 100, $G_1 = 100$ with a unity subtractor gives the best CMRR and makes the subtractor's offset and noise negligible, but a 20 mV input spreads the internal outputs by 2 V. $G_1 = 10$ with $G_D = 10$ spreads them by only 0.2 V, widening the allowed common-mode range, at the cost of 20 dB of CMRR and more error from the subtractor. Choose by the common-mode range you need, not by habit.
+
+</section>
+
+<section id="bridge">
+
+<div className="section-heading"><span>05</span><h2>Design a bridge amplifier</h2></div>
+
+<BridgeInaCircuit/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A 350 Ω STRAIN GAUGE ON 5 V</span><h3>2 mV/V full scale, 2 V output span</h3>
+
+<p><strong>Gain.</strong> With 5 V excitation the bridge gives up to ±10 mV at full-scale strain of either sign. For an output of 2.5 V ± 1 V the gain must be 1 V/10 mV = 100. With $R$ = 10 kΩ, $R_G = 2R/(G - 1)$ = 202 Ω.</p>
+
+<p><strong>Internal voltages.</strong> Both bridge outputs sit near 2.5 V. At full scale the internal outputs are $2.5 \pm 100 × 0.01/2$ = 2.0 and 3.0 V: comfortably inside a 0.2–4.5 V swing.</p>
+
+<p><strong>Errors.</strong> The INA's 50 µV offset, referred to the input, is 0.5% of the 10 mV span: calibrate it, or use a zero-drift INA. CMRR of 100 dB turns a 50 mV change in the bridge's common mode (excitation drift) into 0.5 µV, negligible. The gain resistor's tolerance is the gain tolerance; a 0.1%, 10 ppm/°C part keeps the gain to 0.1% plus 0.04% over 40 °C.</p>
+
+<p><strong>Bias return.</strong> The bridge connects both inputs to the supply and ground through 175 Ω, so the input bias currents have a DC path. A transformer-coupled or capacitively coupled source would need explicit return resistors.</p>
+
+</div>
+
+### Filter the inputs symmetrically
+
+Long sensor cables pick up radio-frequency interference as common mode, and an INA's CMRR falls at high frequency. An RC low-pass in each input helps, but only if the two are matched. If one leg's filter capacitor is 5% larger than the other's, a common-mode signal is filtered slightly differently on the two sides and becomes a differential one. With 4.99 kΩ and 1 nF per leg, at 10 kHz, a 5% capacitor mismatch converts about **1.4%** of the common mode into a differential signal, which the INA then amplifies by its full gain. Standard practice adds a differential capacitor across the inputs, about ten times larger than each common-mode capacitor, so that the differential bandwidth is set by one part and the mismatch matters far less.
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Give the reference a real driver</h2></div>
+
+The final subtractor's ground end, the **reference** pin, sets the output's zero. It is one end of the subtractor's resistor divider, so it must be driven from a low impedance: a resistor in series with it unbalances the ratio and degrades both gain and CMRR. Drive it with a buffer or a low-impedance reference. Its noise and drift appear directly at the output.
+
+**Integrated or discrete?** An integrated INA has laser-trimmed, matched resistors, a characterized diamond plot and specified CMRR at each gain. Three separate op amps and resistors can match its gain, but rarely its CMRR or its drift. The circuit constraints of this chapter apply to both.
+
+**Verify:** internal-output range at the worst common mode and signal, input common-mode range, gain-resistor tolerance and drift, reference impedance and noise, bandwidth at the chosen gain (each input op amp runs at noise gain $G_1$), and input filtering.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>The input stage amplifies the difference by $1 + 2R/R_G$ while passing common mode at unity, so <em>CMRR grows with gain</em>. Check the internal outputs, $V_C \pm G_1v_d/2$, against their swing: the final output cannot tell you they have clipped.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Can the final output be in range while a first-stage amplifier is saturated?</summary>
+<div>
+
+Yes. The internal outputs sit at $V_C \pm G_1v_d/2$, which depends on the common mode, while the final output depends only on their difference. At a high common mode, a moderate difference can drive one internal output into its rail although the final output looks normal.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why does the first stage pass common mode at unity gain?</summary>
+<div>
+
+With equal inputs, both minus nodes sit at the same voltage, so no current flows through $R_G$, and none through the $R$ resistors. Each input op amp acts as a follower for the common mode.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does INA CMRR increase with gain?</summary>
+<div>
+
+The common mode reaches the subtractor at unity gain, so its leakage there is fixed. The difference reaches it multiplied by $G_1$. The ratio of differential to common-mode gain, the CMRR, therefore grows in proportion to $G_1$, until the op amps' intrinsic CMRR limits it.
+
+</div>
+</details>
+
+<details>
+<summary>4. For $R$ = 10 kΩ, what $R_G$ gives a first-stage gain of 100?</summary>
+<div>
+
+$G_1 = 1 + 2R/R_G$ = 100, so $R_G = 2R/99$ ≈ **202 Ω**. Its tolerance and drift become the gain's.
+
+</div>
+</details>
+
+<details>
+<summary>5. A floating source (a thermocouple not connected to ground) drives an INA. What else is needed?</summary>
+<div>
+
+A DC path for the input bias currents: typically a resistor from each input (or one input) to the reference or ground. Without it, the inputs float to a rail and the INA saturates. Equal return resistors on both inputs keep the bias-current error common mode.
+
+</div>
+</details>
+
+<details>
+<summary>6. Why must input filters on an INA be matched?</summary>
+<div>
+
+A mismatched pair of RC filters attenuates a common-mode signal by different amounts on the two inputs, producing a differential signal the INA cannot distinguish from the real one. A larger capacitor directly across the inputs makes the differential bandwidth depend on one component and reduces the mismatch's effect.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§5.15–5.16 (instrumentation amplifiers, input filtering, bridge excitation); Asadi, <em>Applied Op Amp Circuits</em>, §3.6 and chapter 4. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-instrumentation/practice/">Open practice →</a></div>

@@ -1,0 +1,210 @@
+import Equation from '../../components/Equation.astro';
+import {MosDifferentialFigure} from '../../components/MosAnalogFigures';
+import {MosLab} from '../../components/MosAnalogLabs';
+import {CmWindowFigure,CmrrFrequencyFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 71</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>Differential-pair range and rejection<br/><em>Where the pair works, and how well it ignores what it should.</em></h1>
+
+<p className="dek">Replace the ideal tail with a transistor. Derive the common-mode window from the headroom of every device, separate it from the differential linear range, and calculate how finite tail impedance, mismatch and capacitance turn common-mode inputs into errors.</p>
+
+<div className="chapter-meta"><span>50–70 min + exploration</span><span>Differential pair (Ch. 70) · Cascode mirror (Ch. 62)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Can a 10 mV differential signal fail simply because both gates are too low?</p></div>
+
+<div>
+
+Chapter 70 assumed an ideal tail current and checked headroom only in passing. A real tail is a transistor, and it needs its own saturation voltage. The input devices need theirs. Together they fence the common-mode input into a window, and outside it the pair does not work at all, however small the differential signal.
+
+Inside the window, the pair's rejection of common-mode inputs is finite. It depends on how good a current source the tail is, how well the two halves match, and how the tail's impedance falls with frequency. This chapter puts numbers on each of those, because a datasheet's "input common-mode range" and "CMRR" come from exactly these calculations.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Replace the ideal tail with a transistor → Calculate three different ranges → Move common mode while holding the signal small → Mismatch turns common mode into signal → Rejection falls with frequency → Apply the bounds instantaneously → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Replace the ideal tail with a transistor</h2></div>
+
+<MosDifferentialFigure mode="tail"/>
+
+The tail is an NMOS current sink, biased to draw $I_T$ while saturated. Its source is at ground and its drain is the pair's shared source node $V_S$. Two consequences follow. It needs $V_S \ge u_T$, its own overdrive, to remain a current source. And it has a finite incremental resistance $r_T$, its $r_o$ (or much more if it is cascoded).
+
+At balance the shared source sits one $V_{GS}$ below the inputs, $V_S = V_C - V_T - u_0$, so the tail's requirement becomes a **lower** limit on the common-mode input. The input devices set the **upper** limit: each needs $V_D - V_S \ge u_0$, where the balanced drain voltage is $V_D = V_{DD} - I_TR_D/2$.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Calculate three different ranges</h2></div>
+
+Substituting the balanced source voltage into both conditions gives the **common-mode input range**:
+
+<Equation tex={String.raw`V_T+u_0+u_T\;\le\;V_C\;\le\;V_{DD}-\frac{I_TR_D}{2}+V_T`} label="COMMON-MODE WINDOW (BALANCED)"/>
+
+<CmWindowFigure/>
+
+That answers the opening question. At 2.0 V common mode the shared source would have to sit at 0 V, leaving the tail no voltage to work with. The tail current collapses, both input devices starve, and no differential signal gets through, however small. Common-mode range and differential range are separate questions.
+
+The **differential** input has two ranges of its own, both from Chapter 70's steering law. The current difference falls below its tangent by the factor $\sqrt{1 - v_d^2/4u_0^2}$, so the **linear** range for 1% compression is
+
+<Equation tex={String.raw`|v_d|\lesssim0.28\,u_0\qquad\text{(1\% gain compression)}`}/>
+
+and the **full-steering** limit, beyond which one device carries the whole tail, is $\sqrt2\,u_0$. For $u_0$ = 1 V these are ±0.28 V and ±1.41 V. Neither is related to the gate-oxide rating, which is a reliability limit, nor to the common-mode window.
+
+### Common-mode gain
+
+From the half-circuit of Chapter 70, each half sees $2r_T$ in its source, so a common-mode input produces at each drain
+
+<Equation tex={String.raw`A_{cm,se}\approx-\frac{g_mR_D}{1+2g_mr_T},\qquad \mathrm{CMRR}_{se}=\left|\frac{A_{d,se}}{A_{cm,se}}\right|\approx\frac{1+2g_mr_T}{2}`} label="SINGLE-ENDED COMMON-MODE REJECTION"/>
+
+Here $A_{d,se} = g_mR_D/2$ is the single-ended differential gain. This ignores the input devices' own $r_o$, body effect and mismatch. With a perfectly matched pair and a **differential** output, the two drains' common-mode responses are identical and cancel exactly; the finite single-ended CMRR above matters when the pair drives a single-ended load or a mirror (Chapter 72).
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Move common mode while holding the signal small</h2></div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / THE WINDOW AND THE REJECTION</span><h3>$I_T$ = 2 mA, $k$ = 2 mA/V², $V_T$ = 1 V, $R_D$ = 1 kΩ, $V_{DD}$ = 5 V, $u_T$ = 0.3 V</h3>
+
+<p><strong>Window.</strong> Lower limit: 1 + 1 + 0.3 = 2.3 V. Upper limit: 5 − 1 + 1 = 5.0 V. At $V_C$ = 2.5 V the shared source is 0.5 V and the drains at 4 V have 2.5 V of margin. At 5.2 V the source is at 3.2 V and $V_{DS}$ = 0.8 V, less than $u_0$: the input devices are in triode.</p>
+
+<p><strong>Rejection.</strong> With $g_m$ = 2 mS and tail resistances of 10, 50 and 200 kΩ, the single-ended CMRR is 20.5, 100.5 and 400.5: <strong>26, 40 and 52 dB</strong>. A cascoded tail at 5 MΩ would give 10 000, or 80 dB. Each tenfold increase of $r_T$ buys 20 dB, and none of it changes the tail's DC compliance.</p>
+
+<p><strong>What 40 dB means.</strong> A 100 mV common-mode hum at 40 dB CMRR looks, at a single-ended output, like 1 mV of differential input. If the wanted signal is 10 mV, the hum is a 10% error.</p>
+
+</div>
+
+<MosLab kind="differential" client:load/>
+
+<p className="caption">Live lab. Hold the differential input at a small value, 20 mV, and sweep the common-mode input from 0.5 V to 5.5 V. Watch the headroom indicator: it should change state near 2.3 V and near 5.0 V while the ideal curves stay put. Then raise the tail current and predict which limit moves, and which way.</p>
+
+</section>
+
+<section id="mismatch">
+
+<div className="section-heading"><span>04</span><h2>Mismatch turns common mode into signal</h2></div>
+
+A differential output cancels common mode only if the two halves are identical. Suppose the drain resistors differ by $\Delta R_D$. A common-mode input changes each drain current by about $v_c/(2r_T)$, and the two drains then differ by that current times $\Delta R_D$. Dividing the differential gain $g_mR_D$ by that common-mode-to-differential gain:
+
+<Equation tex={String.raw`\mathrm{CMRR}_{diff}\approx\frac{2g_mr_T}{\Delta R_D/R_D}`} label="CMRR LIMITED BY LOAD MISMATCH"/>
+
+A mismatch in transconductance gives the same form with $\Delta g_m/g_m$ in place of the resistor term. Threshold mismatch by itself produces offset, not a common-mode error, unless it changes $g_m$.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A 1% RESISTOR MISMATCH</span><h3>$g_m$ = 2 mS, $r_T$ = 50 kΩ, differential output</h3>
+
+<p>$2g_mr_T$ = 200. With 1% resistor mismatch, CMRR ≈ 200/0.01 = 20 000, about <strong>86 dB</strong>. With 0.1% resistors, 106 dB. With a 5 MΩ cascode tail and 1% resistors, 126 dB.</p>
+
+<p>Compare the single-ended result of 40 dB for the same tail: the differential output, even with ordinary 1% resistors, rejects common mode 200 times better. That is why precision circuits keep signals differential as long as possible.</p>
+
+</div>
+
+</section>
+
+<section id="frequency">
+
+<div className="section-heading"><span>05</span><h2>Rejection falls with frequency</h2></div>
+
+The tail node has capacitance: the tail transistor's drain junction and both input devices' source junctions, typically a picofarad or more. Above $1/(2\pi r_TC_T)$ that capacitance, not $r_T$, sets the tail impedance, and the CMRR falls at 20 dB per decade:
+
+<CmrrFrequencyFigure/>
+
+A cascode tail improves the low-frequency rejection by its intrinsic gain, but the high-frequency rejection is set by $C_T$ alone. At 10 MHz both tails give only about 24 dB. Power-supply ripple from a switching regulator, at hundreds of kilohertz, can sail straight through an input stage whose DC CMRR is excellent. Minimize the tail node's capacitance, and specify the CMRR at the frequencies that matter.
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Apply the bounds instantaneously</h2></div>
+
+The window above was calculated at balance. With a differential signal present, the two drain voltages differ and the shared source moves with the larger gate. Check both branches at the waveform's extremes. With $v_d$ = +0.8 V at $V_C$ = 4 V, the higher-current device's gate is at 4.4 V and its drain at 3.27 V: it is in triode, although the balanced window says 4 V is fine.
+
+**Body effect.** If the input devices' bodies are grounded, their thresholds rise with $V_S$, which raises both the lower and upper limits by different amounts. The window must then be solved implicitly.
+
+**Above the rail.** This resistor-loaded model can accept a common mode up to $V_{DD} + V_T - I_TR_D/2$, slightly above the supply. Real input protection diodes, gate ratings and bias networks usually forbid it. Do not read a saturation inequality as a packaged op amp's input specification; rail-to-rail inputs use two complementary pairs (Chapter 82).
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A pair has three ranges: <em>the common-mode window, set by headroom</em>; the linear differential range, $\approx 0.28u_0$; and full steering, $\sqrt2\,u_0$. Its rejection is set by tail impedance at DC, by matching for differential outputs, and by tail capacitance at high frequency.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Can a 10 mV differential signal fail because both gates are too low?</summary>
+<div>
+
+Yes. If the common mode is below $V_T + u_0 + u_T$, the shared source cannot rise to the tail's compliance voltage, the tail current collapses, and the input devices starve. No differential gain is available at any amplitude. Common-mode range is a bias condition, independent of signal size.
+
+</div>
+</details>
+
+<details>
+<summary>2. What sets the lower and the upper ends of the common-mode window?</summary>
+<div>
+
+The lower end is set by the tail: the shared source, one $V_{GS}$ below the inputs, must stay above the tail's overdrive. The upper end is set by the input devices: their drains must stay at least one overdrive above the shared source.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does a tenfold larger tail resistance improve CMRR by 20 dB but leave the common-mode window unchanged?</summary>
+<div>
+
+CMRR depends on the tail's incremental resistance, which reduces the common-mode current change. The window depends on the tail's DC compliance voltage, the minimum $V_{DS}$ it needs. A cascode tail raises $r_T$ enormously but actually needs more compliance, about two overdrives.
+
+</div>
+</details>
+
+<details>
+<summary>4. With a differential output, why does a 1% drain-resistor mismatch limit CMRR?</summary>
+<div>
+
+A common-mode input changes both drain currents equally. With equal resistors the drain voltages change equally and cancel; with unequal resistors they differ by the current change times $\Delta R_D$, which looks like a differential output. CMRR then becomes $2g_mr_T/(\Delta R_D/R_D)$.
+
+</div>
+</details>
+
+<details>
+<summary>5. A pair has 80 dB of CMRR at DC with a cascode tail. Why might it have almost none at 10 MHz?</summary>
+<div>
+
+The tail node capacitance shunts the cascode's megohms. Above $1/(2\pi r_TC_T)$, only 16 kHz here, the tail impedance falls as $1/(2\pi fC_T)$, and at 10 MHz with 2 pF it is only 8 kΩ. The rejection is then about what an 8 kΩ tail would give, roughly 24 dB.
+
+</div>
+</details>
+
+<details>
+<summary>6. What is the 1% linear differential range for $u_0$ = 0.5 V, and what is the full-steering limit?</summary>
+<div>
+
+Linear range ≈ 0.28 × 0.5 = **±0.14 V**. Full steering at $\sqrt2 × 0.5$ = **±0.71 V**. Both scale with overdrive; neither depends on the common mode, as long as the common mode is inside its window.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Huijsing, <em>Operational Amplifiers</em>, 3rd ed., §§4.3 and 6.2 (CMRR, input range); Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§2.3.8 and 4.4. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-differential-range/practice/">Open practice →</a></div>

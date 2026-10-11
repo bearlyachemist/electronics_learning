@@ -1,0 +1,209 @@
+import Equation from '../../components/Equation.astro';
+import {OpAmpFigure} from '../../components/OpAmpFigures';
+import {IntegratorWindowFigure,IntegratorDriftFigure,TriangleOscCircuit,TriangleWaveFigure} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 88</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Practical op-amp integrators<br/><em>Accumulate the signal, not the errors.</em></h1>
+
+<p className="dek">Derive the integrator in time and frequency, see how a microvolt of offset walks its output to a rail, bound it with a feedback resistor, and use integration for real jobs: a triangle-wave oscillator, a charge amplifier and the integral term of a controller.</p>
+
+<div className="chapter-meta"><span>50–70 min</span><span>RC integrators (Ch. 8) · Inverting amplifiers (Ch. 84) · DC errors (Ch. 78)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">An ideal integrator has 100 µV of input offset and no signal. How long before its output is useless?</p></div>
+
+<div>
+
+Chapter 8 built an integrator from a resistor and a capacitor, and found that it integrated only while its output stayed small compared with its input. Put the capacitor in an op amp's feedback path and the summing node stays at 0 V whatever the output does: the input current is exactly $V_{in}/R$, and the capacitor accumulates it faithfully over volts of output.
+
+That faithfulness is also the problem. The capacitor accumulates every constant current, including the one produced by the op amp's offset and bias current, without limit. A practical integrator is always a compromise between integrating the signal and forgetting the errors, specified over a window of time and frequency.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Add a DC feedback path → Derive both frequency and time behavior → Compare DC leakage and useful integration → Build a triangle-wave oscillator → Measure charge → Design the capacitor as a real component → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Add a DC feedback path</h2></div>
+
+<OpAmpFigure mode="integrator"/>
+
+With the plus input grounded, feedback holds the minus input at 0 V, so the input current is $V_I/R_{IN}$. It cannot enter the op amp, so it flows onto the feedback capacitor, and the output moves to keep the minus input at zero:
+
+<Equation tex={String.raw`C_F\frac{dV_O}{dt}=-\frac{V_I}{R_{IN}}\qquad\Rightarrow\qquad V_O(t)=V_O(0)-\frac{1}{R_{IN}C_F}\int_0^tV_I\,dt`}/>
+
+The output is the accumulated history of the input, plus its initial value. The resistor $R_F$ across the capacitor gives the circuit a finite DC gain so that constant errors cannot accumulate forever. A reset switch across the capacitor is the alternative: it sets the initial condition exactly, but its leakage and charge injection then join the error budget.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Derive both frequency and time behavior</h2></div>
+
+With $R_F$ in place, the feedback impedance is $R_F \parallel C_F$:
+
+<Equation tex={String.raw`H(s)=-\frac{R_F/R_{IN}}{1+sR_FC_F},\qquad \frac{dV_O}{dt}+\frac{V_O}{R_FC_F}=-\frac{V_I}{R_{IN}C_F}`} label="LEAKY INTEGRATOR"/>
+
+Well above $1/(2\pi R_FC_F)$, $H \approx -1/(sR_{IN}C_F)$: integration. Below it, the circuit is an inverting amplifier of gain $-R_F/R_{IN}$. In time, a stored output decays with time constant $R_FC_F$ when the input is zero; integration is accurate only for intervals much shorter than that.
+
+At the top end, the integrator needs loop gain like any op-amp circuit. Its noise gain is $1 + Z_F/R_{IN}$, which falls toward 1 at high frequency, so it needs a unity-gain-stable op amp, and above the op amp's $f_t$ it stops integrating:
+
+<IntegratorWindowFigure/>
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Compare DC leakage and useful integration</h2></div>
+
+<IntegratorDriftFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / RATE, DRIFT AND THE FEEDBACK RESISTOR</span><h3>$R_{IN}$ = 10 kΩ, $C_F$ = 10 nF</h3>
+
+<p><strong>Signal rate.</strong> A constant 0.1 V input moves the output at 0.1/(10 kΩ × 10 nF) = 1000 V/s = 1 V/ms.</p>
+
+<p><strong>Offset with no $R_F$.</strong> The opening question: 100 µV of offset is a constant input, moving the output at 1 V/s. From zero, a ±4.5 V output reaches its rail in <strong>4.5 s</strong>. Bias current does the same: 1 nA onto 10 nF is 0.1 V/s. An "ideal" integrator is useless for anything longer than a few seconds.</p>
+
+<p><strong>With $R_F$.</strong> 100 kΩ, 1 MΩ and 10 MΩ give time constants of 1, 10 and 100 ms, lower corners of 159, 15.9 and 1.59 Hz, and DC gains of −10, −100 and −1000. The offset settles at 1, 10 and 100 mV. Larger $R_F$ integrates to lower frequencies but holds a larger offset.</p>
+
+<p><strong>A sine in the window.</strong> With $R_F$ = 1 MΩ, a 0.1 V, 1 kHz sine gives $0.1/(2\pi × 1\text{ kHz} × 10\text{ kΩ} × 10\text{ nF})$ = 0.159 V, shifted +90°. A 0.1 V step instead heads for −10 V, the DC gain times 0.1 V, and saturates at −4.5 V on the way.</p>
+
+</div>
+
+</section>
+
+<section id="oscillator">
+
+<div className="section-heading"><span>04</span><h2>Build a triangle-wave oscillator</h2></div>
+
+An integrator turns a square wave into a triangle. A comparator with hysteresis turns a triangle back into a square wave. Connect them in a loop and the circuit generates both, with no input at all:
+
+<TriangleOscCircuit/>
+
+<TriangleWaveFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / DERIVE THE FREQUENCY</span><h3>$R_1$ = 100 kΩ, $C$ = 10 nF, $R_2$ = 10 kΩ, $R_3$ = 20 kΩ, ±5 V outputs</h3>
+
+<p><strong>Thresholds.</strong> The comparator switches when its plus input crosses 0 V. That input is a divider between the triangle and the square: zero when $V_{tri}R_3 = -V_{sq}R_2$, so at $V_{tri} = \mp V_S R_2/R_3$ = ∓2.5 V.</p>
+
+<p><strong>Ramp.</strong> The square's ±5 V drives the integrator at $\mp V_S/R_1C$ = ∓5 V/ms.</p>
+
+<p><strong>Period.</strong> Each half-cycle covers $2V_SR_2/R_3$ = 5 V at 5 V/ms: 1 ms. So</p>
+
+</div>
+
+<Equation tex={String.raw`f=\frac{1}{2\Delta t}=\frac{1}{4R_1C}\cdot\frac{R_3}{R_2}=500\ \text{Hz}`}/>
+
+The supply voltage has cancelled: a larger swing raises both the ramp rate and the thresholds. The amplitude is set by $R_2/R_3$, the frequency by $R_1C$ and that ratio. The comparator must be noninverting (its feedback to the plus input); an inverting Schmitt trigger in this loop would latch at one rail.
+
+</section>
+
+<section id="charge">
+
+<div className="section-heading"><span>05</span><h2>Measure charge</h2></div>
+
+Remove $R_{IN}$ and connect a charge source, such as a piezoelectric sensor or a particle detector, directly to the summing node. Any charge it delivers ends up on $C_F$:
+
+<Equation tex={String.raw`\Delta V_O=-\frac{\Delta Q}{C_F}`}/>
+
+This is a **charge amplifier**. Because the summing node does not move, the sensor's own capacitance and its cable's capacitance do not affect the gain, only the noise. A piezoelectric accelerometer delivering 100 pC into a 1 nF feedback capacitor gives −100 mV, whether its cable is 1 m or 10 m long. $R_F$, often 1 GΩ or more, bleeds the charge away with a time constant $R_FC_F$ = 1 s: the amplifier measures vibration above about 0.16 Hz, but not a static force.
+
+**In control loops** an integrator provides the I of a PI controller (Chapter 45): it drives the steady-state error to zero. When the actuator saturates, the integrator keeps accumulating error, **winds up**, and the loop overshoots badly on recovery. Anti-windup, by clamping the integrator's output or resetting it, changes the equations while engaged and must be designed deliberately.
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Design the capacitor as a real component</h2></div>
+
+**Dielectric absorption.** Some dielectrics store charge in slowly relaxing dipoles. After a reset, a few tenths of a percent of the previous voltage creeps back. Polypropylene, polystyrene and C0G ceramic are good; general-purpose ceramics and electrolytics are poor.
+
+**Leakage.** Leakage through the capacitor, the reset switch, the circuit board and the op amp's input sets a floor on long integrations, exactly like an extra $R_F$. At 1 GΩ of board leakage and 10 nF, the effective time constant is 10 s.
+
+**Voltage coefficient and size.** High-K ceramics lose capacitance with voltage and temperature, making the integration rate signal dependent. For accuracy use film or C0G, which limits practical values to tens of nanofarads.
+
+Specify an integrator as a window: the shortest and longest times (or highest and lowest frequencies) over which it must integrate, the accuracy, and the largest accumulated output. Then check initial conditions, input polarity, drift, saturation and recovery.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>An op-amp integrator accumulates every constant current, signal or error, at $V/R_{IN}C_F$. A resistor across the capacitor <em>bounds the error at the cost of the lowest frequencies</em>; beyond that, integration is a window, not an operation.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. How long can an ideal integrator tolerate 100 µV of offset with $R_{IN}$ = 10 kΩ and $C_F$ = 10 nF?</summary>
+<div>
+
+The offset is integrated at 100 µV/(10 kΩ × 10 nF) = 1 V/s, so a ±4.5 V output saturates in about **4.5 s**. In practice bias current adds a similar rate. Without a feedback resistor or a reset, no integration longer than a few seconds is meaningful.
+
+</div>
+</details>
+
+<details>
+<summary>2. What does $R_F$ across the capacitor do, and what does it cost?</summary>
+<div>
+
+It gives the circuit a finite DC gain, $-R_F/R_{IN}$, so offsets settle at a bounded value instead of ramping. The cost is that the circuit integrates only above $1/(2\pi R_FC_F)$, and stored results decay with time constant $R_FC_F$.
+
+</div>
+</details>
+
+<details>
+<summary>3. In the triangle oscillator, why does the supply voltage cancel out of the frequency?</summary>
+<div>
+
+The ramp rate is proportional to the comparator's output swing $V_S$, and so are the switching thresholds, $\pm V_SR_2/R_3$. Doubling $V_S$ doubles both, so each half-cycle takes the same time.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why must the oscillator's comparator be noninverting?</summary>
+<div>
+
+The integrator inverts. For the loop to reverse the ramp at each threshold, the comparator must switch in the direction that sends the integrator back. With an inverting comparator the loop has the wrong overall sign: the ramp drives the comparator to the state that continues the same ramp, and the circuit latches at a rail.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why is a charge amplifier's gain independent of the sensor's cable capacitance?</summary>
+<div>
+
+The summing node is a virtual ground, so the cable's capacitance, connected from that node to ground, never has any voltage across it and takes no charge. All the sensor's charge goes onto $C_F$. The cable capacitance raises the noise gain, and hence the noise, but not the signal gain.
+
+</div>
+</details>
+
+<details>
+<summary>6. What is integrator windup?</summary>
+<div>
+
+When a control loop's actuator saturates, the error cannot be corrected, but the integrator keeps accumulating it. When the error finally reverses, the integrator must first unwind all that accumulated charge, causing a large, slow overshoot. Anti-windup limits the integrator during saturation.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§4.2.6, 4.3.3 (triangle-wave oscillator) and 4.5.5 (a closer look at the integrator); Asadi, <em>Applied Op Amp Circuits</em>, §9.7 (triangular-wave generator). Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-integrator/practice/">Open practice →</a></div>

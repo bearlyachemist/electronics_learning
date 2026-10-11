@@ -45,6 +45,8 @@ jobs:
           npx tsc --noEmit
           npm run build:hosted
           npm run check:hosted
+          npm run check:schematics
+          npm run check:advanced
 
       - name: Check deployment credential
         env:

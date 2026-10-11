@@ -1,0 +1,199 @@
+import Equation from '../../components/Equation.astro';
+import {MosStageFigure} from '../../components/MosAnalogFigures';
+import {CgPhotodiodeCircuit,CgRinFigure,CgBandwidthFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 68</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>Common-gate MOS amplifiers<br/><em>Drive the source, hold the gate still.</em></h1>
+
+<p className="dek">Move the input to the source terminal, derive the positive voltage gain and the low (but load-dependent) input resistance, and use the stage for what it does best: carrying a current from a capacitive source into a load without slowing it down.</p>
+
+<div className="chapter-meta"><span>45–60 min</span><span>Common source (Ch. 64) · Active loads (Ch. 65)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Raise a common-gate transistor's source voltage. Does the drain go up or down?</p></div>
+
+<div>
+
+A MOSFET has three terminals, and each of the three basic single-transistor stages grounds one of them for signals. Common source grounds the source: gate in, drain out, inverting gain. Common drain (the follower) grounds the drain: gate in, source out, gain just under one. **Common gate** grounds the gate: source in, drain out.
+
+It looks the least useful of the three. Its input resistance is low, so it loads a voltage source heavily, and it has no current gain. But a low input resistance is exactly what a current signal wants, and the absence of a gate–drain Miller capacitance makes it fast. Common gate is the upper half of every cascode, and the first stage of many photodiode and RF receivers.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Move the signal to the source → Retain finite drain resistance in both ports → Trade input impedance against bias current → Use it as a current buffer → Know when low input impedance is useful → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Move the signal to the source</h2></div>
+
+<MosStageFigure mode="common-gate"/>
+
+The gate sits at a fixed DC bias $V_B$, the drain has a resistor $R_D$ to the supply, and the signal drives the source. Whatever drives the source must also set its DC voltage and carry the DC drain current: the drawing's input terminal stands for a complete driver, such as a bias current sink with the signal added.
+
+Now the opening question. Raising the source with the gate fixed **reduces** $V_{GS}$, so the drain current falls, the drop across $R_D$ falls, and the drain rises. Source up, drain up: the voltage gain is **positive**. If the body is grounded, a rising source also raises the threshold, which reduces the current further: the body effect helps here.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Retain finite drain resistance in both ports</h2></div>
+
+With the gate and body at AC ground, the channel current is $-(g_m + g_{mb})v_s$, and $r_o$ connects drain to source. KCL at the drain:
+
+<Equation tex={String.raw`\frac{v_d}{R_D}+g_{ds}(v_d-v_s)-(g_m+g_{mb})v_s=0`}/>
+
+The current entering the source terminal is $(g_m + g_{mb} + g_{ds})v_s - g_{ds}v_d$. Solving:
+
+<Equation tex={String.raw`A_v=\frac{v_d}{v_s}=\frac{g_m+g_{mb}+g_{ds}}{1/R_D+g_{ds}},\qquad R_{in}=\frac{1+g_{ds}R_D}{g_m+g_{mb}+g_{ds}}`} label="COMMON-GATE GAIN AND INPUT RESISTANCE"/>
+
+With $r_o \to \infty$ these reduce to the textbook values $A_v \approx (g_m + g_{mb})R_D$ and $R_{in} \approx 1/(g_m + g_{mb})$. The magnitude of the gain is the same as a common-source stage's, but positive, and the body effect increases it.
+
+The input resistance deserves more care. The numerator $1 + g_{ds}R_D$ says that $R_{in}$ depends on what the drain is connected to. A signal current entering the source raises the drain voltage, which pushes current back through $r_o$ into the source and raises it further. With a small resistor load the effect is negligible; with a load comparable to $r_o$, it dominates:
+
+<CgRinFigure/>
+
+When the load is a current source or another high-impedance node, as in a cascode, $R_{in}$ approaches $(R_D + r_o)/(g_mr_o)$, which can be many kilohms. "Common-gate input resistance is $1/g_m$" is true only for drain loads well below $r_o$.
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Trade input impedance against bias current</h2></div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / THREE BIAS CURRENTS</span><h3>$k$ = 2 mA/V², $R_D$ = 5 kΩ, $\lambda$ = 0.02 V⁻¹, no body effect, 10 V supply</h3>
+
+<p>At 0.25, 0.5 and 1 mA, $g_m$ is 1.000, 1.414 and 2.000 mS, and $r_o$ ≈ 200, 100 and 50 kΩ. The exact formulas give gains of <strong>+4.90, +6.78 and +9.18</strong> and input resistances of <strong>1020, 737 and 545 Ω</strong>. More current means more gain and a lower input resistance, both through $g_m$.</p>
+
+<p><strong>DC check.</strong> With the source held at 1 V, the drains sit at 8.75, 7.5 and 5 V, so $V_{DS}$ is 7.75, 6.5 and 4 V against overdrives of 0.50, 0.71 and 1.00 V. All three are saturated. The gate biases are $V_S + V_T + u$ = 2.5, 2.71 and 3.0 V; a grounded body would require more.</p>
+
+<p><strong>Driving it from a real source.</strong> At 1 mA, a generator with 1 kΩ of internal resistance sees the 545 Ω input as a divider: only 545/1545 = 0.353 of its voltage reaches the source. The generator-to-drain gain is 9.18 × 0.353 = <strong>+3.24</strong>, not 9.18. The stage gain is still 9.18 from the source terminal to the drain; the low input resistance has spent the rest.</p>
+
+</div>
+
+A common-gate stage is a poor **voltage** amplifier from a high-resistance source: most of the signal is lost across the source resistance. It is a good amplifier from a low-resistance source, such as a 50 Ω line, and an excellent one from a **current** source.
+
+</section>
+
+<section id="buffer">
+
+<div className="section-heading"><span>04</span><h2>Use it as a current buffer</h2></div>
+
+Drive the source with a current rather than a voltage. Almost all of it flows into the low input resistance, through the channel, and out of the drain into $R_D$: the current gain is close to one,
+
+<Equation tex={String.raw`\frac{i_d}{i_{in}}=\frac{(g_m+g_{mb})r_o}{1+(g_m+g_{mb})r_o}\approx 1`}/>
+
+So what is gained? The **impedance** at which the current is delivered changes, from the low input resistance to the high output resistance at the drain, while the current itself is preserved. That isolates a capacitive source from the resistor that converts its current to a voltage.
+
+<CgPhotodiodeCircuit/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A FASTER PHOTODIODE RECEIVER</span><h3>10 pF photodiode, 5 kΩ transimpedance</h3>
+
+<p><strong>Direct connection.</strong> The photodiode current flows into 5 kΩ, giving 5 mV per µA. The photodiode capacitance, plus 1 pF of wiring, forms a pole with the same resistor: 1/(2π × 5 kΩ × 11 pF) = <strong>2.9 MHz</strong>. Transimpedance and bandwidth are locked together by the one resistor.</p>
+
+<p><strong>Through a common-gate buffer</strong> biased at 1 mA ($g_m$ = 2 mS). The photodiode now sees $R_{in}$ = 545 Ω, so its pole moves to 1/(2π × 545 Ω × 10 pF) = 29 MHz. The current passes to the drain and develops the same 5 mV per µA across $R_D$, where only 1 pF remains: a second pole at 32 MHz. The combined bandwidth is about 20 MHz.</p>
+
+<p>The two poles have been separated: the large capacitance meets the small resistance and the small capacitance meets the large resistance. The cost is a bias current, the transistor's noise, and a headroom budget.</p>
+
+</div>
+
+<CgBandwidthFigure/>
+
+The same idea appears inside the cascode (Chapters 62 and 69): the upper, common-gate device takes the current from the lower device's drain and delivers it to a high-impedance load, while holding that drain nearly still.
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>Know when low input impedance is useful</h2></div>
+
+**No Miller multiplication.** In a common-source stage, $C_{gd}$ connects input to an inverted, amplified output and is multiplied by $1 + |A_v|$. In common gate, the gate is AC ground, so $C_{gd}$ simply loads the drain and $C_{gs}$ loads the source. Neither is multiplied. Common gate is intrinsically a wideband stage, which is why it appears in RF front ends.
+
+**Impedance matching.** A 50 Ω transmission line terminated by $1/g_m$ = 50 Ω needs $g_m$ = 20 mS, a few milliamps of bias in a small MOSFET. Package and wiring parasitics then decide how good the match is at high frequency; $g_m = 1/Z_0$ is only a starting point.
+
+**Noise.** The transistor's channel noise appears at the drain without the benefit of the input-referred gain a common-source stage would provide. For a current-source input such as a photodiode, the bias sink's noise current adds directly to the signal current. Low-noise receivers weigh this against the bandwidth gained.
+
+**Compliance.** As the source swings, check that $V_{GS} > V_T$ (the transistor stays on: the input current cannot exceed the bias current in the "turn-off" direction) and that $V_D - V_S \ge u$ (it stays saturated). In a cascode, the source is an internal node with no independent generator; analyze it with the lower transistor's output conductance and capacitance as the source impedance.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Common gate has positive voltage gain $(g_m + g_{mb})R_D$, an input resistance near $1/g_m$ only for light drain loads, and a current gain of one. Its job is <em>moving a current to a higher impedance</em> without a Miller capacitance.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why is the common-gate voltage gain positive?</summary>
+<div>
+
+With the gate fixed, a rising source reduces $V_{GS}$, so the drain current falls and the drain voltage rises. The common-source stage inverts because its input raises $V_{GS}$; the common-gate stage does not, because its input lowers it.
+
+</div>
+</details>
+
+<details>
+<summary>2. For $g_m$ = 2 mS, $g_{ds}$ = 20 µS and $R_D$ = 10 kΩ, find the gain and input resistance.</summary>
+<div>
+
+$A_v$ = 2.02 mS / (0.1 mS + 0.02 mS) = **+16.8**. $R_{in}$ = (1 + 0.2)/2.02 mS = **594 Ω**, about 20% more than $1/g_m$ because of the drain load.
+
+</div>
+</details>
+
+<details>
+<summary>3. The same stage is driven from a 2 kΩ generator. What is the overall gain?</summary>
+<div>
+
+The input divider passes 594/(2000 + 594) = 0.229, so the overall gain is 16.8 × 0.229 = **+3.86**. The low input resistance costs three quarters of the signal before the transistor sees it.
+
+</div>
+</details>
+
+<details>
+<summary>4. With $g_m$ = 1 mS, $g_{mb}$ = 0.2 mS and infinite $r_o$, what is the input resistance?</summary>
+<div>
+
+$1/(g_m + g_{mb})$ = 1/1.2 mS = **833 Ω**, rather than 1 kΩ. The body effect adds to the transconductance seen from the source, because the source is the terminal being driven.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why does a common-gate stage loaded by a current source not have a low input resistance?</summary>
+<div>
+
+A signal current entering the source must leave through the drain. If the drain node is high impedance, that current raises the drain voltage a lot, which drives current back through $r_o$ toward the source and raises the source voltage. $R_{in} = (1 + g_{ds}R_D)/(g_m + g_{mb} + g_{ds})$ grows with $R_D$, toward $R_D/(g_mr_o)$ when $R_D \gg r_o$.
+
+</div>
+</details>
+
+<details>
+<summary>6. How does a common-gate buffer increase a photodiode receiver's bandwidth without reducing its transimpedance?</summary>
+<div>
+
+It separates the large photodiode capacitance from the large transimpedance resistor. The photodiode sees only $\approx 1/g_m$, so its pole moves up; the current passes through with unity gain to the resistor, where only the small drain capacitance remains. The transimpedance is still $R_D$.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§2.4.4 and 4.5 (cascode and photodiode amplifiers); Huijsing, <em>Operational Amplifiers</em>, 3rd ed., chapter 4. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-common-gate/practice/">Open practice →</a></div>

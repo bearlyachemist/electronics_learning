@@ -1,0 +1,1332 @@
+{
+  "mos-bias-atlas": [
+    {
+      "tag": "BIAS",
+      "title": "Bias",
+      "prompt": "With 5 V, k = 2 mA/V\u00b2, $V_T$ = 1 V, $R_D$ = 1 k\u03a9 and $V_G$ = 2 V, find the bias. Ignore lambda.",
+      "hint": "Try saturation and then test $V_{DS}$ \u2265 u.",
+      "solution": [
+        {
+          "text": "u = 1 V, $I_D$ = 1 mA and $V_D$ = 4 V; the saturation assumption holds with 3 V margin."
+        }
+      ]
+    },
+    {
+      "tag": "BOUNDARY",
+      "title": "Boundary",
+      "prompt": "For the same device with $R_D$ = 2 k\u03a9, find the maximum gate voltage that still gives saturation.",
+      "hint": "Set the drain voltage equal to overdrive.",
+      "solution": [
+        {
+          "text": "Solve 5 \u2212 2u\u00b2 = u. The positive root is (\u221a41 \u2212 1)/4 = 1.3508 V, giving $V_G$ = 2.3508 V."
+        }
+      ]
+    },
+    {
+      "tag": "FEEDBACK",
+      "title": "Feedback",
+      "prompt": "At $I_D$ = 1 mA and $g_m$ = 2 mS, compare a source resistor of 0 and 500 \u03a9 with $R_D$ = 2 k\u03a9. Treat these as independently established bias points with infinite $r_o$ and no body effect.",
+      "hint": "Use the incremental source feedback factor.",
+      "solution": [
+        {
+          "text": "The gains are \u22124 and \u22122 V/V. The DC gate setting must change to keep the same current when $R_S$ is added."
+        }
+      ]
+    }
+  ],
+  "mos-diode-load": [
+    {
+      "tag": "RESISTANCE",
+      "title": "Resistance",
+      "prompt": "A diode-connected MOSFET has $g_m$ = 1 mS and $g_{ds}$ = 10 \u03bcS. Find its incremental resistance.",
+      "hint": "The two conductances add.",
+      "solution": [
+        {
+          "text": "The resistance is 1/1.01 mS = 990.1 \u03a9, not the 100 k\u03a9 drain output resistance."
+        }
+      ]
+    },
+    {
+      "tag": "SIZE",
+      "title": "Size",
+      "prompt": "A 1 mA stage has $k_n$ = 2 mA/V\u00b2 and $k_L$ = 0.5 mA/V\u00b2. With both thresholds 1 V and $V_{DD}$ = 5 V, find input and output voltages.",
+      "hint": "Find each overdrive independently.",
+      "solution": [
+        {
+          "text": "Input overdrive is 1 V and load overdrive is 2 V, giving $V_{in}$ = 2 V and $V_o$ = 2 V. Both devices are in saturation."
+        }
+      ]
+    },
+    {
+      "tag": "GAIN",
+      "title": "Gain",
+      "prompt": "Use $g_{mn}$ = 2 mS, $g_{mL}$ = 1 mS, $g_{dsn}$ = $g_{dsL}$ = 20 \u03bcS and an AC-coupled 10 k\u03a9 output load. Find gain.",
+      "hint": "Keep the load conductance in the output KCL equation.",
+      "solution": [
+        {
+          "text": "$A_v$ = \u22122 mS/(1 mS + 40 \u03bcS + 100 \u03bcS) = \u22121.754 V/V."
+        }
+      ]
+    }
+  ],
+  "mos-current-mirror": [
+    {
+      "tag": "REFERENCE",
+      "title": "Reference",
+      "prompt": "For $I_{REF}$ = 0.25 mA, k = 2 mA/V\u00b2 and $V_T$ = 1 V, find gate voltage and ideal compliance.",
+      "hint": "Find the square-law overdrive first.",
+      "solution": [
+        {
+          "text": "u = 0.5 V, $V_{GS}$ = 1.5 V and output compliance is 0.5 V."
+        }
+      ]
+    },
+    {
+      "tag": "MISMATCH",
+      "title": "Mismatch",
+      "prompt": "At 0.5 V overdrive, estimate the relative current error from a +5 mV threshold shift.",
+      "hint": "Linearize the squared overdrive.",
+      "solution": [
+        {
+          "text": "The first-order error is \u22122\u00d70.005/0.5 = \u22122%; the exact square-law ratio gives \u22121.99%."
+        }
+      ]
+    },
+    {
+      "tag": "OUTPUT SLOPE",
+      "title": "Output Slope",
+      "prompt": "A device has $I_0$ = 1 mA and lambda = 0.02 V\u207b\u00b9. How much does its current rise when $V_{DS}$ changes by 2 V?",
+      "hint": "Differentiate the modulation factor at fixed gate voltage.",
+      "solution": [
+        {
+          "text": "$g_{ds}$ = 20 \u03bcS, so \u0394ID = 40 \u03bcA. This is an exact increment within the stated linear modulation model while saturation holds."
+        }
+      ]
+    }
+  ],
+  "mos-ratioed-mirrors": [
+    {
+      "tag": "POLARITY",
+      "title": "Polarity",
+      "prompt": "A 5 V PMOS source has overdrive 0.4 V. What is the highest output voltage allowing saturation?",
+      "hint": "Subtract overdrive from the source rail.",
+      "solution": [
+        {
+          "text": "The upper output limit is 4.6 V."
+        }
+      ]
+    },
+    {
+      "tag": "RATIO",
+      "title": "Ratio",
+      "prompt": "A 100 \u03bcA reference feeds mirror ratios 1, 2 and 5. Find the total DC supply current, including the reference branch.",
+      "hint": "Include all four branches.",
+      "solution": [
+        {
+          "text": "The three outputs total 800 \u03bcA; with the 100 \u03bcA reference, the total is 900 \u03bcA."
+        }
+      ]
+    },
+    {
+      "tag": "DEGENERATION",
+      "title": "Degeneration",
+      "prompt": "A 1:4 mirror uses 1 k\u03a9 in the 0.25 mA reference source. Choose the output source resistor for a 1 mA target.",
+      "hint": "Match source voltage drops.",
+      "solution": [
+        {
+          "text": "The reference drop is 0.25 V, so the output resistor is 250 \u03a9. This preserves nominal $V_{GS}$ matching, not perfect finite-voltage accuracy."
+        }
+      ]
+    }
+  ],
+  "mos-source-degeneration": [
+    {
+      "tag": "GAIN",
+      "title": "Gain",
+      "prompt": "At $g_m$ = 2 mS, $r_o$ = 50 k\u03a9, $R_D$ = 5 k\u03a9 and $R_S$ = 500 \u03a9, calculate gain with no body effect.",
+      "hint": "Use the two-node denominator, including $g_{ds}$.",
+      "solution": [
+        {
+          "text": "$g_{ds}$ = 20 \u03bcS. The denominator is 1 + 0.1 + 1.01 = 2.11, so $A_v$ = \u221210/2.11 = \u22124.739 V/V."
+        }
+      ]
+    },
+    {
+      "tag": "RESISTANCE",
+      "title": "Resistance",
+      "prompt": "For the same transistor and source resistor, find current-source output resistance.",
+      "hint": "Use a drain test current with the gate AC grounded.",
+      "solution": [
+        {
+          "text": "$R_{out}$ = 50 k\u03a9 + 0.5 k\u03a9 + (2 mS)(50 k\u03a9)(0.5 k\u03a9) = 100.5 k\u03a9."
+        }
+      ]
+    },
+    {
+      "tag": "HEADROOM",
+      "title": "Headroom",
+      "prompt": "A 1 mA current sink has $R_S$ = 500 \u03a9 and overdrive 0.5 V. Find minimum output voltage.",
+      "hint": "Add source drop to channel compliance.",
+      "solution": [
+        {
+          "text": "The source is at 0.5 V and the channel needs another 0.5 V, giving a 1 V minimum output."
+        }
+      ]
+    }
+  ],
+  "mos-cascode-mirror": [
+    {
+      "tag": "resistance",
+      "title": "Resistance",
+      "prompt": "Find cascode resistance for $g_m=1$ mS and both $r_o=100$ k\u03a9.",
+      "hint": "Keep the two additive resistances.",
+      "solution": [
+        {
+          "text": "$R_{out}=100k+100k+0.001(100k)^2=10.2$ M\u03a9. A 0.5 V incremental output change produces about 49 nA."
+        }
+      ]
+    },
+    {
+      "tag": "headroom",
+      "title": "Headroom",
+      "prompt": "Use $V_T=0.7$ V and $u=0.3$ V. Find standard output compliance and upper gate bias.",
+      "hint": "Write the lower drain first.",
+      "solution": [
+        {
+          "text": "$V_X=1.0$ V, $V_{out,min}=1.3$ V and $V_B=2.0$ V. Allow margin for spread before choosing the supply."
+        }
+      ]
+    },
+    {
+      "tag": "mismatch",
+      "title": "Mismatch",
+      "prompt": "A lower output device has a 5 mV threshold increase at $u=0.5$ V. Estimate current error.",
+      "hint": "Differentiate the square law.",
+      "solution": [
+        {
+          "text": "$\\Delta I/I\\approx-2\\Delta V_T/u=-2\\%$. Large cascode output resistance does not suppress this mismatch."
+        }
+      ]
+    }
+  ],
+  "mos-wide-swing-mirror": [
+    {
+      "tag": "bias",
+      "title": "Bias",
+      "prompt": "For $u_1=0.2$ V, $u_2=0.3$ V, $V_{T2}=0.8$ V and margin 0.1 V, find $V_X,V_B,V_{out,min}$.",
+      "hint": "Start at the lower drain.",
+      "solution": [
+        {
+          "text": "$V_X=0.3$ V, $V_B=1.4$ V and $V_{out,min}=0.6$ V."
+        }
+      ]
+    },
+    {
+      "tag": "replica",
+      "title": "Replica",
+      "prompt": "An output device has $k=8$ mA/V\u00b2 at 0.5 mA. What replica k doubles its overdrive?",
+      "hint": "Use $u\\propto1/\\sqrt{k}$.",
+      "solution": [
+        {
+          "text": "$k_{replica}=2$ mA/V\u00b2. Output overdrive is 0.354 V; replica overdrive is 0.707 V."
+        }
+      ]
+    },
+    {
+      "tag": "budget",
+      "title": "Budget",
+      "prompt": "A 1.8 V supply must support a 1.5 V bias node and a 0.4 V reference-generator compliance. Is it feasible?",
+      "hint": "Add the independent voltage demands.",
+      "solution": [
+        {
+          "text": "No. The generator needs at least 1.9 V. Output-stack compliance alone does not establish feasibility."
+        }
+      ]
+    }
+  ],
+  "mos-common-source": [
+    {
+      "tag": "gain",
+      "title": "Gain",
+      "prompt": "Find gain for $g_m=3$ mS, $R_D=4$ k\u03a9 and $r_o=40$ k\u03a9.",
+      "hint": "Use the parallel load.",
+      "solution": [
+        {
+          "text": "$R=3.636$ k\u03a9 and $A_v=-10.91$ V/V."
+        }
+      ]
+    },
+    {
+      "tag": "distortion",
+      "title": "Distortion",
+      "prompt": "Estimate second harmonic for 20 mV peak input at 0.4 V overdrive.",
+      "hint": "Use the local expansion.",
+      "solution": [
+        {
+          "text": "$H_2/H_1\\approx0.020/(4\\times0.4)=1.25\\%$. Verify saturation over the cycle."
+        }
+      ]
+    },
+    {
+      "tag": "loading",
+      "title": "Loading",
+      "prompt": "At gain \u221210, with $C_{gs}=8$ pF and $C_{gd}=1$ pF, estimate input capacitance and its pole with 50 k\u03a9 source resistance.",
+      "hint": "Include the inverted output movement.",
+      "solution": [
+        {
+          "text": "$C_{in}=19$ pF and $f_p\\approx1/(2\\pi\\times50k\\times19p)=167.5$ kHz."
+        }
+      ]
+    }
+  ],
+  "mos-active-load": [
+    {
+      "tag": "gain",
+      "title": "Gain",
+      "prompt": "For $g_m=1$ mS and both output resistances 100 k\u03a9, find unloaded gain and gain with 50 k\u03a9 AC load.",
+      "hint": "Parallel both device resistances first.",
+      "solution": [
+        {
+          "text": "Unloaded $R=50$ k\u03a9 and gain \u221250; loaded $R=25$ k\u03a9 and gain \u221225."
+        }
+      ]
+    },
+    {
+      "tag": "bias",
+      "title": "Bias",
+      "prompt": "A 30 k\u03a9 node experiences 15 \u03bcA current imbalance. Estimate the DC shift.",
+      "hint": "Use local output resistance.",
+      "solution": [
+        {
+          "text": "Magnitude is 0.45 V. The sign depends on which branch has excess current; check compliance before accepting the estimate."
+        }
+      ]
+    },
+    {
+      "tag": "pole",
+      "title": "Pole",
+      "prompt": "A 40 k\u03a9 node has 20 pF capacitance. Find its pole.",
+      "hint": "Use the RC time constant.",
+      "solution": [
+        {
+          "text": "$f_p=1/(2\\pi\\times40k\\times20p)=198.9$ kHz. Additional internal poles may limit the complete amplifier sooner."
+        }
+      ]
+    }
+  ],
+  "mos-source-follower": [
+    {
+      "tag": "gain",
+      "title": "Gain",
+      "prompt": "Use $g_m=2$ mS, $g_{mb}=0.4$ mS, $g_{ds}=0.02$ mS and $R_L=10$ k\u03a9. Find gain.",
+      "hint": "Convert load resistance into conductance.",
+      "solution": [
+        {
+          "text": "$A_v=2/(2+0.4+0.02+0.1)=0.794$. Stage output resistance is 413 \u03a9; loaded resistance is about 397 \u03a9."
+        }
+      ]
+    },
+    {
+      "tag": "dc",
+      "title": "Dc",
+      "prompt": "With no body effect, $V_G=3$ V, $V_T=1$ V, $k=2$ mA/V\u00b2 and $R_L=2$ k\u03a9, solve source voltage.",
+      "hint": "Use $V_S=2(2-V_S)^2$.",
+      "solution": [
+        {
+          "text": "The physical root is $(9-\\sqrt{17})/4=1.219$ V, giving 0.610 mA. Reject the other root because its overdrive is negative."
+        }
+      ]
+    },
+    {
+      "tag": "transient",
+      "title": "Transient",
+      "prompt": "A 2 k\u03a9 load discharges 1 nF from 2 V with the transistor off. Find initial slope and time constant.",
+      "hint": "Use resistor current and capacitor charge.",
+      "solution": [
+        {
+          "text": "Initial current is 1 mA and slope is \u22121 V/\u03bcs. The decay time constant is 2 \u03bcs; the slope decreases as voltage falls."
+        }
+      ]
+    }
+  ],
+  "mos-current-loaded-follower": [
+    {
+      "tag": "headroom",
+      "title": "Headroom",
+      "prompt": "An NMOS follower has $u=0.4$ V above a sink with $u=0.2$ V on a 3 V supply. Find its ideal output interval.",
+      "hint": "Check each drain-source voltage.",
+      "solution": [
+        {
+          "text": "$0.2\\le V_O\\le2.6$ V. Gate-drive limits and body effect can narrow this interval."
+        }
+      ]
+    },
+    {
+      "tag": "slew",
+      "title": "Slew",
+      "prompt": "A 200 \u03bcA sink discharges 2 nF with no other load. Find falling slope.",
+      "hint": "Use capacitor charge.",
+      "solution": [
+        {
+          "text": "$\\dot V=-I/C=-0.1$ V/\u03bcs until sink compliance fails."
+        }
+      ]
+    },
+    {
+      "tag": "power",
+      "title": "Power",
+      "prompt": "A 0.8 mA unloaded path runs from a 5 V rail to ground. Find idle power.",
+      "hint": "Include both series devices.",
+      "solution": [
+        {
+          "text": "Total idle power is 4 mW. Multiplying only the follower voltage drop by current omits sink dissipation."
+        }
+      ]
+    }
+  ],
+  "mos-common-gate": [
+    {
+      "tag": "ports",
+      "title": "Ports",
+      "prompt": "For $g_m=2$ mS, $g_{ds}=20$ \u03bcS and $R_D=10$ k\u03a9, find gain and input resistance.",
+      "hint": "Use both exact incremental equations.",
+      "solution": [
+        {
+          "text": "$A_v=2.02/0.12=16.833$. $R_{in}=1.2/0.00202=594.1$ \u03a9."
+        }
+      ]
+    },
+    {
+      "tag": "generator",
+      "title": "Generator",
+      "prompt": "Use the previous stage with a 2 k\u03a9 generator resistance. Find overall voltage gain.",
+      "hint": "Apply the input divider.",
+      "solution": [
+        {
+          "text": "$A_{total}=16.833\\times594.1/(2000+594.1)=3.855$ V/V."
+        }
+      ]
+    },
+    {
+      "tag": "body",
+      "title": "Body",
+      "prompt": "With $g_m=1$ mS, $g_{mb}=0.2$ mS and infinite output resistance, find input resistance.",
+      "hint": "Body feedback adds source transconductance.",
+      "solution": [
+        {
+          "text": "$R_{in}=1/1.2$ mS $=833$ \u03a9, rather than 1 k\u03a9."
+        }
+      ]
+    }
+  ],
+  "mos-cascode-amplifier": [
+    {
+      "tag": "loading",
+      "title": "Loading",
+      "prompt": "Use stack $R_c=2$ M\u03a9, $G_m=1$ mS and active-load resistance 100 k\u03a9. Find gain.",
+      "hint": "Parallel the resistances.",
+      "solution": [
+        {
+          "text": "$R=95.24$ k\u03a9 and $A_v=-95.24$."
+        }
+      ]
+    },
+    {
+      "tag": "bias",
+      "title": "Bias",
+      "prompt": "A lower device needs 0.3 V overdrive with 0.1 V margin. Upper threshold is 0.8 V and overdrive 0.4 V. Find gate bias and minimum output.",
+      "hint": "Find the middle node first.",
+      "solution": [
+        {
+          "text": "$V_X=0.4$ V, $V_B=1.6$ V and $V_{out,min}=0.8$ V."
+        }
+      ]
+    },
+    {
+      "tag": "pole",
+      "title": "Pole",
+      "prompt": "A loaded node has 80 k\u03a9 resistance and 5 pF capacitance. Find its isolated pole.",
+      "hint": "Use the RC node model.",
+      "solution": [
+        {
+          "text": "$f_p\\approx397.9$ kHz. This does not include the cascode internal-node pole."
+        }
+      ]
+    }
+  ],
+  "mos-differential-pair": [
+    {
+      "tag": "balance",
+      "title": "Balance",
+      "prompt": "For $I_T=0.8$ mA and $k=5$ mA/V\u00b2, find balanced overdrive and transconductance.",
+      "hint": "Each branch carries half the tail.",
+      "solution": [
+        {
+          "text": "$u_0=\\sqrt{0.8/5}=0.4$ V and $g_{m0}=2$ mS."
+        }
+      ]
+    },
+    {
+      "tag": "gain",
+      "title": "Gain",
+      "prompt": "Use $g_{m0}=2$ mS and equal 4 k\u03a9 drain loads. Find right-drain and differential gain.",
+      "hint": "Fix $v_d=V_1-V_2$.",
+      "solution": [
+        {
+          "text": "Right-drain gain is +4; drain2-minus-drain1 gain is +8. Left-drain gain is \u22124."
+        }
+      ]
+    },
+    {
+      "tag": "steering",
+      "title": "Steering",
+      "prompt": "For $I_T=1$ mA and $k=8$ mA/V\u00b2, find the ideal full-steering threshold.",
+      "hint": "Use the nonnegative-overdrive bound.",
+      "solution": [
+        {
+          "text": "$|v_d|=\\sqrt{2I_T/k}=0.5$ V. This is a saturation-law current-steering limit, not an input rating."
+        }
+      ]
+    }
+  ],
+  "mos-differential-range": [
+    {
+      "tag": "range",
+      "title": "Range",
+      "prompt": "Use $V_{DD}=3.3$ V, $I_T=1$ mA, $R_D=2$ k\u03a9, $V_T=0.7$ V, $u_0=0.3$ V and $u_T=0.2$ V. Find balanced common-mode bounds.",
+      "hint": "Compute drain voltage first.",
+      "solution": [
+        {
+          "text": "$V_D=2.3$ V; $V_{C,min}=1.2$ V and $V_{C,max}=3.0$ V before protection and body-effect limits."
+        }
+      ]
+    },
+    {
+      "tag": "rejection",
+      "title": "Rejection",
+      "prompt": "For $g_m=1$ mS and $r_T=100$ k\u03a9, estimate single-ended CMRR.",
+      "hint": "Use the factor of two in differential gain.",
+      "solution": [
+        {
+          "text": "CMRR is 100.5, about 40.0 dB, under the simplified matched-device model."
+        }
+      ]
+    },
+    {
+      "tag": "linearity",
+      "title": "Linearity",
+      "prompt": "For $u_0=0.2$ V, estimate the 1% gain-compression differential range.",
+      "hint": "Scale the normalized steering expression.",
+      "solution": [
+        {
+          "text": "Approximately \u00b156.4 mV; full steering occurs near \u00b1283 mV, a much larger amplitude."
+        }
+      ]
+    }
+  ],
+  "mos-mirror-loaded-differential": [
+    {
+      "tag": "gain",
+      "title": "Gain",
+      "prompt": "For $g_m=1.5$ mS and both output resistances 80 k\u03a9, find differential single-ended gain.",
+      "hint": "Combine the two current changes first.",
+      "solution": [
+        {
+          "text": "$R=40$ k\u03a9 and gain is +60 for left-minus-right differential input."
+        }
+      ]
+    },
+    {
+      "tag": "swing",
+      "title": "Swing",
+      "prompt": "Let $V_S=0.4$ V, $u_N=0.3$ V, $V_{DD}=3.3$ V and $u_P=0.4$ V. Find output interval.",
+      "hint": "Check both output devices.",
+      "solution": [
+        {
+          "text": "$0.7\\le V_O\\le2.9$ V before extra margin. A centered 1.8 V point permits roughly \u00b11.1 V."
+        }
+      ]
+    },
+    {
+      "tag": "error",
+      "title": "Error",
+      "prompt": "A 10 \u03bcA DC imbalance enters a 40 k\u03a9 output node. Find local shift.",
+      "hint": "Use the output resistance.",
+      "solution": [
+        {
+          "text": "Output shift magnitude is 0.4 V; a sufficiently large imbalance drives a device out of saturation."
+        }
+      ]
+    }
+  ],
+  "mos-differential-degeneration": [
+    {
+      "tag": "gain",
+      "title": "Gain",
+      "prompt": "For $g_m=4$ mS and $R_S=250$ \u03a9, find differential transconductance and drain-difference gain with 2 k\u03a9 loads.",
+      "hint": "Use the local feedback factor.",
+      "solution": [
+        {
+          "text": "$G_{md}=2$ mS and differential gain is +4."
+        }
+      ]
+    },
+    {
+      "tag": "headroom",
+      "title": "Headroom",
+      "prompt": "Use $I_T=1$ mA, $R_S=1$ k\u03a9, $V_T=0.7$ V, $u_0=0.2$ V and $u_T=0.15$ V. Find lower common mode.",
+      "hint": "Each resistor carries half the tail.",
+      "solution": [
+        {
+          "text": "$V_{C,min}=0.7+0.2+0.5+0.15=1.55$ V."
+        }
+      ]
+    },
+    {
+      "tag": "steering",
+      "title": "Steering",
+      "prompt": "For $I_T=1$ mA, $k=8$ mA/V\u00b2 and $R_S=500$ \u03a9, find full-steering input.",
+      "hint": "Add resistor voltage at full imbalance.",
+      "solution": [
+        {
+          "text": "Magnitude is $0.5+0.001\\times500=1.0$ V."
+        }
+      ]
+    }
+  ],
+  "mos-complementary-output": [
+    {
+      "tag": "bias",
+      "title": "Bias",
+      "prompt": "For matched devices with $V_T=0.8$ V, $k=10$ mA/V\u00b2 and $I_Q=0.2$ mA, find gate spread.",
+      "hint": "Find each overdrive.",
+      "solution": [
+        {
+          "text": "$u=0.2$ V and $V_B=2.0$ V."
+        }
+      ]
+    },
+    {
+      "tag": "drive",
+      "title": "Drive",
+      "prompt": "An upper NMOS must source 5 mA with $k=40$ mA/V\u00b2 and $V_T=1$ V at output 3 V. Find gate voltage if the lower device is off.",
+      "hint": "Compute required overdrive.",
+      "solution": [
+        {
+          "text": "$u=0.5$ V, so gate needs 4.5 V. Also require drain at least 3.5 V."
+        }
+      ]
+    },
+    {
+      "tag": "power",
+      "title": "Power",
+      "prompt": "A complementary stage has \u00b112 V rails and 3 mA idle current. Find total idle power.",
+      "hint": "Use the entire rail separation.",
+      "solution": [
+        {
+          "text": "Idle power is $24\\times0.003=72$ mW, shared between devices and any series resistors."
+        }
+      ]
+    }
+  ],
+  "mos-two-stage-amplifier": [
+    {
+      "tag": "gain",
+      "title": "Gain",
+      "prompt": "Stages have transconductances 0.8 and 3 mS, and resistances 80 and 40 k\u03a9. Find DC gain magnitude.",
+      "hint": "Multiply both local gains.",
+      "solution": [
+        {
+          "text": "Stage gains are 64 and 120; total is 7680, or about 77.7 dB."
+        }
+      ]
+    },
+    {
+      "tag": "compensation",
+      "title": "Compensation",
+      "prompt": "For $g_{m1}=0.5$ mS and desired $f_u=2$ MHz, estimate Miller capacitance.",
+      "hint": "Rearrange the unity-frequency estimate.",
+      "solution": [
+        {
+          "text": "$C_C\\approx39.8$ pF. Confirm the remaining pole and zero positions before accepting stability."
+        }
+      ]
+    },
+    {
+      "tag": "slew",
+      "title": "Slew",
+      "prompt": "A 40 pF capacitor can receive 80 \u03bcA. Find slew and maximum 1 V peak sine frequency before slew limiting.",
+      "hint": "Sine maximum slope is $2\\pi fV_p$.",
+      "solution": [
+        {
+          "text": "Slew is 2 V/\u03bcs, so $f\\le318$ kHz for 1 V peak. Closed-loop bandwidth may impose a tighter limit."
+        }
+      ]
+    }
+  ],
+  "mos-noise-design": [
+    {
+      "tag": "efficiency",
+      "title": "Efficiency",
+      "prompt": "For 0.25 V strong-inversion overdrive, find $g_m/I_D$ and current needed for 2 mS.",
+      "hint": "Use $2/u$.",
+      "solution": [
+        {
+          "text": "Efficiency is 8 V\u207b\u00b9; current is 0.25 mA in the square-law approximation."
+        }
+      ]
+    },
+    {
+      "tag": "noise",
+      "title": "Noise",
+      "prompt": "Combine 4 nV/\u221aHz amplifier noise with 12 nV/\u221aHz resistor noise.",
+      "hint": "Sum squares.",
+      "solution": [
+        {
+          "text": "Combined density is $\\sqrt{4^2+12^2}=12.65$ nV/\u221aHz, or 1.265 \u03bcV rms over a rectangular 10 kHz band."
+        }
+      ]
+    },
+    {
+      "tag": "bandwidth",
+      "title": "Bandwidth",
+      "prompt": "A first-order low-pass has 1 kHz \u22123 dB frequency and white input density 10 nV/\u221aHz. Find integrated rms input noise.",
+      "hint": "Its equivalent noise bandwidth is $\\pi f_c/2$.",
+      "solution": [
+        {
+          "text": "ENBW is 1571 Hz, giving about 396 nV rms. Using 1 kHz as a rectangular band would underestimate it."
+        }
+      ]
+    }
+  ],
+  "opamp-ideal": [
+    {
+      "tag": "finite gain",
+      "title": "Finite Gain",
+      "prompt": "A noninverting gain-20 circuit has $A_0=20000$. Find its exact DC gain.",
+      "hint": "Use gain divided by $1+NG/A_0$.",
+      "solution": [
+        {
+          "text": "$G=20/(1+20/20000)=19.9800$, about 0.0999% low."
+        }
+      ]
+    },
+    {
+      "tag": "virtual ground",
+      "title": "Virtual Ground",
+      "prompt": "An inverting stage has 0.8 V output and $A_0=80000$, with plus input at zero. Find minus-input voltage.",
+      "hint": "Use the signed open-loop law.",
+      "solution": [
+        {
+          "text": "$v_-= -v_o/A_0=-10$ \u03bcV. It is near ground, not exactly ground."
+        }
+      ]
+    },
+    {
+      "tag": "limit",
+      "title": "Limit",
+      "prompt": "A gain-5 circuit has a 3 V positive output limit. What ideal input reaches it?",
+      "hint": "Start with the requested output.",
+      "solution": [
+        {
+          "text": "Input is 0.6 V in the ideal-gain estimate. Leave margin for finite output swing and any required load current."
+        }
+      ]
+    }
+  ],
+  "opamp-dc-errors": [
+    {
+      "tag": "offset",
+      "title": "Offset",
+      "prompt": "A gain-25 amplifier has 80 \u03bcV offset. Find output offset before other errors.",
+      "hint": "Offset is amplified by noise gain.",
+      "solution": [
+        {
+          "text": "Output offset is approximately 2 mV."
+        }
+      ]
+    },
+    {
+      "tag": "bias",
+      "title": "Bias",
+      "prompt": "With $R_F=90$ k\u03a9 and $R_G=10$ k\u03a9, choose matching source resistance. If offset current is 4 nA, find residual output bias error.",
+      "hint": "Use parallel resistance and noise gain.",
+      "solution": [
+        {
+          "text": "$R_{match}=9$ k\u03a9; output error is $10\\times4n\\times9k=360$ \u03bcV."
+        }
+      ]
+    },
+    {
+      "tag": "drift",
+      "title": "Drift",
+      "prompt": "Offset drift is 0.5 \u03bcV/\u00b0C over 80\u00b0C, at noise gain 50. Find output drift contribution.",
+      "hint": "Convert to equivalent input drift first.",
+      "solution": [
+        {
+          "text": "Input change is 40 \u03bcV; output contribution is 2 mV. Initial offset and other drifts remain."
+        }
+      ]
+    }
+  ],
+  "opamp-ac-limits": [
+    {
+      "tag": "bandwidth",
+      "title": "Bandwidth",
+      "prompt": "A 3 MHz single-pole op amp has inverting gain \u22129. Estimate bandwidth.",
+      "hint": "Find noise gain first.",
+      "solution": [
+        {
+          "text": "Noise gain is 10, so approximate bandwidth is 300 kHz."
+        }
+      ]
+    },
+    {
+      "tag": "slew",
+      "title": "Slew",
+      "prompt": "Find required slew for a 3 V peak, 20 kHz sine.",
+      "hint": "Differentiate the sine.",
+      "solution": [
+        {
+          "text": "$SR\\ge2\\pi\\times20k\\times3=0.377$ V/\u03bcs, with extra margin for low distortion."
+        }
+      ]
+    },
+    {
+      "tag": "settling",
+      "title": "Settling",
+      "prompt": "A one-pole closed loop has 50 kHz bandwidth. Estimate 0.1% settling.",
+      "hint": "Use $6.91/(2\\pi f)$.",
+      "solution": [
+        {
+          "text": "Approximately 22 \u03bcs for a sufficiently small step. Slew and additional poles can increase it."
+        }
+      ]
+    }
+  ],
+  "opamp-bjt-internals": [
+    {
+      "tag": "input",
+      "title": "Input",
+      "prompt": "At 25 \u03bcA collector current and $\\beta=250$, find transconductance and base current at 300 K.",
+      "hint": "Use thermal voltage.",
+      "solution": [
+        {
+          "text": "$g_m=0.967$ mS and $I_B=100$ nA."
+        }
+      ]
+    },
+    {
+      "tag": "source",
+      "title": "Source",
+      "prompt": "A 100 nA input bias current flows through 200 k\u03a9. Find voltage error and output error at gain 5.",
+      "hint": "Ohm\u2019s law followed by noise gain.",
+      "solution": [
+        {
+          "text": "Input drop is 20 mV; output error magnitude is about 100 mV before cancellation and other errors."
+        }
+      ]
+    },
+    {
+      "tag": "steering",
+      "title": "Steering",
+      "prompt": "For 100 \u03bcA tail and 10 mV differential input at 300 K, find current difference.",
+      "hint": "Use $I_T\\tanh(v_d/(2U_T))$.",
+      "solution": [
+        {
+          "text": "Difference is about 19.1 \u03bcA, versus 19.34 \u03bcA from the tangent; branch currents are about 59.6 and 40.4 \u03bcA."
+        }
+      ]
+    }
+  ],
+  "opamp-cmos-internals": [
+    {
+      "tag": "gm",
+      "title": "Gm",
+      "prompt": "A MOS input branch runs at 20 \u03bcA and 0.16 V overdrive. Find transconductance.",
+      "hint": "Use $2I/u$.",
+      "solution": [
+        {
+          "text": "$g_m=0.25$ mS in strong-inversion square-law saturation."
+        }
+      ]
+    },
+    {
+      "tag": "range",
+      "title": "Range",
+      "prompt": "For threshold 0.6 V, input overdrive 0.15 V and tail overdrive 0.1 V, find the lower NMOS common-mode bound.",
+      "hint": "Add the stacked voltage requirements.",
+      "solution": [
+        {
+          "text": "Approximately 0.85 V above the lower rail, before body effect and margin."
+        }
+      ]
+    },
+    {
+      "tag": "leakage",
+      "title": "Leakage",
+      "prompt": "Total leakage is 20 pA into a 5 M\u03a9 source. Find input error.",
+      "hint": "Include all leakage paths.",
+      "solution": [
+        {
+          "text": "Error magnitude is 100 \u03bcV. At noise gain 20 it contributes 2 mV output."
+        }
+      ]
+    }
+  ],
+  "opamp-input-tradeoffs": [
+    {
+      "tag": "crossover",
+      "title": "Crossover",
+      "prompt": "An amplifier has 3 nV/\u221aHz voltage noise and 0.5 pA/\u221aHz current noise. Where are their contributions equal?",
+      "hint": "Set $e_n=i_nR$.",
+      "solution": [
+        {
+          "text": "At 6 k\u03a9. Resistor thermal noise remains an additional contribution."
+        }
+      ]
+    },
+    {
+      "tag": "noise",
+      "title": "Noise",
+      "prompt": "At 300 K, combine 5 nV/\u221aHz voltage noise, 0.2 pA/\u221aHz current noise and 100 k\u03a9 source resistance.",
+      "hint": "Include resistor noise.",
+      "solution": [
+        {
+          "text": "Resistor noise is about 40.7 nV/\u221aHz and current contribution 20 nV/\u221aHz; total is about 45.6 nV/\u221aHz."
+        }
+      ]
+    },
+    {
+      "tag": "dc",
+      "title": "Dc",
+      "prompt": "A 50 pA bias current flows through 2 M\u03a9, while offset is 30 \u03bcV. Find worst-case input bound.",
+      "hint": "Add magnitudes for an uncorrelated guarantee.",
+      "solution": [
+        {
+          "text": "Bias term is 100 \u03bcV; worst-case sum is 130 \u03bcV before drift and other errors. Signed nominal terms might partly cancel."
+        }
+      ]
+    }
+  ],
+  "opamp-noninverting": [
+    {
+      "tag": "design",
+      "title": "Design",
+      "prompt": "Choose gain 6 with $R_G=4$ k\u03a9. Find $R_F$.",
+      "hint": "Solve the ratio.",
+      "solution": [
+        {
+          "text": "$R_F=20$ k\u03a9. At 3 V output the divider draws 125 \u03bcA."
+        }
+      ]
+    },
+    {
+      "tag": "current",
+      "title": "Current",
+      "prompt": "A 2 V output drives 500 \u03a9 and a 100 k\u03a9/10 k\u03a9 divider. Find required output current.",
+      "hint": "Add load and divider currents.",
+      "solution": [
+        {
+          "text": "Approximately 4.018 mA. Check guaranteed output swing at that current."
+        }
+      ]
+    },
+    {
+      "tag": "noise",
+      "title": "Noise",
+      "prompt": "Find divider input-referred resistor noise at 300 K for $R_F=30$ k\u03a9 and $R_G=10$ k\u03a9.",
+      "hint": "Use their parallel value.",
+      "solution": [
+        {
+          "text": "$R_{eq}=7.5$ k\u03a9 and noise density is about 11.15 nV/\u221aHz."
+        }
+      ]
+    }
+  ],
+  "opamp-inverting-summing": [
+    {
+      "tag": "weights",
+      "title": "Weights",
+      "prompt": "With $R_F=30$ k\u03a9, $R_1=10$ k\u03a9 and $R_2=15$ k\u03a9, find weights and noise gain.",
+      "hint": "Apply KCL and then zero sources.",
+      "solution": [
+        {
+          "text": "Weights are \u22123 and \u22122; noise gain is 6."
+        }
+      ]
+    },
+    {
+      "tag": "reference",
+      "title": "Reference",
+      "prompt": "For those resistors, use $V_R=0.5$ V, $V_1=0.2$ V and $V_2=0.3$ V. Find output.",
+      "hint": "Include $NGV_R$.",
+      "solution": [
+        {
+          "text": "$V_O=6(0.5)-3(0.2)-2(0.3)=1.8$ V."
+        }
+      ]
+    },
+    {
+      "tag": "speed",
+      "title": "Speed",
+      "prompt": "An inverting gain \u22120.1 stage uses a 2 MHz one-pole op amp. Estimate bandwidth.",
+      "hint": "Signal gain is not noise gain.",
+      "solution": [
+        {
+          "text": "Noise gain is 1.1, so bandwidth is roughly 1.82 MHz; verify unity-gain stability and parasitics."
+        }
+      ]
+    }
+  ],
+  "opamp-difference": [
+    {
+      "tag": "exact",
+      "title": "Exact",
+      "prompt": "For $a=2$ and $b=2.02$, find $c$ and common-mode gain.",
+      "hint": "Use the unmatched expression.",
+      "solution": [
+        {
+          "text": "$c=3(2.02)/3.02=2.00662$, so $A_{cm}=0.00662$."
+        }
+      ]
+    },
+    {
+      "tag": "error",
+      "title": "Error",
+      "prompt": "Use that circuit at 3 V common mode and zero differential input. Find output.",
+      "hint": "Multiply common-mode gain.",
+      "solution": [
+        {
+          "text": "Output is about 19.9 mV despite zero differential signal."
+        }
+      ]
+    },
+    {
+      "tag": "matching",
+      "title": "Matching",
+      "prompt": "What relative ratio mismatch gives approximately 80 dB resistor-limited CMRR at unity gain?",
+      "hint": "Convert dB to a voltage ratio.",
+      "solution": [
+        {
+          "text": "CMRR is 10000, so $|\\epsilon|\\approx2/10000=0.0002$, or 0.02% ratio mismatch."
+        }
+      ]
+    }
+  ],
+  "opamp-instrumentation": [
+    {
+      "tag": "gain",
+      "title": "Gain",
+      "prompt": "For $R=12$ k\u03a9 and $R_G=1$ k\u03a9 with final gain 2, find total gain.",
+      "hint": "First-stage gain includes twice R.",
+      "solution": [
+        {
+          "text": "$G_1=25$ and total gain is 50."
+        }
+      ]
+    },
+    {
+      "tag": "range",
+      "title": "Range",
+      "prompt": "At $V_C=2$ V, $G_1=20$ and $v_d=0.1$ V, find internal outputs.",
+      "hint": "Split the amplified difference equally.",
+      "solution": [
+        {
+          "text": "Outputs are 1 and 3 V; check each stage\u2019s swing and common-mode limits."
+        }
+      ]
+    },
+    {
+      "tag": "offset",
+      "title": "Offset",
+      "prompt": "Two input bias returns are 1 M\u03a9 and 1.1 M\u03a9 with equal 5 nA currents. Find differential drop.",
+      "hint": "Subtract the resistor drops.",
+      "solution": [
+        {
+          "text": "Drops are 5 and 5.5 mV, giving 0.5 mV differential error, or 50 mV at total gain 100."
+        }
+      ]
+    }
+  ],
+  "opamp-transimpedance": [
+    {
+      "tag": "range",
+      "title": "Range",
+      "prompt": "Use $R_F=200$ k\u03a9 and allowable output magnitude 4 V. Find current range.",
+      "hint": "Use DC transimpedance.",
+      "solution": [
+        {
+          "text": "Approximately \u00b120 \u03bcA before offset and swing margin."
+        }
+      ]
+    },
+    {
+      "tag": "compensation",
+      "title": "Compensation",
+      "prompt": "For $R_F=2$ M\u03a9, $C_{IN}=20$ pF and $f_t=2$ MHz, estimate starting $C_F$.",
+      "hint": "Use the square-root scale.",
+      "solution": [
+        {
+          "text": "Approximately 0.89 pF; stray capacitance may be comparable, so verify the complete network."
+        }
+      ]
+    },
+    {
+      "tag": "noise",
+      "title": "Noise",
+      "prompt": "Find thermal current-noise density of 1 M\u03a9 at 300 K.",
+      "hint": "Use $\\sqrt{4k_BT/R}$.",
+      "solution": [
+        {
+          "text": "Approximately 0.129 pA/\u221aHz, before detector and amplifier noise."
+        }
+      ]
+    }
+  ],
+  "opamp-integrator": [
+    {
+      "tag": "ramp",
+      "title": "Ramp",
+      "prompt": "For 20 k\u03a9 input resistance, 5 nF feedback capacitance and 50 mV input, find initial slope.",
+      "hint": "Use $-V/(RC)$.",
+      "solution": [
+        {
+          "text": "Slope is \u2212500 V/s, or \u22120.5 V/ms."
+        }
+      ]
+    },
+    {
+      "tag": "charge",
+      "title": "Charge",
+      "prompt": "A charge pulse of 2 nC reaches a 1 nF feedback capacitor. Find output change.",
+      "hint": "Use charge conservation.",
+      "solution": [
+        {
+          "text": "Output changes by \u22122 V if feedback remains active and leakage during the pulse is negligible."
+        }
+      ]
+    },
+    {
+      "tag": "leak",
+      "title": "Leak",
+      "prompt": "With 2 M\u03a9 parallel resistance and 20 nF capacitance, find leakage corner and retained fraction after 10 ms.",
+      "hint": "Use exponential decay.",
+      "solution": [
+        {
+          "text": "Time constant is 40 ms, corner 3.98 Hz and retained fraction $e^{-0.25}=0.779$."
+        }
+      ]
+    }
+  ],
+  "opamp-differentiator": [
+    {
+      "tag": "scale",
+      "title": "Scale",
+      "prompt": "For $R_F=50$ k\u03a9 and $C_{IN}=2$ nF, find output for a slow 2000 V/s ramp.",
+      "hint": "Use the derivative scale.",
+      "solution": [
+        {
+          "text": "Scale is 100 \u03bcs and output is approximately \u22120.2 V within the derivative band."
+        }
+      ]
+    },
+    {
+      "tag": "corner",
+      "title": "Corner",
+      "prompt": "For $R_{IN}=20$ k\u03a9 and $C_{IN}=1$ nF, find input-series corner.",
+      "hint": "Use the RC product.",
+      "solution": [
+        {
+          "text": "Corner is about 7.96 kHz."
+        }
+      ]
+    },
+    {
+      "tag": "response",
+      "title": "Response",
+      "prompt": "Both denominator corners are 10 kHz. At 10 kHz, how does exact magnitude compare with the derivative-only estimate?",
+      "hint": "Each denominator has magnitude $\\sqrt2$.",
+      "solution": [
+        {
+          "text": "The exact magnitude is half the derivative-only estimate, with an additional \u221290\u00b0 phase from the two poles."
+        }
+      ]
+    }
+  ],
+  "opamp-active-filters": [
+    {
+      "tag": "design",
+      "title": "Design",
+      "prompt": "Choose equal-RC 1 kHz natural frequency with 10 nF capacitors. Find R and Butterworth K.",
+      "hint": "Use the natural-frequency and Q formulas.",
+      "solution": [
+        {
+          "text": "$R=15.915$ k\u03a9 and $K=1.5858$. Select practical values and recalculate the response."
+        }
+      ]
+    },
+    {
+      "tag": "Q",
+      "title": "Q",
+      "prompt": "Equal RC with K = 2.2 has what Q and natural-frequency gain relative to DC?",
+      "hint": "Use $Q=1/(3-K)$ and $|H(f_0)|/K=Q$.",
+      "solution": [
+        {
+          "text": "Q is 1.25 and relative gain is about +1.94 dB."
+        }
+      ]
+    },
+    {
+      "tag": "sensitivity",
+      "title": "Sensitivity",
+      "prompt": "At K = 2.8, estimate fractional Q change for a +0.01 gain error.",
+      "hint": "Differentiate Q.",
+      "solution": [
+        {
+          "text": "Q is 5; derivative is 25. Q rises about 0.25, or 5% to first order; exact new Q is about 5.263."
+        }
+      ]
+    }
+  ],
+  "opamp-precision-rectifier": [
+    {
+      "tag": "swing",
+      "title": "Swing",
+      "prompt": "An amplifier can reach 3.8 V and its diode drops 0.5 V. Find approximate positive measured-output limit.",
+      "hint": "Check the node before the diode.",
+      "solution": [
+        {
+          "text": "Approximately 3.3 V, with load-dependent diode drop and output margin."
+        }
+      ]
+    },
+    {
+      "tag": "droop",
+      "title": "Droop",
+      "prompt": "A 20 nF peak capacitor has 5 nA total leakage. Find loss over 50 ms.",
+      "hint": "Integrate leakage charge.",
+      "solution": [
+        {
+          "text": "Droop is 0.25 V/s, giving 12.5 mV over 50 ms."
+        }
+      ]
+    },
+    {
+      "tag": "acquisition",
+      "title": "Acquisition",
+      "prompt": "Charge 10 nF by 2 V in 20 \u03bcs. Find average current.",
+      "hint": "Use $I=C\\Delta V/\\Delta t$.",
+      "solution": [
+        {
+          "text": "Average current is 1 mA. Peak current, slew and stability may demand more margin."
+        }
+      ]
+    }
+  ],
+  "opamp-current-servo": [
+    {
+      "tag": "design",
+      "title": "Design",
+      "prompt": "Set 20 mA using 0.4 V command. Find sense resistance and power.",
+      "hint": "Use the regulated voltage.",
+      "solution": [
+        {
+          "text": "$R=20$ \u03a9 and power is 8 mW."
+        }
+      ]
+    },
+    {
+      "tag": "error",
+      "title": "Error",
+      "prompt": "A 200 \u03bcV offset appears with 0.2 V command. Find fractional current error.",
+      "hint": "Divide offset by sense voltage.",
+      "solution": [
+        {
+          "text": "Approximately 0.1%, before resistor and other errors."
+        }
+      ]
+    },
+    {
+      "tag": "thermal",
+      "title": "Thermal",
+      "prompt": "A 24 V supply drives 50 mA through a load dropping 8 V and a sense resistor dropping 1 V. Find MOS power.",
+      "hint": "Subtract both external drops.",
+      "solution": [
+        {
+          "text": "$V_{DS}=15$ V and MOS power is 0.75 W. Check linear safe operating area and thermal design."
+        }
+      ]
+    }
+  ],
+  "opamp-load-stability": [
+    {
+      "tag": "pole",
+      "title": "Pole",
+      "prompt": "Use 40 \u03a9 effective output resistance and 5 nF load. Find initial pole estimate.",
+      "hint": "Use the RC product.",
+      "solution": [
+        {
+          "text": "Approximately 796 kHz."
+        }
+      ]
+    },
+    {
+      "tag": "drop",
+      "title": "Drop",
+      "prompt": "A locally sensed output drives 4 mA through 47 \u03a9 isolation. Find load voltage loss.",
+      "hint": "Ohm\u2019s law.",
+      "solution": [
+        {
+          "text": "Loss is 188 mV, outside the locally sensed feedback correction."
+        }
+      ]
+    },
+    {
+      "tag": "charge",
+      "title": "Charge",
+      "prompt": "A 2 nF load must change by 3 V in 2 \u03bcs. Find average required current.",
+      "hint": "Use capacitor charge.",
+      "solution": [
+        {
+          "text": "Average current is 3 mA. Include any resistive current and amplifier rate limits."
+        }
+      ]
+    }
+  ],
+  "opamp-function-design": [
+    {
+      "tag": "log ratio",
+      "title": "Log Ratio",
+      "prompt": "At 300 K and $n=1$, find output change for a current ratio of 1000.",
+      "hint": "Use the log-ratio law.",
+      "solution": [
+        {
+          "text": "Change is about \u2212178.6 mV; absolute output also depends on junction parameters."
+        }
+      ]
+    },
+    {
+      "tag": "oscillator",
+      "title": "Oscillator",
+      "prompt": "Design equal-RC Wien natural frequency 2 kHz with 5 nF capacitors. Find R.",
+      "hint": "Use $1/(2\\pi RC)$.",
+      "solution": [
+        {
+          "text": "Each resistor is about 15.9 k\u03a9. Startup requires gain above 3 and amplitude control for a stable sine."
+        }
+      ]
+    },
+    {
+      "tag": "chain",
+      "title": "Chain",
+      "prompt": "A \u00b12 mV sensor must produce \u00b10.8 V variation around a reference. Find gain and output error from 20 \u03bcV input offset.",
+      "hint": "Scale signal and offset with the same total gain.",
+      "solution": [
+        {
+          "text": "Required gain is 400. Offset contribution is 8 mV; input common mode, internal swing and reference error still require checking."
+        }
+      ]
+    }
+  ]
+}

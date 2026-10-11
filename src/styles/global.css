@@ -28,3 +28,13 @@
 .katex{font-size:1.06em;line-height:1.2}.equation .katex{font-size:1.21em}summary .katex{font-size:1.04em}
 .plot-key sub,.sidebar sub,.course-nav sub{font-size:.75em;line-height:0}
 var{font-style:italic}.plot-key sub{line-height:0}
+
+/* Keep the expanded transistor constructions readable; scroll the diagram alone on narrow screens. */
+.support-figure:has(.advanced-circuit){overflow-x:auto}
+.support-figure svg.advanced-circuit{max-height:none;min-width:620px}
+.operating-points{overflow-x:auto;margin:24px 0}
+.operating-points table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.6}
+.operating-points th,.operating-points td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.operating-points th{color:var(--accent);font-weight:600;background:var(--mint)}
+@media(max-width:540px){.support-figure svg.advanced-circuit{min-width:580px}.operating-points table{font-size:12px}}
+@media(max-width:540px){.support-figure:has(.advanced-circuit)::before{content:"Swipe across the circuit to see all connections.";display:block;font:11px/1.6 var(--sans);color:var(--muted);margin-bottom:8px}}

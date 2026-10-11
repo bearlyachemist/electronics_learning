@@ -2,6 +2,7 @@
 import Book from '../../layouts/Book.astro';
 import Equation from '../../components/Equation.astro';
 import problems from '../../content/practice.json';
+import advancedProblems from '../../content/advanced-practice.json';
 import fetProblems from '../../content/fet-practice.json';
 import feedbackProblems from '../../content/feedback-practice.json';
 import {chapters} from '../../curriculum/chapters';
@@ -9,8 +10,8 @@ import {texToHtml} from '../../components/MathText';
 import {sitePath} from '../../lib/site-path';
 const esc=(s:string)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const rich=(s:string)=>texToHtml(esc(s));
-export function getStaticPaths(){return Object.keys({...problems,...feedbackProblems,...fetProblems}).map(chapter=>({params:{chapter}}));}
-const allProblems={...problems,...feedbackProblems,...fetProblems};
+export function getStaticPaths(){return Object.keys({...problems,...feedbackProblems,...fetProblems,...advancedProblems}).map(chapter=>({params:{chapter}}));}
+const allProblems={...problems,...feedbackProblems,...fetProblems,...advancedProblems};
 const chapter=Astro.params.chapter as keyof typeof allProblems;
 const current=chapters.find(c=>c.id===chapter)!;
 ---

@@ -1,0 +1,217 @@
+import Equation from '../../components/Equation.astro';
+import {OpAmpFigure} from '../../components/OpAmpFigures';
+import {SummingDacCircuit,DacStaircaseFigure,LevelShiftCircuit,MixerBandwidthFigure} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 84</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Inverting and summing amplifiers<br/><em>Currents meet at a virtual ground.</em></h1>
+
+<p className="dek">Derive weighted sums from KCL at the summing node, separate each input's signal gain from the circuit's noise gain, and use the virtual ground for three practical circuits: a summing DAC, a single-supply level shifter and a multi-channel mixer.</p>
+
+<div className="chapter-meta"><span>45–65 min</span><span>Ideal op amps (Ch. 77) · DC errors (Ch. 78) · Noninverting amplifiers (Ch. 83)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">An inverting amplifier with gain −1 has a noise gain of 2. Why?</p></div>
+
+<div>
+
+Ground the plus input of an op amp, feed the signal through a resistor to the minus input, and close the loop with a second resistor. Feedback holds the minus input at 0 V: a **virtual ground**. Every input resistor then carries a current proportional to its own input voltage, independent of all the others, and the feedback resistor carries their sum.
+
+That simple fact makes the inverting configuration the op amp's natural adder. It is the basis of digital-to-analog converters, audio mixers and offset-and-scale stages. Its costs are an input impedance equal to the input resistor, and a noise gain that grows with every input you add.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Keep the summing node a voltage constraint → Calculate signal gains and noise gain separately → Compare a weighted two-input summer → A summing DAC → Shift and scale for a single supply → Set references and resistor accuracy deliberately → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Keep the summing node a voltage constraint</h2></div>
+
+<OpAmpFigure mode="sum"/>
+
+With the plus input grounded and negative feedback working, the minus input sits at (nearly) 0 V. Input $i$ therefore draws a current $V_i/R_i$ into the summing node, whatever the other inputs are doing. No current enters the op amp, so the feedback resistor carries the total, and the output must go negative enough to pull it through:
+
+<Equation tex={String.raw`V_O=-R_F\sum_i\frac{V_i}{R_i}`}/>
+
+Each source sees only its own input resistor as a load, since the far end of that resistor is held at 0 V. A source's own Thévenin resistance adds to its input resistor and changes its weight. On a single supply, the output cannot go below ground, so the circuit needs a reference (section 05).
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Calculate signal gains and noise gain separately</h2></div>
+
+Each input has its own **signal gain**, $-R_F/R_i$. The **noise gain**, which sets the loop gain, bandwidth and the amplification of offset and noise, is found by turning all signal sources off. Then every input resistor connects the summing node to ground, in parallel:
+
+<Equation tex={String.raw`NG=1+R_F\sum_i\frac1{R_i}=1+\frac{R_F}{R_1\parallel R_2\parallel\cdots}`} label="NOISE GAIN OF A SUMMER"/>
+
+That answers the opening question. An inverter of gain −1 has $R_F = R_{IN}$: with the input source turned off, $R_{IN}$ goes from the summing node to ground, and the circuit is a noninverting amplifier of gain $1 + R_F/R_{IN}$ = 2 as far as the op amp's own errors are concerned. Its bandwidth is $f_t/2$ and its offset is doubled, although no signal is amplified.
+
+A two-input summer with all resistors equal has noise gain 3; an $N$-input mixer, $N + 1$:
+
+<MixerBandwidthFigure/>
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Compare a weighted two-input summer</h2></div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / WEIGHTS, NOISE GAIN AND ERRORS</span><h3>$R_F$ = 20 kΩ, $R_1$ = 10 kΩ, $R_2$ = 40 kΩ</h3>
+
+<p><strong>Weights and noise gain.</strong> $V_O = -2V_1 - 0.5V_2$, and $NG = 1 + 20/10 + 20/40$ = 3.5.</p>
+
+<p><strong>Three input pairs.</strong> (0.2, 0.4) V gives −0.6 V; (0.2, −0.8) V gives 0 V; (1, 1) V gives −2.5 V. In the second case the output is zero, but the input currents are not: +20 µA and −20 µA cancel at the summing node.</p>
+
+<p><strong>Bandwidth and offset.</strong> With a 1 MHz op amp the bandwidth is $f_t/3.5$ = 286 kHz. A 100 µV offset gives 350 µV at the output, and 50 nA of bias current into the minus input gives 50 nA × 20 kΩ = 1 mV, unless the plus input is returned through $R_F\parallel R_1\parallel R_2$ = 5.7 kΩ.</p>
+
+<p><strong>Source resistance.</strong> A 1 kΩ source on input 1 makes its effective resistor 11 kΩ and its weight −1.818 instead of −2, a 9% error, far larger than the 0.0035% from finite gain at $A_0 = 10^5$.</p>
+
+</div>
+
+<OpAmpFigure mode="inv"/>
+
+</section>
+
+<section id="dac">
+
+<div className="section-heading"><span>04</span><h2>A summing DAC</h2></div>
+
+Give the inputs binary-weighted resistors and drive them from logic, and the summer becomes a digital-to-analog converter:
+
+<SummingDacCircuit/>
+
+<DacStaircaseFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / HOW ACCURATE MUST THE RESISTORS BE?</span><h3>4 bits, then 12 bits</h3>
+
+<p><strong>4 bits.</strong> The LSB step is 2.5 V × 10 k/80 k = 0.3125 V. If the MSB resistor is 0.5% high, the MSB contributes 2.4876 V instead of 2.5 V, so the step from code 7 to 8 is 0.300 V instead of 0.3125 V: an error of 4% of an LSB. Harmless.</p>
+
+<p><strong>12 bits.</strong> The MSB carries 2048 LSBs. To keep the 2047→2048 step within half an LSB, the MSB resistor must be accurate to 0.5/2048 ≈ 0.025%, and the smallest resistor would be 2048 times the largest. Neither is practical in one circuit, so precision DACs use an R–2R ladder: only two resistor values, matched to each other, with the same virtual-ground summing node.</p>
+
+</div>
+
+The virtual ground also explains a mixer's low crosstalk. Because the summing node does not move, one input's signal cannot reach another source through the resistors. At high frequency the loop gain falls, the node's impedance rises to about $R_F/(1 + A(f))$, and crosstalk appears, which is one more reason to choose an op amp with bandwidth to spare.
+
+</section>
+
+<section id="shift">
+
+<div className="section-heading"><span>05</span><h2>Shift and scale for a single supply</h2></div>
+
+Put a reference voltage $V_R$ on the plus input. It appears at the output multiplied by the noise gain, while the signal is multiplied by its signal gain:
+
+<Equation tex={String.raw`V_O=NG\cdot V_R-R_F\sum_i\frac{V_i}{R_i}`}/>
+
+<LevelShiftCircuit/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / ±10 V INTO A 3.3 V ADC</span><h3>Single 3.3 V supply, rail-to-rail op amp</h3>
+
+<p><strong>Scale.</strong> A 20 V input range must fit in about 3.2 V: gain $-0.16$. Choose $R_F$ = 9.76 kΩ and $R_{IN}$ = 60.4 kΩ (standard values): −0.1616.</p>
+
+<p><strong>Offset.</strong> The noise gain is $1 + 9.76/60.4$ = 1.1616. For a 1.65 V output at zero input, $V_R$ = 1.65/1.1616 = 1.42 V, a ratio of 0.430 of the supply: 18.7 kΩ over 14.1 kΩ, bypassed by 1 µF.</p>
+
+<p><strong>Range.</strong> $V_O$ = 1.65 − 0.1616 $v_{in}$: 3.27 V at −10 V and 0.03 V at +10 V. The input sees 60.4 kΩ, the source never sees more than ±10 V, and the op amp's inputs sit at 1.42 V, well inside a rail-to-rail part's range.</p>
+
+<p><strong>Errors.</strong> Supply noise reaches the output through the divider times 1.16: deriving $V_R$ from a precision reference instead of the supply is better if the ADC uses that reference too. The divider's 8 kΩ Thévenin resistance adds to the plus input's source resistance in the bias budget.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Set references and resistor accuracy deliberately</h2></div>
+
+**Noise.** Every input resistor and the feedback resistor contribute thermal noise, and the op amp's voltage noise is multiplied by the noise gain. Adding channels to a mixer raises its noise even when they carry no signal; switched or disconnected channels change the noise gain and the bandwidth.
+
+**Accuracy.** Signal gains are resistor ratios, so tolerance and drift go straight into the weights. Matched resistor networks track each other with temperature far better than separate parts.
+
+**Output range.** Check the sum at the worst simultaneous combination of inputs. Two inputs that are each safely within range can add to more than the output can swing, and the output current through $R_F$ and the load must stay within the op amp's limits.
+
+**Input impedance.** The inverting configuration's input impedance is $R_i$, which loads high-impedance sources. If that matters, buffer the source first, or use a noninverting configuration (Chapter 83).
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>The virtual ground makes each input's current independent, so the output is a weighted sum $-R_F\sum V_i/R_i$. But the op amp sees <em>all input resistors in parallel</em>: the noise gain $1 + R_F\sum 1/R_i$ sets bandwidth, offset and noise.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why does a gain −1 inverter have noise gain 2?</summary>
+<div>
+
+With the signal source turned off, its input resistor runs from the summing node to ground. Seen by the op amp's own errors, the circuit is then a noninverting amplifier with $R_G = R_{IN}$ and $R_F = R_{IN}$: gain $1 + R_F/R_{IN}$ = 2.
+
+</div>
+</details>
+
+<details>
+<summary>2. In the weighted summer, why is the output zero for (0.2 V, −0.8 V) even though current flows?</summary>
+<div>
+
+Input 1 sends 0.2 V/10 kΩ = +20 µA into the summing node and input 2 draws −0.8 V/40 kΩ = −20 µA. They cancel, so no current flows through $R_F$ and the output is 0 V. Each source still supplies its current.
+
+</div>
+</details>
+
+<details>
+<summary>3. What happens to the bandwidth of a unity-weight mixer when you go from 2 to 8 inputs?</summary>
+<div>
+
+The noise gain goes from 3 to 9, so the bandwidth falls from $f_t/3$ to $f_t/9$, a factor of 3, whether or not the extra inputs carry signal.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why do precision DACs use an R–2R ladder instead of binary-weighted resistors?</summary>
+<div>
+
+A binary-weighted $n$-bit DAC needs resistors spanning a ratio of $2^{n-1}$, with the MSB resistor accurate to about $2^{-n}$. An R–2R ladder uses only two values, R and 2R, which can be matched to each other closely in one network, and keeps the same summing-node principle.
+
+</div>
+</details>
+
+<details>
+<summary>5. A reference $V_R$ on the plus input of an inverting stage appears at the output multiplied by what?</summary>
+<div>
+
+By the noise gain, $1 + R_F\sum 1/R_i$, not by any signal gain. Its noise and drift are multiplied by the same factor, so a quiet, stable reference matters.
+
+</div>
+</details>
+
+<details>
+<summary>6. Why does a 1 kΩ source change the weight of a 10 kΩ input?</summary>
+<div>
+
+The summing node sees the source's resistance in series with the input resistor: 11 kΩ instead of 10 kΩ, so that input's current, and its weight, falls by 9%. Either include the source resistance in the design or buffer the source.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§4.2.1, 4.3.1D (summing amplifier) and 4.6 (single-supply operation); Asadi, <em>Applied Op Amp Circuits</em>, chapter 2. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-inverting-summing/practice/">Open practice →</a></div>

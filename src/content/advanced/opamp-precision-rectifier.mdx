@@ -1,0 +1,221 @@
+import Equation from '../../components/Equation.astro';
+import {OpAmpFigure} from '../../components/OpAmpFigures';
+import {ImprovedHalfWaveCircuit,FullWaveCircuit,RectifierRecoveryFigure,PeakDetectorCircuit} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 91</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Precision rectifiers and peak detection<br/><em>Hide the diode inside the loop, then watch it switch.</em></h1>
+
+<p className="dek">Put a diode inside an op amp's feedback loop to rectify signals smaller than its forward drop. Analyze each diode state separately, find the switching error the static analysis hides, cure it with a two-diode design, build a full-wave rectifier and an AC meter, and budget a peak detector's droop.</p>
+
+<div className="chapter-meta"><span>50–70 min</span><span>Diode applications (Ch. 16) · Inverting amplifiers (Ch. 84) · Slew rate (Ch. 79)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Feedback removes a diode's 0.6 V forward drop from a rectifier's output. Does it also remove the diode's effect on fast signals?</p></div>
+
+<div>
+
+A plain diode cannot rectify a 50 mV signal: below about 0.6 V it hardly conducts at all. Put the diode inside an op amp's feedback loop and the op amp raises its own output by whatever the diode needs, so the circuit rectifies millivolt signals with millivolt accuracy.
+
+That is the static story. The dynamic story is about the half-cycle when the diode is off. Then there is no feedback, the op amp is open loop, and what it does in that interval decides how well the circuit works at high frequency. The answer to the opening question turns out to be no, and the cure is a circuit that never lets the op amp leave its feedback loop for long.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Name the two output nodes → Solve one topology for each diode state → The switching error → A two-diode rectifier that does not saturate → Full-wave rectification and an AC meter → Peak detection → Select a recovery-aware topology → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Name the two output nodes</h2></div>
+
+<OpAmpFigure mode="rectifier"/>
+
+The input drives the plus terminal. The op amp's output drives a diode, and the diode's cathode is the circuit's output, loaded by $R_L$ to ground. Feedback returns from the circuit output, after the diode, to the minus input. There are two output nodes, the op amp's and the circuit's, one diode drop apart when the diode conducts.
+
+For a positive input the diode conducts, the loop is closed, and the circuit output follows the input exactly; the op amp's output sits one forward drop higher. For a negative input the op amp tries to drive its output negative, the diode turns off, the loop opens, and $R_L$ holds the circuit output at 0 V while the op amp swings to its negative limit.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Solve one topology for each diode state</h2></div>
+
+<Equation tex={String.raw`V_O\approx\max(V_I,\,0)\qquad\text{(ideal static limit)}`}/>
+
+Each state has its own circuit and its own validity conditions. **Diode on:** a closed noninverting follower, valid while the diode carries forward current and the op amp can reach $V_I + V_D$. **Diode off:** no feedback; the output is set by the load; the op amp's output is wherever its open-loop gain and limits put it. The virtual short exists only in the first state. Analyzing a precision rectifier means analyzing both, plus the transition between them.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / STATIC LIMITS</span><h3>0.6 V diode, op amp output limited to ±4.5 V</h3>
+
+<p>Inputs of −0.2, +0.02 and +2 V give outputs of 0, 0.02 and 2 V: the 20 mV input is rectified exactly, which no bare diode could do. For the positive inputs the op amp's output is about 0.62 and 2.6 V.</p>
+
+<p>The largest output is set by the op amp's swing minus the diode drop: about 3.9 V. The smallest rectifiable signal is set by the op amp's offset voltage and noise, millivolts or less.</p>
+
+</div>
+
+</section>
+
+<section id="switching">
+
+<div className="section-heading"><span>03</span><h2>The switching error</h2></div>
+
+During the negative half-cycle the op amp is open loop and its output runs to its negative limit, −4 V say. When the input crosses zero going positive, the output must slew all the way from −4 V to +0.6 V before the diode conducts and feedback resumes. Until then the circuit output stays at zero, although the input is already positive.
+
+<RectifierRecoveryFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / HOW MUCH OF EACH CYCLE IS LOST?</span><h3>0.5 V/µs op amp, 10 kHz sine</h3>
+
+<p>Slewing 4.6 V at 0.5 V/µs takes <strong>9.2 µs</strong>, plus any recovery from saturation. At 10 kHz the positive half-cycle lasts 50 µs, so nearly a fifth of it is lost, and the average output is several percent low. At 100 kHz the circuit hardly rectifies at all.</p>
+
+<p>That answers the opening question. Feedback removes the diode's static drop, but not the time the op amp needs to get from its saturated state back into the loop. A faster op amp helps; a circuit that never saturates helps more.</p>
+
+</div>
+
+</section>
+
+<section id="improved">
+
+<div className="section-heading"><span>04</span><h2>A two-diode rectifier that does not saturate</h2></div>
+
+<ImprovedHalfWaveCircuit/>
+
+The improved circuit is an inverting amplifier with two diodes. For a positive input, $D_1$ conducts and closes the loop through $R_F$: $v_{out} = -v_{in}$. For a negative input, $D_2$ conducts instead and closes a second loop directly from the op amp's output to its minus input, clamping the output one diode drop above the virtual ground; $D_1$ is reverse biased and $R_F$ holds $v_{out}$ at 0 V. The op amp is never open loop. Across each zero crossing its output moves only from about −0.6 V to +0.6 V, 1.2 V instead of 4.6 V, and the lost time falls to about 2.4 µs with the same op amp.
+
+The output is inverted; add an inverter, or use it as the first half of a full-wave circuit.
+
+</section>
+
+<section id="fullwave">
+
+<div className="section-heading"><span>05</span><h2>Full-wave rectification and an AC meter</h2></div>
+
+<FullWaveCircuit/>
+
+The second stage sums the input with weight −1 and the half-wave output with weight −2. For a positive input that is $-v_{in} + 2v_{in} = v_{in}$; for a negative input the half-wave output is zero and the sum is $-v_{in}$. The result is $|v_{in}|$, accurate to millivolts.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / AN AVERAGE-RESPONDING AC VOLTMETER</span><h3>Absolute value, then a low-pass filter</h3>
+
+<p>Follow the absolute-value circuit with an RC low-pass much slower than the signal, and the output is the average of $|v_{in}|$. For a sine of peak $V_p$ that average is $2V_p/\pi$ = 0.637 $V_p$, while the rms value is 0.707 $V_p$. Scaling by 0.707/0.637 = <strong>1.11</strong> makes the meter read rms, for sines.</p>
+
+<p>For other waveforms it is wrong. A square wave's average and rms are equal, so the meter reads 11% high; a triangle wave's rms is 1.155 times its average, so it reads 3.9% low. Meters that must be right for any waveform compute the true rms instead (Chapter 94).</p>
+
+<p><strong>Matching.</strong> If the summer's weights are 2.00 and 1.00 to within 0.1%, the two half-cycles have gains equal to within 0.1%. A 1% mismatch makes the positive and negative halves differ by 1%, and adds a ripple component at the signal frequency.</p>
+
+</div>
+
+</section>
+
+<section id="peak">
+
+<div className="section-heading"><span>06</span><h2>Peak detection</h2></div>
+
+<PeakDetectorCircuit/>
+
+Replace the load resistor with a capacitor and the rectifier holds the highest voltage it has seen. A follower reads the capacitor without loading it, and taking the feedback from the follower's output removes both the diode's drop and the follower's offset from the result. Two numbers govern the design:
+
+<Equation tex={String.raw`\text{acquisition: }I\approx C_H\frac{dV}{dt},\qquad\text{droop: }\frac{dV}{dt}\approx-\frac{I_{leak}}{C_H}`}/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / CHOOSE THE HOLD CAPACITOR</span><h3>10 nA of total leakage, 1 V peaks</h3>
+
+<p><strong>Droop.</strong> With 1, 10 and 100 nF the held voltage droops at 10, 1 and 0.1 V/s. Over a 10 ms hold that is 100, 10 and 1 mV.</p>
+
+<p><strong>Acquisition.</strong> Charging 100 nF by 1 V in 10 µs needs 10 mA from the first op amp, more than many can supply, and its slew rate and the diode's capacitance limit it further. 10 nF needs 1 mA: a reasonable compromise between 10 mV of droop and a 10 µs acquisition.</p>
+
+<p><strong>Leakage sources.</strong> The diode's reverse leakage (a low-leakage diode or a transistor's base–collector junction), the reset switch, the follower's bias current and the capacitor itself. Use a film or C0G capacitor: dielectric absorption makes a reset capacitor creep back toward its previous value.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>07</span><h2>Select a recovery-aware topology</h2></div>
+
+**Small signals:** offset voltage and noise set the threshold below which the circuit cannot tell positive from negative. **Fast signals:** slew rate, saturation recovery, the diodes' capacitance and reverse recovery set the error; choose a topology whose op amp stays in a loop, and a fast op amp. **Long holds:** leakage and dielectric absorption dominate.
+
+The same reasoning applies to every circuit with a diode or switch inside a feedback loop: active clamps, limiters, sample-and-holds. Analyze each state, then ask what the op amp does while the loop is open, and how long it takes to get back.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Feedback hides a diode's static drop, but while the diode is off the loop is open and the op amp saturates. <em>Keep the op amp in a loop in both states</em>, as the two-diode rectifier does, and budget slew, offset and leakage for the signals you actually have.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>08</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why does feedback not remove the diode's effect on fast signals?</summary>
+<div>
+
+In the off state the loop is open and the op amp saturates at its negative limit. When the diode must turn on again, the op amp has to slew from that limit back to one diode drop above the output before feedback resumes. That time, 9.2 µs in the example, is lost from every cycle regardless of how small the static error is.
+
+</div>
+</details>
+
+<details>
+<summary>2. How does the second diode in the improved rectifier help?</summary>
+<div>
+
+It gives the op amp a feedback path in the otherwise-open state, clamping its output one diode drop from the virtual ground. The op amp never saturates, so across each zero crossing it moves only about 1.2 V instead of several volts, and the switching error shrinks proportionally.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does the full-wave summer use weights −1 and −2?</summary>
+<div>
+
+The half-wave output is $-v_{in}$ for positive inputs and 0 for negative ones. Adding $-v_{in}$ (weight −1 on the input) and $-2 × (-v_{in})$ (weight −2 on the half-wave output) gives $+v_{in}$ for positive inputs; for negative inputs only the $-v_{in}$ term remains, which is also positive. The result is $|v_{in}|$.
+
+</div>
+</details>
+
+<details>
+<summary>4. An average-responding meter calibrated for sines measures a square wave. Is the reading high or low, and by how much?</summary>
+<div>
+
+High by 11%. The square wave's average equals its rms, but the meter multiplies the average by 1.11, the sine's ratio.
+
+</div>
+</details>
+
+<details>
+<summary>5. A peak detector must hold within 5 mV for 20 ms with 2 nA of leakage. What is the smallest hold capacitor?</summary>
+<div>
+
+Droop is $I_{leak}t/C$ ≤ 5 mV, so $C \ge$ 2 nA × 20 ms / 5 mV = **8 nF**; use 10 nF. Then check that the op amp can charge it at the required rate.
+
+</div>
+</details>
+
+<details>
+<summary>6. Why take the peak detector's feedback from the follower's output rather than from the capacitor?</summary>
+<div>
+
+Then the loop corrects for both the diode's forward drop and the follower's offset: whatever the follower reads is forced to equal the input's peak. Taking feedback from the capacitor would leave the follower's offset uncorrected.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§4.3.2D (active rectifier) and 4.5.1–4.5.4 (peak detector, sample-and-hold, active clamp, absolute-value circuit); Asadi, <em>Applied Op Amp Circuits</em>, chapter 10. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-precision-rectifier/practice/">Open practice →</a></div>

@@ -1,0 +1,230 @@
+import Equation from '../../components/Equation.astro';
+import {MosStageFigure} from '../../components/MosAnalogFigures';
+import {MosLab} from '../../components/MosAnalogLabs';
+import {NoiseVsSourceFigure,GmIdFigure,FlickerFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 76</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>MOS noise and transconductance efficiency<br/><em>Spend current only where it lowers the noise.</em></h1>
+
+<p className="dek">Refer every noise source to the input, find how a MOSFET's white noise depends on its transconductance and its flicker noise on its area, compare inversion levels by $g_m/I_D$, and decide when more current helps, when more area helps, and when neither does.</p>
+
+<div className="chapter-meta"><span>50–70 min + exploration</span><span>Differential pair (Ch. 70) · Thermal noise (Ch. 50)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Quadrupling an input transistor's current halves its noise power. When does it barely change the amplifier's noise at all?</p></div>
+
+<div>
+
+The first transistor in a signal chain sets most of the noise floor, because everything after it sees its amplified output. Its noise has two parts: a white part from the random motion of carriers in the channel, which depends on transconductance, and a low-frequency "flicker" part from charges trapped and released at the gate oxide, which depends on gate area.
+
+Both can be reduced, by spending current and by spending silicon. But the signal source has noise of its own, and once the amplifier's noise is well below the source's, further spending buys nothing. This chapter puts numbers on all three, introduces $g_m/I_D$ as the measure of how efficiently a transistor converts current into transconductance, and closes the MOSFET studies with a design method.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Refer noise to the signal input → White noise follows $g_m$ → Compare noise against the source floor → Transconductance per microamp → Flicker noise follows area → Match the model to the device and task → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Refer noise to the signal input</h2></div>
+
+<MosStageFigure mode="noise"/>
+
+A source with resistance $R_{sig}$ drives the gate. Each resistor and transistor in the circuit contributes noise somewhere. To compare them, refer each one to the **input**: ask what noise voltage at the signal source would produce the same output noise. Uncorrelated sources then add as powers:
+
+<Equation tex={String.raw`e_{n,in}^2=4k_BTR_{sig}+e_{n,M}^2+\sum_j e_{n,j}^2\quad(\text{densities, V}^2/\text{Hz})`}/>
+
+The rms noise over a band is the square root of the density integrated over that band. For a white density $e_n$ and a rectangular band $B$, $v_{rms} = e_n\sqrt B$. A real filter's integrating width is its **equivalent noise bandwidth**: $\pi/2$ times the −3 dB frequency for a single pole. (A first-order 1 kHz low-pass integrates 1571 Hz of white noise, not 1000 Hz.)
+
+</section>
+
+<section id="white">
+
+<div className="section-heading"><span>02</span><h2>White noise follows $g_m$</h2></div>
+
+In saturation, a long-channel MOSFET's channel produces a white drain-current noise
+
+<Equation tex={String.raw`\frac{\overline{i_{n,d}^2}}{\Delta f}=4k_BT\,\gamma_n\,g_m,\qquad \gamma_n\approx\tfrac23\ \text{(long channel, strong inversion)}`}/>
+
+Here $\gamma_n$ is a noise coefficient, not the body-effect $\gamma$. Dividing by $g_m^2$ refers it to the gate:
+
+<Equation tex={String.raw`e_{n,M}^2=\frac{4k_BT\gamma_n}{g_m}\qquad\Longleftrightarrow\qquad e_{n,M}=\sqrt{4k_BT\cdot\frac{\gamma_n}{g_m}}`} label="MOS WHITE INPUT NOISE"/>
+
+That is the thermal noise of a resistor of value $\gamma_n/g_m$. More $g_m$ means less noise, but with a square root twice over: $g_m \propto \sqrt{I_D}$ at fixed geometry, and $e_n \propto 1/\sqrt{g_m}$. Quadrupling the current lowers $e_n$ by only $\sqrt2$.
+
+A MOSFET's gate draws almost no current, so its input **current** noise (shot noise of gate leakage) is tiny at low frequency. That makes it the natural choice for high source impedances, where a bipolar transistor's base-current shot noise, flowing through the source resistance, would dominate.
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Compare noise against the source floor</h2></div>
+
+<NoiseVsSourceFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / WHEN MORE CURRENT DOES NOT HELP</span><h3>$k$ = 2 mA/V², $\gamma_n$ = 2/3, 300 K, 10 kΩ source</h3>
+
+<p><strong>The transistor.</strong> At 0.25, 1 and 4 mA, $g_m$ is 1, 2 and 4 mS, so $e_{n,M}$ = 3.32, 2.35 and 1.66 nV/√Hz. Sixteen times the current halves the noise.</p>
+
+<p><strong>The source.</strong> A 10 kΩ resistor at 300 K has $\sqrt{4k_BTR}$ = 12.9 nV/√Hz.</p>
+
+<p><strong>The total.</strong> $\sqrt{12.9^2 + 3.32^2}$ = 13.3, then 13.1 and 13.0 nV/√Hz. Over a 10 kHz rectangular band, 1.33, 1.31 and 1.30 µV rms. Spending sixteen times the current improved the total by 2%. That answers the opening question: once the source dominates, transistor current is wasted.</p>
+
+<p><strong>The useful figure</strong> is the <em>noise figure</em> or the ratio of amplifier to source noise. With 0.25 mA it is already 3.32/12.9 = 0.26, raising the total noise by only 3.3% (6.6% in power). A good design stops spending at about this point.</p>
+
+</div>
+
+<MosLab kind="noise" client:load/>
+
+<p className="caption">Live lab. Long-channel white-noise estimate at 300 K with $\gamma_n$ = 2/3 over a rectangular 10 kHz band. Set the source to 1 kΩ and sweep the drain current: now the transistor matters. Then set 100 kΩ and sweep again. Flicker noise, the bias network and the load are excluded.</p>
+
+</section>
+
+<section id="efficiency">
+
+<div className="section-heading"><span>04</span><h2>Transconductance per microamp</h2></div>
+
+Since noise, gain and speed all improve with $g_m$, the useful question is how much $g_m$ each microamp of current buys. That ratio, $g_m/I_D$, depends on how strongly the channel is inverted:
+
+<Equation tex={String.raw`\left(\frac{g_m}{I_D}\right)_{\text{strong}}=\frac{2}{u},\qquad\left(\frac{g_m}{I_D}\right)_{\text{weak}}=\frac{1}{nU_T}`}/>
+
+$U_T = k_BT/q$ ≈ 25.9 mV is the thermal voltage (not the threshold), and $n$ ≈ 1.2–1.5 is the subthreshold slope factor. In strong inversion, $g_m/I_D$ grows as the overdrive shrinks. Below about $u \approx 2nU_T$ the channel enters weak inversion, the current becomes exponential in $V_{GS}$ like a bipolar transistor's, and $g_m/I_D$ saturates:
+
+<GmIdFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / THREE WAYS TO BUY 1 mS</span><h3>Strong, moderate and weak inversion</h3>
+
+<p><strong>Strong inversion, $u$ = 0.5 V:</strong> $g_m/I_D$ = 4 V⁻¹, so 1 mS costs <strong>250 µA</strong>.</p>
+
+<p><strong>Strong inversion, $u$ = 0.2 V:</strong> 10 V⁻¹, so <strong>100 µA</strong>, with a 2.5 times wider device.</p>
+
+<p><strong>Weak inversion, $n$ = 1.5:</strong> $1/(1.5 × 0.0259)$ = 25.8 V⁻¹, so about <strong>39 µA</strong>, but the device must be very wide, with correspondingly large capacitance. Its speed, roughly $g_m/(2\pi C_{gs})$, is far lower.</p>
+
+<p>Low-power designs therefore work in weak or moderate inversion for the input pair, where noise per microamp is best, and in strong inversion for mirrors and loads, where a large overdrive improves matching (Chapter 59) and makes their own noise contribution, proportional to their $g_m$, smaller.</p>
+
+</div>
+
+Real short-channel devices depart from both simple expressions: velocity saturation lowers $g_m$ at high overdrive, and $\gamma_n$ can exceed 1. Integrated-circuit designers work from measured $g_m/I_D$ curves rather than from the square law, using exactly this figure's axes.
+
+</section>
+
+<section id="flicker">
+
+<div className="section-heading"><span>05</span><h2>Flicker noise follows area</h2></div>
+
+At low frequencies a second mechanism appears: carriers trapped and released by defects at the gate oxide modulate the channel. Its input-referred power density falls as $1/f$ and scales inversely with gate area:
+
+<Equation tex={String.raw`e_{n,1/f}^2(f)\approx\frac{K_F}{C_{ox}WL}\cdot\frac{1}{f}\qquad\Rightarrow\qquad e_n^2(f)=e_{n,\text{white}}^2\left(1+\frac{f_c}{f}\right)`}/>
+
+The **corner frequency** $f_c$, where flicker equals white noise, is typically 1–100 kHz in small MOSFETs, much higher than in bipolar transistors. Increasing $WL$ lowers the flicker term (and improves matching) but adds capacitance; increasing current lowers the white floor and so **raises** the corner.
+
+<FlickerFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A SLOW MEASUREMENT</span><h3>White floor 5 nV/√Hz, corner 1 kHz</h3>
+
+<p>Integrating $e_n^2(1 + f_c/f)$ from $f_1$ to $f_2$ gives $e_n^2[(f_2 - f_1) + f_c\ln(f_2/f_1)]$. Each decade of flicker contributes the same amount, $f_c\ln 10$.</p>
+
+<p><strong>0.1 to 10 Hz</strong> (a strain-gauge or thermocouple band): $5\text{ nV}\sqrt{9.9 + 1000\ln 100}$ = <strong>340 nV rms</strong>, almost all flicker.</p>
+
+<p><strong>1 to 10 kHz</strong>: $5\text{ nV}\sqrt{9000 + 1000\ln 10}$ = <strong>532 nV rms</strong>, mostly white.</p>
+
+<p>The 0.1–10 Hz band is a thousand times narrower but has two-thirds of the noise. For slow precision measurements, a chopper-stabilized amplifier (Chapter 82) moves the signal above the flicker corner and removes this noise almost entirely.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Match the model to the device and task</h2></div>
+
+**The whole chain.** The input pair's two transistors contribute $\sqrt2$ times one device's noise. The active load contributes too, referred to the input by the ratio $g_{m,load}/g_{m,input}$, which is another reason to run loads at large overdrive (small $g_m$). The second stage's noise is divided by the first stage's gain and is usually negligible.
+
+**Leakage and current noise.** MOS gate leakage is small but not zero, and it doubles roughly every 10 °C. At very high source impedances (pH electrodes, photodiodes in photovoltaic mode, electrometers), leakage in protection diodes and on the board can dominate. These are DC errors and low-frequency noise, not represented by $e_n$.
+
+**Choosing a technology.** Low source impedance (below ~1 kΩ): the lowest $e_n$ per microamp, usually a bipolar input. High source impedance: the lowest current noise, MOS or JFET. Below the flicker corner: large-area devices, JFETs, or chopping. Chapter 82 turns these rules into a comparison.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A MOSFET's white noise is that of a resistor $\gamma_n/g_m$, so it falls only as the fourth root of current; its flicker noise falls with area. <em>Stop spending once the source's own noise dominates.</em></p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. When does quadrupling the drain current barely improve an amplifier's noise?</summary>
+<div>
+
+When the source's thermal noise dominates. With a 10 kΩ source (12.9 nV/√Hz), a transistor's noise of 3.3 or 1.7 nV/√Hz adds almost nothing in quadrature: the totals are 13.3 and 13.0 nV/√Hz. Current helps only when the amplifier's noise is comparable to or larger than the source's.
+
+</div>
+</details>
+
+<details>
+<summary>2. At 0.25 V of overdrive in strong inversion, what is $g_m/I_D$, and what current gives 2 mS?</summary>
+<div>
+
+$g_m/I_D = 2/u$ = **8 V⁻¹**, so 2 mS needs **0.25 mA**, in the square-law approximation.
+
+</div>
+</details>
+
+<details>
+<summary>3. Combine 4 nV/√Hz of amplifier noise with 12 nV/√Hz of resistor noise. What is the rms over 10 kHz?</summary>
+<div>
+
+$\sqrt{4^2 + 12^2}$ = 12.65 nV/√Hz; times $\sqrt{10\,000}$ = 100 gives **1.26 µV rms** over a rectangular band.
+
+</div>
+</details>
+
+<details>
+<summary>4. A first-order low-pass at 1 kHz follows a 10 nV/√Hz white source. What is the integrated noise?</summary>
+<div>
+
+The equivalent noise bandwidth is $(\pi/2) × 1$ kHz = 1571 Hz, so the noise is 10 nV × $\sqrt{1571}$ ≈ **396 nV rms**. Using the −3 dB frequency as a rectangular band would give 316 nV, a 20% underestimate.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why does weak inversion give the most transconductance per microamp, and why is it not always used?</summary>
+<div>
+
+In weak inversion the current is exponential in gate voltage, so $g_m/I_D$ reaches its maximum $1/nU_T$. But getting a useful current in weak inversion needs a very wide device, with large capacitance and so low speed. It is the right choice for micropower, low-frequency inputs, not for fast stages.
+
+</div>
+</details>
+
+<details>
+<summary>6. Doubling a device's gate area changes its flicker noise and its white noise how?</summary>
+<div>
+
+Flicker noise power halves (density falls by $\sqrt2$), because it scales as $1/WL$. White noise depends on $g_m$; at fixed current and $W/L$ doubling the area (both $W$ and $L$) leaves $g_m$, and so the white floor, unchanged. The corner frequency halves.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., chapter 8 (low-noise techniques); Huijsing, <em>Operational Amplifiers</em>, 3rd ed., §§4.4 and 6.2 (noise of input stages). Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-noise-design/practice/">Open practice →</a></div>

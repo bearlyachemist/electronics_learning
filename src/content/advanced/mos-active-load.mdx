@@ -1,0 +1,207 @@
+import Equation from '../../components/Equation.astro';
+import {MosCases} from '../../components/MosAnalogLabs';
+import {ActiveLoadCircuit,ActiveLoadLineFigure,ActiveTransferFigure,ActiveGbwFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 65</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>Common-source stages with active loads<br/><em>Gain from two current sources fighting.</em></h1>
+
+<p className="dek">Replace the drain resistor with a PMOS current source. Derive a gain that is independent of current, see on the load lines why the DC output becomes almost undefined, and trade the stage's large resistance between gain, bandwidth and bias sensitivity.</p>
+
+<div className="chapter-meta"><span>50–70 min</span><span>Mirrors (Chs. 59–60) · Common source (Ch. 64)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Two perfect current sources, one pulling up and one pulling down, meet at a node. What sets the voltage of that node?</p></div>
+
+<div>
+
+Chapter 64 found that a resistor-loaded stage's gain is $2V_{R_D}/u$, limited by how much supply voltage you can afford to drop across the resistor. The way out is a load whose **incremental** resistance is large while its **DC** voltage drop is small. A current source is exactly that: it passes its current with a fraction of a volt across it, yet resists changes like tens of kilohms.
+
+With a PMOS current source as the load, a single transistor gives gains of 50 to 100, set by the devices' output resistances. That is the gain stage inside almost every CMOS op amp. But it raises a question that resistor loads never posed, the one above, and its answer decides how such stages must be used.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Two current laws meet at one node → Convert current imbalance into voltage → See it on the load lines → Hold bias fixed while changing AC loading → Close the DC and AC design loops → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Two current laws meet at one node</h2></div>
+
+<ActiveLoadCircuit/>
+
+$M_2$'s gate is held at a fixed bias $V_{BP}$ by the mirror, so it sources a nearly constant current into the output. $M_1$'s gate is the input, so it sinks a current that depends on $V_{in}$. KCL at the output demands that the two be equal.
+
+Now the opening question. If both transistors were ideal current sources ($\lambda$ = 0), the PMOS would source exactly 1 mA at any output voltage in its compliance range, and the NMOS would sink a current fixed by $V_{in}$. If the two happen to be equal, **every** output voltage in the interval $u_N \le V_O \le V_{DD} - u_P$ satisfies KCL: the output is undefined. If they differ by any amount, **no** voltage in that interval works, and the output runs to whichever edge lets one device leave saturation and reduce its current.
+
+With $\lambda > 0$, the currents depend slightly on $V_O$, and a unique intersection exists. But it is set by the tiny slopes $1/r_o$, so it is extraordinarily sensitive. With $|V_T|$ = 1 V and 1 V of overdrive on each device in a 5 V supply, the window is 1 V to 4 V.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Convert current imbalance into voltage</h2></div>
+
+For small signals the PMOS gate and both supplies are AC ground, so the load contributes only its output conductance $g_{oP}$. KCL at the output, with an optional AC-coupled load $R_L$:
+
+<Equation tex={String.raw`g_{mN}v_i+\left(g_{oN}+g_{oP}+\frac1{R_L}\right)v_o=0\qquad\Rightarrow\qquad A_v=-g_{mN}\,(r_{oN}\parallel r_{oP}\parallel R_L)`}/>
+
+Unloaded, substitute $g_m = 2I_D/u$ and $g_o = \lambda I_D$:
+
+<Equation tex={String.raw`|A_v|=\frac{g_{mN}}{g_{oN}+g_{oP}}=\frac{2I_D/u_N}{(\lambda_N+\lambda_P)I_D}=\frac{2}{(\lambda_N+\lambda_P)\,u_N}`} label="ACTIVE-LOAD GAIN IS INDEPENDENT OF CURRENT"/>
+
+The current cancels. Doubling the bias current doubles $g_m$ but halves both $r_o$, leaving the gain unchanged. The gain depends only on the overdrive and on $\lambda$, which falls with channel length. With $\lambda$ = 0.02 V⁻¹ for both devices and $u$ = 1 V, $|A_v|$ = 50. Halve the overdrive, or double both channel lengths, and it becomes 100. Current buys speed, not gain.
+
+The same equation, read as DC, gives the sensitivity: a current mismatch $\Delta I$ between the two devices moves the output by
+
+<Equation tex={String.raw`\Delta V_O\approx-\Delta I\,(r_{oN}\parallel r_{oP})`}/>
+
+until one device leaves saturation. The large resistance that makes the gain also magnifies every bias error.
+
+</section>
+
+<section id="loadlines">
+
+<div className="section-heading"><span>03</span><h2>See it on the load lines</h2></div>
+
+<ActiveLoadLineFigure/>
+
+Compare this with the resistor load line of Chapter 57, a steep straight line crossing the transistor's flat curves at a well-defined angle. Here both curves are nearly flat, so they cross at a shallow angle, and moving either one slightly slides the intersection a long way. Each 10 mV of gate voltage raises the NMOS curve by $g_m × 10$ mV = 20 µA; the intersection must move until the slopes make up 20 µA, which takes $20\text{ µA} × 25\text{ kΩ}$ = 0.5 V.
+
+<ActiveTransferFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / HOW SENSITIVE IS THE DC OUTPUT?</span><h3>1 mA, $g_m$ = 2 mS, $r_{oN} = r_{oP}$ = 50 kΩ</h3>
+
+<p>The output resistance is 25 kΩ, so a 20 µA mismatch between the NMOS and PMOS currents moves the output 0.5 V. Referred to the input, that is a gate error of 20 µA / 2 mS = 10 mV. A 10 mV threshold mismatch, or a 2% error in the PMOS mirror ratio, shifts the output half a volt.</p>
+
+<p>An 80 µA error (8%) would demand a 2 V shift. From a 2.5 V quiescent point that pushes the output to 0.5 V, below the NMOS compliance of 1 V. $M_1$ enters triode and the "amplifier" is stuck at one rail. A single active-loaded stage cannot hold its own DC operating point to useful accuracy. Something else must, and in practice that something is negative feedback around the whole amplifier.</p>
+
+</div>
+
+<div className="margin-note">
+
+**The answer, precisely.** Two ideal current sources do not define a node voltage. Real ones do, through their output resistances, but only weakly: the node voltage is set by a ratio of two small slopes and moves by volts for a microamp-level imbalance. High-gain nodes in CMOS op amps are always placed inside a feedback loop that measures the output and adjusts the input until KCL is satisfied at the right voltage.
+
+</div>
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>04</span><h2>Hold bias fixed while changing AC loading</h2></div>
+
+Keep $I_D$ = 1 mA, $g_{mN}$ = 2 mS and $r_{oN} = r_{oP}$ = 50 kΩ, put 10 pF of total capacitance on the output, and add three AC-coupled loads:
+
+<MosCases kind="active"/>
+
+Unloaded, the node resistance is 25 kΩ and the gain −50. A 100 kΩ load reduces it to −40 and a 10 kΩ load to −14.3. Meanwhile the output pole, $1/(2\pi R_{out}C)$, rises from 637 kHz to 2.2 MHz. Loading appears to speed the stage up, but only by spending gain:
+
+<ActiveGbwFigure/>
+
+All three curves share one asymptote and cross unity gain at the same frequency:
+
+<Equation tex={String.raw`\text{GBW}=|A_v|\,f_p=g_mR_{out}\cdot\frac{1}{2\pi R_{out}C}=\frac{g_m}{2\pi C}`} label="GAIN–BANDWIDTH PRODUCT OF A SINGLE NODE"/>
+
+At 2 mS and 10 pF that is 32 MHz. The only ways to raise it are more $g_m$ (more current or smaller overdrive) or less capacitance. This single equation drives op-amp design: Chapter 81 uses it to set the unity-gain frequency of a two-stage CMOS amplifier with a deliberately added compensation capacitor.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / SWING AND INPUT RANGE</span><h3>Gain −50 in a 1–4 V output window</h3>
+
+<p>From a 2.5 V quiescent output the stage can swing about ±1.5 V before either device leaves saturation. At a gain of 50 that corresponds to only <strong>±30 mV</strong> at the input. The stage is a precision amplifier for small signals around one exact operating point; it is not a general-purpose gain block.</p>
+
+<p>If each device's $\lambda$ doubles (shorter channels) at the same current, each $r_o$ halves: gain −25 and the unloaded pole doubles to 1.3 MHz. That is a change of device, not something the gate voltage can adjust.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>Close the DC and AC design loops</h2></div>
+
+**Noise and errors from the load.** The "fixed" PMOS gate is only as quiet as the mirror that drives it. Noise on $V_{BP}$ appears at the output multiplied by $g_{mP}R_{out}$, the same gain as the input. The load device's current noise and mismatch join the input device's errors on equal terms. An active load roughly doubles the input-referred noise compared with an ideal noiseless load.
+
+**Measurement.** A 10 MΩ, 10 pF oscilloscope probe barely changes the 25 kΩ resistance but adds as much capacitance as the circuit itself, halving the bandwidth you are trying to measure. A load connected to ground at DC draws current and moves the operating point, as the worked example showed.
+
+**Design flow.** Choose the DC stabilization before cascading the stage. In a two-stage op amp (Chapter 75), overall feedback sets the output; the intermediate high-gain node stays in its window only because the loop forces the input difference to near zero. Verify the low-frequency loop polarity first, then the compensation.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>An active load makes the gain $2/(\lambda_N + \lambda_P)u$, independent of current, but leaves the DC output resting on the ratio of two tiny slopes. <em>High-gain nodes live inside feedback loops.</em></p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Why does a PMOS current-source load give more gain than a drain resistor with the same DC drop?</summary>
+<div>
+
+A resistor's incremental resistance equals its DC voltage divided by its current, so 2 V at 1 mA is 2 kΩ. A saturated PMOS passes 1 mA with perhaps 1–2 V across it, yet its incremental resistance is $r_o$ ≈ 50 kΩ, because its current barely changes with voltage. The gain is $g_m$ times that much larger resistance.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why is the active-loaded gain independent of the bias current?</summary>
+<div>
+
+$g_m = 2I_D/u$ grows in proportion to current, and $r_o = 1/(\lambda I_D)$ shrinks in proportion to current. Their product is $2/(\lambda u)$, with the current cancelled. More current makes the stage faster (higher $g_m/C$) but not higher-gain.
+
+</div>
+</details>
+
+<details>
+<summary>3. What determines the DC output if both devices were ideal current sources?</summary>
+<div>
+
+Nothing. If the commanded currents were exactly equal, any voltage in the compliance window would satisfy KCL; if they differed at all, none would, and the output would slam to whichever edge lets one device leave saturation. Real output resistance, or an external feedback loop, selects the point.
+
+</div>
+</details>
+
+<details>
+<summary>4. What limits the output from above?</summary>
+<div>
+
+The PMOS needs $V_{SD} \ge u_P$, so $V_O \le V_{DD} - u_P$, 4 V in the example. Above that it enters triode, its current falls, and it is no longer a high-resistance load.
+
+</div>
+</details>
+
+<details>
+<summary>5. A 10 kΩ load raises the output pole from 637 kHz to 2.2 MHz. Has the stage become faster?</summary>
+<div>
+
+Only in the sense that its corner frequency moved up; its gain fell from 50 to 14.3 by the same factor. The gain–bandwidth product $g_m/2\pi C$ is unchanged at 32 MHz. For any given closed-loop gain in a feedback circuit, the useful bandwidth is the same.
+
+</div>
+</details>
+
+<details>
+<summary>6. Does noise on the PMOS bias voltage reach the output?</summary>
+<div>
+
+Yes, with the same gain as the input signal: a voltage on $V_{BP}$ changes the PMOS current by $g_{mP}v_{bp}$, and that current flows into the 25 kΩ output node. The bias line must be filtered, or derived so that its noise is common to both sides of a differential stage, where it cancels (Chapter 72).
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Huijsing, <em>Operational Amplifiers</em>, 3rd ed., §§4.1 and 7.4; Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§2.3.7 and 4.4. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-active-load/practice/">Open practice →</a></div>

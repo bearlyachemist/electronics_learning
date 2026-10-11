@@ -1,0 +1,201 @@
+import Equation from '../../components/Equation.astro';
+import {OpAmpFigure} from '../../components/OpAmpFigures';
+import {CmrrMismatchFigure,CmrrMonteCarloFigure,CurrentSenseCircuit} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 85</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Difference amplifiers and resistor CMRR<br/><em>Subtract two large voltages, keep the small difference.</em></h1>
+
+<p className="dek">Derive the four-resistor difference amplifier without assuming the ratios match, separate its differential and common-mode gains, find how resistor mismatch sets its CMRR, and check it statistically and in a real current-sensing circuit.</p>
+
+<div className="chapter-meta"><span>50–70 min</span><span>Inverting and noninverting amplifiers (Chs. 83–84) · Pair CMRR (Ch. 71)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">A difference amplifier is built from four 0.1% resistors. How large an error can it make on a 10 mV signal riding on 5 V?</p></div>
+
+<div>
+
+Many measurements are differences: the voltage across a current shunt in a 12 V supply line, the output of a bridge whose both ends sit at half the supply, the signal on a cable whose ground is not the receiver's ground. Each needs a circuit that responds to the difference between two inputs and ignores what they share.
+
+One op amp and four resistors can do it: an inverting path for one input and a noninverting path for the other. If the resistor ratios match, the common part cancels exactly. They never match exactly, and because the common part may be a thousand times larger than the difference, a tiny mismatch can be a large error. This chapter quantifies it.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Write both input paths → Expose differential and common-mode terms → Compare ratio mismatch at high common mode → Worst case and statistics → A high-side current sensor → Check source and input range together → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Write both input paths</h2></div>
+
+<OpAmpFigure mode="difference"/>
+
+$V_1$ drives the minus input through $R_1$, with feedback $R_2$: an inverting amplifier. $V_2$ reaches the plus input through the divider $R_3$, $R_4$: a noninverting path. Define the two ratios $a = R_2/R_1$ and $b = R_4/R_3$. The plus input sits at $bV_2/(1 + b)$; feedback makes the minus input follow it; superposition gives the output.
+
+Equal nominal resistors give unity subtraction only if their ratios are actually equal. A source resistance in series with either input changes that input's ratio, so a mismatch in source impedances is a mismatch in ratios.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Expose differential and common-mode terms</h2></div>
+
+<Equation tex={String.raw`V_O=-aV_1+cV_2,\qquad c=\frac{(1+a)\,b}{1+b}`}/>
+
+Rewrite the inputs as a common-mode voltage and a difference, $V_1 = V_C - v_d/2$ and $V_2 = V_C + v_d/2$:
+
+<Equation tex={String.raw`V_O=A_d\,v_d+A_{cm}V_C,\qquad A_d=\frac{a+c}{2},\quad A_{cm}=c-a,\quad\mathrm{CMRR}=\left|\frac{A_d}{A_{cm}}\right|`} label="DIFFERENCE AMPLIFIER GAINS"/>
+
+If $a = b = G$, then $c = G$, $A_{cm} = 0$ and $V_O = G(V_2 - V_1)$. Now let the ratios differ slightly, $b = a(1 + \epsilon)$. To first order,
+
+<Equation tex={String.raw`A_{cm}\approx\frac{a\,\epsilon}{1+a},\qquad\mathrm{CMRR}\approx\frac{1+G}{|\epsilon|}`} label="RESISTOR-LIMITED CMRR"/>
+
+$\epsilon$ is the mismatch between the two **ratios**, not the tolerance of one resistor. Four resistors each within ±0.1% can make the ratios differ by up to 0.4%.
+
+<CmrrMismatchFigure/>
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Compare ratio mismatch at high common mode</h2></div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / 0.1% OF RATIO MISMATCH</span><h3>Unity gain, $a$ = 1, $b$ = 1.001</h3>
+
+<p>$c = 2 × 1.001/2.001$ = 1.0005, so $A_d$ = 1.00025 and $A_{cm}$ = 0.0005. CMRR = 2000, about <strong>66 dB</strong>.</p>
+
+<p>Now the opening question: $V_C$ = 5 V with $v_d$ = 10 mV. The common-mode leakage is 0.0005 × 5 V = <strong>2.5 mV</strong> at the output, beside the wanted 10 mV. A 0.1% resistor error has become a <strong>25%</strong> measurement error. With four independent 0.1% parts the ratio mismatch can reach 0.4%, and the error 100%.</p>
+
+<p>Better resistors improve this in proportion: ratio mismatches of 0.01% and 0.001% give 86 and 106 dB. Resistor networks, made side by side on one substrate, specify ratio tracking of 0.01% or better even when their absolute tolerance is 0.1% or worse.</p>
+
+</div>
+
+**Higher gain helps.** At gain 10 with matched ratios, a 0.1% mismatch gives $(1 + 10)/0.001$ = 11 000, 81 dB, because the common-mode error stays roughly the same size while the wanted output is ten times larger. But the plus input now sits at $(10/11)V_C$: a 5 V common mode puts 4.55 V on the op amp's input, which a 5 V-supply op amp may not accept even though the output is only 100 mV.
+
+The op amp's own CMRR adds to the resistors'. If the op amp has 100 dB and the resistors give 66 dB, the resistors dominate; the combined value (adding the two common-mode gains, as fractions, with their signs) is at worst slightly below the poorer one.
+
+</section>
+
+<section id="monte">
+
+<div className="section-heading"><span>04</span><h2>Worst case and statistics</h2></div>
+
+A worst-case analysis assumes every resistor is at the edge of its tolerance in the most damaging direction. A **Monte Carlo** analysis draws many random sets of resistor values and looks at the distribution of results:
+
+<CmrrMonteCarloFigure/>
+
+Both are useful, for different questions. "Will every unit meet 54 dB?" needs the worst case: yes. "How many units will reach 60 dB?" needs the distribution: about 92%. Production test or trimming can then reject or adjust the tail. If every unit must exceed 80 dB, no selection of individual 0.1% resistors will do it reliably; a matched network or a monolithic difference amplifier will.
+
+</section>
+
+<section id="sense">
+
+<div className="section-heading"><span>05</span><h2>A high-side current sensor</h2></div>
+
+<CurrentSenseCircuit/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / MEASURE 0–2 A IN A 12 V LINE</span><h3>50 mΩ shunt, gain 20, 1% resistors versus a 0.05% network</h3>
+
+<p><strong>Signal.</strong> 2 A through 50 mΩ is 100 mV, amplified 20 times to 2 V: 1 V/A. The shunt dissipates 0.2 W at full current.</p>
+
+<p><strong>Common mode.</strong> Both shunt terminals sit near 12 V. With 1% resistors the ratio mismatch can be 4% in the worst case, and the CMRR $(1 + 20)/0.04$ = 525. The common-mode gain is $A_{cm} \approx a\epsilon/(1 + a)$ = 20 × 0.04/21 = 0.038, so the 12 V common mode produces <strong>0.46 V</strong> of output error, equivalent to 0.46 A. Useless.</p>
+
+<p>With a 0.05% matched network, $\epsilon \le$ 0.1% worst case, $A_{cm}$ = 0.00095 and the error is 11 mV, 11 mA. And when the 12 V supply varies by ±1 V, the error changes by only ±1 mA.</p>
+
+<p><strong>Range.</strong> The op amp's plus input sits at 12 × 100/105 = 11.4 V. An op amp on a 5 V supply cannot accept that. Either power the op amp from more than about 13 V, or use a difference amplifier with an attenuating input network, or use a dedicated high-side current-sense amplifier whose input stage runs above its own supply.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Check source and input range together</h2></div>
+
+**Unequal input impedances.** The minus input looks like $R_1$ to its source; the plus input looks like $R_3 + R_4$. A common-mode voltage therefore draws different currents from the two inputs. If the sources have unequal impedances, the voltages reaching the resistors differ, which is a ratio mismatch. With 10 kΩ input resistors, a 100 Ω source on one input and none on the other is a 1% ratio error, limiting CMRR to 46 dB at unity gain. Buffer the inputs (Chapter 86) when source impedances are significant or unequal.
+
+**AC common-mode rejection.** Stray capacitances across the resistors, if unequal, make the ratios frequency dependent. A difference amplifier with 90 dB of DC CMRR may have 50 dB at 100 kHz. Symmetric layout and matched capacitors across $R_2$ and $R_4$ help; so does filtering both inputs identically.
+
+**Ratings and faults.** The common-mode voltage appears across the input resistors. If an input can see a fault voltage, the resistors must withstand it and the op amp's input must be protected. Check the internal plus-input voltage, the output swing and the resistors' power at the worst common mode.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A four-resistor difference amplifier rejects common mode only as well as its two ratios match: $\mathrm{CMRR} \approx (1 + G)/\epsilon$. Use <em>matched resistor networks</em>, equal source impedances, and check the internal input voltage at the worst common mode.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. How large an error can four 0.1% resistors make on 10 mV at 5 V common mode?</summary>
+<div>
+
+A 0.1% ratio mismatch gives a common-mode gain of about 0.0005 at unity gain, so 5 V leaks 2.5 mV: 25% of the 10 mV signal. With all four resistors at the worst edge, the ratio mismatch can reach 0.4% and the error 10 mV, 100%.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why does the CMRR depend on ratio matching rather than on absolute resistor values?</summary>
+<div>
+
+The common-mode gain is $c - a$, where $a = R_2/R_1$ and $c$ depends on $b = R_4/R_3$. If all four resistors are 1% high, both ratios are unchanged and the CMRR is unaffected; only the difference between the ratios matters.
+
+</div>
+</details>
+
+<details>
+<summary>3. A unity-gain difference amplifier needs 80 dB of CMRR from its resistors. What ratio mismatch is allowed?</summary>
+<div>
+
+80 dB is 10 000, and CMRR ≈ $(1 + G)/\epsilon$ = 2/$\epsilon$, so $\epsilon \le$ **0.02%**. Individual resistors cannot guarantee that; a matched network specified for ratio tracking can.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why does increasing the gain improve the resistor-limited CMRR?</summary>
+<div>
+
+The common-mode gain $a\epsilon/(1 + a)$ approaches $\epsilon$ for large $a$, roughly constant, while the differential gain grows as $a$. Their ratio, the CMRR, grows as $1 + a$.
+
+</div>
+</details>
+
+<details>
+<summary>5. What is the difference between a worst-case and a Monte Carlo analysis of CMRR?</summary>
+<div>
+
+The worst case assumes every resistor at its tolerance limit in the most damaging combination, giving a guaranteed minimum (54 dB for four 0.1% parts at unity gain). Monte Carlo samples random values and gives the distribution of what real units achieve (median near 68 dB). One sets a guarantee, the other predicts yield.
+
+</div>
+</details>
+
+<details>
+<summary>6. A 100 Ω source drives one input of a 10 kΩ unity-gain difference amplifier. What CMRR results?</summary>
+<div>
+
+That input's resistor is effectively 10.1 kΩ, a 1% ratio error. CMRR ≈ 2/0.01 = 200, about **46 dB**, regardless of how good the four resistors are. Buffering the inputs, as an instrumentation amplifier does, removes the problem.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§4.2.4, 4.8.3 (load-current sensing) and 5.14 (difference amplifiers); Asadi, <em>Applied Op Amp Circuits</em>, chapter 3 and chapter 13 (Monte Carlo and worst-case analysis). Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-difference/practice/">Open practice →</a></div>

@@ -19,7 +19,7 @@ Open the local address printed by Astro, normally http://127.0.0.1:4321/.
 
 The published notebook lives at https://hebert.phd/electronics/. It is a static
 section of the existing Cloudflare Pages site; the personal homepage has no link
-to it. All 56 chapters and their practice pages are included, with interactive
+to it. All 94 chapters and their practice pages are included, with interactive
 experiments running in the browser.
 
 Push updates to `main` in this repository to deploy automatically. GitHub Actions
@@ -41,7 +41,7 @@ The staging command replaces only the generated `public/electronics` directory
 in the hebert.phd checkout. Review and commit that directory in the host
 repository, then push to `main`; its existing Cloudflare Pages integration
 publishes the update. The homepage source and build configuration need no edits.
-`check:hosted` verifies all 112 HTML pages and their local links, scripts, styles,
+`check:hosted` verifies all 188 HTML pages and their local links, scripts, styles,
 React island modules, and font assets under `/electronics`.
 
 ## Chapters
@@ -90,7 +90,7 @@ React island modules, and font assets under `/electronics`.
 | Current sharing in parallel BJTs | /current-sharing/ | /current-sharing/practice/ |
 | Capacitance & the Miller effect | /miller-effect/ | /miller-effect/practice/ |
 
-Practice is separate from illustrative material. A circuit may be static, interactive, linked to a plot, or part of a worked explanation without requiring an attached problem. There are 207 practice problems with hints and worked solutions; grading is by self-assessment.
+Practice is separate from illustrative material. A circuit may be static, interactive, linked to a plot, or part of a worked explanation without requiring an attached problem. There are 371 practice problems with hints and worked solutions; grading is by self-assessment.
 
 ## Organization
 
@@ -113,3 +113,20 @@ The original divider figures save settings locally. The newer experiments reset 
 ## Feedback and control
 
 Chapters 42–46 add feedback fundamentals and transistor applications, regulated power supplies, temperature control, and BJT/diode logic. See docs/feedback-control.md for scope, model assumptions and verification. Their 25 practice problems live in src/content/feedback-practice.json, merged by the practice route. Chapters 35–41 (current mirrors through the Miller effect) are the amplifier building blocks of AoE §§2.3.7–2.4.5; see docs/curriculum-map.md.
+
+## MOSFET and op-amp expansion
+
+Chapters 57–76 provide twenty MOSFET circuit studies, from bias and mirrors
+through cascodes, followers, differential pairs, complementary output stages,
+two-stage gain and noise. Chapters 77–82 derive ideal/real op-amp properties
+and compare original simplified BJT and CMOS internal constructions. Chapters
+83–94 develop twelve application studies with numerical examples, checks and
+three worked practice problems each. The 38 new chapters add 114 problems.
+
+The six supplied textbooks guide technical coverage; see
+[the reference map](docs/textbook-reference-map.md) for bibliography and inspected
+sections. The published content and schematics are original. No source PDFs or
+scanned figures are included. New content lives in `src/content/advanced/`, with
+metadata in `src/curriculum/advanced-chapters.ts` and practice in
+`src/content/advanced-practice.json`. Models in `mos-analog.mjs` and `opamp.mjs`
+are verified against DC KCL/KVL, independent nodal equations and numerical slopes.

@@ -1,0 +1,196 @@
+import Equation from '../../components/Equation.astro';
+import {OpAmpFigure} from '../../components/OpAmpFigures';
+import {OpAmpLab} from '../../components/OpAmpLabs';
+import {CapLoadLagFigure,IsolationCircuits,CapLoadStepFigure} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 93</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Capacitive loads and feedback placement<br/><em>Where you take the feedback decides what you get.</em></h1>
+
+<p className="dek">See how a capacitive load forms a pole with the op amp's output resistance and eats phase margin. Then compare the fixes, an isolation resistor outside the loop and dual-path feedback, by their stability, their DC accuracy at the load and their settling, and check the large-signal current a capacitor demands.</p>
+
+<div className="chapter-meta"><span>45–60 min + exploration</span><span>Bandwidth and stability (Ch. 79) · Noninverting amplifiers (Ch. 83)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Feedback is taken before a series resistor to the load. Who corrects the voltage dropped across that resistor?</p></div>
+
+<div>
+
+Op amps drive cables, ADC inputs, MOSFET gates and long traces, and all of those are capacitive. A follower that is perfectly stable on the bench may ring or oscillate once it drives a few nanofarads: Chapter 83 warned about it, and Chapter 92's current servo met a version of the same problem.
+
+The cause is a pole in the feedback loop that the datasheet's open-loop curve does not show. The cures all involve a resistor between the op amp and the load, and the question is where the feedback comes from: before the resistor, after it, or both. Each choice gives a different combination of stability and accuracy.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>A capacitor adds a pole → Decide where the resistor sits relative to feedback → Compare direct drive, isolation and dual feedback → Deliver the charge → Verify both stability and delivered accuracy → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>A capacitor adds a pole</h2></div>
+
+<OpAmpFigure mode="stability"/>
+
+Inside the loop, the op amp's output stage has an open-loop output resistance $R_O$, typically tens of ohms. With a capacitive load it forms a pole:
+
+<Equation tex={String.raw`f_{load}=\frac{1}{2\pi R_OC_L}`}/>
+
+That pole sits between the op amp's internal gain and the feedback point, so it adds phase lag around the loop. A follower, whose noise gain of 1 puts its loop crossing at the highest frequency, suffers most:
+
+<CapLoadLagFigure/>
+
+Real output impedance is not a pure resistance: it rises with frequency as the loop gain falls, and some op amps have inductive-looking output impedance. The single-resistor model explains the problem; the datasheet's capacitive-load curves or a validated model decide a real design.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Decide where the resistor sits relative to feedback</h2></div>
+
+<IsolationCircuits/>
+
+**Isolation resistor outside the loop.** Put $R_{ISO}$ between the op amp's pin and the load, and take feedback at the pin. The loop's load is now $R_{ISO}$ in series with $C_L$, which at high frequency looks resistive, so the pole is tamed: there is a zero at $1/(2\pi R_{ISO}C_L)$ that cancels much of its lag. But the load is now on the far side of an RC filter that the loop does not see. With a resistive load in parallel, the DC load voltage is
+
+<Equation tex={String.raw`V_{load}=V_{pin}\cdot\frac{R_L}{R_L+R_{ISO}}`}/>
+
+and that is the answer to the opening question: nobody corrects it. The loop holds the pin exactly; the resistor's drop is outside its reach.
+
+**Feedback after the resistor.** Take feedback from the load instead, and the DC drop is corrected, but the $R_{ISO}C_L$ pole is now inside the loop, and the circuit is usually worse than with no resistor at all.
+
+**Dual-path feedback.** Take DC feedback from the load through $R_F$ and high-frequency feedback from the pin through $C_F$. Below $1/(2\pi R_FC_F)$ the loop regulates the load; above it, the loop sees the pin, as in the isolated case. Choose $R_FC_F$ several times larger than $R_{ISO}C_L$, so that the crossover between the two paths happens where the load pole cannot cause trouble.
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Compare direct drive, isolation and dual feedback</h2></div>
+
+<CapLoadStepFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / 10 nF AND 1 kΩ FROM A 1 MHz FOLLOWER</span><h3>$R_O$ = 50 Ω, $R_{ISO}$ = 50 Ω, $R_FC_F$ = 30 µs</h3>
+
+<p><strong>Direct drive.</strong> The load pole is at $1/(2\pi × 50 × 10\text{ nF})$ = 318 kHz. At the 1 MHz crossing it adds 72° of lag, leaving less than 20° of margin. The step overshoots about 40% and rings for several microseconds.</p>
+
+<p><strong>Isolation outside the loop.</strong> 1% overshoot, settled within 2% in about 1.5 µs. But the load sees $1000/1050$ = 0.952 of the pin voltage: a 4.8% gain error. With 100 Ω of isolation there is no overshoot at all, settling stretches to about 4 µs, and the error doubles to 9%.</p>
+
+<p><strong>Dual-path feedback.</strong> The load settles to exactly 1.000 V with no overshoot, but its last few percent are slow, about 16 µs, because the DC path's time constant is 30 µs. A shorter $R_FC_F$ settles faster but brings back ringing: at 1–3 µs the overshoot is 14–28%.</p>
+
+</div>
+
+None of the three is best at everything. If the load is purely capacitive (an ADC input, a reference pin), isolation outside the loop has no DC error and is the simplest choice. If the load also draws DC current and accuracy matters, use dual feedback, or pick a driver specified for the load.
+
+<OpAmpLab kind="ac" client:load/>
+
+<p className="caption">Live lab. The adjustable second pole stands in for the load pole $1/(2\pi R_OC_L)$. Set the noise gain to 1 and move the pole from 10 MHz down to 300 kHz: the peaking grows as the margin disappears. This is an abstract open-loop pole, not a complete output-impedance and isolation model.</p>
+
+</section>
+
+<section id="charge">
+
+<div className="section-heading"><span>04</span><h2>Deliver the charge</h2></div>
+
+Stability is a small-signal question. A capacitor also demands current, which is a large-signal one:
+
+<Equation tex={String.raw`I=C_L\frac{dV}{dt}`}/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / CAN IT FOLLOW THE EDGE?</span><h3>2 V step into 10 nF in 1 µs</h3>
+
+<p>The average current is 10 nF × 2 V/1 µs = <strong>20 mA</strong>. An op amp limited to 5 mA of output current slews the load at only 0.5 V/µs, taking 4 µs, however good its phase margin. The capacitor ends up storing $\tfrac12CV^2$ = 20 nJ; delivering that charge takes time set by the current limit.</p>
+
+<p>A step that hits the current limit also leaves the loop: while current-limited, the op amp is effectively open loop, its internal nodes may saturate, and recovery adds more time. Check the large-signal step separately from the small-signal one.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>Verify both stability and delivered accuracy</h2></div>
+
+**Measure with the real load.** Small steps reveal ringing; large steps reveal current limiting and slewing. A long cable is not a lumped capacitor: it has propagation delay and inductance, and above a few megahertz it should be terminated in its characteristic impedance rather than treated as $C_L$.
+
+**Mind the probe.** A 10 pF probe on a lightly loaded node changes the very response being measured. Probe the load end, use a low-capacitance probe, and compare a few load values.
+
+**Use the datasheet.** Many op amps specify a maximum capacitive load for unity-gain stability, or recommend an isolation resistor against $C_L$. Some are designed to drive any capacitance, with a dominant pole that moves with the load. When the load is heavy and the edge fast, a dedicated buffer or line driver may be simpler than any feedback trick.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A capacitive load forms a pole with the op amp's output resistance. An isolation resistor tames it if feedback is taken <em>before</em> the resistor, at the cost of an uncorrected drop; dual-path feedback gets both, more slowly. Then check the current $C\,dV/dt$.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. If feedback senses before a series resistor, who corrects the load's voltage drop?</summary>
+<div>
+
+No one. The loop holds the voltage at its feedback point, the op amp's pin. The resistor's drop with any resistive load, and the delay of its RC with the load capacitance, are outside the loop and appear uncorrected at the load.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why does a capacitive load threaten a follower more than a gain-of-10 amplifier?</summary>
+<div>
+
+The follower's loop crosses unity at the op amp's full $f_t$, where the load pole $1/(2\pi R_OC_L)$ adds the most phase lag. At a noise gain of 10 the crossing is ten times lower, the same pole adds far less lag, and the margin survives.
+
+</div>
+</details>
+
+<details>
+<summary>3. With $R_O$ = 50 Ω and a 1 MHz crossing, how much phase does 1 nF cost?</summary>
+<div>
+
+The pole is at $1/(2\pi × 50 × 1\text{ nF})$ = 3.2 MHz, and at 1 MHz it adds $\arctan(1/3.2)$ ≈ **17°**.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why does moving the feedback point to after the isolation resistor usually make things worse?</summary>
+<div>
+
+It puts the $R_{ISO}C_L$ pole, now lower in frequency than the original $R_OC_L$ pole, directly inside the loop, adding even more phase lag. The isolation resistor helps only when the loop is closed before it at high frequency.
+
+</div>
+</details>
+
+<details>
+<summary>5. In dual-path feedback, what sets how fast the load voltage reaches its final value?</summary>
+<div>
+
+The DC path's time constant $R_FC_F$. Above $1/(2\pi R_FC_F)$ the loop regulates the pin; the load voltage converges to the correct value only as the slower DC path takes over. Making $R_FC_F$ too short brings the load pole back into the high-frequency loop and causes ringing.
+
+</div>
+</details>
+
+<details>
+<summary>6. An op amp with 5 mA of output current drives 10 nF. How fast can it slew the load?</summary>
+<div>
+
+$dV/dt = I/C$ = 5 mA/10 nF = **0.5 V/µs**, regardless of its small-signal bandwidth or phase margin. A 2 V step takes at least 4 µs.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§4.6.2 (capacitive loads), 5.8.4 (unity-gain buffers) and 4.9 (compensation); Asadi, <em>Applied Op Amp Circuits</em>, chapter 6. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-load-stability/practice/">Open practice →</a></div>

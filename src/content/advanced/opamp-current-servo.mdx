@@ -1,0 +1,207 @@
+import Equation from '../../components/Equation.astro';
+import {OpAmpFigure} from '../../components/OpAmpFigures';
+import {ServoComplianceFigure,ServoDissipationFigure,HighSideSourceCircuit,ServoStepFigure} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 92</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Op-amp current servos<br/><em>Force a voltage across a resistor, and the current follows.</em></h1>
+
+<p className="dek">Combine an op amp, a MOSFET and a sense resistor into a precise current source. Budget its accuracy, find its compliance and the transistor's worst-case dissipation, build sinking and sourcing versions, and stabilize a loop that has a large capacitor in it.</p>
+
+<div className="chapter-meta"><span>50–70 min</span><span>Mirrors (Ch. 59) · MOSFET current sinks (Ch. 53) · DC errors (Ch. 78) · Stability (Ch. 79)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">A current servo is set for 10 mA. What happens when the load's resistance is so large that it would need more voltage than the supply can give?</p></div>
+
+<div>
+
+Chapter 59 promised that precise currents come from forcing a stable voltage across a resistor with a feedback loop. Here is that loop. The op amp compares the voltage across a sense resistor with a set voltage and drives a MOSFET's gate until they match. The current is then $V_{SET}/R_S$, as accurate as the set voltage, the resistor and the op amp's offset, and nearly independent of the MOSFET, the load and the supply.
+
+The circuit drives LEDs and laser diodes, biases sensors, tests transistors and sinks current from batteries. Its two limits are the ones every current source has: a compliance range beyond which it cannot hold the current, and a transistor that must dissipate whatever voltage the load does not use.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Return the source voltage to minus → Derive error and compliance budgets → Compare three sense voltages → Find the compliance and the heat → Source current into a grounded load → Close the loop around a capacitive gate → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Return the source voltage to minus</h2></div>
+
+<OpAmpFigure mode="servo"/>
+
+$V_{SET}$ drives the plus input; the minus input senses the top of $R_{SENSE}$. If the current rises, the sense voltage rises, the minus input exceeds the plus, the op amp's output falls, the gate voltage drops and the current falls back: negative feedback. In the linear region, the sense voltage equals $V_{SET}$ and
+
+<Equation tex={String.raw`I\approx\frac{V_{SET}+V_{OS}}{R_{SENSE}}`}/>
+
+The MOSFET's gate draws no DC current, so every ampere through the load passes through $R_{SENSE}$: the drain current and the sensed current are the same. (A bipolar transistor would lose its base current, a $1/\beta$ error.) The load, the MOSFET and the sense resistor share the supply voltage.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Derive error and compliance budgets</h2></div>
+
+**Accuracy.** The fractional current error is about $V_{OS}/V_{SET} - \Delta R/R$: offset relative to the set voltage, plus the sense resistor's tolerance and drift. At high currents, the resistance of the wiring to the sense resistor adds to it; **Kelvin** connections, separate sense wires to the resistor's terminals, keep the load current's drops out of the measurement.
+
+**Compliance.** Three voltages must fit within the supply:
+
+<Equation tex={String.raw`V_{SUPPLY}\ge V_{LOAD}(I)+I\,R_{SENSE}+V_{DS,\min}`} label="SERVO COMPLIANCE"/>
+
+and the op amp must be able to drive the gate to $IR_{SENSE} + V_T + u$, above the source. With a 1 V threshold, 0.3 V of overdrive and a 0.5 V sense drop, that is 1.8 V: easy on 12 V, impossible for an op amp powered from 1.8 V. Strictly, a MOSFET can still regulate in triode if the gate drive is large enough; saturation is not required, only that the op amp has range left.
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Compare three sense voltages</h2></div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / CHOOSE THE SENSE VOLTAGE</span><h3>10 mA, 100 µV of op-amp offset</h3>
+
+<p>Sense voltages of 0.1, 0.5 and 1 V need 10, 50 and 100 Ω, dissipating 1, 5 and 10 mW. The offset causes current errors of 10, 2 and 1 µA: 0.1%, 0.02% and 0.01%.</p>
+
+<p>A larger sense voltage makes the offset matter less but takes compliance and power. At 10 A, a 1 V sense voltage would dissipate 10 W in the resistor; high-current servos use 50–100 mV and a precision or zero-drift op amp instead.</p>
+
+</div>
+
+</section>
+
+<section id="compliance">
+
+<div className="section-heading"><span>04</span><h2>Find the compliance and the heat</h2></div>
+
+<ServoComplianceFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A 10 mA SINK ON 12 V</span><h3>50 Ω sense resistor, resistive load</h3>
+
+<p><strong>600 Ω load.</strong> The load drops 6 V, the sense resistor 0.5 V, so the MOSFET has 5.5 V across it and dissipates 55 mW. The current is exactly 10 mA.</p>
+
+<p><strong>1.2 kΩ load.</strong> The load alone would need 12 V. Now the opening question: the loop cannot deliver the current. The op amp's output rises to its limit trying, the MOSFET turns fully on, and the current is whatever the supply can push through the load and sense resistor, about 9.6 mA here and falling as the load grows. The op amp is then open loop, saturated, and will take time to recover when the load returns to normal.</p>
+
+<p><strong>Short circuit.</strong> With the load shorted, the MOSFET has 11.5 V across it at 10 mA: <strong>115 mW</strong>, its worst case.</p>
+
+</div>
+
+<ServoDissipationFigure/>
+
+The transistor's dissipation is largest when the load takes the least voltage. Size the MOSFET and its heat sink for a short-circuited load, and check its **linear-mode** safe operating area: power MOSFETs optimized for switching can fail at modest dissipation when held in their linear region (Chapter 56).
+
+</section>
+
+<section id="source">
+
+<div className="section-heading"><span>05</span><h2>Source current into a grounded load</h2></div>
+
+The sink above needs the load connected to the supply. When the load must return to ground, put the sense resistor at the top and use a PMOS:
+
+<HighSideSourceCircuit/>
+
+The op amp now forces the sense node to $V_{DD} - V_{SET}$. Since $V_{SET}$ is measured from the supply, the set voltage must be derived from the supply too (a divider or a reference referred to $V_{DD}$), or supply variations become current variations. The op amp's inputs sit near the positive rail, so it needs an input range that includes the rail. The compliance is now from ground up: the load may rise to $V_{DD} - V_{SET} - V_{SD,\min}$.
+
+A common variation adds a second, low-side servo whose sense resistor sets a current through a resistor to the supply, generating the PMOS servo's set voltage from a ground-referred command. Precision **current references** (the reference Chapter 59 asked for) are built exactly this way, with a bandgap voltage of about 1.2 V across a precision resistor.
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Close the loop around a capacitive gate</h2></div>
+
+The op amp does not drive a resistor divider; it drives a MOSFET's gate capacitance through its own output resistance, and the MOSFET acts as a source follower into the sense resistor. That gate RC is a second pole in the loop:
+
+<ServoStepFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A BIGGER TRANSISTOR, A WORSE LOOP</span><h3>1 MHz op amp with 100 Ω output resistance</h3>
+
+<p>With 1 nF of gate capacitance the gate pole is at $1/(2\pi × 100 × 1\text{ nF})$ = 1.6 MHz. The loop crosses unity near 0.8 MHz with about 63° of phase margin.</p>
+
+<p>A larger MOSFET, chosen for its higher dissipation rating, has 5 nF. The pole falls to 320 kHz, the crossing to about 0.5 MHz, and the margin to about 33°: the current rings on every step.</p>
+
+<p><strong>Cures.</strong> A small resistor in series with the gate (tens to hundreds of ohms) isolates the op amp from the capacitance but does not remove the pole. The standard fix adds a capacitor from the op amp's output to its minus input and a resistor between the minus input and the sense node: at high frequency the op amp sees local feedback and the slow outer loop takes over only at low frequency, preserving DC accuracy.</p>
+
+</div>
+
+Verify command steps with light and heavy loads, start-up, and recovery after the compliance limit. Inductive loads (motors, solenoids) need a path for their current when the servo turns off. Check the sense resistor's temperature rise, which changes its value, and its pulse rating.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A current servo sets $I = V_{SET}/R_S$ with the accuracy of a voltage and a resistor, <em>but only within its compliance</em>. Size the transistor for a shorted load, and include its gate capacitance in the loop's stability.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. What happens when the load leaves too little voltage across the MOSFET?</summary>
+<div>
+
+The loop runs out of range: the op amp drives its output to its limit, the MOSFET turns fully on, and the current is set by the supply, the load and the sense resistor instead of by $V_{SET}$. The circuit stops being a current source until the load's voltage falls back within compliance, and the saturated op amp needs time to recover.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why does a MOSFET give a more accurate current servo than a bipolar transistor?</summary>
+<div>
+
+The servo regulates the current in the sense resistor, which for a BJT is the emitter current, while the load carries the collector current, smaller by the base current, a $1/\beta$ error that varies with temperature and part. A MOSFET's gate draws no DC current, so source and drain currents are equal.
+
+</div>
+</details>
+
+<details>
+<summary>3. A 1 A servo uses a 0.1 Ω sense resistor and an op amp with 1 mV offset. What is the current error?</summary>
+<div>
+
+1 mV/0.1 Ω = **10 mA**, 1%. Use a larger sense voltage (more dissipation) or a zero-drift op amp with microvolts of offset.
+
+</div>
+</details>
+
+<details>
+<summary>4. When does the MOSFET in a current sink dissipate the most?</summary>
+<div>
+
+When the load takes the least voltage, at a short circuit. The MOSFET then absorbs nearly the whole supply at the full current: 11.5 V × 10 mA = 115 mW in the example, twice its nominal dissipation.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why does a high-side PMOS current source need its set voltage referred to the supply?</summary>
+<div>
+
+It regulates the voltage across a sense resistor connected to the supply, by comparing the sense node with its plus input. If the plus input is a fixed voltage from ground, every change in the supply changes the voltage across the sense resistor and hence the current.
+
+</div>
+</details>
+
+<details>
+<summary>6. Why might replacing a MOSFET with a larger one make a servo ring?</summary>
+<div>
+
+The larger device has more gate capacitance, which with the op amp's output resistance forms a lower-frequency pole inside the loop. That pole adds phase lag at the crossing frequency, reducing the phase margin. Compensation must be revisited whenever the transistor changes.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§4.2.5 (current sources), 4.4.4 (bandwidth and the op-amp current source) and 9.3 (current sources and references); Huijsing, <em>Operational Amplifiers</em>, 3rd ed., chapter 9. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-current-servo/practice/">Open practice →</a></div>

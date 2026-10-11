@@ -1,0 +1,205 @@
+import Equation from '../../components/Equation.astro';
+import {OpAmpLab} from '../../components/OpAmpLabs';
+import {ErrorModelCircuit,ErrorVsSourceFigure,ThermocoupleBudgetFigure,OffsetNullCircuit} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 78</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Real op amps: the DC error budget<br/><em>Every microvolt has a source.</em></h1>
+
+<p className="dek">Put offset voltage, bias currents, finite gain, drift and common-mode rejection back into the ideal model at the nodes where they act. Solve the signed equations, choose resistors that cancel what can be cancelled, and assemble a worst-case budget for a real measurement.</p>
+
+<div className="chapter-meta"><span>55–75 min + exploration</span><span>Ideal op amps (Ch. 77) · Pair offset (Chs. 70–72)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Adding a resistor in series with an op amp's input can reduce its output error. When does it also make things worse?</p></div>
+
+<div>
+
+An ideal op amp with zero input gives zero output. A real one gives a few millivolts, and that error stays put as a signal arrives, adding to every reading. In an audio stage nobody cares; in a thermocouple amplifier, where 1 °C is 41 µV, a 1 mV offset is a 25 °C error.
+
+Chapters 70–72 showed where these errors come from inside the chip: mismatched thresholds, bias currents, finite gain. This chapter treats the op amp as a black box with specified errors, puts each at the node where it acts, and adds them up honestly. The result is an error budget, the document that decides which op amp a precision design needs.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Assign error sources to specific nodes → Solve the signed noninverting equation → Compare source resistances → Build a worst-case budget → Null what is repeatable → Include the complete signal source → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Assign error sources to specific nodes</h2></div>
+
+<ErrorModelCircuit/>
+
+Model the real op amp as an ideal one with three error sources at its inputs. The offset voltage $V_{OS}$ is the differential input needed to bring the output to zero, drawn as a small battery in series with one input. The bias currents $I_{B+}$ and $I_{B-}$ flow into the two inputs; take them as **signed**, positive into the amplifier, because their signs decide whether they cancel or add. Their difference is the **offset current** $I_{OS}$.
+
+Keep the specifications distinct. Offset voltage is not the $v_o/A$ that finite gain requires. Bias current is a DC current, not current-noise density. Drift is a change with temperature, and a datasheet's "typical" is not a guaranteed maximum. Read each specification at the supply, common-mode voltage, temperature and load you will actually use.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Solve the signed noninverting equation</h2></div>
+
+KCL at the minus input includes $I_{B-}$; the plus input sits at $V_{IN} - I_{B+}R_{SRC}$; the amplifier sees $V_{OS}$ added to its input. Solving with finite gain $A_0$:
+
+<Equation tex={String.raw`v_o=\frac{NG}{1+NG/A_0}\Bigl[V_{IN}+V_{OS}-I_{B+}R_{SRC}+I_{B-}\,(R_F\parallel R_G)\Bigr],\qquad NG=1+\frac{R_F}{R_G}`} label="NONINVERTING AMPLIFIER WITH DC ERRORS"/>
+
+Read the bracket as the input-referred error. Every term in it is multiplied by the noise gain, just like the signal. $I_{B-}$ flows out through $R_F$, so the output must rise to supply it; $I_{B+}$ flowing through $R_{SRC}$ pulls the plus input down. If the two bias currents are equal and the two input resistances are equal, $R_{SRC} = R_F \parallel R_G$, the bias terms cancel, leaving only $I_{OS}$ times that resistance.
+
+Three more errors enter the same bracket. **Finite gain** produces a gain error of $-NG/A_0$ times the reading. **Common-mode rejection** turns a common-mode change $\Delta V_{CM}$ into an input error $\Delta V_{CM}/\text{CMRR}$. **Power-supply rejection** does the same for supply changes.
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Compare source resistances</h2></div>
+
+<ErrorVsSourceFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / SIGNED TERMS THAT CANCEL AND ADD</span><h3>$R_F$ = 100 kΩ, $R_G$ = 10 kΩ, $V_{OS}$ = +100 µV, $I_{B+}$ = 50 nA, $I_{B-}$ = 55 nA</h3>
+
+<p>$R_F \parallel R_G$ = 9.09 kΩ, so the $I_{B-}$ term is +500 µV at the input. With source resistances of 0, 9.09 kΩ and 100 kΩ, the $I_{B+}$ term is 0, −455 and −5000 µV. The totals are <strong>+600, +145 and −4400 µV</strong>, and at the output, times 11: +6.6 mV, +1.6 mV and −48.4 mV.</p>
+
+<p>Matching the resistances leaves 100 µV of offset and $I_{OS} \cdot 9.09$ kΩ = 45 µV. It cannot remove the offset voltage, and it only helps when the two bias currents are nearly equal, which is true for bipolar input stages but not for many bias-compensated or CMOS parts.</p>
+
+<p><strong>More terms.</strong> At $A_0 = 10^5$ and 0.1 V input, finite gain lowers the output by 121 µV. A 1 µV/°C drift over 50 °C adds 50 µV input (0.55 mV output). An 80 dB CMRR turns a 2 V common-mode change into 200 µV.</p>
+
+</div>
+
+That answers the opening question. A matching resistor in series with the plus input cancels the average bias current, but it adds its own thermal noise ($\sqrt{4kTR}$, 12 nV/√Hz for 9 kΩ) and, if the bias currents are unequal or of opposite sign, it can make the error worse. Use it with bipolar op amps that have specified offset current; leave it out for FET- and CMOS-input parts whose bias currents are picoamps.
+
+<OpAmpLab kind="dc" client:load/>
+
+<p className="caption">Live lab. Signed errors before clipping at ±4.5 V. Sweep the source resistance and watch the total pass through zero, as in the figure. Then reverse the sign of the bias current: some op amps have bias current flowing out of their inputs, and the cancellation point moves.</p>
+
+</section>
+
+<section id="budget">
+
+<div className="section-heading"><span>04</span><h2>Build a worst-case budget</h2></div>
+
+A budget lists every error, input-referred, at the worst case over the operating conditions, and compares the total with the requirement. Uncorrelated random errors are sometimes combined as a root sum of squares; a **guaranteed** bound adds magnitudes.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A THERMOCOUPLE AMPLIFIER</span><h3>Gain 100, ±0.5 °C, 0–40 °C ambient</h3>
+
+<p><strong>Requirement.</strong> A type-K thermocouple produces about 41 µV/°C, so ±0.5 °C allows about ±20 µV of input-referred error. The signal itself is at most a few tens of millivolts, near ground, so CMRR matters only for interference.</p>
+
+<p><strong>General-purpose op amp</strong> (1 mV offset, 10 µV/°C drift, 50 nA bias): offset alone is 1000 µV, fifty times the budget, and drift over 40 °C is 400 µV. Calibration could remove the offset but not the drift. It fails.</p>
+
+<p><strong>Precision bipolar op amp</strong> (25 µV, 0.3 µV/°C, 1 nA, 120 dB CMRR): calibrate out the initial offset; then drift 12 µV, bias 0.5 µV, CMRR 1 µV, 0.05% gain resistors 5 µV at a 10 mV reading, noise 0.25 µV p-p. Total about <strong>19 µV</strong>: just inside, with calibration.</p>
+
+<p><strong>Auto-zero (chopper) op amp</strong> (5 µV, 0.02 µV/°C): uncalibrated total about <strong>12 µV</strong>. The gain resistors are now the largest error.</p>
+
+</div>
+
+<ThermocoupleBudgetFigure/>
+
+The budget did two jobs. It chose the op amp, and it showed what to improve next: in the chopper design, better resistors, not a better amplifier. It also revealed what was not in the budget yet: the thermocouple's own cold-junction compensation, which is usually the largest error of all.
+
+</section>
+
+<section id="null">
+
+<div className="section-heading"><span>05</span><h2>Null what is repeatable</h2></div>
+
+<OffsetNullCircuit/>
+
+An initial offset is repeatable, so it can be trimmed out. Many op amps have null pins; when they do not, add a small adjustable voltage at the noninverting input. In the circuit above, the wiper's ±15 V is divided by 150 kΩ and 10 Ω to ±1 mV, enough to cancel any offset within ±1 mV. Because the noise gain amplifies the plus input, the correction acts exactly like an input voltage.
+
+Nulling has costs. It holds at one temperature: an op amp nulled at 25 °C still drifts. For some bipolar op amps, nulling with the internal pins actually changes the drift; for an external network, the divider's own resistors and the rails' stability enter the budget. Calibrating in software, by measuring the offset and subtracting it, achieves the same thing without a trimmer, and can be repeated as the temperature changes.
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Include the complete signal source</h2></div>
+
+**Source resistance that varies.** A sensor's resistance often changes with its signal or temperature. Bias current through a varying resistance becomes a gain error or a nonlinearity, not just an offset.
+
+**Leakage you did not specify.** A CMOS op amp may have 1 pA of bias current, but its input protection diodes, the circuit board and a fingerprint can leak nanoamps, doubling every 10 °C. Guard rings around high-impedance inputs, driven at the input's own potential, stop that leakage from reaching the input.
+
+**Resistors are components too.** The gain is a ratio of resistors, so their tolerance is a gain error; their temperature coefficients and self-heating make it drift. A 0.1% resistor with 25 ppm/°C drifts 0.1% over 40 °C.
+
+**Range.** After adding the worst-case errors, check again that the output stays in its swing range and the inputs in their common-mode range. Calibration removes errors at the calibration point only; it does not remove drift, noise, hysteresis or nonlinearity.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Put each error at its node, keep its sign, refer it to the input, and <em>multiply everything in the bracket by the noise gain</em>. A worst-case budget chooses the op amp and shows what to improve next.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. A gain-of-25 amplifier has 80 µV of offset. What is its output offset?</summary>
+<div>
+
+$25 × 80$ µV = **2 mV**, before any other errors. Offset is multiplied by the noise gain, the same as a signal at the plus input.
+
+</div>
+</details>
+
+<details>
+<summary>2. With $R_F$ = 90 kΩ and $R_G$ = 10 kΩ, what source resistance cancels equal bias currents? With 4 nA of offset current, what remains at the output?</summary>
+<div>
+
+$R_F \parallel R_G$ = **9 kΩ**. The residual is $NG × I_{OS} × 9\text{ kΩ}$ = 10 × 4 nA × 9 kΩ = **360 µV** at the output.
+
+</div>
+</details>
+
+<details>
+<summary>3. Offset drift is 0.5 µV/°C over 80 °C at a noise gain of 50. What is the output drift?</summary>
+<div>
+
+Input change: 0.5 × 80 = 40 µV. Output: 50 × 40 µV = **2 mV**. Initial offset and other drifts come on top of this.
+
+</div>
+</details>
+
+<details>
+<summary>4. When does a bias-cancelling resistor make the error worse?</summary>
+<div>
+
+When the two bias currents are not nearly equal: for bias-compensated bipolar parts they can have opposite signs, and for CMOS parts they are tiny and unrelated. The resistor then adds an $I_{B+}R$ term without cancelling anything, plus its own thermal noise.
+
+</div>
+</details>
+
+<details>
+<summary>5. Why does nulling the offset at room temperature not solve the thermocouple problem with a general-purpose op amp?</summary>
+<div>
+
+Its drift, 10 µV/°C over a 40 °C range, is 400 µV, twenty times the whole budget. Nulling removes the initial offset at one temperature; the drift is a change from that point and remains.
+
+</div>
+</details>
+
+<details>
+<summary>6. Should you add worst-case errors or combine them as a root sum of squares?</summary>
+<div>
+
+For a guaranteed specification, add magnitudes: the worst case of each can occur together. For a statistical estimate of what most units will do, combine independent random errors as a root sum of squares. State which one a budget uses.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §4.4 and §§5.1–5.7 (precision design and error budgets); Asadi, <em>Applied Op Amp Circuits</em>, §§2.3 and 2.8 (offset nulling); Huijsing, <em>Operational Amplifiers</em>, 3rd ed., §6.2. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-dc-errors/practice/">Open practice →</a></div>

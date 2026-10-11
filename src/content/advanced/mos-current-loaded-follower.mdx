@@ -1,0 +1,212 @@
+import Equation from '../../components/Equation.astro';
+import {MosStageFigure} from '../../components/MosAnalogFigures';
+import {MosCases,MosLab} from '../../components/MosAnalogLabs';
+import {LevelShiftCircuit,FollowerLoadGainFigure,SinkSlewFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 67</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>Current-loaded source followers<br/><em>Keep the current flowing, whatever the load.</em></h1>
+
+<p className="dek">Add a current sink under a source follower so its transconductance no longer depends on the load. Derive the gain, use the circuit as a level shifter, and inspect both transistors on every excursion, because the sink brings its own compliance and its own speed limit.</p>
+
+<div className="chapter-meta"><span>45–60 min + exploration</span><span>Source follower (Ch. 66) · Mirrors (Ch. 59)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Does an ideal current sink make a source follower an ideal voltage buffer?</p></div>
+
+<div>
+
+Chapter 66's follower had two weaknesses traceable to one cause: its current came from the load. A light load meant little current, little $g_m$, and gain well below one; a falling output could only be pulled down by the load resistor.
+
+Put a current sink under the source and both weaknesses improve. The transistor now carries the sink current plus the load current, so $g_m$ stays up when the load is light, and the sink actively pulls the output down. The circuit becomes the standard MOS buffer and level shifter. But "ideal buffer" needs every assumption at once, and the body effect, in particular, does not go away.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Add the sink to the source-node equation → Distinguish load current from bias current → Compare bias and signal limits → Use it as a level shifter → Inspect both transistors on every excursion → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Add the sink to the source-node equation</h2></div>
+
+<MosStageFigure mode="current-follower"/>
+
+The follower's source drives the load and a sink that removes $I_B$. Both currents must come through the NMOS:
+
+<Equation tex={String.raw`I_D=I_B+\frac{V_S}{R_L}=\tfrac12k\bigl[V_G-V_S-V_T(V_S)\bigr]^2`}/>
+
+With a light load, the transistor still carries $I_B$, so its overdrive and transconductance hardly change as the load varies. That is the improvement. The figure shows an ideal sink; a real one is a transistor (Section 04) that needs at least its own overdrive across it, which sets a lower limit on the output.
+
+If the solution of this equation would require a negative output, the gate is simply too low to supply the commanded sink current: in a single-supply circuit, the sink saturates out of compliance and the follower turns off. The lab marks such points as having no bias solution.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Distinguish load current from bias current</h2></div>
+
+KCL at the source, for small signals, now has one more conductance, that of a real sink ($g_{sink} = 1/r_{o,sink}$):
+
+<Equation tex={String.raw`A_v=\frac{g_m}{g_m+g_{mb}+g_{ds}+g_{sink}+1/R_L}`} label="CURRENT-LOADED FOLLOWER GAIN"/>
+
+The structure is the same as in Chapter 66, but $g_m$ is now set by $I_B + I_{load}$ rather than by the load alone. With no body effect, an ideal sink and no load, the gain is exactly 1, and the output sits a fixed $V_T + \sqrt{2I_B/k}$ below the gate. That is the ideal-buffer answer, and it requires all four assumptions.
+
+<FollowerLoadGainFigure/>
+
+The figure answers the opening question. With the body tied to the source (a discrete MOSFET, or an IC device in its own well), the sink lifts the gain into a 10 kΩ load from 0.89 to 0.94, and into 100 kΩ to 0.99. With a grounded body it stalls near 0.87, its ceiling $1/(1 + \eta)$, no matter how ideal the sink. The sink fixes the load problem; it cannot fix the body effect.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / BIAS CURRENT SETS THE OUTPUT RESISTANCE</span><h3>Gate at 3 V, no load, no body effect, $k$ = 2 mA/V²</h3>
+
+<p>With sink currents of 0.25, 0.5 and 1 mA, the overdrive is $\sqrt{2I_B/k}$ = 0.500, 0.707 and 1.000 V, so the output sits at 1.500, 1.293 and 1.000 V.</p>
+
+<p>The transconductances are $g_m = ku$ = 1.00, 1.41 and 2.00 mS, so the output resistances $1/g_m$ are <strong>1 kΩ, 707 Ω and 500 Ω</strong>. Quadrupling the current halves the output resistance, because $g_m \propto \sqrt{I}$.</p>
+
+<p>The power cost is constant and unconditional: 5 V × $I_B$ = 1.25, 2.5 and 5 mW, flowing whether or not there is any signal.</p>
+
+</div>
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Compare bias and signal limits</h2></div>
+
+Three gate voltages with a 0.5 mA ideal sink, a 10 kΩ load, a grounded body ($\gamma$ = 0.4 √V, $2\phi_F$ = 0.6 V), $k$ = 2 mA/V² and $V_{T0}$ = 1 V:
+
+<MosCases kind="current-follower"/>
+
+Each row solves the load, the sink and the body effect together. The table assumes an ideal sink; a real one adds a lower output limit, examined next.
+
+**Speed in both directions.** The dynamic equation at the output is $C_L\,dV_O/dt = I_D - I_B - V_O/R_L$. Rising, the follower supplies extra current as before. Falling, the follower may turn off, but now the sink keeps pulling at $I_B$, so the output falls at $(I_B + V_O/R_L)/C_L$ rather than at $(V_O/R_L)/C_L$:
+
+<SinkSlewFigure/>
+
+With 1 nF, sink currents of 0.25, 0.5 and 1 mA allow falling slew rates of 0.25, 0.5 and 1 V/µs from the sink alone. The resistor adds a little at high output voltages. Once the output nears the sink's compliance, the sink's current falls and the edge rounds off.
+
+<MosLab kind="follower" client:load/>
+
+<p className="caption">Live lab. Set a 0.5 mA sink and a 10 kΩ load. Compare the gate-to-output curves with the body grounded and with it following the source, and read the local gain. Then set the load to 100 kΩ. With the body following the source the gain should approach 1; with it grounded it should approach about 0.87. Finally lower the gate until the solution disappears: the gate can no longer supply the sink current.</p>
+
+</section>
+
+<section id="shift">
+
+<div className="section-heading"><span>04</span><h2>Use it as a level shifter</h2></div>
+
+<LevelShiftCircuit/>
+
+Because the gate–source drop is set by $I_B$ rather than by the load, the current-loaded follower is an excellent **level shifter**: it reproduces its input, shifted down by a nearly constant voltage. Op amps use it to move a signal from the level where one stage wants it to the level the next stage needs.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A 1.7 V SHIFT AND ITS IMPERFECTIONS</span><h3>0.5 mA mirror sink, $k$ = 2 mA/V², $V_T$ = 1 V</h3>
+
+<p><strong>Nominal shift:</strong> $V_{GS} = V_T + \sqrt{2 × 0.5/2}$ = 1 + 0.707 = <strong>1.71 V</strong>.</p>
+
+<p><strong>Range.</strong> The sink $M_2$ needs $V_{DS} \ge$ 0.71 V, so the output must stay above 0.71 V and the input above 2.41 V. The follower $M_1$ needs $V_{DS} \ge u$ = 0.71 V too, so the output must stay below 4.29 V and the input below 6 V, which a 5 V input never reaches. The useful input range is 2.4–5 V.</p>
+
+<p><strong>Load sensitivity.</strong> A 10 kΩ load at a 2 V output draws 0.2 mA, raising $M_1$'s current to 0.7 mA and its overdrive to 0.84 V: the shift grows by 0.13 V. A level shifter wants a light load or a larger $I_B$.</p>
+
+<p><strong>Body effect.</strong> In a grounded-body process the threshold grows with the output: from 1.0 V at $V_O$ = 0 to about 1.34 V at $V_O$ = 2 V ($\gamma$ = 0.4 √V). The shift is then not constant, and the gain is about 0.87, not 1.</p>
+
+<p><strong>Temperature.</strong> $V_T$ falls by about 2 mV/°C while mobility falls too. At this overdrive the two partly cancel, but the shift is not a precision voltage.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>Inspect both transistors on every excursion</h2></div>
+
+Every output voltage must satisfy two compliance conditions at once:
+
+<Equation tex={String.raw`u_{sink}\le V_O\le V_{DD}-u_{follower}`}/>
+
+The input can demand an output that violates either one. Below the lower limit the sink's current falls, the slew rate falls with it, and the output's DC level is no longer $V_G - V_{GS}$. Above the upper limit the follower runs out of drain headroom.
+
+**Noise.** The sink's current noise flows through the source node's impedance, about $1/g_m$, and appears directly at the output. A mirror sink also passes on the noise of its reference. Filtering the sink's gate line is a common fix.
+
+**One-way drive, again.** The sink can pull only $I_B$. A load that must be discharged faster, or an external circuit that sources current into the output, needs a push–pull output stage (Chapter 74).
+
+**Large negative gate excursions.** If the gate drops far below the source, for example during a fast falling input with a large load capacitance, $V_{GS}$ goes strongly negative. Check the device's gate–source voltage rating.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A current sink keeps a follower's $g_m$ independent of the load and lets it pull down at $I_B/C_L$. It makes the gain close to 1 only if <em>the body follows the source</em>, and it adds a lower output limit of its own.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Does an ideal current sink make a source follower an ideal buffer?</summary>
+<div>
+
+Only if the body also follows the source, $\lambda$ is zero and the load is light. A grounded body caps the gain at $1/(1 + \eta)$, about 0.87 in the example, whatever the sink. The DC shift also depends on load current through the overdrive.
+
+</div>
+</details>
+
+<details>
+<summary>2. Why does the current-loaded follower keep its gain into light loads, while a resistor-only follower does not?</summary>
+<div>
+
+In the resistor-only follower the load sets the current, so a light load means little current and little $g_m$: the output resistance $1/g_m$ grows along with the load resistance, and the ratio between them barely improves. With a sink the current stays at least $I_B$, so $g_m$ and $1/g_m$ stay fixed and the gain $g_mR_L/(1 + g_mR_L)$ rises toward 1 as $R_L$ grows.
+
+</div>
+</details>
+
+<details>
+<summary>3. A 0.5 mA sink and a 1 nF load. What is the fastest falling slew rate, and when does it fail?</summary>
+<div>
+
+With the follower off, the sink alone discharges the capacitor at $I_B/C_L$ = 0.5 V/µs, plus a little from any load resistor. It fails when the output nears the sink's compliance (one overdrive above ground); there the sink enters triode and its current falls.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why does quadrupling the sink current only halve the output resistance?</summary>
+<div>
+
+The output resistance is $1/g_m$ and $g_m = \sqrt{2kI_D}$. Four times the current gives twice the $g_m$. To halve the output resistance more cheaply, use a wider device (larger $k$) at the same current, at the cost of capacitance.
+
+</div>
+</details>
+
+<details>
+<summary>5. In the level shifter, what limits the input range from below?</summary>
+<div>
+
+The sink transistor needs its drain, the output, at least one overdrive (0.71 V) above ground. The output is the input minus 1.71 V, so the input must stay above about 2.4 V. Below that, the sink loses compliance and the shift collapses.
+
+</div>
+</details>
+
+<details>
+<summary>6. Where does the sink's noise go?</summary>
+<div>
+
+Its current noise must flow somewhere, and the only path is through the source node, whose impedance is about $1/g_m$ in parallel with the load. The noise current times that impedance appears at the output. Mirror sinks also carry the reference's noise, so their gate lines are often filtered.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §3.2.6 and §4.4 (op-amp output stages); Huijsing, <em>Operational Amplifiers</em>, 3rd ed., chapter 4. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-current-loaded-follower/practice/">Open practice →</a></div>

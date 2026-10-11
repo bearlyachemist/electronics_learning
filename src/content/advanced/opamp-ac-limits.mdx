@@ -1,0 +1,223 @@
+import Equation from '../../components/Equation.astro';
+import {OpAmpLab} from '../../components/OpAmpLabs';
+import {ClosedLoopBodeFigure,SlewDistortionFigure,FullPowerFigure,PhaseMarginStepFigure} from '../../components/OpAmpStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 79</span><span className="hairline"/>OPERATIONAL AMPLIFIERS</div>
+
+<h1>Bandwidth, slew and stability<br/><em>Three different speed limits.</em></h1>
+
+<p className="dek">Use the gain–bandwidth product and the noise gain to find small-signal bandwidth, the slew rate to find the largest clean sine, and the phase margin to predict ringing. Then settle a step and see which limit controls each part of the response.</p>
+
+<div className="chapter-meta"><span>55–75 min + exploration</span><span>Ideal op amps (Ch. 77) · Two-stage compensation (Ch. 75)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">An amplifier passes a 10 mV sine at 50 kHz perfectly. Can it distort a 2 V sine at the same frequency?</p></div>
+
+<div>
+
+"How fast is this op amp?" has at least three answers, and they come from different physics. The **small-signal bandwidth** comes from the dominant-pole compensation of Chapter 75 and is shared between gain and frequency. The **slew rate** is how fast the compensation capacitor can be charged by the limited current available, and it depends on signal amplitude. **Stability** depends on how much phase the loop has left at the frequency where its gain falls to one.
+
+A datasheet gives a number for each. This chapter shows how to use them, and why a circuit can satisfy one and fail another at the same frequency.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Start with one dominant pole → Gain–bandwidth and noise gain → Slew rate and full-power bandwidth → Phase margin and the second pole → Settling a step → Measure the relevant form of speed → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Start with one dominant pole</h2></div>
+
+A compensated op amp's open-loop gain has one dominant pole, very low in frequency:
+
+<Equation tex={String.raw`A(f)=\frac{A_0}{1+jf/f_p},\qquad f_t=A_0f_p`}/>
+
+Above $f_p$, typically a few hertz, the gain falls at 20 dB per decade, and $|A| \cdot f$ is constant: the **gain–bandwidth product** $f_t$, where the open-loop gain reaches 1. A part with $A_0 = 10^5$ and $f_p$ = 10 Hz has $f_t$ = 1 MHz: open-loop gain 1000 at 1 kHz, 10 at 100 kHz.
+
+That smooth curve is what Chapter 75's Miller capacitor achieved, and it holds only for small signals. A large step drives the input stage out of its linear range, and then a different limit takes over.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Gain–bandwidth and noise gain</h2></div>
+
+Substitute the one-pole $A(f)$ into Chapter 77's closed-loop formula with feedback factor $\beta = 1/NG$:
+
+<Equation tex={String.raw`\frac{v_o}{v_i}\approx\frac{NG}{1+jf\,NG/f_t}\qquad\Rightarrow\qquad f_{CL}=\frac{f_t}{NG}`} label="CLOSED-LOOP BANDWIDTH"/>
+
+<ClosedLoopBodeFigure/>
+
+The closed-loop response is flat at the noise gain until it meets the open-loop curve, then follows it down. A 1 MHz op amp gives 1 MHz as a follower, 100 kHz at a gain of 10 and 10 kHz at 100. The relevant gain is the **noise gain**, not the signal gain: an inverter of gain −1 has noise gain 2 and half the bandwidth of a follower.
+
+Between the two curves lies the loop gain. At 10 kHz, a 1 MHz op amp has open-loop gain 100; at a noise gain of 10 the loop gain is only 10, so the gain error there is about 10%, not the 0.01% of DC. Accuracy at a frequency is set by the loop gain at that frequency.
+
+</section>
+
+<section id="slew">
+
+<div className="section-heading"><span>03</span><h2>Slew rate and full-power bandwidth</h2></div>
+
+When the input changes quickly by a large amount, the input stage steers its whole tail current into the compensation capacitor and can deliver no more (Chapter 75). The output then changes at a fixed maximum rate, the **slew rate** $SR = I_T/C_C$, whatever the input does. A sine of peak $V_{pk}$ has maximum slope $2\pi fV_{pk}$ at its zero crossings, so it passes cleanly only if
+
+<Equation tex={String.raw`2\pi f\,V_{pk}\le SR\qquad\Rightarrow\qquad f_{FP}=\frac{SR}{2\pi V_{pk}}`} label="FULL-POWER BANDWIDTH"/>
+
+<SlewDistortionFigure/>
+
+That answers the opening question. With $SR$ = 0.5 V/µs, a 10 mV sine needs only 0.003 V/µs at 50 kHz, and passes. A 2 V sine needs 0.63 V/µs and does not: its output becomes the lagging triangle in the figure. Small-signal bandwidth, 100 kHz at a gain of 10, said nothing about this.
+
+<FullPowerFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / WHICH LIMIT BITES?</span><h3>$f_t$ = 1 MHz, $SR$ = 0.5 V/µs, gain 10</h3>
+
+<p><strong>Small signal.</strong> Bandwidth $f_t/NG$ = 100 kHz.</p>
+
+<p><strong>Large signal.</strong> At 10 mV peak output the slew limit is 8 MHz (irrelevant); at 1 V peak it is 80 kHz; at 2 V peak, 40 kHz. So this amplifier can deliver 2 V peak only to 40 kHz, although its small-signal bandwidth is 100 kHz.</p>
+
+<p><strong>Margin.</strong> At exactly the slew limit the waveform is already distorted near its zero crossings. For low distortion keep the required slope well below $SR$, perhaps a factor of 3 to 10.</p>
+
+</div>
+
+</section>
+
+<section id="stability">
+
+<div className="section-heading"><span>04</span><h2>Phase margin and the second pole</h2></div>
+
+A real op amp has more poles above $f_t$: the output stage, the mirror, the nulling network. Each adds phase lag. The loop is stable if, at the frequency $f_c$ where $|T| = 1$, the loop phase has not reached −180°. The **phase margin** is the distance remaining:
+
+<Equation tex={String.raw`\mathrm{PM}=180^\circ+\arg T(jf_c)`}/>
+
+With one dominant pole and a second pole at $f_2$, the dominant pole contributes almost 90° and the second $\arctan(f_c/f_2)$. A lower noise gain puts $f_c$ higher, where the second pole has added more lag. So the same op amp is less stable at low gain:
+
+<PhaseMarginStepFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A DECOMPENSATED OP AMP</span><h3>$f_t$ = 1 MHz scale, second pole at 200 kHz</h3>
+
+<p><strong>As a follower</strong> ($NG$ = 1): the loop gain crosses unity at 425 kHz, where the second pole adds 65°, leaving <strong>25° of phase margin</strong>. A step overshoots by 49%.</p>
+
+<p><strong>At gain 10:</strong> crossing at 91 kHz, second-pole lag 24°, <strong>65° of margin</strong>, 4% overshoot. Higher noise gain stabilizes the loop by lowering the crossing frequency, at the cost of bandwidth.</p>
+
+<p>That is why some fast op amps are sold "decompensated", stable only above a minimum gain: they put the dominant pole higher to gain bandwidth, and rely on the user's noise gain for stability. To use one at low signal gain, raise the noise gain without raising the signal gain (Chapter 93).</p>
+
+</div>
+
+A rule of thumb links margin and response: 45° gives about 25% overshoot, 60° about 9%, 76° none. Capacitive loads add another pole through the op amp's output resistance and are the commonest cause of unexpected ringing; Chapter 93 is devoted to them.
+
+</section>
+
+<section id="settle">
+
+<div className="section-heading"><span>05</span><h2>Settling a step</h2></div>
+
+A large step settles in two phases. First the output slews at $SR$ until it is close to its final value; then the small-signal response takes over and the error decays as $e^{-t/\tau}$ with $\tau = 1/(2\pi f_{CL})$. To settle to a fraction $\epsilon$ of the step takes $\tau\ln(1/\epsilon)$: 4.6τ for 1%, 6.9τ for 0.1%, 9.2τ for 0.01%.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / 0.1% SETTLING OF A 5 V STEP</span><h3>Gain 10, $f_t$ = 1 MHz, $SR$ = 0.5 V/µs</h3>
+
+<p><strong>Slewing.</strong> The linear response could move at most about $5\text{ V}/\tau$ initially; with $\tau$ = 1.6 µs that is 3 V/µs, far above 0.5 V/µs. So the output slews, covering the first 4.2 V in about 8.4 µs.</p>
+
+<p><strong>Linear settling.</strong> Once the remaining error is small enough for the linear response, about $SR \cdot \tau$ = 0.8 V, it decays with $\tau$ = 1.6 µs. From 0.8 V to 5 mV (0.1% of 5 V) takes $\tau\ln(160)$ = 8.1 µs.</p>
+
+<p><strong>Total</strong> about 16.5 µs, compared with 11 µs for a small step. For a sample-and-hold or ADC driver, the large-signal number is the one that matters, and real parts add ringing, thermal tails and overload recovery that a two-phase model omits.</p>
+
+</div>
+
+<OpAmpLab kind="ac" client:load/>
+
+<p className="caption">Live lab. Single-pole op amp plus an adjustable second pole. Set the second pole to 200 kHz and the noise gain to 1, and look for peaking near the crossing: that is low phase margin. Raise the noise gain to 10 and watch the peaking disappear while the bandwidth falls. The slew-limit readout is independent of the small-signal curve.</p>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>06</span><h2>Measure the relevant form of speed</h2></div>
+
+**Small signals** (a few tens of millivolts) measure the linear response: bandwidth, peaking, settling. **Large steps** measure slewing, asymmetry between rising and falling edges, and overload recovery. **Real loads** change both: output current limits and a capacitive load's extra pole do not appear in an unloaded specification.
+
+**Frequency-dependent noise gain.** In transimpedance amplifiers (Chapter 87), integrators and filters, the feedback network contains capacitors, so the noise gain changes with frequency. Their stability must be analyzed by plotting $1/\beta(f)$ against $A(f)$; a single number does not suffice.
+
+**Simulation.** To measure phase margin in a simulator, break the loop without disturbing its DC operating point and compute the return ratio. A closed-loop step can confirm the damping but cannot by itself reveal every margin.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Small-signal bandwidth is $f_t/NG$; the largest clean sine is limited by $SR/2\pi f$; ringing is set by the phase margin at the loop crossing. <em>Check all three</em>, at the noise gain and amplitude you will actually use.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Can an amplifier pass a 10 mV sine cleanly but distort a 2 V sine at the same frequency?</summary>
+<div>
+
+Yes. Slew-rate limiting depends on the waveform's slope, $2\pi fV_{pk}$, which grows with amplitude. With 0.5 V/µs at 50 kHz, 10 mV needs 0.003 V/µs and passes; 2 V needs 0.63 V/µs and is slew-limited. Small-signal bandwidth is the same for both.
+
+</div>
+</details>
+
+<details>
+<summary>2. An inverting amplifier of gain −1 uses a 10 MHz op amp. What is its bandwidth?</summary>
+<div>
+
+Its noise gain is $1 + R_F/R_{IN}$ = 2, so the bandwidth is $f_t/2$ = **5 MHz**, half that of a follower built from the same op amp.
+
+</div>
+</details>
+
+<details>
+<summary>3. What full-power bandwidth does a 13 V peak output have with a 0.5 V/µs slew rate?</summary>
+<div>
+
+$SR/(2\pi V_{pk})$ = 0.5×10⁶/(2π × 13) ≈ **6.1 kHz**. Above that the full output swing is not available as an undistorted sine.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why can raising the noise gain stabilize an op amp?</summary>
+<div>
+
+The loop crosses unity at $f_t/NG$. A higher noise gain lowers that crossing frequency, where higher-frequency poles have added less phase lag, so the phase margin grows. The cost is bandwidth.
+
+</div>
+</details>
+
+<details>
+<summary>5. How long does 0.1% settling take for a small step at a closed-loop bandwidth of 100 kHz?</summary>
+<div>
+
+$\tau = 1/(2\pi × 100\text{ kHz})$ = 1.59 µs, and 0.1% needs $\ln 1000$ = 6.9 time constants: about **11 µs**, provided the step is small enough not to slew.
+
+</div>
+</details>
+
+<details>
+<summary>6. What is the difference between gain–bandwidth product and slew rate?</summary>
+<div>
+
+GBW describes the linear, small-signal response: how gain trades against frequency. Slew rate is a large-signal limit: the maximum rate of change of the output when the input stage saturates and charges the compensation capacitor with all its current. GBW is independent of amplitude; slew limiting appears only for large, fast signals.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§4.4.1, 4.9 and 5.8; Asadi, <em>Applied Op Amp Circuits</em>, chapters 4 and 6 (frequency response and slew rate); Huijsing, <em>Operational Amplifiers</em>, 3rd ed., chapter 7. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-ac-limits/practice/">Open practice →</a></div>

@@ -10,7 +10,8 @@
     "check:hosted": "node scripts/check-hosted.mjs",
     "preview": "astro preview --host 127.0.0.1",
     "test": "node --test tests/*.test.mjs",
-    "check:schematics": "node scripts/check-schematics.mjs"
+    "check:schematics": "node scripts/check-schematics.mjs",
+    "check:advanced": "node scripts/check-advanced.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "latest",

@@ -1,0 +1,210 @@
+import Equation from '../../components/Equation.astro';
+import {MosMirrorFigure} from '../../components/MosAnalogFigures';
+import {WideSwingCircuit,WideSwingOutputFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 63</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>Wide-swing cascode bias<br/><em>Give back the wasted threshold.</em></h1>
+
+<p className="dek">Choose the protected node's voltage deliberately rather than accepting whatever a diode stack provides, design the bias generator that makes the choice possible, and keep the cascode's output resistance down to about two overdrives.</p>
+
+<div className="chapter-meta"><span>45–65 min</span><span>Cascode mirror (Ch. 62)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">How low can the cascode's internal node go before the promised output resistance disappears?</p></div>
+
+<div>
+
+The standard cascode of Chapter 62 holds the lower device's drain at $V_T + u$, although that device only needs $u$. The extra threshold voltage is not required by the topology. It is an accident of the bias network, which stacks two diode-connected transistors.
+
+In a 5 V circuit nobody minds. At 1.8 V, a threshold of 0.5 V is more than a quarter of the supply. The wide-swing mirror keeps the same two output transistors but generates the cascode gate voltage separately, so that the internal node can sit just above $u$. The output's compliance falls from $V_T + 2u$ to about $2u$.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Separate signal devices from the bias generator → Design the output stack from its margins → Compare ideal and useful compliance → Generate the cascode bias → Include the missing circuit in the design → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Separate signal devices from the bias generator</h2></div>
+
+<MosMirrorFigure mode="wide"/>
+
+Start with the output stack alone. The lower device $M_2$ copies current from a reference that sets its gate to $V_T + u$. The upper device $M_4$ has its gate at a separately generated voltage $V_B$. The question is purely: what should $V_B$ be?
+
+$M_4$ carries the same current and has the same overdrive $u$, so its source settles one $V_{GS}$ below its gate: $V_X = V_B - V_T - u$. To put $V_X$ at $u$ plus a little margin $m$, set
+
+<Equation tex={String.raw`V_B=V_T+2u+m\qquad\Rightarrow\qquad V_X=u+m`}/>
+
+Why not use the standard four-transistor reference and just lower its $V_B$? In that network the cascode reference device sits on a diode-connected $M_1$ whose drain is fixed at $V_T + u$. Lowering $V_B$ would demand that the upper reference device's source go to $u$, which conflicts with $M_1$'s diode connection. The bias must come from a different network.
+
+</section>
+
+<section id="derive">
+
+<div className="section-heading"><span>02</span><h2>Design the output stack from its margins</h2></div>
+
+Work from the bottom up. Choose the current; the geometries give the two overdrives $u_1$ (lower) and $u_2$ (upper); then place the internal node and the gate bias:
+
+<Equation tex={String.raw`V_X=u_1+m,\qquad V_B=V_X+V_{T2}+u_2,\qquad V_{OUT,\min}=u_1+u_2+m`} label="WIDE-SWING DESIGN EQUATIONS"/>
+
+With equal overdrives and zero margin the theoretical minimum is $2u$: one overdrive for each transistor, no threshold. Do not design for zero margin. Exactly $V_X = u$ puts $M_2$ on its saturation edge, and threshold spread, temperature and the output's own signal swing will push it into triode, where its output resistance collapses. Typical margins are 50–150 mV.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / UNEQUAL OVERDRIVES</span><h3>$u_1$ = 0.2 V, $u_2$ = 0.3 V, $V_{T2}$ = 0.8 V, $m$ = 0.1 V</h3>
+
+<p>$V_X$ = 0.2 + 0.1 = <strong>0.3 V</strong>. $V_B$ = 0.3 + 0.8 + 0.3 = <strong>1.4 V</strong>. The output works down to 0.2 + 0.3 + 0.1 = <strong>0.6 V</strong>.</p>
+
+<p>A standard cascode with the same devices would hold $V_X$ at $V_{T1} + u_1$ = 1.0 V (taking $V_{T1}$ = 0.8 V too) and need the output above 1.3 V. The wide-swing version gains 0.7 V, which is $V_T - m$. Note that the upper device's threshold still appears in $V_B$, the gate bias, but no longer in the output's compliance.</p>
+
+</div>
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>03</span><h2>Compare ideal and useful compliance</h2></div>
+
+Take $V_T$ = 0.7 V, $k$ = 8 mA/V² for both output devices and $m$ = 0.1 V:
+
+| Current | $u$ | $V_X$ | $V_B$ | Wide-swing $V_{OUT,\min}$ | Standard $V_{OUT,\min}$ |
+|---|---|---|---|---|---|
+| 0.25 mA | 0.250 V | 0.350 V | 1.300 V | 0.600 V | 1.200 V |
+| 0.50 mA | 0.354 V | 0.454 V | 1.507 V | 0.807 V | 1.407 V |
+| 1.00 mA | 0.500 V | 0.600 V | 1.800 V | 1.100 V | 1.700 V |
+
+The useful improvement is $V_T - m$ = 0.6 V at every current. It does not depend on the overdrive, because it is the threshold the standard bias wastes. The sweep below confirms that the flat, high-resistance region really does begin about 0.6 V lower:
+
+<WideSwingOutputFigure/>
+
+The 3% offset in the wide-swing curve is a lesson in itself. The lower output device runs at $V_{DS}$ ≈ 0.36 V. If its gate is generated by a plain diode-connected reference running at $V_{DS} = V_{GS}$ ≈ 0.95 V, channel-length modulation ($\lambda$ = 0.05 V⁻¹) makes the two currents differ by $0.05 × 0.59$ ≈ 3%. The cascode has made the output current independent of the **output** voltage, but the copy is still taken at the wrong drain voltage. The complete circuit fixes this too.
+
+</section>
+
+<section id="bias">
+
+<div className="section-heading"><span>04</span><h2>Generate the cascode bias</h2></div>
+
+<WideSwingCircuit/>
+
+The complete circuit adds two things to the output stack.
+
+**A replica that makes $V_B$.** A diode-connected device carrying the reference current, with one quarter of the output devices' $k$, has overdrive $\sqrt{2I/(k/4)} = 2u$, so it generates $V_T + 2u$, the zero-margin $V_B$. To include a margin $m$, make it a little smaller still:
+
+<Equation tex={String.raw`k_5=\frac{2I_{REF}}{(2u+m)^2}`}/>
+
+**A cascoded reference branch.** $M_3$, with its gate also at $V_B$, sits on top of $M_1$, and $M_1$'s gate is connected to $M_3$'s **drain**, not its own. Feedback around this loop adjusts the gate until $M_1$ carries $I_{REF}$ at $V_{DS1} = V_X$, exactly the drain voltage $M_2$ sees. The copy is now taken at the right drain voltage, and the 3% offset of the figure in section 03 disappears.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / SIZE THE REPLICA</span><h3>0.25 mA, $k$ = 8 mA/V², $V_T$ = 0.7 V, $m$ = 0.1 V</h3>
+
+<p>Output devices: $u$ = 0.25 V. The replica must have overdrive $2u + m$ = 0.6 V at 0.25 mA, so $k_5$ = 0.5 mA / 0.36 V² = <strong>1.39 mA/V²</strong>, about $k/5.8$. The zero-margin choice $k/4$ = 2 mA/V² would give 0.5 V of overdrive and $V_X$ = 0.25 V, right on the edge.</p>
+
+<p>Check $M_3$, the reference cascode: its source is at $V_X$ = 0.35 V and its drain at $M_1$'s gate voltage, $V_T + u$ = 0.95 V, so $V_{DS3}$ = 0.6 V against $u$ = 0.25 V. It is saturated with margin.</p>
+
+<p><strong>Body effect.</strong> If the upper bodies are grounded, $M_4$'s threshold at $V_X$ = 0.35 V rises by $0.4(\sqrt{0.95} - \sqrt{0.6})$ = 0.08 V for $\gamma$ = 0.4 √V and $2\phi_F$ = 0.6 V. The replica's body effect is different, because its source is at ground. Unless the replica is modified (for example, by stacking it on a small device that lifts its source), $V_X$ drops by the 0.08 V shift and most of the 0.1 V margin is gone.</p>
+
+</div>
+
+<div className="margin-note">
+
+**A low-voltage design.** In a 1.8 V process with $V_T$ = 0.45 V, biasing at $u$ = 0.11 V (50 µA with $k$ = 8 mA/V²) and $m$ = 0.1 V gives a wide-swing compliance of 0.32 V. A standard cascode would need 0.67 V. On a 1.8 V rail, those 0.35 V are a fifth of the supply, and often the difference between a design that works and one that does not.
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>Include the missing circuit in the design</h2></div>
+
+A voltage label on a drawing is not a bias circuit. Every wide-swing design must answer:
+
+- **Where does $V_B$ come from?** An independent reference, a self-biased replica as above, or a feedback servo that measures $V_X$ directly. Each has different tracking with temperature and process.
+- **Does the replica track?** It must see the same current density, temperature and, ideally, body voltage as the device it imitates. A replica at a different current density does not track threshold drift correctly.
+- **Is there a start-up problem?** If the reference current is itself derived from the bias network, an all-zero state may be stable.
+- **What does the bias cost?** The replica and the cascoded reference each carry a reference current. In a low-power design, the bias network can draw as much as the signal path.
+
+Margin is a trade, too. More margin protects the output resistance against variation but gives back swing. Wider devices lower $u$ at fixed current but add capacitance and area. Lower current improves compliance and output resistance, but slows the circuit.
+
+Finally, verify: sweep supply, temperature and mismatch, and report the internal-node margin $V_X - u_1$ explicitly, not just the output current. Only where that margin is positive does the Chapter 62 output-resistance formula apply.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A cascode needs only $2u$ of headroom; the standard bias wastes a threshold besides. Generate $V_B = V_T + 2u + m$ with a replica, <em>cascode the reference too</em>, and audit the margin at node X.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. What sets the minimum internal-node voltage $V_X$, and what happens below it?</summary>
+<div>
+
+The lower device needs $V_{DS} \ge u_1$ to stay saturated. Below that it enters triode, its output resistance falls from $r_o$ to a few hundred ohms, and the cascode's multiplication $g_mr_o \cdot r_{o1}$ collapses because $r_{o1}$ has collapsed. That is the answer to the opening question: $V_X$ can go down to about $u_1$, and no further.
+
+</div>
+</details>
+
+<details>
+<summary>2. An output device has $k$ = 8 mA/V² at 0.5 mA. What replica $k$ doubles its overdrive?</summary>
+<div>
+
+Overdrive scales as $1/\sqrt k$ at fixed current, so doubling it needs a quarter of the $k$: **2 mA/V²**. The output overdrive is 0.354 V, the replica's 0.707 V.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does the improvement over a standard cascode equal $V_T - m$, independent of current?</summary>
+<div>
+
+The standard bias holds $V_X$ at $V_T + u$; the wide-swing bias holds it at $u + m$. The difference is $V_T - m$, and both output compliances are $V_X + u$, so the output gains the same amount. The overdrive cancels.
+
+</div>
+</details>
+
+<details>
+<summary>4. Why is $M_1$'s gate connected to $M_3$'s drain rather than to its own drain?</summary>
+<div>
+
+So that $M_1$ operates at the same drain voltage as $M_2$. With $M_3$ biased like $M_4$, $M_1$'s drain sits at $V_X$, and the loop sets $M_1$'s gate to whatever gives $I_{REF}$ at that drain voltage. A plain diode-connected $M_1$ would run at $V_{DS} = V_{GS}$, and channel-length modulation would make the copy a few percent wrong.
+
+</div>
+</details>
+
+<details>
+<summary>5. A 1.8 V supply must support a 1.5 V cascode bias node and a reference generator that needs 0.4 V of compliance. Is it feasible?</summary>
+<div>
+
+No. The generator alone needs 1.5 + 0.4 = 1.9 V. The output stack's compliance being low does not establish feasibility; every bias branch must fit under the supply too.
+
+</div>
+</details>
+
+<details>
+<summary>6. Why does body effect threaten a wide-swing design more than a standard one?</summary>
+<div>
+
+The wide-swing design deliberately leaves only a small margin $m$, often 0.1 V. A body-effect threshold shift of the same size in the cascode device, not mirrored by the replica, can consume all of it. A standard cascode wastes a whole threshold of margin and tolerates such shifts easily.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Huijsing, <em>Operational Amplifiers</em>, 3rd ed., §7.4 (low-voltage CMOS bias); Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §3.2. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-wide-swing-mirror/practice/">Open practice →</a></div>

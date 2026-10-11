@@ -1,0 +1,215 @@
+import Equation from '../../components/Equation.astro';
+import {MosMirrorFigure} from '../../components/MosAnalogFigures';
+import {MosCases} from '../../components/MosAnalogLabs';
+import {CascodeNodeFigure,CascodeOutputFigure,CascodeRoutFigure} from '../../components/MosStudyFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 62</span><span className="hairline"/>MOSFET CIRCUIT STUDIES</div>
+
+<h1>The cascode current mirror<br/><em>Hold the copying transistor's drain still.</em></h1>
+
+<p className="dek">Stack a second pair of transistors on a mirror so that the output voltage can no longer reach the copying device. Derive the hundredfold rise in output resistance, then pay for it in compliance, and audit what cascoding does not fix.</p>
+
+<div className="chapter-meta"><span>50–70 min</span><span>Basic mirror (Ch. 59) · Degeneration (Ch. 61)</span></div>
+
+</div>
+
+<div className="opening-grid">
+
+<div><span className="tiny-label">PREDICT BEFORE CALCULATING</span><p className="opening-question">Adding a transistor above a current sink raises its output resistance a hundredfold. Does it also lower the minimum output voltage?</p></div>
+
+<div>
+
+Chapter 59 found the simple mirror's main systematic error: its output transistor sees a different drain voltage from its reference, and channel-length modulation turns that difference into a current error. Chapter 61 reduced the effect with a source resistor, at the cost of a resistor drop.
+
+The cascode attacks the cause directly. Put a second transistor in series above the output device, with its gate held at a fixed voltage. That transistor acts as a common-gate stage: its source, which is the lower device's drain, barely moves however much the output moves. The copying transistor's drain is shielded, so its current stops depending on the load.
+
+</div>
+
+</div>
+
+<div className="learning-map">
+
+<span className="tiny-label">THE PATH THROUGH THIS CHAPTER</span><p>Identify the two feedback jobs → Derive output resistance → Derive compliance, separately → Compare three current budgets → Audit start-up, loading and mismatch → Check your understanding.</p>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Identify the two feedback jobs</h2></div>
+
+<MosMirrorFigure mode="cascode"/>
+
+Four transistors do two jobs. The lower pair, $M_1$ and $M_2$, is an ordinary mirror: it copies the current. The upper pair, $M_3$ and $M_4$, copies a **voltage**: it makes $M_2$'s drain voltage $V_X$ equal to $M_1$'s.
+
+The trick is in the reference stack. $M_1$ is diode connected, so its drain sits at $V_{GS}$. $M_3$, also diode connected, sits on top of it, so its gate is at $V_B = 2V_{GS}$. $M_4$ has that same gate voltage and carries the same current, so it has the same $V_{GS}$ as $M_3$, which puts its source at $V_B - V_{GS} = V_{GS}$. Now $M_2$ and $M_1$ have equal gate, source **and** drain voltages, and the drain-voltage error of Chapter 59 vanishes.
+
+<CascodeNodeFigure/>
+
+Assumptions: matched long-channel devices, each body tied to its own source, negligible gate current, and a reference source with enough headroom to deliver its current at $V_B$. If the upper devices' bodies are grounded instead, their thresholds rise with $V_X$; both rise equally, so $V_X$ still matches, but $V_B$ and the output compliance go up by the threshold shift (about 0.34 V at $V_X$ = 1.5 V with $\gamma$ = 0.5 √V).
+
+</section>
+
+<section id="rout">
+
+<div className="section-heading"><span>02</span><h2>Derive output resistance</h2></div>
+
+Hold both gate lines at AC ground and push a test current $i$ into the output. Call the lower output device's output resistance $r_{o1}$ and the upper device's $r_{o2}$ and $g_{m2}$.
+
+1. The lower device has a fixed gate, so it is just a resistance $r_{o1}$. The test current raises its drain to $v_x = i\,r_{o1}$.
+2. The upper device's source rose by $v_x$ while its gate stayed fixed, so $v_{gs2} = -v_x$ and its controlled source pulls $g_{m2}v_x$ **opposite** to $i$.
+3. KCL at the output: $i = -g_{m2}v_x + (v_{out} - v_x)/r_{o2}$. Solve for $v_{out}$:
+
+<Equation tex={String.raw`R_{out}=\frac{v_{out}}{i}=r_{o1}+r_{o2}+g_{m2}r_{o1}r_{o2}\;\approx\;(g_{m2}r_{o2})\,r_{o1}`} label="CASCODE OUTPUT RESISTANCE"/>
+
+The cascode multiplies the lower device's resistance by the upper device's **intrinsic gain** $g_mr_o$, typically 20 to 1000. Compare Chapter 61's source degeneration, which multiplied $r_o$ by $1 + g_mR_S$. A cascode is degeneration in which the "source resistor" is the lower transistor's own $r_{o1}$, a very large resistance that costs only one overdrive of DC voltage.
+
+If the upper device's body is grounded, replace $g_{m2}$ by $g_{m2} + g_{mb2}$: the body effect helps here.
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / HOW MUCH BETTER?</span><h3>1 mA, $k$ = 2 mA/V², $\lambda$ = 0.02 V⁻¹</h3>
+
+<p>Each device has $g_m$ = 2 mS and $r_o$ ≈ 50 kΩ. A simple mirror has $R_{out}$ = 50 kΩ. The cascode has 50 k + 50 k + (2 mS)(50 k)(50 k) = <strong>5.1 MΩ</strong>, a hundred times more.</p>
+
+<p>A 1 V change at the output changes the simple mirror's current by 1 V / 50 kΩ = 20 µA (2%), and the cascode's by 1 V / 5.1 MΩ = 0.20 µA (0.02%). A full numerical solution of the four-transistor circuit gives 5.7 MΩ; the difference comes from using $1/\lambda I_D$ rather than the exact $r_o$.</p>
+
+</div>
+
+</section>
+
+<section id="compliance">
+
+<div className="section-heading"><span>03</span><h2>Derive compliance, separately</h2></div>
+
+Output resistance and output swing are different calculations, and the cascode improves the first by sacrificing the second. Both output devices must stay in saturation:
+
+- $M_2$ needs $V_X \ge u$. The bias actually holds $V_X$ at $V_T + u$, a full threshold more than necessary.
+- $M_4$ needs $V_{OUT} - V_X \ge u$.
+
+Together:
+
+<Equation tex={String.raw`V_{OUT,\min}=V_X+u=V_T+2u,\qquad V_B=2(V_T+u)`} label="STANDARD CASCODE COMPLIANCE"/>
+
+<CascodeOutputFigure/>
+
+So the answer to the opening question is no. The cascode makes the minimum output voltage **worse**: $V_T + 2u$ instead of $u$. At 0.25 mA in our example that is 2.0 V instead of 0.5 V. Of the extra 1.5 V, one overdrive is the unavoidable price of a second transistor in saturation; the threshold voltage is pure waste, there only because the simple diode stack puts $V_X$ a threshold higher than $M_2$ needs. Chapter 63 recovers it.
+
+<div className="margin-note">
+
+**Two numbers, two questions.** $R_{out}$ answers "how much does the current change if the output moves a little, while everything is in saturation?" Compliance answers "how far can the output move before something leaves saturation?" A designer needs both, and a spectacular resistance is worthless over a voltage range the circuit cannot reach.
+
+</div>
+
+</section>
+
+<section id="cases">
+
+<div className="section-heading"><span>04</span><h2>Compare three current budgets</h2></div>
+
+The table uses $k$ = 2 mA/V², $V_T$ = 1 V, $\lambda$ = 0.02 V⁻¹, $g_m = ku$ and $r_o \approx 1/(\lambda I_D)$. The last column is $g_mR_{out}$, the gain this current source would give as the load of an amplifier with an identical input device and no external load:
+
+<MosCases kind="cascode"/>
+
+| Current | $u$ | $V_{OUT,\min} = V_T + 2u$ | $V_B$ | Simple-mirror minimum |
+|---|---|---|---|---|
+| 0.25 mA | 0.500 V | 2.00 V | 3.00 V | 0.50 V |
+| 0.5 mA | 0.707 V | 2.41 V | 3.41 V | 0.71 V |
+| 1 mA | 1.000 V | 3.00 V | 4.00 V | 1.00 V |
+
+Lower current raises $R_{out}$ steeply but lowers $g_m$, and the headroom cost falls with $u$. Plotted against current, the two output resistances run parallel on log axes, separated by the intrinsic gain:
+
+<CascodeRoutFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / WILL IT FIT IN 3.3 V?</span><h3>Choose the current for a 3.3 V supply</h3>
+
+<p>The reference stack needs $V_B = 2(V_T + u)$, plus headroom for whatever generates $I_{REF}$, say 0.3 V for a PMOS source. At 1 mA that is 4.0 + 0.3 = 4.3 V: impossible. At 0.25 mA it is 3.0 + 0.3 = 3.3 V: exactly the rail, with no margin for threshold spread.</p>
+
+<p>To fit comfortably you would cut the overdrive. At $u$ = 0.2 V (40 µA with this $k$), $V_B$ = 2.4 V and the output works down to 1.4 V. That still leaves the output only 1.9 V of the 3.3 V rail. The standard cascode is a 5 V circuit; low-voltage designs use the wide-swing bias of Chapter 63.</p>
+
+</div>
+
+</section>
+
+<section id="limits">
+
+<div className="section-heading"><span>05</span><h2>Audit start-up, loading and mismatch</h2></div>
+
+**Mismatch is not cascoded away.** The cascode removes the error caused by **drain voltage**. A threshold mismatch between $M_1$ and $M_2$ still gives $-2\Delta V_T/u$: 5 mV at 0.5 V overdrive is a 2% error, no matter how large $R_{out}$ is. Mismatch between $M_3$ and $M_4$ only shifts $V_X$ slightly, which matters little.
+
+**Bias errors cost margin.** If $V_B$ is low, $V_X$ is low and $M_2$ loses saturation margin; if it is high, the output compliance rises. In the self-biased stack both track automatically, which is its main virtue.
+
+**Frequency.** The internal node $X$ has capacitance to ground ($C_{db}$ of $M_2$, $C_{gs}$ of $M_4$). Above roughly $g_{m4}/(2\pi C_X)$, the upper device can no longer hold $V_X$ still, and the output impedance falls toward that of the simple mirror. The pole is usually high, but it must be included in any feedback loop using this current source.
+
+**Verify by sweeping.** Sweep the output voltage and record every device's saturation margin $V_{DS} - u$. Quote the output resistance only over the range where all margins are positive.
+
+<div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A cascode multiplies output resistance by the intrinsic gain $g_mr_o$ <em>and costs at least one more overdrive of swing</em>; the simple diode-stack bias wastes a threshold besides.</p></div>
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+<details>
+<summary>1. Find the cascode output resistance for $g_m$ = 1 mS and both $r_o$ = 100 kΩ. How much does the current change for a 0.5 V output step?</summary>
+<div>
+
+$R_{out}$ = 100 k + 100 k + (1 mS)(100 k)(100 k) = **10.2 MΩ**. The current changes by 0.5 V / 10.2 MΩ ≈ **49 nA**, compared with 5 µA for a simple mirror with the same $r_o$.
+
+</div>
+</details>
+
+<details>
+<summary>2. With $V_T$ = 0.7 V and $u$ = 0.3 V, what are the standard cascode's output compliance and upper gate bias?</summary>
+<div>
+
+$V_X = V_T + u$ = 1.0 V, $V_{OUT,\min} = V_X + u$ = **1.3 V**, and $V_B = 2(V_T + u)$ = **2.0 V**. A simple mirror would work down to 0.3 V. Leave margin for threshold spread before choosing the supply.
+
+</div>
+</details>
+
+<details>
+<summary>3. Why does the cascode multiply $r_o$ by $g_mr_o$ rather than by a fixed number?</summary>
+<div>
+
+When the output rises, the lower device's drain $X$ starts to rise. That rise reduces the upper device's $V_{GS}$, so it fights back with a current $g_mv_x$. The upper device acts as a feedback amplifier with gain $g_mr_o$ that holds node $X$ still, so the output must move $g_mr_o$ times further to produce the same current change.
+
+</div>
+</details>
+
+<details>
+<summary>4. A lower output device has a threshold 5 mV higher than its reference, at $u$ = 0.5 V. Does the cascode reduce the error?</summary>
+<div>
+
+No. The error is $-2\Delta V_T/u$ ≈ −2% regardless of cascoding, because it comes from unequal devices at equal voltages, not from unequal drain voltages. Fix it with larger devices, larger overdrive or degeneration.
+
+</div>
+</details>
+
+<details>
+<summary>5. Which part of the cascode's extra headroom is unavoidable, and which part is waste?</summary>
+<div>
+
+The upper device needs one overdrive across it to stay saturated: that is unavoidable. The lower device needs only $u$ at its drain, but the diode stack holds it at $V_T + u$. The extra threshold voltage is waste, caused by the bias scheme rather than by the topology. Biasing $V_B$ lower recovers it (Chapter 63).
+
+</div>
+</details>
+
+<details>
+<summary>6. Why does the cascode's output resistance fall at high frequency?</summary>
+<div>
+
+Holding node $X$ still requires the upper device to absorb the current that the output pushes through capacitance at $X$. Above about $g_m/(2\pi C_X)$, that capacitance shunts the lower device's $r_o$, so the effective degeneration falls and the output resistance drops toward that of a single transistor.
+
+</div>
+</details>
+
+</section>
+
+<p className="reference">Further reading: Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§2.4.4 and 3.2; Huijsing, <em>Operational Amplifiers</em>, 3rd ed., §7.4. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+
+<div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/mos-cascode-mirror/practice/">Open practice →</a></div>
