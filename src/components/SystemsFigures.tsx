@@ -43,3 +43,10 @@ export function MatchCircuit(){return <Figure caption="Low-pass L match from a 5
  <S.Res a={[460,70]} b={[460,190]} label="R_L" value="200 Ω"/>
  <S.Wire pts={[[80,190],[280,190],[460,190]]}/><S.Terminal at={[80,190]} label="Return"/><S.Ground at={[280,190]}/><S.Dot at={[280,70]}/><S.Dot at={[280,190]}/>
  </S.Schematic></Figure>;}
+
+export function LadderCircuit(){return <Figure caption="Four-bit voltage-mode R–2R ladder. Bottom terminals are ideal bit-controlled 0 V / Vref sources; the switches and reference source are omitted. A final 2R terminates the ladder."><S.Schematic width={720} height={285} description="Four rungs of 2R driven by bits, three series R resistors, and a final 2R termination to ground.">
+ <S.Terminal at={[40,70]} label="V_o" side="above"/><S.Wire pts={[[40,70],[100,70]]}/>
+ {[100,250,400].map((x,i)=><S.Res key={'h'+i} a={[x,70]} b={[x+150,70]} label="R"/>)}
+ {[100,250,400,550].map((x,i)=><g key={'b'+i}><S.Res a={[x,70]} b={[x,210]} label="2R"/><S.Terminal at={[x,210]} label={'b_'+(3-i)} side="below"/><S.Dot at={[x,70]}/><S.Text x={x} y={267} anchor="middle" kind="value">0 V / V_ref</S.Text></g>)}
+ <S.Res a={[550,70]} b={[680,70]} label="2R"/><S.Ground at={[680,70]}/>
+ </S.Schematic></Figure>;}

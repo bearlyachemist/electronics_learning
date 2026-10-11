@@ -4685,5 +4685,48 @@
       ]
     ],
     "sources": "The Art of Electronics, §§13.8–13.9; ADI MT-022 and MT-023"
+  },
+  "dac-architectures-output": {
+    "title": "Reconstruction speed versus PWM ripple",
+    "setup": "3.3 V PWM, 100 kHz, half duty, first-order RC. Use small-ripple approximation and 1% step settling.",
+    "equation": "\\Delta V\\simeq0.825/(100000\\tau),\\qquad t_{1\\%}=\\ln100\\,\\tau",
+    "columns": [
+      "Time constant",
+      "Approximate ripple",
+      "1% settling"
+    ],
+    "rows": [
+      [
+        "0.1 ms",
+        "82.5 mV",
+        "0.4605 ms"
+      ],
+      [
+        "1 ms",
+        "8.25 mV",
+        "4.605 ms"
+      ],
+      [
+        "10 ms",
+        "0.825 mV",
+        "46.05 ms"
+      ]
+    ],
+    "analysis": [
+      "A decade more filtering lowers periodic ripple tenfold but slows first-order response tenfold.",
+      "Increasing timer resolution can lower PWM frequency, reversing some apparent benefit unless the timing clock also changes."
+    ],
+    "limits": "The approximation is least exact for the smallest time constant; the exact periodic exponential expression is available in the reading.",
+    "connections": [
+      [
+        "/opamp-transimpedance/",
+        "Current-output conversion"
+      ],
+      [
+        "/sampling-converter-errors/",
+        "Code and spectral budgets"
+      ]
+    ],
+    "sources": "The Art of Electronics, §§13.2–13.4; ADI DAC tutorials; original PWM example"
   }
 }

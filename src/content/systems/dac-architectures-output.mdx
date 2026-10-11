@@ -1,0 +1,121 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot,PowerCircuit,MatchCircuit,LadderCircuit} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 110</span><span className="hairline"/>DATA CONVERTERS</div>
+
+<h1>DAC architectures and analog output design<br/><em>A digital number still needs an analog current path.</em></h1>
+
+<p className="dek">Compare string, weighted, R–2R, current-steering, segmented, capacitive and oversampling DACs, then derive loading, glitches, PWM filtering and reconstruction behavior.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="scale">
+
+<div className="section-heading"><span>01</span><h2>Define the voltage or current represented by a code</h2></div>
+
+An ideal unipolar DAC often follows $V_o=V_{ref}D/2^N$ for code D from 0 to $2^N-1$. Maximum code is one step below the reference, not equal to it. Some devices use another endpoint convention, programmable gains or bipolar ranges; read the transfer equation. Offset, gain error, INL and DNL affect the analog output independently of the number of bits loaded into a register.
+
+<Equation tex={String.raw`V_o=V_{ref}\frac{D}{2^N},\qquad q=\frac{V_{ref}}{2^N},\qquad DNL_k=\frac{V_{k+1}-V_k}{q}-1`}/>
+For a DAC, DNL greater than −1 makes each step positive and ensures monotonicity under that definition. A −1 step is flat; below −1 the output reverses at a code transition. Monotonicity matters in feedback control because an increasing command should not produce a decreasing actuator voltage. It does not ensure small INL or accurate absolute volts.
+
+For 12 bits and 4.096 V reference, one step is 1 mV and code 3000 ideally gives 3.000 V. A 0.05% reference error produces 1.5 mV at that code, while an additive 2 mV buffer offset affects every code. Calibrating both endpoints can correct a repeatable line, but not arbitrary code-dependent errors or later drift. Check zero-scale and full-scale output headroom under the actual load.
+
+</section>
+
+<section id="string">
+
+<div className="section-heading"><span>02</span><h2>Use positive resistor increments for monotonic taps</h2></div>
+
+A resistor-string DAC divides a reference across a chain and selects one tap with switches. With equal segments, taps rise in equal increments. Positive segment resistances make the unloaded tap sequence inherently ordered even if their values vary, so resistor mismatch changes spacing and INL without the binary major-carry problem.
+
+A simple N-bit string needs roughly $2^N$ segments and a tap-selection network. That becomes large at high resolution. The reference supplies string current continuously, and output resistance depends on the selected tap. For total string resistance $R_T$ and fractional tap position $x$, the tap's Thevenin resistance is approximately $R_Tx(1-x)$, reaching $R_T/4$ near midpoint.
+
+<Equation tex={String.raw`R_{out}=R_Tx(1-x),\qquad V_{loaded}=V_{tap}\frac{R_L}{R_L+R_{out}}`}/>
+With a 40 kΩ string, midpoint impedance is 10 kΩ. A 100 kΩ load reduces a nominal 2 V midpoint to 1.818 V. A buffer removes much of that loading but adds offset, noise, bias current, settling and output-drive limits. Switch resistance and charge injection also contribute. Segmented or buffered-string variants manage these tradeoffs rather than making them vanish.
+
+</section>
+
+<section id="binary">
+
+<div className="section-heading"><span>03</span><h2>Derive binary weighting and the R–2R ladder</h2></div>
+
+Binary-weighted currents or resistors sum bit contributions in powers of two. The ideal mathematics is efficient: only N controlled weights are needed. The challenge is maintaining a large weight ratio and matched drift. At a major carry, several small contributions turn off as a larger one turns on, so mismatch can make the net step negative.
+
+For a 12-bit ideal current DAC, the MSB is 2048 unit currents and all lower bits sum to 2047. If the MSB weight is low by 0.1%, it is only 2045.952 units. The transition from code 2047 to 2048 then falls by 1.048 units even though every individual current source remains positive. Resolution alone does not imply monotonicity.
+
+An R–2R ladder avoids extreme resistor values by recursively dividing currents or voltages using only R and 2R. In the voltage-mode ladder shown, the far-right 2R termination parallels the last 2R rung to make R. Adding the preceding series R gives 2R, which parallels its rung to make R again. This recursion makes each leftward division one half.
+
+<LadderCircuit/>
+
+<Equation tex={String.raw`V_o=V_{ref}\left(\frac{b_{N-1}}2+\frac{b_{N-2}}4+\cdots+\frac{b_0}{2^N}\right)`}/>
+For four bits, 1011 gives $V_{ref}(1/2+1/8+1/16)=11V_{ref}/16$. This ideal voltage-mode topology has output resistance R when all ideal bit sources are set to zero. Ratios, switch resistance and parasitic capacitance disturb the recursion. Integrated ratio matching is generally much better than assembling nominal 1% resistors, whose independent errors can swamp a many-bit target.
+
+A current-mode R–2R DAC steers ladder currents into a node held near a specified voltage, often a transimpedance amplifier's summing node. It has different reference and output impedances from the voltage-mode ladder. A multiplying DAC permits a varying reference signal and produces a code-scaled version of it, subject to reference range, bandwidth, feedthrough and output compliance. Two- or four-quadrant operation depends on the permitted reference and output polarities, not merely on signed software arithmetic.
+
+</section>
+
+<section id="steering">
+
+<div className="section-heading"><span>04</span><h2>Trade unit elements, segmentation and switching error</h2></div>
+
+A current-steering DAC switches current sources between output branches. High-speed designs can avoid a slow voltage buffer and deliver current directly into a defined load or transformer. Compliance specifies the output-voltage range over which the current sources remain sufficiently accurate. Exceeding it changes current and distortion even when the digital code is correct.
+
+Thermometer coding uses unit sources, turning on one additional element for each increment. It avoids a binary carry that changes many weighted elements together, but full decoding grows exponentially. A segmented DAC thermometer-codes upper bits and binary-codes lower bits, trading element count against matching and glitch behavior. Layout and switching symmetry matter to dynamic performance; static trim does not automatically correct timing mismatch.
+
+If nominally simultaneous switches move at different times, a major-carry transition can briefly select a very wrong output. Define glitch impulse area $A_g=\int[v_o(t)-v_{ideal}(t)]dt$ using the measurement's convention. A narrow 1 nV·s impulse passed through a first-order filter with 100 μs time constant has a roughly 10 μV initial-response scale. If identical signed impulses recur at 100 kHz, their DC average contribution is about 100 μV. Sign cancellation and actual waveform determine the exact result.
+
+<Equation tex={String.raw`V_{glitch,avg}=A_gf_{update},\qquad V_{impulse,initial}\simeq A_g/\tau`}/>
+Capacitive DACs redistribute charge rather than continuous resistor current. They are natural inside SAR converters, and can be used in refreshed or specialized standalone outputs. Leakage, refresh, switching and buffer behavior determine how a DC output is held. Delta–sigma DACs interpolate and noise-shape digital data into a lower-bit high-rate stream, then reconstruct analog voltage. Multi-bit feedback/output element matching and clock jitter remain analog concerns.
+
+</section>
+
+<section id="output">
+
+<div className="section-heading"><span>05</span><h2>Design the buffer and reconstruction filter</h2></div>
+
+A voltage output must settle under the actual resistive/capacitive load. A current output needs a compliance-preserving load or I/V amplifier; its output capacitance and code-dependent impedance can alter amplifier noise gain and stability. Reserve output swing and current for the largest step, not only a small sine. A DAC with 1 μs nominal settling to 0.1% has not established half-code settling for a 16-bit requirement.
+
+The held output sequence produces spectral images. An ideal zero-order hold has a sinc magnitude envelope:
+
+<Equation tex={String.raw`H_{ZOH}(f)=e^{-j\pi f/f_s}\frac{\sin(\pi f/f_s)}{\pi f/f_s}`}/><SystemsPlot kind="dac"/>
+At $f=0.1f_s$, hold droop is about −0.143 dB; at $0.4f_s$, about −2.42 dB. Images around multiples of update rate require a reconstruction filter. Interpolation raises the internal rate and can ease analog filtering; inverse-sinc correction can compensate some in-band droop, but consumes headroom and does not remove all images or DAC nonlinearities.
+
+Settling is a time-domain requirement; reconstruction is a frequency-domain requirement. A very narrow filter can clean a waveform while slowing a control command unacceptably. Include filter group delay, ringing and overload recovery. Reference noise scales with code; buffer offset does not. Digital feedthrough, clock edges and shared return impedance can create spurs unrelated to ideal quantization noise.
+
+Synchronize updates when several DAC channels must change together. A shadow register and common latch prevent intermediate command states, but channel-to-channel analog settling can still differ. At startup choose a safe default code, verify reference readiness and define behavior during communication loss.
+
+</section>
+
+<section id="pwm">
+
+<div className="section-heading"><span>06</span><h2>Derive the limits of a PWM substitute</h2></div>
+
+PWM followed by a low-pass produces an average proportional to duty: $V_o\approx DV_{logic}$. Its reference is the logic-high level, including driver drop and supply noise, unless a more controlled switching reference is used. Timer resolution, pulse timing and analog filtering all matter.
+
+For a first-order RC with time constant $\tau$, period T and high fraction D, periodic steady-state ripple is:
+
+<Equation tex={String.raw`\Delta V_{pp}=V_H\frac{(1-e^{-DT/\tau})(1-e^{-(1-D)T/\tau})}{1-e^{-T/\tau}}\simeq\frac{V_HD(1-D)}{f_{PWM}\tau}`}/>
+The approximation assumes $T\ll\tau$. At 3.3 V, half duty, 100 kHz and 1 ms time constant, ripple is about 8.25 mV, over ten 12-bit steps. Reducing it below half a 12-bit step needs roughly 20.5 ms time constant in this simple model, making 1% step settling about 94 ms. A higher-order filter can improve rejection for a given passband, but adds design complexity and must preserve acceptable transient behavior.
+
+A conventional 12-bit counter needs 4096 clocks per PWM period. At 100 MHz timer clock, PWM is only 24.4 kHz. Increasing nominal timer bits lowers carrier frequency unless the clock or modulation technique changes. A sigma–delta or pulse-density output distributes pulses differently but still needs an output noise and bandwidth budget. PWM is useful when its real precision and speed meet the application; it is not automatically a precision DAC because software uses a wide integer.
+
+Primary architecture connections: [ADI MT-014, String and Thermometer DACs](https://www.analog.com/media/en/training-seminars/tutorials/MT-014.pdf), [MT-015, Binary DACs](https://www.analog.com/media/en/training-seminars/tutorials/MT-015.pdf), [MT-016, Segmented DACs](https://www.analog.com/media/en/training-seminars/tutorials/MT-016.pdf) and [MT-017, Oversampling Interpolating DACs](https://www.analog.com/media/en/training-seminars/tutorials/MT-017.pdf). The ladder, carry, glitch and PWM calculations above are original.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/dac-architectures-output/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§13.2–13.4 and §13.9.8; ADI MT-014–MT-017 (linked above); original ladder and output-network derivations. Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>

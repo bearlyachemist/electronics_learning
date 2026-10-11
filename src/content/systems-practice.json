@@ -523,5 +523,40 @@
         }
       ]
     }
+  ],
+  "dac-architectures-output": [
+    {
+      "tag": "TRANSFER",
+      "title": "Maximum code is below reference",
+      "prompt": "A 10-bit ideal DAC has 2.048 V reference and denominator 2ᴺ. Find the step, output at code 700 and output at maximum code.",
+      "hint": "There are 1024 code weights but maximum unsigned code is 1023.",
+      "solution": [
+        {
+          "text": "Step is 2 mV; code 700 gives 1.400 V; code 1023 gives 2.046 V."
+        }
+      ]
+    },
+    {
+      "tag": "MONOTONICITY",
+      "title": "A major carry exposes mismatch",
+      "prompt": "An 8-bit weighted-current DAC has ideal lower-bit sum 127 units, but its MSB is 126.8 units. What happens from code 127 to 128?",
+      "hint": "Compare sums before and after the carry.",
+      "solution": [
+        {
+          "text": "Output falls by 0.2 unit. DNL at that transition is −1.2 under the ideal one-unit step definition, so it is nonmonotonic."
+        }
+      ]
+    },
+    {
+      "tag": "PWM",
+      "title": "Carrier, resolution and ripple",
+      "prompt": "A 100 MHz timer uses 10-bit PWM and 1 ms RC. At 3.3 V half duty, estimate carrier and ripple.",
+      "hint": "The period has 1024 counts; use the small-ripple RC expression.",
+      "solution": [
+        {
+          "text": "Carrier is 97.656 kHz. Ripple is about 3.3 × 0.25/(97656 × 0.001) = 8.448 mV. Effective output precision also depends on supply/reference and settling."
+        }
+      ]
+    }
   ]
 }

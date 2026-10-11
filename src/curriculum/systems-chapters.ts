@@ -572,5 +572,47 @@ export const systemsChapters = [
         "Check your understanding"
       ]
     ]
+  },
+  {
+    "id": "dac-architectures-output",
+    "number": "110",
+    "title": "DAC architectures and analog output design",
+    "href": "/dac-architectures-output/",
+    "practice": "/dac-architectures-output/practice/",
+    "group": "Data converters",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "scale",
+        "Define the voltage or current represented by a code"
+      ],
+      [
+        "string",
+        "Use positive resistor increments for monotonic taps"
+      ],
+      [
+        "binary",
+        "Derive binary weighting and the R–2R ladder"
+      ],
+      [
+        "steering",
+        "Trade unit elements, segmentation and switching error"
+      ],
+      [
+        "output",
+        "Design the buffer and reconstruction filter"
+      ],
+      [
+        "pwm",
+        "Derive the limits of a PWM substitute"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
   }
 ];
