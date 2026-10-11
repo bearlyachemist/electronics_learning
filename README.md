@@ -130,3 +130,17 @@ scanned figures are included. New content lives in `src/content/advanced/`, with
 metadata in `src/curriculum/advanced-chapters.ts` and practice in
 `src/content/advanced-practice.json`. Models in `mos-analog.mjs` and `opamp.mjs`
 are verified against DC KCL/KVL, independent nodal equations and numerical slopes.
+
+## Textbook synthesis across the complete book
+
+Every one of the 94 reading chapters includes a Design synthesis section,
+with an original worked design, equation, three numerical cases, practical
+limits and cross-links. The 282 cases extend the chapter examples and compare
+operating conditions rather than replacing the separate practice notebooks.
+See [the synthesis coverage index](docs/synthesis-coverage.md) for the chapter
+map, source roles and verification scope. These sections are independent of
+ongoing prose/figure revisions and live in `src/content/synthesis.json`.
+
+`npm run check:synthesis` verifies all published studies, chapter-section
+targets and rendered math. The test suite checks representative numerical
+quantities in every study against circuit equations or the independent engines.

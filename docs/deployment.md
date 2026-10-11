@@ -47,8 +47,12 @@ the workflow's manual trigger.
 From this repository, with a clean, current hebert.phd checkout beside it:
 
 ```sh
+npm test
 npm run build:hosted
 npm run check:hosted
+npm run check:schematics
+npm run check:advanced
+npm run check:synthesis
 git -C ../hebert.phd pull --ff-only
 node scripts/stage-hosted.mjs ../hebert.phd
 git -C ../hebert.phd add -- public/electronics

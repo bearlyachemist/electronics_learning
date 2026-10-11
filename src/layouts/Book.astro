@@ -1,11 +1,13 @@
 ---
 import '../styles/global.css';
+import ChapterSynthesis from '../components/ChapterSynthesis.astro';
+import synthesis from '../content/synthesis.json';
 import 'katex/dist/katex.min.css';
 import {chapters as chapterData} from '../curriculum/chapters';
 import {sitePath} from '../lib/site-path';
 // Section labels may contain X_sub notation (e.g. g_m); show it as a real subscript.
 const sub=(s:string)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/([A-Za-zα-ω])_([A-Za-z0-9]+)/g,'<var>$1</var><sub>$2</sub>');
-const chapters=chapterData.map(c=>({...c, href:sitePath(c.href), practice:sitePath(c.practice)})).sort((a,b)=>Number(a.number)-Number(b.number));
+const chapters=chapterData.map(c=>({...c, href:sitePath(c.href), practice:sitePath(c.practice), sections:c.id in synthesis?[...c.sections,['synthesis','Design synthesis']]:c.sections})).sort((a,b)=>Number(a.number)-Number(b.number));
 const {title, practice=false, chapter='dividers'} = Astro.props;
 const current=chapters.find(c=>c.id===chapter) ?? chapters[0];
 const currentIndex=chapters.indexOf(current), previous=chapters[currentIndex-1], next=chapters[currentIndex+1];
@@ -27,7 +29,7 @@ const currentIndex=chapters.indexOf(current), previous=chapters[currentIndex-1],
 <a class={practice?'practice-link selected':'practice-link'} href={current.practice}>Practice independently <span>→</span></a>
 <div class="sidebar-note"><span class="tiny-label">THE APPROACH</span><p>Build intuition.<br/>Follow the mathematics.<br/>Try the circuit.</p></div>
 </aside>
-<main id="main"><slot/>{!practice && <nav class="chapter-pager" aria-label="Previous and next chapters">{previous?<a href={previous.href}><small>PREVIOUS CHAPTER</small>← {previous.title}</a>:<span/>}{next&&<a href={next.href}><small>NEXT CHAPTER</small>{next.title} →</a>}</nav>}</main>
+<main id="main"><slot/>{!practice&&<ChapterSynthesis chapter={chapter}/>}{!practice && <nav class="chapter-pager" aria-label="Previous and next chapters">{previous?<a href={previous.href}><small>PREVIOUS CHAPTER</small>← {previous.title}</a>:<span/>}{next&&<a href={next.href}><small>NEXT CHAPTER</small>{next.title} →</a>}</nav>}</main>
 </div>
 <footer class="footer"><span>The Analog Notebook · Foundations</span><span>Original teaching material · Models and assumptions stated in each chapter</span></footer>
 </body></html>

@@ -1,6 +1,7 @@
 import Equation from '../components/Equation.astro';
 import DividerLab from '../components/DividerLab';
 import {DividerEquivalentFigure,LoadingErrorFigure,ImpedanceLevelFigure,DividerTradeoffFigure,BatteryMonitorFigure} from '../components/FoundationFigures';
+import {ThermistorDividerFigure,ThermistorAlarmCircuit,LoadedPotFigure} from '../components/TextbookFigures';
 
 <div className="chapter-hero" id="overview">
 
@@ -259,9 +260,67 @@ A buffer is another option: its input draws little current from the divider, whi
 
 </section>
 
+<section id="real">
+
+<div className="section-heading"><span>05</span><h2>Real dividers: pots, sensors and standard values</h2></div>
+
+Three practical variations turn the divider from an equation into a component you can buy and build.
+
+### The potentiometer
+
+A potentiometer is a resistor with a sliding contact, the **wiper**: one fixed resistance split into two parts whose ratio follows the shaft position. With nothing connected to the wiper, its output is exactly proportional to rotation. Connect a load and the lower part of the divider is shunted, so the output sags below the straight line, most of all in the middle:
+
+<LoadedPotFigure/>
+
+The rule from section 02 applies with the pot's own output resistance, which is largest at mid-travel ($R_{pot}/4$). A 10 kΩ volume control driving a 100 kΩ input is fine; driving a 10 kΩ input, it is badly nonlinear. Pots also come with a logarithmic ("audio") taper, deliberately nonlinear, because the ear judges loudness logarithmically.
+
+### A sensing divider
+
+Replace one resistor with a sensor whose resistance depends on something you want to measure (temperature, light, strain), and the divider's output becomes a measurement. An NTC thermistor's resistance falls by about 4% per degree:
+
+<Equation tex={String.raw`R_T(T)=R_{25}\,\exp\!\left[B\left(\frac{1}{T}-\frac{1}{298.15\ \text{K}}\right)\right]`}/>
+
+<ThermistorDividerFigure/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A 40 °C OVER-TEMPERATURE ALARM</span><h3>10 kΩ NTC thermistor, $B$ = 3950 K, 5 V supply</h3>
+
+<p><strong>Choose the fixed resistor.</strong> At 40 °C (313.15 K) the thermistor is $10\text{ kΩ} × e^{3950(1/313.15 - 1/298.15)}$ = 5.30 kΩ. The nearest E96 value, 5.36 kΩ, gives 2.486 V at 40 °C and a nominal 2.5 V crossing at 39.73 °C. Matching the resistor to the sensor near the target temperature gives useful local sensitivity.</p>
+
+<p><strong>Sensitivity.</strong> Differentiating the divider with $R = R_T$: $dV/dT = -\tfrac14 V_S\,B/T^2$ = −1.25 V × 3950/313² ≈ <strong>−50 mV/°C</strong>. A comparator with 5 mV of offset shifts the threshold about 0.1 °C; thermistor tolerance, its B-value tolerance and self-heating also belong in the accuracy budget.</p>
+
+<p><strong>Make the decision.</strong> Compare the sensing divider with a second divider that makes 2.5 V from the same supply:</p>
+
+</div>
+
+<ThermistorAlarmCircuit/>
+
+Both dividers scale with the supply, so the trip point is set by resistor ratios alone: the circuit works the same on 4.5 V or 5.5 V. This **ratiometric** trick, comparing two quantities derived from the same reference, recurs throughout electronics (Chapter 94 builds a whole measurement chain on it). A real comparator would add a little positive feedback, **hysteresis**, so the output does not chatter as the temperature drifts slowly through 40 °C (Chapter 94).
+
+### Standard values and tolerance
+
+Resistors come in preferred-number series: E12 (commonly associated with 10% tolerance: 1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2), E24 (5%) and E96 (1%), repeated in every decade. A divider ratio must be built from those values, and each value has a tolerance. For $V_O = V_S R_2/(R_1 + R_2)$, small errors combine as
+
+<Equation tex={String.raw`\frac{\Delta V_O}{V_O}=\frac{R_1}{R_1+R_2}\left(\frac{\Delta R_2}{R_2}-\frac{\Delta R_1}{R_1}\right)`}/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / 3.3 V FROM 5 V WITH STANDARD PARTS</span><h3>An E24 divider and its tolerance</h3>
+
+<p>The ratio needed is 0.66. Searching E24 pairs, 5.1 kΩ over 10 kΩ gives $5 × 10/15.1$ = <strong>3.311 V</strong>, 0.3% high; 20 kΩ over 39 kΩ gives 3.305 V.</p>
+
+<p>With 1% resistors, the worst case moves the two in opposite directions: $\Delta V_O/V_O = (5.1/15.1)(0.01 + 0.01)$ = ±0.68%, ±22 mV. An RSS combination of two independent 1% error magnitudes is $\sqrt2$ times smaller, 0.48%; a component tolerance limit by itself does not specify a probability distribution or a confidence interval. Relative output sensitivity increases with $R_1/(R_1+R_2)$. A divider with $R_2 \gg R_1$ is less sensitive to fractional resistor errors, because its output is nearly the full supply.</p>
+
+<p>When the ratio matters more than the values, use a resistor network: two resistors made together on one substrate whose <em>ratio</em> is specified to 0.05% even if each value is only ±1%.</p>
+
+</div>
+
+</section>
+
 <section id="limits">
 
-<div className="section-heading"><span>05</span><h2>Where the model ends</h2></div>
+<div className="section-heading"><span>06</span><h2>Where the model ends</h2></div>
 
 The calculations here assume an ideal DC supply, linear resistors, steady conditions, and a load described by a resistance to ground. Those assumptions are useful, and specific.
 
@@ -283,7 +342,7 @@ The calculations here assume an ideal DC supply, linear resistors, steady condit
 
 <section id="check">
 
-<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
 
 Answer each question before opening it.
 

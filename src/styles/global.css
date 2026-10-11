@@ -38,3 +38,5 @@ var{font-style:italic}.plot-key sub{line-height:0}
 .operating-points th{color:var(--accent);font-weight:600;background:var(--mint)}
 @media(max-width:540px){.support-figure svg.advanced-circuit{min-width:580px}.operating-points table{font-size:12px}}
 @media(max-width:540px){.support-figure:has(.advanced-circuit)::before{content:"Swipe across the circuit to see all connections.";display:block;font:11px/1.6 var(--sans);color:var(--muted);margin-bottom:8px}}
+
+.chapter-synthesis{margin-top:56px;padding-top:0}.chapter-synthesis h3{margin-top:18px}.synthesis-connections{font-size:14px}

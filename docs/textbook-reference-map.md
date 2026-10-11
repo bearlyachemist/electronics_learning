@@ -57,3 +57,37 @@ equations before forming a worst-case error bound. BJT/CMOS diagrams are
 simplified teaching constructions, not claimed transistor-level replicas of a
 commercial device. State which bias generators, protection and parasitics have
 been omitted.
+
+## Whole-book synthesis pass
+
+The extension now reaches Chapters 1–94 through `src/content/synthesis.json`: 94
+design studies with 282 cases. The source roles remain complementary: AoE
+provides practical bias, component, power and measurement context; Fiore provides
+AC/nodal/power/resonance methods; Huijsing provides internal amplifier and
+error/dynamic models; Asadi supplies application analysis; Van Valkenburg informs
+filter specifications and realizations; Selvam informs nonlinear measurement
+functions. Original values and derivations are checked independently.
+
+Additional AoE material indexed and locally extracted for this pass includes PDF pp. 34–35, 40–41,
+51–53, 61–62, 64–65, 69–70, 73–74, 104–107, 113–114, 123–124, 132–133,
+138–139, 148–149, 156–157, 164–165, 174–175, 198–199, 204–205, 220–221,
+328–329, 334–335, 340–341, 348–349, 366–367, 380–381, 389–390, 424–425,
+439–440, 458–459, 506–507, 554–555, 570–571, 628–629, 656–657, 669–670
+and 1102–1103. Locally extracted material is kept outside the repository.
+Fiore's RMS, impedance, source transformations, nodal equations, power, resonance
+and Bode material was indexed and locally extracted on PDF pp. 23–24, 31–32, 45–46, 81–82,
+145–146, 160–161, 170–171, 205–206, 261–262, 273–274, 295–296, 310–311,
+372–373 and 383–384. Asadi PDF pp. 19–20, 46–47, 91–92 and 102–103
+and Selvam PDF pp. 55–56, 68–69 and 79–80 supply the relevant application
+and function-circuit connections.
+
+This is a coverage pass over the notebook's existing subjects, not an assertion
+that the six books' unrelated chapters have been reproduced or that simplified
+teaching models replace device characterization.
+
+Focused inspection of the newly extracted AoE material covered the sections
+starting on PDF pp. 34, 51, 61, 104, 113, 123, 132, 138, 148, 174, 198, 204,
+220, 241, 328, 334, 348, 366, 554, 570, 656 and 669. Fiore's RMS derivation
+on PDF pp. 23–24 was inspected in addition to the source pages recorded above.
+An extracted/indexed page list is not a claim of line-by-line review of every
+page; the design cases are independently derived from their stated models.

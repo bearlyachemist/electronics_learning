@@ -1,0 +1,4044 @@
+{
+  "dividers": {
+    "title": "A divider driving a sampled input",
+    "setup": "A 3.3 V source drives equal divider resistors $R$. The receiving input has negligible steady current but samples through a 20 pF capacitance. Its step error must fall below half of one 12-bit code in a 1 μs acquisition. Use a lumped RC acquisition model, without switch charge injection.",
+    "equation": "R_{th}=R/2,\\quad \\epsilon(t)=e^{-t/(R_{th}C)},\\quad t_{12bit}=\\ln(8192)R_{th}C",
+    "columns": [
+      "Each resistor",
+      "Divider current",
+      "Acquisition to half code"
+    ],
+    "rows": [
+      [
+        "10 kΩ",
+        "165 μA",
+        "0.901 μs"
+      ],
+      [
+        "100 kΩ",
+        "16.5 μA",
+        "9.01 μs"
+      ],
+      [
+        "1 MΩ",
+        "1.65 μA",
+        "90.1 μs"
+      ]
+    ],
+    "analysis": [
+      "The three dividers have the same nominal 1.65 V output, but only the lowest-resistance pair meets this simplified acquisition deadline. A voltmeter measurement cannot reveal the dynamic loading because it observes the settled result. The source resistance must be evaluated against charge transfer, not only DC input resistance.",
+      "The 10 kΩ pair has just 0.099 μs timing margin. Component tolerance, sampling-switch resistance and input capacitance spread can consume it. A buffer may reduce the drive resistance, but its own settling and capacitive-load behavior must satisfy the same accuracy target."
+    ],
+    "limits": "Include source resistance upstream of the divider, input leakage, resistor ratio tracking and sampled charge. A capacitor at the divider node can supply charge locally but then creates an additional sensor-settling time constant.",
+    "connections": [
+      [
+        "/thevenin/",
+        "Source resistance"
+      ],
+      [
+        "/opamp-noninverting/",
+        "ADC buffering"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D"
+  },
+  "thevenin": {
+    "title": "Identify a source without confusing the load boundary",
+    "setup": "A linear source reads 8 V open circuit. A known 2 kΩ test load reduces its terminal voltage to 6 V. Use the two measurements to infer the source model, then predict different loads. Assume the source remains linear over this current range.",
+    "equation": "R_{th}=R_{test}\\left(\\frac{V_{oc}}{V_{test}}-1\\right),\\quad V_L=\\frac{V_{th}R_L}{R_{th}+R_L}",
+    "columns": [
+      "Load",
+      "Terminal voltage",
+      "Delivered current"
+    ],
+    "rows": [
+      [
+        "1 kΩ",
+        "4.8 V",
+        "4.8 mA"
+      ],
+      [
+        "2 kΩ",
+        "6.0 V",
+        "3.0 mA"
+      ],
+      [
+        "10 kΩ",
+        "7.5 V",
+        "0.75 mA"
+      ]
+    ],
+    "analysis": [
+      "The inferred resistance is 666.7 Ω. This is an incremental/linear port model, not proof of a physical resistor hidden inside the source. A regulated supply may give a different slope near current limit; a transistor output can have a different tangent at another bias. Repeat the measurement over the intended range if linearity is uncertain.",
+      "A second load measurement can validate the line rather than merely fit it. If the 1 kΩ measurement is far from 4.8 V, investigate current limiting, heating or a nonlinear output stage. Include meter loading in the open-circuit measurement when the inferred resistance is high."
+    ],
+    "limits": "The replacement predicts terminal behavior, not internal dissipation. A maximum-power load here would also lose half the open-circuit voltage, so it is usually a poor voltage-measurement load.",
+    "connections": [
+      [
+        "/ac-thevenin/",
+        "Frequency-dependent source models"
+      ],
+      [
+        "/small-signal/",
+        "Local nonlinear equivalents"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D"
+  },
+  "small-signal": {
+    "title": "A tangent needs a signal-amplitude budget",
+    "setup": "A diode obeys $I=I_S e^{V/(nU_T)}$ around its operating point, with $n=1$ and $U_T=25.85$ mV. Neglect series resistance and the exponential law’s minus-one term. Compare local resistance at three bias currents.",
+    "equation": "r_d=\\frac{nU_T}{I_D},\\quad \\frac{H_2}{H_1}\\simeq\\frac{a}{4nU_T}",
+    "columns": [
+      "DC current",
+      "Local resistance",
+      "10 μA incremental voltage"
+    ],
+    "rows": [
+      [
+        "0.1 mA",
+        "258.5 Ω",
+        "2.585 mV"
+      ],
+      [
+        "1 mA",
+        "25.85 Ω",
+        "0.2585 mV"
+      ],
+      [
+        "10 mA",
+        "2.585 Ω",
+        "25.85 μV"
+      ]
+    ],
+    "analysis": [
+      "The last column uses the tangent, so the same current variation is 10% of the lowest bias but only 0.1% of the highest. At a 1 mV peak voltage perturbation, the small exponential expansion predicts about 0.97% second harmonic in current. At 5 mV it predicts about 4.84%; the approximation becomes progressively less precise as amplitude grows.",
+      "The ratio $V_D/I_D$ is a DC secant and does not replace $dV/dI$. A diode with a 0.6 V drop at 1 mA has a 600 Ω secant yet a roughly 25.85 Ω ideal local slope resistance. The slope governs incremental gain, feedback and noise conversion."
+    ],
+    "limits": "At larger current, series resistance adds to the tangent and self-heating changes the bias. At high frequency junction and diffusion capacitances make the tangent an impedance rather than a single resistance.",
+    "connections": [
+      [
+        "/diodes/",
+        "Region and temperature models"
+      ],
+      [
+        "/bjt-small-signal/",
+        "Transistor tangents"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D; AoE §2.3"
+  },
+  "power": {
+    "title": "Equal average power can hide different stresses",
+    "setup": "A 100 Ω resistor receives 20 V rectangular pulses. Compare duty cycles while retaining the same 4 W instantaneous pulse power. Assume periodic operation and a thermal time constant long compared with the pulse period.",
+    "equation": "P_{avg}=D\\frac{V_p^2}{R},\\quad V_{rms}=V_p\\sqrt D,\\quad E_{pulse}=\\frac{V_p^2t_p}{R}",
+    "columns": [
+      "Duty cycle",
+      "Average power",
+      "RMS voltage"
+    ],
+    "rows": [
+      [
+        "1%",
+        "40 mW",
+        "2.0 V"
+      ],
+      [
+        "10%",
+        "400 mW",
+        "6.325 V"
+      ],
+      [
+        "50%",
+        "2.0 W",
+        "14.142 V"
+      ]
+    ],
+    "analysis": [
+      "A 1 ms pulse deposits 4 mJ regardless of repetition rate. Duty cycle controls long-term average heating, while individual pulse energy and voltage determine additional stress. A resistor that survives 40 mW average may still exceed its pulse-overload or working-voltage rating at 20 V pulses.",
+      "The thermal time constant determines whether temperature follows average power or develops substantial ripple. With a short pulse, use transient thermal impedance or a pulse-energy rating; with a long pulse, peak temperature approaches the steady condition for the instantaneous power. A single average-watt number cannot settle both questions."
+    ],
+    "limits": "Use the actual resistor’s pulse curves, temperature derating and mounting conditions. For semiconductors, also consider current density and safe operating area rather than applying a resistor-only heating argument.",
+    "connections": [
+      [
+        "/mosfet-power/",
+        "Switching-loss budgets"
+      ],
+      [
+        "/parallel-mosfets/",
+        "Thermal sharing"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D; AoE §9.4"
+  },
+  "capacitors": {
+    "title": "Reservoir capacitance is a charge and energy choice",
+    "setup": "A 5 V reservoir supplies an additional 20 mA for 100 μs. Assume a constant-current pulse, negligible ESR/ESL and no replenishing source current during the pulse. Compare three capacitor values.",
+    "equation": "\\Delta V=\\frac{I\\Delta t}{C},\\quad E_{stored}=\\frac12CV^2",
+    "columns": [
+      "Capacitance",
+      "Pulse droop",
+      "Initial energy at 5 V"
+    ],
+    "rows": [
+      [
+        "1 μF",
+        "2.0 V",
+        "12.5 μJ"
+      ],
+      [
+        "10 μF",
+        "0.2 V",
+        "125 μJ"
+      ],
+      [
+        "100 μF",
+        "0.02 V",
+        "1.25 mJ"
+      ]
+    ],
+    "analysis": [
+      "The pulse removes 2 μC of charge in every case. Its energy is not exactly $5I\\Delta t$ when the voltage droops substantially; integrate the falling capacitor voltage or use the change in stored energy. For 1 μF, final voltage is 3 V and released energy is 8 μJ. For 10 μF, the release is 9.8 μJ.",
+      "Increasing capacitance reduces charge-induced droop but creates more startup charge and stored fault energy. The source must eventually restore the missing charge; a large capacitor cannot compensate indefinitely for an undersized supply. Effective capacitance under DC bias can be much lower than a nominal ceramic value."
+    ],
+    "limits": "Add ESR’s immediate $I\\,ESR$ step and ESL’s edge-dependent voltage separately. Account for charging current, leakage and the supply’s recovery dynamics.",
+    "connections": [
+      [
+        "/real-capacitors/",
+        "ESR and ESL"
+      ],
+      [
+        "/ac-thevenin/",
+        "Supply reservoirs"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D"
+  },
+  "rc-circuits": {
+    "title": "Settling accuracy determines the waiting time",
+    "setup": "A first-order RC node makes a full-scale step. Its remaining fractional error is $e^{-t/RC}$. Compare acquisition targets instead of using the informal five-time-constant rule.",
+    "equation": "t=RC\\ln(1/\\epsilon)",
+    "columns": [
+      "Target error",
+      "Required time",
+      "For RC = 10 μs"
+    ],
+    "rows": [
+      [
+        "1%",
+        "4.605 RC",
+        "46.05 μs"
+      ],
+      [
+        "0.1%",
+        "6.908 RC",
+        "69.08 μs"
+      ],
+      [
+        "Half a 16-bit code",
+        "11.784 RC",
+        "117.84 μs"
+      ]
+    ],
+    "analysis": [
+      "Five time constants leave about 0.674% error. That may be sufficient for an indicator but is far too large for a full-scale 16-bit acquisition. “Settled” must name an error band and a starting step amplitude. For a smaller step, the absolute half-code target corresponds to a less demanding fractional error.",
+      "The same reasoning applies to a supply reference after startup, a multiplexed sensor after switching and a passive filter after a range change. Cascaded sections or a resonant filter generally do not settle as a single exponential. A first-order fit to the late tail may miss early ringing."
+    ],
+    "limits": "Include source and switch resistance in RC, and distinguish a linear settling tail from current-limited charging. Leakage may prevent reaching the intended final voltage even after a long wait.",
+    "connections": [
+      [
+        "/opamp-ac-limits/",
+        "Amplifier settling"
+      ],
+      [
+        "/opamp-active-filters/",
+        "Multipole response"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D"
+  },
+  "differentiators": {
+    "title": "An edge shaper sees rise time, not an ideal step",
+    "setup": "A passive high-pass uses 1 nF in series and 10 kΩ to ground, giving a 10 μs time constant. For a linear 1 V ramp starting from rest, evaluate the output at the end of its rise.",
+    "equation": "v_o(t_r)=\\frac{\\Delta V\\,RC}{t_r}\\left(1-e^{-t_r/(RC)}\\right)",
+    "columns": [
+      "Rise time",
+      "End-of-rise output",
+      "Interpretation"
+    ],
+    "rows": [
+      [
+        "1 μs",
+        "0.952 V",
+        "Near a passed step"
+      ],
+      [
+        "10 μs",
+        "0.632 V",
+        "Neither limiting approximation"
+      ],
+      [
+        "100 μs",
+        "0.100 V",
+        "Derivative approximation"
+      ]
+    ],
+    "analysis": [
+      "For a slow ramp, the output approaches $RC\\,dV_i/dt$. For a fast edge, it approaches the total step amplitude, not an infinite spike. The exact result joins the two regimes and gives a meaningful amplitude budget for a pulse detector.",
+      "After the ramp stops, the output decays exponentially with the same time constant. A falling edge gives the opposite polarity, so a following logic input or clamp must accommodate both. Source resistance modifies the high-frequency division as well as the time constant."
+    ],
+    "limits": "Include finite driver impedance, input clamp current and stray capacitance. If the target is a signal derivative over a band, specify allowed amplitude and phase error instead of selecting RC solely from pulse width.",
+    "connections": [
+      [
+        "/opamp-differentiator/",
+        "Controlled derivative bandwidth"
+      ],
+      [
+        "/diode-applications/",
+        "Edge limiting"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D"
+  },
+  "integrators": {
+    "title": "Passive integration has amplitude and phase error",
+    "setup": "A passive RC low-pass uses 10 kΩ and 10 nF. Its time constant is 100 μs and corner 1591.5 Hz. Compare the exact transfer with $1/(j\\omega RC)$ in the high-frequency integration region.",
+    "equation": "\\frac{|H_{exact}|}{|H_{integrator}|}=\\frac{\\omega RC}{\\sqrt{1+(\\omega RC)^2}}",
+    "columns": [
+      "Frequency / corner",
+      "Magnitude ratio",
+      "Phase short of −90°"
+    ],
+    "rows": [
+      [
+        "1",
+        "0.7071",
+        "45.0°"
+      ],
+      [
+        "10",
+        "0.9950",
+        "5.71°"
+      ],
+      [
+        "100",
+        "0.99995",
+        "0.573°"
+      ]
+    ],
+    "analysis": [
+      "At ten times the corner, magnitude is within about 0.5% of the integration approximation, yet phase is still 5.7° away. A design that relies on quadrature can therefore need a much larger frequency separation than one concerned only with amplitude.",
+      "The passive network cannot maintain a virtual input node or integrate down to DC: it has unity DC gain. The op-amp integrator later replaces the passive output loading with active feedback, but introduces offset-driven drift and output limits. The two circuits share a frequency-region approximation, not identical time-domain behavior."
+    ],
+    "limits": "Include output loading and source resistance before applying these ratios. A capacitor with leakage or significant series impedance may leave no useful ideal integration region at the intended frequency.",
+    "connections": [
+      [
+        "/rc-filters/",
+        "Exact frequency response"
+      ],
+      [
+        "/opamp-integrator/",
+        "Active integration"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D; Fiore §10.3"
+  },
+  "real-capacitors": {
+    "title": "A decoupler has a useful impedance window",
+    "setup": "Use a series model with $C=10$ μF, ESR = 0.1 Ω and ESL = 5 nH. Ignore parallel leakage and frequency dependence of these parameters. Evaluate the same component across three frequencies.",
+    "equation": "Z=ESR+j\\left(\\omega ESL-\\frac{1}{\\omega C}\\right),\\quad f_{SR}=\\frac{1}{2\\pi\\sqrt{ESL\\,C}}",
+    "columns": [
+      "Frequency",
+      "Impedance magnitude",
+      "Dominant behavior"
+    ],
+    "rows": [
+      [
+        "10 kHz",
+        "1.594 Ω",
+        "Capacitive"
+      ],
+      [
+        "711.8 kHz",
+        "0.100 Ω",
+        "Series resonance"
+      ],
+      [
+        "10 MHz",
+        "0.328 Ω",
+        "Inductive"
+      ]
+    ],
+    "analysis": [
+      "The self-resonant frequency is about 711.8 kHz. Above it, more nominal capacitance does not keep reducing impedance; the lead and package inductance dominates. At resonance, ESR sets the idealized minimum. The result explains why a part labeled 10 μF cannot be treated as a zero-impedance AC ground everywhere.",
+      "A parallel bank of different capacitors can create antiresonance when one branch is inductive while another is capacitive. A supply network needs its complete impedance, including mounting inductance and source path. Damping and placement may matter more than adding another nominal capacitance value."
+    ],
+    "limits": "Real ESR, capacitance and inductance vary with frequency, bias and construction. Use impedance data over the actual band and include the connection loop in ESL.",
+    "connections": [
+      [
+        "/ac-thevenin/",
+        "Antiresonance and bypass"
+      ],
+      [
+        "/opamp-load-stability/",
+        "Capacitive loads"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D; AoE §1.9"
+  },
+  "inductors": {
+    "title": "Pulse width sets current and clamp energy",
+    "setup": "A 100 mH coil receives 12 V from an ideal switch, initially at zero current. For this short-pulse comparison neglect winding resistance. Turn-off energy must be handled by the clamp or returned to the supply.",
+    "equation": "I_p=\\frac{Vt_{on}}{L},\\qquad E_L=\\frac12LI_p^2",
+    "columns": [
+      "On time",
+      "Peak current",
+      "Stored energy"
+    ],
+    "rows": [
+      [
+        "0.5 ms",
+        "60 mA",
+        "0.18 mJ"
+      ],
+      [
+        "1 ms",
+        "120 mA",
+        "0.72 mJ"
+      ],
+      [
+        "2 ms",
+        "240 mA",
+        "2.88 mJ"
+      ]
+    ],
+    "analysis": [
+      "Doubling pulse duration doubles current and quadruples energy. A clamp selected from an average current alone can therefore be badly undersized after a timing change. At a fixed repetition rate, the repetitive energy dissipation follows the same quadratic growth until winding resistance or saturation changes the current ramp.",
+      "When the coil is interrupted, current continuity requires an alternate path. A low-voltage diode clamp gives a slower decay; a higher reverse coil voltage gives faster release. Compute the switch voltage separately from the coil’s reverse voltage because the supply can add to the switch stress."
+    ],
+    "limits": "Winding resistance limits long-pulse current and magnetic saturation can make inductance fall, accelerating the ramp. Include both in a real maximum-energy estimate.",
+    "connections": [
+      [
+        "/diode-protection/",
+        "Clamp release time"
+      ],
+      [
+        "/power-fet-circuits/",
+        "Inductive power stages"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D"
+  },
+  "transformers": {
+    "title": "One turns ratio supports several load cases",
+    "setup": "An ideal transformer has primary-to-secondary turns ratio 5:1 and receives 20 V RMS at a fixed suitable frequency. Compare secondary resistive loads, neglecting magnetizing current and all losses.",
+    "equation": "V_s=V_p/5,\\quad Z_{in}=25R_L,\\quad I_p=I_s/5",
+    "columns": [
+      "Secondary load",
+      "Secondary current",
+      "Reflected load"
+    ],
+    "rows": [
+      [
+        "10 Ω",
+        "0.4 A",
+        "250 Ω"
+      ],
+      [
+        "100 Ω",
+        "40 mA",
+        "2.5 kΩ"
+      ],
+      [
+        "1 kΩ",
+        "4 mA",
+        "25 kΩ"
+      ]
+    ],
+    "analysis": [
+      "Every case receives 4 V RMS. Corresponding primary currents are 80, 8 and 0.8 mA, with powers 1.6, 0.16 and 0.016 W. The ideal relations conserve power; they do not establish a practical transformer’s VA rating or temperature.",
+      "The primary also draws magnetizing current in hardware. Core flux is governed by applied volt-seconds per turn, so lowering frequency at unchanged voltage can saturate the core even with no secondary load. A load calculation and a core-flux calculation answer different design questions."
+    ],
+    "limits": "Include winding resistance, leakage inductance, regulation and insulation. A DC component in the applied voltage can accumulate flux; symmetric waveform amplitude alone does not guarantee zero net volt-seconds.",
+    "connections": [
+      [
+        "/rectifiers/",
+        "Reservoir charging load"
+      ],
+      [
+        "/reactive-power/",
+        "RMS power accounting"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D"
+  },
+  "semiconductors": {
+    "title": "A varactor tuning range has hidden fixed capacitance",
+    "setup": "A reverse-biased junction is modeled as $C_j=C_0/\\sqrt{1+V_R/\\Phi}$, with $C_0=100$ pF and $\\Phi=0.7$ V. It tunes an LC resonator with $L=10$ μH and an unavoidable parallel 20 pF fixed capacitance.",
+    "equation": "f=\\frac{1}{2\\pi\\sqrt{L(C_j+C_{fixed})}}",
+    "columns": [
+      "Reverse bias",
+      "Junction capacitance",
+      "Resonant frequency"
+    ],
+    "rows": [
+      [
+        "0 V",
+        "100 pF",
+        "4.594 MHz"
+      ],
+      [
+        "3 V",
+        "43.50 pF",
+        "6.316 MHz"
+      ],
+      [
+        "10 V",
+        "25.58 pF",
+        "7.455 MHz"
+      ]
+    ],
+    "analysis": [
+      "The junction capacitance changes nearly fourfold, but the total capacitance changes by only a factor about 2.63. Frequency therefore changes by only about 1.62. Fixed package and circuit capacitance compress tuning range and must be included before selecting a varactor.",
+      "A larger AC swing modulates junction voltage during each cycle, making capacitance nonlinear and producing distortion or frequency pulling. The DC bias should keep the junction reverse biased over the full signal. Junction loss and series resistance also lower resonator Q."
+    ],
+    "limits": "The square-root law is an abrupt-junction teaching model. Grading profile, breakdown, series resistance and temperature require the chosen device’s data.",
+    "connections": [
+      [
+        "/resonance/",
+        "Tuning and Q"
+      ],
+      [
+        "/fet-physics/",
+        "Depletion-controlled devices"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D; AoE §3.1"
+  },
+  "diodes": {
+    "title": "Forward-drop spread changes a shared current path",
+    "setup": "A 5 V source drives a resistor and diode in series. Use a constant-drop comparison to expose sensitivity before returning to the exponential model. Target 10 mA at a nominal 0.7 V forward drop, so choose 430 Ω.",
+    "equation": "I=\\frac{V_S-V_F}{R},\\quad \\Delta I\\simeq-\\frac{\\Delta V_F}{R}",
+    "columns": [
+      "Diode drop",
+      "Current",
+      "Resistor power"
+    ],
+    "rows": [
+      [
+        "0.5 V",
+        "10.47 mA",
+        "47.1 mW"
+      ],
+      [
+        "0.7 V",
+        "10.00 mA",
+        "43.0 mW"
+      ],
+      [
+        "0.9 V",
+        "9.53 mA",
+        "39.1 mW"
+      ]
+    ],
+    "analysis": [
+      "The resistor absorbs most of the supply voltage, so a ±0.2 V drop change produces only about ±4.65% current change. If the supply were only 1 V, the same diode-drop spread would consume most of the available resistor voltage and current regulation would be poor. Compliance relative to uncertain junction voltage determines sensitivity.",
+      "The table compares plausible drops; it does not independently determine each diode’s true operating voltage. An exponential diode and resistor must be solved together. Parallel diode branches without individual resistors can share unevenly because a small drop mismatch creates a large exponential current ratio."
+    ],
+    "limits": "Account for supply tolerance, temperature and resistor tolerance. For LEDs, optical output and junction temperature require more than a forward-voltage model.",
+    "connections": [
+      [
+        "/small-signal/",
+        "Incremental diode resistance"
+      ],
+      [
+        "/current-sharing/",
+        "Exponential sharing"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D; AoE §1.6"
+  },
+  "rectifiers": {
+    "title": "Ripple and conduction pulses are different budgets",
+    "setup": "A full-wave reservoir is charged at 100 Hz and supplies 50 mA approximately continuously. Use the small-ripple estimate $\\Delta V\\approx I/(f_rC)$, without modeling transformer/source impedance yet.",
+    "equation": "\\Delta V_{pp}\\simeq\\frac{I_L}{f_rC},\\quad\\Delta Q_{cycle}=\\frac{I_L}{f_r}",
+    "columns": [
+      "Capacitance",
+      "Estimated ripple",
+      "Charge restored per cycle"
+    ],
+    "rows": [
+      [
+        "470 μF",
+        "1.064 V",
+        "0.5 mC"
+      ],
+      [
+        "1000 μF",
+        "0.500 V",
+        "0.5 mC"
+      ],
+      [
+        "2200 μF",
+        "0.227 V",
+        "0.5 mC"
+      ]
+    ],
+    "analysis": [
+      "All three cases need the same 0.5 mC recharge every cycle, but a larger capacitor tends to concentrate recharge into a narrower conduction interval. If recharge occurred over 1 ms, its average current during that interval would already be 0.5 A, ten times the load current; its actual peak depends on the source and diode laws.",
+      "A regulator downstream sees the minimum reservoir voltage, not the average. Include low mains/transformer output, diode drops and ripple when checking dropout. A larger capacitor can improve this minimum while increasing startup surge and transformer RMS current."
+    ],
+    "limits": "The ripple approximation assumes modest ripple and nearly constant load. Use waveform integration for diode peak current, RMS current, capacitor ripple heating and transformer regulation.",
+    "connections": [
+      [
+        "/regulators/",
+        "Minimum-input headroom"
+      ],
+      [
+        "/power/",
+        "RMS and pulse stresses"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D; AoE §9.5"
+  },
+  "regulators": {
+    "title": "A linear regulator must pass the low-input and high-input tests",
+    "setup": "A 5 V linear regulator supplies 100 mA. Compare input voltages assuming a 0.5 V dropout requirement and neglecting quiescent current. A 60 °C/W thermal path is used only as a steady estimate.",
+    "equation": "P_{pass}=(V_{in}-V_{out})I_L,\\quad \\eta\\simeq V_{out}/V_{in},\\quad\\Delta T\\simeq P_{pass}\\theta",
+    "columns": [
+      "Input",
+      "Pass-device power",
+      "Temperature rise"
+    ],
+    "rows": [
+      [
+        "5.3 V",
+        "Requested 30 mW",
+        "Dropout: cannot regulate"
+      ],
+      [
+        "8 V",
+        "300 mW",
+        "18 °C"
+      ],
+      [
+        "12 V",
+        "700 mW",
+        "42 °C"
+      ]
+    ],
+    "analysis": [
+      "The 5.3 V row has low formal dissipation but fails the dropout requirement, so its requested 5 V output is unattainable. The 8 and 12 V rows regulate in this model but have efficiencies about 62.5% and 41.7%. More input voltage improves headroom while worsening heat.",
+      "At a 50 °C ambient, the 12 V case predicts a 92 °C junction with the stated thermal resistance. That is not a guarantee: PCB area, airflow, package and maximum current change the thermal path. A pulsed load may need transient thermal impedance, while an output capacitor can alter loop stability."
+    ],
+    "limits": "Use guaranteed dropout at the intended current and temperature, actual quiescent current, thermal derating and output-capacitor requirements. Input ripple can cross dropout during only part of each cycle.",
+    "connections": [
+      [
+        "/regulated-supplies/",
+        "Feedback and current limiting"
+      ],
+      [
+        "/rectifiers/",
+        "Ripple troughs"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D; AoE §§9.1, 9.4"
+  },
+  "diode-applications": {
+    "title": "An envelope detector must fit between two time scales",
+    "setup": "A simple diode envelope detector receives a 200 kHz carrier modulated by a 1 kHz sinusoidal envelope. Compare its discharge RC against carrier period 5 μs and modulation period 1 ms, using an ideal peak recharge and first-order decay.",
+    "equation": "\\text{Carrier droop}=1-e^{-T_c/RC},\\quad |H_m|\\simeq\\frac{1}{\\sqrt{1+(2\\pi f_mRC)^2}}",
+    "columns": [
+      "RC",
+      "Inter-carrier droop",
+      "1 kHz first-order magnitude"
+    ],
+    "rows": [
+      [
+        "20 μs",
+        "22.1%",
+        "0.992"
+      ],
+      [
+        "100 μs",
+        "4.88%",
+        "0.847"
+      ],
+      [
+        "500 μs",
+        "0.995%",
+        "0.303"
+      ]
+    ],
+    "analysis": [
+      "A small time constant follows the envelope well but leaves large carrier ripple. A large one suppresses ripple but cannot follow a falling envelope. The middle case is a compromise, not a universal optimum. The magnitude column is a linear RC tracking proxy; a real diode detector has nonlinear charging and can exhibit diagonal clipping.",
+      "Deep modulation makes the falling envelope’s slope and local amplitude matter. Check whether the capacitor’s natural discharge slope can follow the steepest downward envelope segment. A buffered or active detector can separate storage loading from output loading and remove some diode-drop error, but introduces feedback and recovery constraints."
+    ],
+    "limits": "Include source impedance, diode threshold, signal amplitude and load. State the allowed ripple and modulation distortion before choosing RC.",
+    "connections": [
+      [
+        "/opamp-precision-rectifier/",
+        "Active detection"
+      ],
+      [
+        "/rc-filters/",
+        "Tracking response"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D"
+  },
+  "diode-protection": {
+    "title": "Faster release trades clamp voltage against switch stress",
+    "setup": "A 50 mH coil carries 100 mA when its low-side switch opens. For a first estimate neglect winding resistance and use a constant reverse voltage across the coil. Supply voltage is 12 V.",
+    "equation": "t_{decay}\\simeq\\frac{LI_0}{V_{reverse}},\\quad E_L=\\frac12LI_0^2,\\quad V_{switch}\\simeq V_S+V_{reverse}",
+    "columns": [
+      "Reverse coil voltage",
+      "Decay time",
+      "Approximate switch voltage"
+    ],
+    "rows": [
+      [
+        "0.7 V",
+        "7.14 ms",
+        "12.7 V"
+      ],
+      [
+        "12 V",
+        "0.417 ms",
+        "24 V"
+      ],
+      [
+        "24 V",
+        "0.208 ms",
+        "36 V"
+      ]
+    ],
+    "analysis": [
+      "The initial magnetic energy is 0.25 mJ in every row. A higher-voltage clamp removes it faster by dissipating higher instantaneous power. Initial clamp powers are about 70 mW, 1.2 W and 2.4 W respectively; repetitive energy and pulse ratings both matter.",
+      "The switch sees supply plus reverse coil voltage for this low-side topology. A 30 V transistor cannot safely implement the 24 V reverse-coil row even though the clamp label alone is below 30 V. Wiring inductance adds overshoot beyond the constant-clamp estimate."
+    ],
+    "limits": "Real clamp voltage is current dependent. Include component tolerance, repetitive energy, winding resistance and the exact clamp connection before choosing a switch-voltage rating.",
+    "connections": [
+      [
+        "/inductors/",
+        "Stored energy"
+      ],
+      [
+        "/mosfet-power/",
+        "Avalanche and switching"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D; AoE §§1.6, 3.5"
+  },
+  "protection-circuits": {
+    "title": "A hot-plug network can exceed the supply voltage",
+    "setup": "A 12 V source is suddenly connected through 10 μH to an initially uncharged 10 μF capacitor. Compare a lossless LC estimate with series damping. Ignore diode and switch resistance until adding the stated damping.",
+    "equation": "Z_0=\\sqrt{L/C}=1\\,\\Omega,\\quad f_0=\\frac{1}{2\\pi\\sqrt{LC}},\\quad R_{critical}=2\\sqrt{L/C}",
+    "columns": [
+      "Series resistance",
+      "Damping ratio",
+      "Ideal step behavior"
+    ],
+    "rows": [
+      [
+        "0 Ω",
+        "0",
+        "Peak reaches 24 V"
+      ],
+      [
+        "1 Ω",
+        "0.5",
+        "Peak about 13.96 V"
+      ],
+      [
+        "2 Ω",
+        "1",
+        "No overshoot"
+      ]
+    ],
+    "analysis": [
+      "Natural frequency is about 15.9 kHz. A lossless step transfers energy between the inductor and capacitor and reaches twice the source voltage, so capacitor voltage rating cannot be chosen from the nominal supply alone. At damping ratio 0.5, standard second-order overshoot is about 16.3%, giving 13.96 V.",
+      "Series damping reduces overshoot but introduces DC drop and heat if it remains in the load path. An inrush limiter or bypassed damping arrangement can behave differently during startup and steady operation. A TVS clamps voltage but must absorb the energy and coordinate with the upstream impedance."
+    ],
+    "limits": "Capacitor ESR, cable inductance, source impedance and repeated disconnect/reconnect conditions determine actual stress. Model the initially charged as well as initially discharged case.",
+    "connections": [
+      [
+        "/resonance/",
+        "Second-order damping"
+      ],
+      [
+        "/parallel-mosfets/",
+        "Pass-device thermal limits"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.2–1.5 and Appendix D; AoE §9.13"
+  },
+  "phasors": {
+    "title": "Time delay becomes a frequency-dependent phase",
+    "setup": "A signal path delays a sinusoid by 2 μs without changing its amplitude. A phasor can represent that delay at one frequency, but the phase angle varies across a band.",
+    "equation": "H(j\\omega)=e^{-j\\omega t_d},\\quad\\phi=-360^\\circ f t_d",
+    "columns": [
+      "Frequency",
+      "Phase shift",
+      "Magnitude"
+    ],
+    "rows": [
+      [
+        "1 kHz",
+        "−0.72°",
+        "1"
+      ],
+      [
+        "10 kHz",
+        "−7.2°",
+        "1"
+      ],
+      [
+        "100 kHz",
+        "−72°",
+        "1"
+      ]
+    ],
+    "analysis": [
+      "The delay has flat magnitude but a substantial high-frequency phase shift. A magnitude-only Bode plot would entirely miss it. In a feedback loop, this lag can consume stability margin even when no amplitude rolloff appears in the delayed path.",
+      "Angles are conventionally wrapped into a principal range when displaying individual phasors. For a frequency sweep, unwrap phase so the continuous delay remains visible. A −360° phase display does not mean zero physical delay; it means one full cycle at that frequency."
+    ],
+    "limits": "Phasors describe sinusoidal steady state at a specified frequency. For steps, pulses or modulated signals, retain the time delay or analyze the spectrum across the relevant band.",
+    "connections": [
+      [
+        "/negative-feedback/",
+        "Delay and loop phase"
+      ],
+      [
+        "/poles/",
+        "Magnitude and phase"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.7 and 2.2–2.4; Fiore, AC Electrical Circuit Analysis, chapters 5–8 and 10"
+  },
+  "impedance": {
+    "title": "The same magnitude can hide different physics",
+    "setup": "At 1 kHz, compare three impedances of magnitude 1 kΩ driven by 1 V RMS. One is resistive, one capacitive and one inductive. Ideal reactive elements exchange energy without average dissipation.",
+    "equation": "I=V/Z,\\quad P=V_{rms}I_{rms}\\cos\\phi,\\quad |X_C|=1/(\\omega C),\\quad X_L=\\omega L",
+    "columns": [
+      "Impedance",
+      "Current phase",
+      "Average power"
+    ],
+    "rows": [
+      [
+        "1 kΩ",
+        "0°",
+        "1 mW"
+      ],
+      [
+        "−j1 kΩ, C = 159.2 nF",
+        "+90°",
+        "0"
+      ],
+      [
+        "+j1 kΩ, L = 159.2 mH",
+        "−90°",
+        "0"
+      ]
+    ],
+    "analysis": [
+      "Each magnitude produces 1 mA RMS, yet only the resistor dissipates the full 1 mW. A current-limited source must still provide the reactive current. Magnitude alone therefore predicts current amplitude but cannot determine dissipation or phase-sensitive behavior.",
+      "Series and parallel transformations must preserve the complete complex impedance at the specified frequency. A resistor-plus-reactance model that matches at 1 kHz may diverge at another frequency. This matters when interpreting impedance-meter readings or substituting an equivalent network."
+    ],
+    "limits": "Capacitor loss, winding resistance and source resistance create real power in practical reactive paths. Include their frequency dependence before extrapolating an ideal zero-power result.",
+    "connections": [
+      [
+        "/reactive-power/",
+        "Complex power"
+      ],
+      [
+        "/resonance/",
+        "Reactance cancellation"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.7 and 2.2–2.4; Fiore, AC Electrical Circuit Analysis, chapters 5–8 and 10"
+  },
+  "reactive-power": {
+    "title": "Correct power factor without changing useful load power",
+    "setup": "A load consumes 1 kW at 230 V RMS and 50 Hz with lagging power factor 0.8. Treat it as a fixed linear load and compare shunt capacitors. Ignore capacitor loss.",
+    "equation": "Q_L=P\\tan(\\cos^{-1}0.8)=750\\,var,\\quad Q_C=-\\omega CV^2,\\quad I=\\sqrt{P^2+Q^2}/V",
+    "columns": [
+      "Shunt capacitance",
+      "Remaining reactive power",
+      "Supply current"
+    ],
+    "rows": [
+      [
+        "0 μF",
+        "750 var",
+        "5.435 A"
+      ],
+      [
+        "22 μF",
+        "384.4 var",
+        "4.658 A"
+      ],
+      [
+        "45.13 μF",
+        "Approximately 0",
+        "4.348 A"
+      ]
+    ],
+    "analysis": [
+      "The useful real power remains 1 kW; the capacitor supplies part of the reactive current locally. Upstream current falls, reducing wiring losses, while the load’s active energy demand remains the same. This is why apparent power and real power must be budgeted separately.",
+      "The nominal correction is frequency and voltage dependent. If load reactive power changes, a fixed capacitor can overcorrect and make the source current lead. Harmonic-rich loads require true RMS current and distortion power-factor analysis rather than applying a single phase angle to the whole waveform."
+    ],
+    "limits": "This is a circuit-analysis example. Practical mains capacitor selection also depends on ratings, switching transients and system requirements; a resonant supply network can amplify harmonics.",
+    "connections": [
+      [
+        "/phasors/",
+        "RMS and phase conventions"
+      ],
+      [
+        "/resonance/",
+        "Unintended resonance"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.7 and 2.2–2.4; Fiore, AC Electrical Circuit Analysis, chapters 5–8 and 10"
+  },
+  "rc-filters": {
+    "title": "One pole cannot satisfy every passband and stopband pair",
+    "setup": "A first-order low-pass must lose no more than 0.5 dB at 1 kHz while attenuating 20 kHz by at least 30 dB. Assume an ideal buffered single pole.",
+    "equation": "|H|=\\frac{1}{\\sqrt{1+(f/f_c)^2}},\\quad f_c\\ge\\frac{f_{pass}}{\\sqrt{10^{L_{pass}/10}-1}}",
+    "columns": [
+      "Requirement",
+      "Necessary corner",
+      "Conclusion"
+    ],
+    "rows": [
+      [
+        "≤0.5 dB loss at 1 kHz",
+        "At least 2.863 kHz",
+        "Passband constraint"
+      ],
+      [
+        "≥30 dB loss at 20 kHz",
+        "At most 0.633 kHz",
+        "Stopband constraint"
+      ],
+      [
+        "Both together",
+        "No overlap",
+        "A single pole is insufficient"
+      ]
+    ],
+    "analysis": [
+      "The incompatible bounds identify a topology problem before component selection. Choosing a convenient RC and adjusting values cannot resolve it. A higher-order response can steepen the transition, but its pole placement, phase response and transient behavior must then be chosen deliberately.",
+      "For a second-order Butterworth response, loss is $10\\log_{10}[1+(f/f_c)^4]$. The same specifications require $f_c$ at least about 1.692 kHz and at most about 3.557 kHz, so a feasible range exists. A 2 kHz choice gives about 0.263 dB loss at 1 kHz and 40.0 dB loss at 20 kHz in the ideal model."
+    ],
+    "limits": "Source/loading effects, tolerance and amplifier bandwidth can move these responses. Allocate margin rather than designing exactly at both nominal limits.",
+    "connections": [
+      [
+        "/poles/",
+        "Filter order"
+      ],
+      [
+        "/opamp-active-filters/",
+        "Second-order realization"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.7 and 2.2–2.4; Fiore, AC Electrical Circuit Analysis, chapters 5–8 and 10; Van Valkenburg, Analog Filter Design, specifications and Sallen–Key sections"
+  },
+  "poles": {
+    "title": "Two RC sections need a loading calculation",
+    "setup": "Two identical 10 kΩ/10 nF low-pass sections are cascaded without a buffer. The source is ideal and the final load is infinite. Compare that ladder with independently buffered sections using $x=\\omega RC$.",
+    "equation": "H_{ladder}=\\frac{1}{1+3sRC+(sRC)^2},\\qquad H_{buffered}=\\frac{1}{(1+sRC)^2}",
+    "columns": [
+      "Frequency / nominal corner",
+      "Unbuffered magnitude",
+      "Buffered magnitude"
+    ],
+    "rows": [
+      [
+        "0.1",
+        "0.9667",
+        "0.9901"
+      ],
+      [
+        "1",
+        "0.3333",
+        "0.5000"
+      ],
+      [
+        "10",
+        "0.009667",
+        "0.009901"
+      ]
+    ],
+    "analysis": [
+      "At the nominal single-section corner, loading costs about 3.52 dB beyond the buffered cascade. The denominator’s middle coefficient is 3 rather than 2 because the second resistor-capacitor section draws current from the first node. Multiplying isolated responses would miss that interaction.",
+      "The ladder’s equivalent Q is 1/3, whereas the buffered equal-pole cascade has Q = 1/2. Both are overdamped real-pole systems. Buffering restores independent stage multiplication but introduces amplifier noise, offset, supply and stability constraints. Impedance scaling can also reduce loading, at the cost of resistance noise or capacitor size."
+    ],
+    "limits": "The formulas assume no parasitic capacitance or load. Add every external impedance to the nodal equations before deciding whether a cascade is effectively independent.",
+    "connections": [
+      [
+        "/opamp-noninverting/",
+        "Buffer costs"
+      ],
+      [
+        "/opamp-active-filters/",
+        "Complex-pole filters"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.7 and 2.2–2.4; Fiore, AC Electrical Circuit Analysis, chapters 5–8 and 10"
+  },
+  "resonance": {
+    "title": "A small source can create large component voltages",
+    "setup": "A series resonator uses 10 mH and 100 nF, driven by 1 V RMS at its natural frequency. Compare total series resistance, including source and winding resistance.",
+    "equation": "f_0=\\frac{1}{2\\pi\\sqrt{LC}}=5.033\\,kHz,\\quad Q=\\frac{\\sqrt{L/C}}{R},\\quad V_L=V_C=QV_{source}",
+    "columns": [
+      "Total resistance",
+      "Q",
+      "Each reactive voltage RMS"
+    ],
+    "rows": [
+      [
+        "10 Ω",
+        "31.62",
+        "31.62 V"
+      ],
+      [
+        "100 Ω",
+        "3.162",
+        "3.162 V"
+      ],
+      [
+        "316.2 Ω",
+        "Approximately 1",
+        "Approximately 1 V"
+      ]
+    ],
+    "analysis": [
+      "At resonance, inductor and capacitor voltages oppose and cancel in the terminal sum, but each component can experience many times the source voltage. A 1 V input does not imply a 1 V capacitor rating requirement. For the 10 Ω case current is 100 mA RMS and stored energy circulates strongly between L and C.",
+      "Bandwidth is approximately $f_0/Q$ for this series model. More damping reduces voltage magnification and increases bandwidth. A measuring probe that adds resistance or capacitance changes both the resonance and the observed Q; the measurement setup belongs in the circuit."
+    ],
+    "limits": "Check capacitor voltage, inductor current and core linearity. Losses and source impedance may depend on frequency or amplitude, so a nominal unloaded Q can overstate practical magnification.",
+    "connections": [
+      [
+        "/inductors/",
+        "Current and stored energy"
+      ],
+      [
+        "/real-capacitors/",
+        "Loss and parasitics"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.7 and 2.2–2.4; Fiore, AC Electrical Circuit Analysis, chapters 5–8 and 10"
+  },
+  "ac-thevenin": {
+    "title": "Decoupling divides a transient into three mechanisms",
+    "setup": "A chip current rises by 50 mA in 10 ns and remains elevated for 1 μs. Compare three lumped decoupling networks near the chip, ignoring source replenishment during the pulse. Treat edge, ESR and charge terms separately.",
+    "equation": "\\Delta V_L\\simeq L\\Delta I/\\Delta t_r,\\quad\\Delta V_R=ESR\\,\\Delta I,\\quad\\Delta V_C=\\Delta I\\Delta t/C",
+    "columns": [
+      "C, ESR, loop L",
+      "Edge term",
+      "Charge droop"
+    ],
+    "rows": [
+      [
+        "1 μF, 0.1 Ω, 10 nH",
+        "50 mV",
+        "50 mV"
+      ],
+      [
+        "10 μF, 0.1 Ω, 10 nH",
+        "50 mV",
+        "5 mV"
+      ],
+      [
+        "10 μF, 0.01 Ω, 1 nH",
+        "5 mV",
+        "5 mV"
+      ]
+    ],
+    "analysis": [
+      "The first two cases have the same inductive edge spike despite a tenfold capacitance increase. Their ESR steps are both 5 mV. Only the longer-time charge droop improves. The third case reduces all three terms by changing connection inductance and ESR as well as using more capacitance.",
+      "These peak estimates need not occur at exactly the same time, so adding their magnitudes is a conservative initial budget rather than a complete waveform simulation. The supply path eventually restores charge and can ring with the decoupler. Its impedance determines how the current pulse splits between local storage and the upstream source."
+    ],
+    "limits": "Place the connection loop in the inductance budget. Include antiresonance, current-return routing and the chip’s actual edge waveform; a capacitance label alone cannot predict supply integrity.",
+    "connections": [
+      [
+        "/real-capacitors/",
+        "Impedance windows"
+      ],
+      [
+        "/protection-circuits/",
+        "Ringing and damping"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.7 and 2.2–2.4; Fiore, AC Electrical Circuit Analysis, chapters 5–8 and 10"
+  },
+  "transistor-physics": {
+    "title": "Current gain depends on two efficiencies",
+    "setup": "An idealized short-base BJT has emitter injection efficiency $\\gamma$ and base transport factor $\\alpha_T$. Their product gives forward common-base gain $\\alpha_F$. Compare small changes near unity.",
+    "equation": "\\alpha_F=\\gamma\\alpha_T,\\quad\\beta_F=\\frac{\\alpha_F}{1-\\alpha_F}",
+    "columns": [
+      "γ, transport factor",
+      "Forward α",
+      "Forward β"
+    ],
+    "rows": [
+      [
+        "0.99, 0.99",
+        "0.9801",
+        "49.25"
+      ],
+      [
+        "0.995, 0.995",
+        "0.990025",
+        "99.25"
+      ],
+      [
+        "0.999, 0.999",
+        "0.998001",
+        "499.25"
+      ]
+    ],
+    "analysis": [
+      "A seemingly tiny improvement in injection and transport efficiency creates a large change in common-emitter current gain because $1-\\alpha_F$ is small. This makes beta useful for understanding device quality but fragile as a circuit-setting constant. A transistor bias scheme proportional to nominal beta can inherit a large spread.",
+      "Collector current is controlled primarily by the base-emitter junction law in forward active operation. Beta tells us the base current needed to support that current, while Early effect and high-level injection modify behavior. Design feedback around an observable voltage or current rather than assuming every transistor has the same beta."
+    ],
+    "limits": "The short-base model neglects recombination details, current-density dependence and temperature variation. Use it to connect physics to trends, then use characterized limits for bias and drive.",
+    "connections": [
+      [
+        "/bjt-biasing/",
+        "Bias insensitive to beta"
+      ],
+      [
+        "/ebers-moll/",
+        "Two-junction models"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.7 and 2.2–2.4; Fiore, AC Electrical Circuit Analysis, chapters 5–8 and 10"
+  },
+  "bjt": {
+    "title": "A switch needs base-drive and saturation budgets",
+    "setup": "An NPN switches a 12 V, 120 mA load. For initial drive sizing use 0.8 V base-emitter drop and choose forced current gains. The driver provides 3.3 V; calculate resistor values before including driver output droop.",
+    "equation": "I_B=I_C/\\beta_{forced},\\quad R_B=(V_{drive}-V_{BE})/I_B",
+    "columns": [
+      "Forced gain",
+      "Required base current",
+      "Base resistor"
+    ],
+    "rows": [
+      [
+        "10",
+        "12 mA",
+        "208 Ω"
+      ],
+      [
+        "20",
+        "6 mA",
+        "417 Ω"
+      ],
+      [
+        "50",
+        "2.4 mA",
+        "1.04 kΩ"
+      ]
+    ],
+    "analysis": [
+      "The transistor’s active-region beta does not establish the saturation voltage at these forced gains. More base drive may lower the on-state voltage but can deepen saturation and increase stored charge, slowing turn-off. A logic pin that cannot source the requested current invalidates the resistor calculation.",
+      "At an assumed 0.2 V collector-emitter on voltage, load-path dissipation is about 24 mW, excluding base-path power and switching loss. If the load is inductive, turn-off energy and collector voltage require a clamp. Switching behavior involves both the drive circuit and the load, not only a transistor symbol."
+    ],
+    "limits": "Check guaranteed saturation data at comparable collector/base currents, driver output levels, power and turn-off timing. A speed-up or anti-saturation network changes the transient drive model.",
+    "connections": [
+      [
+        "/bjt-logic/",
+        "Loaded logic levels"
+      ],
+      [
+        "/diode-protection/",
+        "Inductive turn-off"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.7 and 2.2–2.4; Fiore, AC Electrical Circuit Analysis, chapters 5–8 and 10"
+  },
+  "emitter-follower": {
+    "title": "The base source appears at the output divided by current gain",
+    "setup": "An emitter follower carries approximately 1 mA collector current at 300 K. Use $g_m=38.68$ mS, $\\beta=100$ and a 1 kΩ emitter load. Compare base-source resistances in a simple active-region hybrid-π model, neglecting output conductance.",
+    "equation": "R_{out,stage}\\simeq\\frac{r_\\pi+R_G}{\\beta+1},\\quad r_\\pi=\\beta/g_m",
+    "columns": [
+      "Base source resistance",
+      "Stage output resistance",
+      "Loaded output resistance"
+    ],
+    "rows": [
+      [
+        "0 Ω",
+        "25.60 Ω",
+        "24.96 Ω"
+      ],
+      [
+        "10 kΩ",
+        "124.61 Ω",
+        "110.80 Ω"
+      ],
+      [
+        "100 kΩ",
+        "1015.70 Ω",
+        "503.89 Ω"
+      ]
+    ],
+    "analysis": [
+      "A follower does not automatically turn every high-impedance source into a stiff output. Base-source resistance reflects to the emitter through current gain. At 100 kΩ source resistance, the effective output is far less stiff than the intrinsic $1/g_m$ estimate suggests.",
+      "The same source resistance also interacts with input current and capacitance. The emitter’s DC current requires base drive, so include source loading when solving the operating point. A current-source emitter load can retain transconductance at light signal load but adds its own compliance and output conductance."
+    ],
+    "limits": "The approximation assumes forward active operation and small perturbations. Output capacitance, cutoff during falling edges, saturation and beta variation require additional analysis.",
+    "connections": [
+      [
+        "/mos-source-follower/",
+        "MOS follower comparison"
+      ],
+      [
+        "/darlington/",
+        "Reducing base-drive loading"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.7 and 2.2–2.4; Fiore, AC Electrical Circuit Analysis, chapters 5–8 and 10"
+  },
+  "bjt-biasing": {
+    "title": "Choose divider stiffness from actual beta spread",
+    "setup": "Use a 10 V supply and a divider equivalent $V_{TH}=2$ V feeding an NPN base. The emitter resistor is 1 kΩ and use a fixed 0.7 V junction drop. Compare $R_{TH}=10$ kΩ across beta values.",
+    "equation": "I_E=\\frac{V_{TH}-V_{BE}}{R_E+R_{TH}/(\\beta+1)}",
+    "columns": [
+      "Beta",
+      "Emitter current",
+      "Base-divider droop"
+    ],
+    "rows": [
+      [
+        "50",
+        "1.087 mA",
+        "0.213 V"
+      ],
+      [
+        "100",
+        "1.183 mA",
+        "0.117 V"
+      ],
+      [
+        "200",
+        "1.238 mA",
+        "0.0616 V"
+      ]
+    ],
+    "analysis": [
+      "The unloaded emitter-current estimate is 1.3 mA, but finite base current pulls the divider down. The emitter resistor gives local feedback and reduces sensitivity compared with a base-resistor-only bias. Increasing divider current lowers $R_{TH}$ and improves stiffness at the cost of standing power.",
+      "If $R_{TH}$ falls to 1 kΩ, the same beta range gives approximately 1.275–1.294 mA, much closer to the unloaded target. However, temperature-dependent $V_{BE}$ still shifts current by approximately $-\\Delta V_{BE}/R_E$ when the divider is stiff. Beta feedback and temperature feedback are related but distinct budgets."
+    ],
+    "limits": "Check collector headroom with the largest current, resistor power, supply spread and junction temperature. A fixed 0.7 V drop is only an initial bias estimate.",
+    "connections": [
+      [
+        "/temperature-control/",
+        "Temperature-sensitive junctions"
+      ],
+      [
+        "/transistor-feedback/",
+        "Local feedback"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.7 and 2.2–2.4; Fiore, AC Electrical Circuit Analysis, chapters 5–8 and 10"
+  },
+  "bjt-small-signal": {
+    "title": "A bypass capacitor changes AC gain while retaining DC feedback",
+    "setup": "A 1 mA BJT at 300 K has $g_m\\approx38.68$ mS. Its effective collector load is 4 kΩ and its total DC emitter resistance is 1 kΩ. Compare how much emitter resistance remains unbypassed at signal frequency, neglecting beta loading and output resistance.",
+    "equation": "A_v\\simeq-\\frac{g_mR_{C,eff}}{1+g_mR_{E,ac}}",
+    "columns": [
+      "Unbypassed emitter resistance",
+      "Local voltage gain",
+      "Role"
+    ],
+    "rows": [
+      [
+        "0 Ω",
+        "−154.7",
+        "Maximum local gain"
+      ],
+      [
+        "100 Ω",
+        "−31.78",
+        "Partial degeneration"
+      ],
+      [
+        "1 kΩ",
+        "−3.899",
+        "Strong degeneration"
+      ]
+    ],
+    "analysis": [
+      "The DC current can remain the same in all three cases if the bypass capacitor is open at DC and effective over the signal band. The capacitor changes incremental emitter feedback, not the DC resistor’s bias-stabilizing role. Its impedance must be small relative to the relevant emitter resistance at the lowest intended signal frequency.",
+      "Higher gain magnifies nonlinearity, loading and Miller capacitance. A nominal gain of −154.7 is not a large-output claim: the collector must remain active throughout the excursion and the input signal must be small on the thermal-voltage scale. Unbypassed resistance often provides a better overall distortion and bandwidth tradeoff."
+    ],
+    "limits": "The capacitor sees the emitter network’s incremental resistance, not automatically the full 1 kΩ. Include source resistance, base network and capacitor ESR in the actual corner calculation.",
+    "connections": [
+      [
+        "/common-emitter/",
+        "Gain and swing"
+      ],
+      [
+        "/miller-effect/",
+        "Input capacitance"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.7 and 2.2–2.4; Fiore, AC Electrical Circuit Analysis, chapters 5–8 and 10"
+  },
+  "current-sources": {
+    "title": "Output resistance determines current regulation above compliance",
+    "setup": "A nominal 1 mA current source has a valid 1–9 V compliance interval. Compare local output resistance while changing output voltage from 2 to 8 V. Use a linear current-source model over that interval.",
+    "equation": "\\Delta I=\\Delta V/r_o,\\quad \\epsilon_I=\\frac{\\Delta V}{I_0r_o}",
+    "columns": [
+      "Output resistance",
+      "Current change over 6 V",
+      "Fraction of 1 mA"
+    ],
+    "rows": [
+      [
+        "50 kΩ",
+        "120 μA",
+        "12%"
+      ],
+      [
+        "500 kΩ",
+        "12 μA",
+        "1.2%"
+      ],
+      [
+        "5 MΩ",
+        "1.2 μA",
+        "0.12%"
+      ]
+    ],
+    "analysis": [
+      "Being inside compliance means the current-source mechanism can operate; it does not imply perfectly constant current. A finite output slope can create an appreciable regulation error even without saturation loss. Conversely, a huge small-signal resistance is meaningless below the minimum headroom.",
+      "Local degeneration, mirrors, cascodes and feedback servos can increase resistance, each with different voltage, noise, matching and bandwidth costs. Compare output resistance at the actual bias current and across the intended range, not at an unrelated device test condition."
+    ],
+    "limits": "The slope may be nonlinear or frequency dependent. Include reference-current drift, mismatch and load dynamics, and separately check startup and maximum dissipation.",
+    "connections": [
+      [
+        "/mos-cascode-mirror/",
+        "Higher output resistance"
+      ],
+      [
+        "/opamp-current-servo/",
+        "Feedback current regulation"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.7 and 2.2–2.4; Fiore, AC Electrical Circuit Analysis, chapters 5–8 and 10"
+  },
+  "common-emitter": {
+    "title": "Output swing should be allocated before gain",
+    "setup": "An NPN uses a 10 V supply, 4 kΩ collector resistor and 1 V emitter voltage. Assume a 0.2 V saturation estimate. Compare quiescent collector currents and available approximately symmetric collector swing.",
+    "equation": "V_{CQ}=V_{CC}-I_C R_C,\\quad V_{C,min}\\simeq V_E+V_{CE,sat}",
+    "columns": [
+      "Quiescent current",
+      "Collector DC voltage",
+      "Approximate symmetric peak swing"
+    ],
+    "rows": [
+      [
+        "0.5 mA",
+        "8 V",
+        "2 V"
+      ],
+      [
+        "1 mA",
+        "6 V",
+        "4 V"
+      ],
+      [
+        "1.5 mA",
+        "4 V",
+        "2.8 V"
+      ]
+    ],
+    "analysis": [
+      "Upward output motion is limited by cutoff near 10 V; downward motion is limited near 1.2 V under the fixed-emitter approximation. The 1 mA point is the best of these three for symmetric swing. A larger transconductance at 1.5 mA does not compensate for its reduced downward headroom.",
+      "For large signals the emitter voltage and saturation boundary may move, and base drive may become limiting. A load coupled directly to the collector changes DC current and voltage; an AC-coupled load mainly changes incremental loading in the midband. The DC and AC load lines should both be drawn."
+    ],
+    "limits": "Distortion usually imposes a smaller usable swing than the clipping boundary. Include transistor power, source loading, beta spread and the coupling/bypass time constants.",
+    "connections": [
+      [
+        "/bjt-small-signal/",
+        "Local gain"
+      ],
+      [
+        "/mos-common-source/",
+        "Load-line comparison"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.7 and 2.2–2.4; Fiore, AC Electrical Circuit Analysis, chapters 5–8 and 10"
+  },
+  "transconductance": {
+    "title": "Equal current does not mean equal small-signal current gain per volt",
+    "setup": "Compare a BJT and strong-inversion MOSFET at 100 μA and 300 K. The BJT uses $U_T=25.85$ mV; MOS overdrive is selected by geometry or current density, not varied independently at fixed geometry.",
+    "equation": "g_{m,BJT}=I_C/U_T,\\quad g_{m,MOS}=2I_D/u",
+    "columns": [
+      "Device/bias",
+      "Transconductance",
+      "Gain into 10 kΩ"
+    ],
+    "rows": [
+      [
+        "BJT, 100 μA",
+        "3.868 mS",
+        "Magnitude 38.68"
+      ],
+      [
+        "MOS, u = 0.1 V",
+        "2.000 mS",
+        "Magnitude 20"
+      ],
+      [
+        "MOS, u = 0.4 V",
+        "0.500 mS",
+        "Magnitude 5"
+      ]
+    ],
+    "analysis": [
+      "The BJT offers high transconductance per collector current, while the MOS device trades current density and overdrive against capacitance, headroom and noise. The listed resistor gains neglect output conductance and any source/emitter feedback, so they compare local transconductance rather than complete amplifier performance.",
+      "Weak-inversion MOS efficiency approaches $1/(nU_T)$, which can be closer to BJT efficiency, but the square law no longer applies and speed/area constraints change. A technology comparison should preserve the same power, source impedance and bandwidth requirements rather than compare one attractive parameter."
+    ],
+    "limits": "Finite beta loads the BJT source; MOS gates contribute capacitance and leakage. Output resistance, flicker noise and matching can dominate the system even when transconductance looks favorable.",
+    "connections": [
+      [
+        "/mos-noise-design/",
+        "Transconductance efficiency"
+      ],
+      [
+        "/opamp-input-tradeoffs/",
+        "Complete input budget"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§1.7 and 2.2–2.4; Fiore, AC Electrical Circuit Analysis, chapters 5–8 and 10; Huijsing, Operational Amplifiers, input-stage tradeoffs"
+  },
+  "ebers-moll": {
+    "title": "Reverse-active operation exposes transistor asymmetry",
+    "setup": "An idealized Ebers–Moll transistor has forward common-base gain 0.99 and reverse gain 0.5. Compare the current-gain consequences rather than assuming collector and emitter are interchangeable.",
+    "equation": "\\beta_F=\\frac{\\alpha_F}{1-\\alpha_F},\\quad\\beta_R=\\frac{\\alpha_R}{1-\\alpha_R}",
+    "columns": [
+      "Mode",
+      "Junction bias condition",
+      "Relevant idealized gain"
+    ],
+    "rows": [
+      [
+        "Forward active",
+        "BE forward, BC reverse",
+        "βF = 99"
+      ],
+      [
+        "Reverse active",
+        "BC forward, BE reverse",
+        "βR = 1"
+      ],
+      [
+        "Saturation",
+        "Both forward",
+        "No single active β"
+      ]
+    ],
+    "analysis": [
+      "The large forward/reverse difference reflects unequal doping and geometry. Swapping collector and emitter can still produce transistor action, but generally with poorer gain and different voltage limits. A three-terminal symbol with nearly symmetric-looking legs does not imply a symmetric device.",
+      "In saturation, both junction currents contribute and collector current is no longer simply beta times base current. The full two-junction model explains why extra base current can deepen stored charge rather than proportionally increase load current. The surrounding resistor/load network determines the final operating point."
+    ],
+    "limits": "Ebers–Moll is a static model. Transit time, charge storage, high-level injection and breakdown need extensions before predicting switching recovery or reverse-junction stress.",
+    "connections": [
+      [
+        "/bjt/",
+        "Saturation drive"
+      ],
+      [
+        "/darlington/",
+        "Composite-device recovery"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§2.3–2.5; Huijsing, Operational Amplifiers, input and gain-stage error analysis"
+  },
+  "current-mirrors": {
+    "title": "Base-current bookkeeping changes with fan-out",
+    "setup": "A basic BJT mirror has one diode-connected reference and N identical output transistors. All devices have beta 100 and equal collector current; ignore Early effect and mismatch. The external reference current must also supply every base current.",
+    "equation": "I_{out}=\\frac{I_{ref}}{1+(N+1)/\\beta}",
+    "columns": [
+      "Number of outputs",
+      "Each output / reference",
+      "Each output for 1 mA reference"
+    ],
+    "rows": [
+      [
+        "1",
+        "0.98039",
+        "0.980 mA"
+      ],
+      [
+        "4",
+        "0.95238",
+        "0.952 mA"
+      ],
+      [
+        "9",
+        "0.90909",
+        "0.909 mA"
+      ]
+    ],
+    "analysis": [
+      "Adding mirror copies changes even the existing branches because their base currents share the reference node. A nominal ten-branch bias tree cannot be designed by multiplying a two-transistor mirror result without recounting currents. Area-ratio outputs also change the base-current total.",
+      "A beta-helper can reduce reference loading, while a Wilson topology adds feedback and alters compliance and dynamics. These remedies address base-current error, not automatically threshold/junction mismatch or unequal collector voltage. Keep a separate term for each error mechanism."
+    ],
+    "limits": "The equation assumes equal beta and current density. Device beta can vary with current, and each output must remain in the intended region; a failed branch can disturb the shared bias network.",
+    "connections": [
+      [
+        "/mos-ratioed-mirrors/",
+        "MOS bias trees"
+      ],
+      [
+        "/opamp-bjt-internals/",
+        "Internal bias loading"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§2.3–2.5; Huijsing, Operational Amplifiers, input and gain-stage error analysis"
+  },
+  "differential-amplifiers": {
+    "title": "Match an input signal to the pair’s linear scale",
+    "setup": "A matched BJT pair at 300 K has a 200 μA ideal tail and equal 10 kΩ collector loads. Both devices remain forward active. Define differential input as left base minus right.",
+    "equation": "I_1-I_2=I_T\\tanh\\left(\\frac{v_d}{2U_T}\\right),\\quad g_{md}=I_T/(2U_T)",
+    "columns": [
+      "Differential input",
+      "Exact current difference",
+      "Tangent prediction"
+    ],
+    "rows": [
+      [
+        "1 mV",
+        "3.868 μA",
+        "3.868 μA"
+      ],
+      [
+        "10 mV",
+        "38.21 μA",
+        "38.68 μA"
+      ],
+      [
+        "50 mV",
+        "149.5 μA",
+        "193.4 μA"
+      ]
+    ],
+    "analysis": [
+      "Drain/collector difference is the current difference times 10 kΩ, with the sign fixed by output order. At 50 mV the tangent severely overstates current steering even though neither branch need be saturated. Input-stage nonlinear range is distinct from output voltage headroom.",
+      "A global feedback amplifier normally keeps the differential input much smaller than the external signal. During startup or overload, that condition can disappear and the pair nearly fully steers. Recovery then involves compensation and internal-node charge, not merely the steady-state tanh law."
+    ],
+    "limits": "Check common-mode headroom, tail impedance, input offset and load matching. Emitter degeneration expands differential range while consuming gain and voltage.",
+    "connections": [
+      [
+        "/mos-differential-pair/",
+        "MOS steering comparison"
+      ],
+      [
+        "/opamp-ideal/",
+        "Feedback keeps error small"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§2.3–2.5; Huijsing, Operational Amplifiers, input and gain-stage error analysis"
+  },
+  "push-pull": {
+    "title": "The hottest class-B output point is not full output",
+    "setup": "An ideal complementary class-B stage has rails ±10 V and drives an 8 Ω resistive load with a sine of peak amplitude $V_p$. Ignore crossover voltage and idle current to isolate power distribution.",
+    "equation": "P_L=\\frac{V_p^2}{2R_L},\\quad P_{supply}=\\frac{2V_SV_p}{\\pi R_L},\\quad P_{devices}=P_{supply}-P_L",
+    "columns": [
+      "Output peak",
+      "Load power",
+      "Combined device dissipation"
+    ],
+    "rows": [
+      [
+        "2 V",
+        "0.250 W",
+        "1.342 W"
+      ],
+      [
+        "6.366 V",
+        "2.533 W",
+        "2.533 W"
+      ],
+      [
+        "10 V",
+        "6.250 W",
+        "1.708 W"
+      ]
+    ],
+    "analysis": [
+      "Total transistor dissipation peaks near $V_p=2V_S/\\pi$, an intermediate output amplitude. Designing the heat sink only from the full-power case can miss the hotter operating point. In the symmetric ideal model, each device dissipates half the combined value.",
+      "At maximum ideal swing, efficiency reaches π/4, about 78.5%. Practical voltage drops reduce available swing and class-AB idle current adds standing power. Reactive loads move current and voltage out of phase and can create a different worst-case transistor trajectory."
+    ],
+    "limits": "Include output-device SOA, idle bias, thermal coupling, load phase and current limiting. Average dissipation alone does not prove survival under a short or reactive load.",
+    "connections": [
+      [
+        "/power/",
+        "Thermal budgets"
+      ],
+      [
+        "/mos-complementary-output/",
+        "MOS output-stage comparison"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§2.3–2.5; Huijsing, Operational Amplifiers, input and gain-stage error analysis"
+  },
+  "darlington": {
+    "title": "Composite gain is paid for in headroom and turn-off",
+    "setup": "A Darlington uses two forward-active transistors with betas 50 and 100. Their emitter-base drops are approximated as 0.7 V each. Compare base-drive estimates with a single beta-100 device for a 100 mA collector demand.",
+    "equation": "\\beta_{D}=\\beta_1\\beta_2+\\beta_1+\\beta_2=5150",
+    "columns": [
+      "Arrangement",
+      "Active-region input current estimate",
+      "Junction drop to emitter"
+    ],
+    "rows": [
+      [
+        "Single BJT, β = 100",
+        "1 mA",
+        "About 0.7 V"
+      ],
+      [
+        "Darlington, βD = 5150",
+        "19.4 μA",
+        "About 1.4 V"
+      ],
+      [
+        "Saturated composite switch",
+        "Use forced-gain data",
+        "Not set by active β"
+      ]
+    ],
+    "analysis": [
+      "The impressive active gain can greatly reduce source loading in a follower, but a saturated switch must be designed from saturation specifications and drive limits. The output transistor’s base current and the first transistor’s collector path create a higher saturation voltage than a single deeply driven transistor in many Darlington constructions.",
+      "Internal resistors can discharge stored base charge and limit leakage amplification, while reducing effective low-current gain. The driver must be able to remove charge at turn-off as well as supply it at turn-on. A low measured DC input current does not guarantee fast switching."
+    ],
+    "limits": "Beta varies with current and temperature. Check the composite’s voltage rating, on-state dissipation, storage time and actual pin configuration rather than treating it as an ideal beta multiplier.",
+    "connections": [
+      [
+        "/emitter-follower/",
+        "Source loading"
+      ],
+      [
+        "/bjt/",
+        "Forced gain and switching"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§2.3–2.5; Huijsing, Operational Amplifiers, input and gain-stage error analysis"
+  },
+  "bootstrapping": {
+    "title": "A phase error can turn high input resistance into a complex load",
+    "setup": "A 100 kΩ resistor connects an input to a driven node with complex gain G relative to that input. The bootstrap current is $(1-G)v_i/R$. Compare gain magnitude and phase, assuming a linear driver.",
+    "equation": "Z_{effective}=\\frac{R}{1-G}",
+    "columns": [
+      "Bootstrap gain",
+      "Effective impedance",
+      "Magnitude"
+    ],
+    "rows": [
+      [
+        "0.9 at 0°",
+        "1.0 MΩ",
+        "1.0 MΩ"
+      ],
+      [
+        "0.99 at 0°",
+        "10.0 MΩ",
+        "10.0 MΩ"
+      ],
+      [
+        "0.99 at −10°",
+        "About 83.0 kΩ − j569.6 kΩ",
+        "575.6 kΩ"
+      ]
+    ],
+    "analysis": [
+      "A gain magnitude near unity is insufficient when phase differs. The last case loses most of the apparent resistance improvement and behaves as a complex impedance. A real driver’s bandwidth and delay therefore define the useful bootstrap band.",
+      "The effective resistor noise also depends on how the driver’s noise appears at both ends. Bootstrapping can reduce signal current through a physical resistor without removing its thermal fluctuations or the driver’s errors. A driven guard can reduce leakage or capacitance loading, but must be stable while driving the guard’s capacitance."
+    ],
+    "limits": "Inspect the complete loop and output load. Near G = 1, small gain errors have large effects, and gain exceeding unity with the wrong phase can produce negative resistance or instability.",
+    "connections": [
+      [
+        "/miller-effect/",
+        "Two moving capacitor terminals"
+      ],
+      [
+        "/opamp-load-stability/",
+        "Driving a guard capacitance"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§2.3–2.5; Huijsing, Operational Amplifiers, input and gain-stage error analysis"
+  },
+  "current-sharing": {
+    "title": "Ballast turns a junction mismatch into a controlled voltage drop",
+    "setup": "Two matched-beta BJTs share a load and have a 10 mV relative junction-voltage mismatch at equal current. Each branch has local emitter ballast. Compare approximate current imbalance around 1 A per device, using $r_e\\approx25.85$ mΩ at 300 K.",
+    "equation": "\\Delta I\\simeq\\frac{\\Delta V_{BE}}{R_E+r_e}",
+    "columns": [
+      "Each ballast resistor",
+      "Approximate branch-current difference",
+      "Power per resistor at 1 A"
+    ],
+    "rows": [
+      [
+        "0 Ω",
+        "0.387 A",
+        "0"
+      ],
+      [
+        "0.1 Ω",
+        "79.5 mA",
+        "0.1 W"
+      ],
+      [
+        "0.5 Ω",
+        "19.0 mA",
+        "0.5 W"
+      ]
+    ],
+    "analysis": [
+      "The estimate linearizes the mismatch near the equal-current point. It shows why a modest resistor can reduce current hogging, but the added drop and dissipation may be significant. At large imbalance, solve both exponential branch laws with total-current conservation instead of extrapolating the tangent.",
+      "Thermal coupling and individual junction temperatures modify the mismatch while the circuit runs. A device that warms and draws more current can enter positive electrothermal feedback. Ballast must be sized against that dynamic tendency and the actual load trajectory, not only a room-temperature initial mismatch."
+    ],
+    "limits": "Check device SOA, resistor pulse rating, current-sense routing and thermal paths. Parallel devices increase available area only when the current and heat actually distribute as intended.",
+    "connections": [
+      [
+        "/parallel-mosfets/",
+        "Different MOS sharing regimes"
+      ],
+      [
+        "/power/",
+        "Transient heating"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§2.3–2.5; Huijsing, Operational Amplifiers, input and gain-stage error analysis"
+  },
+  "miller-effect": {
+    "title": "Gain can dominate the input capacitance budget",
+    "setup": "A transistor has 10 pF from input to AC ground and 2 pF between input and output. It is driven through 20 kΩ. Use a constant inverting gain approximation to compare its input pole.",
+    "equation": "C_{in}\\simeq10\\,pF+2\\,pF(1-A_v),\\quad f_{in}\\simeq\\frac{1}{2\\pi R_GC_{in}}",
+    "columns": [
+      "Voltage gain",
+      "Effective input capacitance",
+      "Input pole"
+    ],
+    "rows": [
+      [
+        "−1",
+        "14 pF",
+        "568 kHz"
+      ],
+      [
+        "−10",
+        "32 pF",
+        "249 kHz"
+      ],
+      [
+        "−100",
+        "212 pF",
+        "37.5 kHz"
+      ]
+    ],
+    "analysis": [
+      "The physical 2 pF coupling capacitor dominates after multiplication at high gain. A device with a high intrinsic transition frequency can still form a slow voltage stage when source resistance and voltage gain are large. Lowering source resistance improves this input pole without changing the device capacitance.",
+      "A cascode reduces the voltage movement at the lower device’s output, reducing its input Miller burden. The resulting high-impedance final output still has its own pole; bandwidth improvement must be assessed for the complete stage. Compensation intentionally uses Miller multiplication to slow an internal node for stability."
+    ],
+    "limits": "The constant-gain approximation fails near the amplifier’s own poles. Use the two-node model when input/output dynamics interact strongly.",
+    "connections": [
+      [
+        "/mos-cascode-amplifier/",
+        "Miller suppression"
+      ],
+      [
+        "/mos-two-stage-amplifier/",
+        "Intentional compensation"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§2.3–2.5; Huijsing, Operational Amplifiers, input and gain-stage error analysis"
+  },
+  "negative-feedback": {
+    "title": "Error suppression depends on where the error enters",
+    "setup": "A feedback amplifier has ideal closed-loop gain 10. Compare loop gain T at the frequency of interest. Input-referred offset is outside the forward-path error suppression, while an output disturbance inside the sensed loop is suppressed.",
+    "equation": "\\epsilon_{gain}=\\frac{1}{1+T},\\quad d_{out,closed}=\\frac{d_{out,open}}{1+T}",
+    "columns": [
+      "Loop gain",
+      "Gain deficiency",
+      "1 V internal output disturbance"
+    ],
+    "rows": [
+      [
+        "9",
+        "10%",
+        "100 mV"
+      ],
+      [
+        "99",
+        "1%",
+        "10 mV"
+      ],
+      [
+        "999",
+        "0.1%",
+        "1 mV"
+      ]
+    ],
+    "analysis": [
+      "The same feedback denominator suppresses an output disturbance but does not erase an offset added at the amplifier’s input: that offset follows the closed-loop noise gain. A precision design must locate each error source before applying a generic “feedback improves accuracy” statement.",
+      "T is complex and frequency dependent. A large DC value may collapse at signal frequency, and a denominator close to zero creates peaking or instability rather than useful suppression. The required loop gain should be checked over the full signal and disturbance band."
+    ],
+    "limits": "Include resistor-ratio error, reference noise and unsensed output drops separately. Verify stability, output range and current before invoking the linear feedback result.",
+    "connections": [
+      [
+        "/opamp-dc-errors/",
+        "Input error budgets"
+      ],
+      [
+        "/opamp-load-stability/",
+        "Feedback location"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§2.3–2.5; Huijsing, Operational Amplifiers, input and gain-stage error analysis"
+  },
+  "transistor-feedback": {
+    "title": "Local feedback reduces parameter sensitivity",
+    "setup": "A common-emitter stage has an effective 5 kΩ collector load and 500 Ω unbypassed emitter resistance. Compare transistor transconductance while neglecting beta loading and output conductance.",
+    "equation": "A_v=-\\frac{g_mR_C}{1+g_mR_E},\\quad S_{g_m}=\\frac{1}{1+g_mR_E}",
+    "columns": [
+      "Transconductance",
+      "Voltage gain",
+      "Fractional sensitivity to gm"
+    ],
+    "rows": [
+      [
+        "10 mS",
+        "−8.333",
+        "0.1667"
+      ],
+      [
+        "20 mS",
+        "−9.091",
+        "0.0909"
+      ],
+      [
+        "40 mS",
+        "−9.524",
+        "0.0476"
+      ]
+    ],
+    "analysis": [
+      "A fourfold transconductance change produces only about 14.3% gain change here, while an un-degenerated stage’s gain would change fourfold. The gain approaches the resistor ratio −10 as local loop gain grows. The residual difference is predictable and should be included in a precision target.",
+      "Adding more degeneration consumes emitter voltage and reduces available output swing or requires a higher supply. It also changes input resistance and introduces resistor noise. Feedback exchanges intrinsic gain for robustness; it does not provide that robustness without a voltage, power and bandwidth budget."
+    ],
+    "limits": "Finite source resistance and transistor output conductance change the exact expression. Keep bias-current changes separate from an incremental parameter comparison at established operating points.",
+    "connections": [
+      [
+        "/bjt-biasing/",
+        "DC feedback"
+      ],
+      [
+        "/mos-source-degeneration/",
+        "MOS comparison"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§2.3–2.5; Huijsing, Operational Amplifiers, input and gain-stage error analysis"
+  },
+  "regulated-supplies": {
+    "title": "A load-step budget begins before the loop can respond",
+    "setup": "A 5 V regulator experiences an added 100 mA load for the first 20 μs before significant loop correction. Compare output capacitors with fixed 0.05 Ω ESR. Neglect ESL and source current change during that interval.",
+    "equation": "\\Delta V\\simeq\\Delta I\\,ESR+\\frac{\\Delta I\\Delta t}{C}",
+    "columns": [
+      "Output capacitance",
+      "Charge droop",
+      "Initial ESR step"
+    ],
+    "rows": [
+      [
+        "10 μF",
+        "200 mV",
+        "5 mV"
+      ],
+      [
+        "47 μF",
+        "42.6 mV",
+        "5 mV"
+      ],
+      [
+        "220 μF",
+        "9.09 mV",
+        "5 mV"
+      ]
+    ],
+    "analysis": [
+      "The control loop cannot instantaneously replace charge. A larger capacitor supports the initial transient, while ESR makes an immediate step. After the loop responds, its bandwidth and damping determine recovery and any overshoot. A static load-regulation number does not describe this sequence.",
+      "The capacitor and ESR can also shape regulator compensation. Replacing an intended capacitor with a much lower-ESR ceramic can improve the instantaneous step while destabilizing a design that depends on an ESR zero. Component selection must preserve both charge storage and loop dynamics."
+    ],
+    "limits": "Check the specific regulator’s capacitor requirements, current limit and dropout during the transient. Wiring inductance adds edge spikes beyond this simple estimate.",
+    "connections": [
+      [
+        "/capacitors/",
+        "Charge reservoirs"
+      ],
+      [
+        "/negative-feedback/",
+        "Loop dynamics"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§2.3–2.5; Huijsing, Operational Amplifiers, input and gain-stage error analysis; AoE §§9.1–9.4"
+  },
+  "temperature-control": {
+    "title": "Integral action does not create heater power",
+    "setup": "A thermal plant loses heat with conductance 0.2 W/°C to a 20 °C ambient. The heater can supply at most 5 W. Compare requested temperatures at steady state, neglecting other heat sources.",
+    "equation": "P_{required}=G_{th}(T_{set}-T_{ambient}),\\quad T_{max}=T_{ambient}+P_{max}/G_{th}",
+    "columns": [
+      "Setpoint",
+      "Required heater power",
+      "Feasibility"
+    ],
+    "rows": [
+      [
+        "30 °C",
+        "2 W",
+        "Attainable"
+      ],
+      [
+        "40 °C",
+        "4 W",
+        "Attainable with 1 W reserve"
+      ],
+      [
+        "50 °C",
+        "6 W",
+        "Unattainable"
+      ]
+    ],
+    "analysis": [
+      "The maximum modeled equilibrium is 45 °C. At a 50 °C command, an integrator continues accumulating positive error unless anti-windup or another limiting rule intervenes. When the command later falls, that stored demand can keep the heater on and cause slow recovery or overshoot.",
+      "Ambient variation changes the power reserve. At 30 °C ambient, maintaining 40 °C needs only 2 W; at 10 °C it needs 6 W and is impossible with this heater. Design both minimum and maximum ambient conditions, then choose controller dynamics against the plant’s heat capacity and sensor lag."
+    ],
+    "limits": "Include sensor location, heater coupling, thermal delay and power-device dissipation. A temperature-independent linear plant is a useful local model, not a guarantee over a wide range.",
+    "connections": [
+      [
+        "/opamp-integrator/",
+        "Windup and stored state"
+      ],
+      [
+        "/power/",
+        "Thermal dynamics"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§2.3–2.5; Huijsing, Operational Amplifiers, input and gain-stage error analysis; AoE §15.6"
+  },
+  "bjt-logic": {
+    "title": "Fan-out and speed share the same current budget",
+    "setup": "An RTL inverter uses a 5 V supply and 4.7 kΩ pull-up. Its high-state node feeds N receiver base resistors of 10 kΩ, each ending at a nominal 0.7 V junction. Ignore transmitter leakage and solve the loaded high level.",
+    "equation": "\\frac{5-V_H}{4.7k}=N\\frac{V_H-0.7}{10k}",
+    "columns": [
+      "Receivers",
+      "Loaded high voltage",
+      "Each receiver base current"
+    ],
+    "rows": [
+      [
+        "1",
+        "3.625 V",
+        "292.5 μA"
+      ],
+      [
+        "3",
+        "2.484 V",
+        "178.4 μA"
+      ],
+      [
+        "5",
+        "1.984 V",
+        "128.4 μA"
+      ]
+    ],
+    "analysis": [
+      "Fan-out lowers the high level even though each receiver is a transistor input. Compare that level with the receiver’s required base drive, not just a nominal logic threshold. At the low state, the transmitting transistor must sink pull-up current while maintaining an acceptable low voltage.",
+      "Reducing the pull-up resistance improves high-state drive and charges node capacitance faster, but increases low-state current and power. Increasing receiver base resistance reduces loading but weakens switching drive. Storage time from deep saturation can dominate turn-off even after the RC rise time is improved."
+    ],
+    "limits": "Include beta spread, junction-drop variation and input/output noise margins. A correct unloaded truth table does not establish reliable cascaded logic.",
+    "connections": [
+      [
+        "/bjt/",
+        "Switch drive"
+      ],
+      [
+        "/darlington/",
+        "Stored-charge recovery"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§2.3–2.5; Huijsing, Operational Amplifiers, input and gain-stage error analysis; AoE §10.2"
+  },
+  "fet-physics": {
+    "title": "A MOS region label depends on both terminal voltages",
+    "setup": "An enhancement NMOS has threshold 1 V, $k=2$ mA/V² and fixed gate-source voltage 2 V. Neglect channel-length modulation and body effect. Sweep drain-source voltage rather than assuming its gate alone determines current.",
+    "equation": "I_D=k(uV_{DS}-V_{DS}^2/2)\\ (0<V_{DS}<u),\\quad I_{D,sat}=ku^2/2",
+    "columns": [
+      "Drain-source voltage",
+      "Drain current",
+      "Region"
+    ],
+    "rows": [
+      [
+        "0.1 V",
+        "0.190 mA",
+        "Triode"
+      ],
+      [
+        "0.5 V",
+        "0.750 mA",
+        "Triode"
+      ],
+      [
+        "1.5 V",
+        "1.000 mA",
+        "Saturation"
+      ]
+    ],
+    "analysis": [
+      "The gate overdrive is 1 V in all rows, but current reaches its saturation value only when drain headroom is sufficient. Pinch-off at the drain end allows continued channel current; it does not mean cutoff. Cutoff instead corresponds to insufficient gate overdrive in this strong-inversion teaching model.",
+      "Near the origin the channel acts as a voltage-controlled resistance, with small-drain conductance approximately $ku$. That approximation becomes nonlinear as drain voltage grows. A signal switch and a current source therefore use different regions of the same device law."
+    ],
+    "limits": "Weak inversion, body effect, mobility degradation and short-channel behavior need richer models. Use region inequalities to check a circuit, then use device curves to quantify real current.",
+    "connections": [
+      [
+        "/fet-switches/",
+        "Triode switching"
+      ],
+      [
+        "/mos-current-mirror/",
+        "Saturation current copying"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.1–3.6; Huijsing, Operational Amplifiers, MOS transconductance and bias stages"
+  },
+  "jfet-bias": {
+    "title": "Self-bias must accommodate two independent parameter spreads",
+    "setup": "A JFET follows $I=I_{DSS}(1-V_{GS}/V_P)^2$, with negative pinch-off voltage. Its gate is grounded and source resistor is 1 kΩ. Solve self-bias for three device parameter sets, initially assuming adequate drain headroom.",
+    "equation": "I=I_{DSS}\\left(1-\\frac{IR_S}{|V_P|}\\right)^2",
+    "columns": [
+      "IDSS, |VP|",
+      "Solved drain current",
+      "Source voltage"
+    ],
+    "rows": [
+      [
+        "4 mA, 2 V",
+        "1.000 mA",
+        "1.000 V"
+      ],
+      [
+        "8 mA, 2 V",
+        "1.219 mA",
+        "1.219 V"
+      ],
+      [
+        "8 mA, 4 V",
+        "2.000 mA",
+        "2.000 V"
+      ]
+    ],
+    "analysis": [
+      "The source resistor reduces sensitivity to zero-bias current, but different pinch-off voltages still move the result substantially. A circuit selected from one typical $I_{DSS}$ cannot represent the complete device family. The physical solution keeps $0\\le IR_S\\le|V_P|$ and rejects the algebraic root outside the depletion-law domain.",
+      "At a 5 V drain supply with a 1 kΩ drain resistor, the final row gives drain 3 V and source 2 V, leaving only 1 V drain-source voltage. Its ideal saturation requirement is $V_{DS}\\ge V_{GS}-V_P=2$ V, so that row’s self-bias saturation assumption fails in this loaded circuit."
+    ],
+    "limits": "Re-solve the region-aware device and load equations when headroom fails. Include gate-junction leakage and reverse-bias ratings rather than treating the JFET gate as an ideal open circuit.",
+    "connections": [
+      [
+        "/jfet-amplifiers/",
+        "Bias and gain together"
+      ],
+      [
+        "/mos-bias-atlas/",
+        "Region-aware load lines"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.1–3.6; Huijsing, Operational Amplifiers, MOS transconductance and bias stages"
+  },
+  "jfet-amplifiers": {
+    "title": "Source feedback makes gain less dependent on device gm",
+    "setup": "A JFET common-source stage sees an effective 10 kΩ drain load and 1 kΩ unbypassed source resistance. Compare local transconductance at independently established valid bias points, neglecting output conductance.",
+    "equation": "A_v\\simeq-\\frac{g_mR_D}{1+g_mR_S}",
+    "columns": [
+      "Transconductance",
+      "Voltage gain",
+      "Un-degenerated gain"
+    ],
+    "rows": [
+      [
+        "1 mS",
+        "−5.000",
+        "−10"
+      ],
+      [
+        "2 mS",
+        "−6.667",
+        "−20"
+      ],
+      [
+        "4 mS",
+        "−8.000",
+        "−40"
+      ]
+    ],
+    "analysis": [
+      "Fourfold transconductance spread produces only a 60% gain spread with this degeneration, compared with fourfold without it. Stronger degeneration moves gain toward the resistor ratio −10, while reducing available gain and consuming source voltage. A selected device can reduce spread, but feedback and selection solve different parts of the budget.",
+      "A bypass capacitor restores more AC gain without removing DC self-bias. Its low-frequency impedance must be evaluated using the complete incremental source network. The high-frequency limit also depends on gate-drain Miller multiplication and the actual signal source resistance."
+    ],
+    "limits": "The JFET gate must remain reverse biased over the signal. Large positive gate excursions introduce gate current and invalidate the voltage-controlled current-source approximation.",
+    "connections": [
+      [
+        "/mos-source-degeneration/",
+        "MOS feedback comparison"
+      ],
+      [
+        "/fet-dynamics/",
+        "Capacitance and leakage"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.1–3.6; Huijsing, Operational Amplifiers, MOS transconductance and bias stages"
+  },
+  "fet-dynamics": {
+    "title": "High input resistance can make leakage the dominant error",
+    "setup": "A gate-input amplifier observes a source with 10 MΩ Thévenin resistance. Compare total DC leakage from device, protection and board while keeping that source resistance fixed.",
+    "equation": "V_{error}=I_{leak}R_S,\\quad e_{R}=\\sqrt{4k_BTR_S}",
+    "columns": [
+      "Total leakage",
+      "Input DC error",
+      "At gain 10"
+    ],
+    "rows": [
+      [
+        "1 pA",
+        "10 μV",
+        "100 μV"
+      ],
+      [
+        "100 pA",
+        "1 mV",
+        "10 mV"
+      ],
+      [
+        "10 nA",
+        "100 mV",
+        "1 V"
+      ]
+    ],
+    "analysis": [
+      "At 300 K the 10 MΩ source also has about 407 nV/√Hz thermal voltage-noise density, before the amplifier’s own noise. Tiny nominal gate current does not make a high-impedance measurement noiseless. Protection leakage and contamination may exceed the intrinsic input current, particularly as temperature or humidity changes.",
+      "Input capacitance forms a low-pass with the source. With 10 pF total capacitance, the 10 MΩ source has a corner near 1.59 kHz. A driven guard can reduce some leakage and capacitance but must track the signal with stable dynamics."
+    ],
+    "limits": "Measure the complete assembly’s leakage and settling under operating conditions. Do not infer a bandwidth or DC accuracy guarantee from a nominal gate-current figure alone.",
+    "connections": [
+      [
+        "/opamp-input-tradeoffs/",
+        "Noise versus source impedance"
+      ],
+      [
+        "/bootstrapping/",
+        "Driven guards"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.1–3.6; Huijsing, Operational Amplifiers, MOS transconductance and bias stages; AoE §§5.7, 8.6"
+  },
+  "fet-switches": {
+    "title": "Sample capacitance has lower and upper bounds",
+    "setup": "A sample-and-hold has total on resistance 1 kΩ, acquisition time 10 μs, hold time 1 ms and leakage 1 nA. Require acquisition within half of one 12-bit full-scale code and hold droop below 1 mV. Ignore charge injection initially.",
+    "equation": "C\\le\\frac{t_{acq}}{R_{on}\\ln8192},\\quad C\\ge\\frac{I_{leak}t_{hold}}{\\Delta V_{hold}}",
+    "columns": [
+      "Constraint",
+      "Capacitance bound",
+      "Meaning"
+    ],
+    "rows": [
+      [
+        "Acquisition",
+        "At most 1.110 nF",
+        "Must charge fast enough"
+      ],
+      [
+        "Hold droop",
+        "At least 1.000 nF",
+        "Must retain enough charge"
+      ],
+      [
+        "Both",
+        "1.000–1.110 nF",
+        "Very narrow nominal window"
+      ]
+    ],
+    "analysis": [
+      "A nominal 1 nF part sits at the lower bound and leaves little tolerance margin. Increasing leakage to 2 nA raises the hold requirement to 2 nF, eliminating the window. Faster acquisition or a lower-resistance switch can restore feasibility; selecting a capacitor alone cannot fix incompatible inequalities.",
+      "Charge injection adds $\\Delta V=\\Delta Q/C$. A 1 pC switching charge into 1 nF creates a 1 mV step, already equal to the entire hold-droop allowance. Thermal sampling noise at 300 K is about 2.03 μV RMS for 1 nF, usually a smaller contribution here but still part of the resolution budget."
+    ],
+    "limits": "Include signal-dependent on resistance, switch leakage over temperature, source resistance, dielectric absorption and buffer settling. Specifications must overlap at worst case, not merely at typical values.",
+    "connections": [
+      [
+        "/rc-circuits/",
+        "Accuracy-based settling"
+      ],
+      [
+        "/opamp-noninverting/",
+        "Sampled-load buffering"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.1–3.6; Huijsing, Operational Amplifiers, MOS transconductance and bias stages; AoE §13.7"
+  },
+  "mosfet-physics": {
+    "title": "Body voltage moves threshold even when the gate is unchanged",
+    "setup": "A MOSFET has zero-body-bias threshold 0.7 V, body coefficient 0.4 √V and $2\\phi_F=0.6$ V. Compare positive source-to-body voltages, using the square-root depletion model.",
+    "equation": "V_T=V_{T0}+\\gamma\\left(\\sqrt{2\\phi_F+V_{SB}}-\\sqrt{2\\phi_F}\\right)",
+    "columns": [
+      "Source-body voltage",
+      "Threshold rise",
+      "New threshold"
+    ],
+    "rows": [
+      [
+        "0 V",
+        "0",
+        "0.700 V"
+      ],
+      [
+        "0.5 V",
+        "109.7 mV",
+        "0.810 V"
+      ],
+      [
+        "2 V",
+        "335.1 mV",
+        "1.035 V"
+      ]
+    ],
+    "analysis": [
+      "The elevated-source device needs more gate-source voltage to carry the same current. A grounded-bulk source follower or upper cascode device therefore cannot be analyzed with the zero-body-bias threshold unless that approximation is justified. The body is an electrical terminal with a bias condition, not merely a symbol decoration.",
+      "In a discrete power NMOS the body is commonly tied internally to the source, while an integrated device can share a substrate or use an isolated well. These physical choices alter threshold, junction behavior and permissible node voltages. State them before comparing apparently identical circuits."
+    ],
+    "limits": "The model assumes reverse-biased source-body junction and the stated process constants. Forward junction conduction, breakdown and short-channel effects lie outside it.",
+    "connections": [
+      [
+        "/mos-source-follower/",
+        "Body feedback in gain"
+      ],
+      [
+        "/mos-wide-swing-mirror/",
+        "Cascode bias margin"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.1–3.6; Huijsing, Operational Amplifiers, MOS transconductance and bias stages"
+  },
+  "mosfet-linear": {
+    "title": "A linear pass device has a voltage-current trajectory",
+    "setup": "A 12 V source feeds a MOSFET controlling a resistive load. Compare device power at three load currents and drain-source drops chosen from possible operating points. These are stress points, not an assumed transistor transfer curve.",
+    "equation": "P_D=V_{DS}I_D",
+    "columns": [
+      "Drain-source drop",
+      "Drain current",
+      "Device dissipation"
+    ],
+    "rows": [
+      [
+        "1 V",
+        "1 A",
+        "1 W"
+      ],
+      [
+        "6 V",
+        "0.5 A",
+        "3 W"
+      ],
+      [
+        "11 V",
+        "0.1 A",
+        "1.1 W"
+      ]
+    ],
+    "analysis": [
+      "The middle point is hotter despite lower current than the first. Low on-resistance tells little about this linear-mode stress because the device is deliberately holding a substantial voltage while conducting. Check the safe operating area at each voltage/current point and at the pulse duration or continuous condition.",
+      "A DC current servo can make output current accurate while the transistor overheats. Feedback corrects the sense voltage, not the silicon’s local temperature distribution. Current crowding and threshold-temperature effects can limit linear operation below a simple total-watt estimate."
+    ],
+    "limits": "Use the actual device’s linear SOA, thermal path and derating. A switching-optimized MOSFET may have inadequate sustained linear capability even when its headline voltage and current ratings look ample.",
+    "connections": [
+      [
+        "/opamp-current-servo/",
+        "Accuracy versus stress"
+      ],
+      [
+        "/parallel-mosfets/",
+        "Linear-mode sharing"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.1–3.6; Huijsing, Operational Amplifiers, MOS transconductance and bias stages; AoE §9.4"
+  },
+  "mosfet-power": {
+    "title": "Frequency moves the loss balance from conduction to switching",
+    "setup": "A low-side MOSFET switches a 12 V, 2 A load at 50% duty. Use on resistance 0.1 Ω, total voltage/current overlap time 100 ns per cycle and total gate charge 20 nC at 5 V drive. Ignore recovery and other parasitic losses.",
+    "equation": "P_{cond}=I^2R_{on}D,\\quad P_{sw}\\simeq\\tfrac12VI(t_r+t_f)f,\\quad P_{gate}=Q_gV_gf",
+    "columns": [
+      "Frequency",
+      "MOS overlap loss",
+      "Driver gate-charge loss"
+    ],
+    "rows": [
+      [
+        "10 kHz",
+        "12 mW",
+        "1 mW"
+      ],
+      [
+        "100 kHz",
+        "120 mW",
+        "10 mW"
+      ],
+      [
+        "1 MHz",
+        "1.20 W",
+        "100 mW"
+      ]
+    ],
+    "analysis": [
+      "Conduction loss is 200 mW in all rows under the fixed-resistance assumption. At 1 MHz switching overlap dominates the MOS budget. Gate-charge loss is primarily supplied/dissipated by the driver path and should not automatically be added to MOS junction heating as though every term occurred in the same die.",
+      "Temperature raises on resistance in typical switching operation, while faster drive can reduce overlap and increase ringing or electromagnetic coupling. A driver must support the required instantaneous gate current, particularly across the Miller plateau; average gate power alone does not establish edge speed."
+    ],
+    "limits": "Include diode reverse recovery, output-capacitance energy, dead time, layout inductance and temperature-dependent parameters for the real topology.",
+    "connections": [
+      [
+        "/power-fet-circuits/",
+        "Bridge and converter losses"
+      ],
+      [
+        "/miller-effect/",
+        "Plateau charge"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.1–3.6; Huijsing, Operational Amplifiers, MOS transconductance and bias stages"
+  },
+  "power-fet-circuits": {
+    "title": "Buck current ripple determines whether the assumed mode exists",
+    "setup": "An ideal buck converts 12 V to 5 V at 100 kHz with a 100 μH inductor. Use continuous-conduction formulas initially and compare load current.",
+    "equation": "D=V_O/V_I,\\quad\\Delta I_{pp}=\\frac{(V_I-V_O)D}{Lf_s}=0.2917\\,A",
+    "columns": [
+      "Load current",
+      "Predicted current valley",
+      "Mode implication"
+    ],
+    "rows": [
+      [
+        "0.05 A",
+        "−0.0958 A",
+        "CCM assumption fails for diode buck"
+      ],
+      [
+        "0.2 A",
+        "0.0542 A",
+        "Continuous current"
+      ],
+      [
+        "1 A",
+        "0.8542 A",
+        "Continuous current"
+      ]
+    ],
+    "analysis": [
+      "The nominal duty ratio is 0.4167. At 50 mA load, a diode buck cannot follow the negative-current prediction because its diode blocks reverse current; it enters discontinuous conduction and requires a different conversion relation. A synchronous converter may permit reverse current depending on its control mode.",
+      "Ripple also changes RMS current and capacitor stress. Inductor peak current is load plus half the ripple, so the 1 A case reaches about 1.146 A. Include tolerance and transients before choosing saturation current. The output capacitor and control loop determine voltage ripple and response beyond this first inductor calculation."
+    ],
+    "limits": "Check dead time, diode or synchronous-switch conduction, bootstrap refresh, inductor loss and control mode. The ideal duty relation alone does not describe light-load behavior.",
+    "connections": [
+      [
+        "/inductors/",
+        "Current continuity"
+      ],
+      [
+        "/regulated-supplies/",
+        "Control-loop response"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.1–3.6; Huijsing, Operational Amplifiers, MOS transconductance and bias stages; AoE §9.6"
+  },
+  "parallel-mosfets": {
+    "title": "Current sharing changes as the devices warm",
+    "setup": "Two fully enhanced MOSFETs have on resistances 40 and 60 mΩ at a common temperature and share 10 A total. Treat each as an ohmic resistor and compare adding equal source ballast.",
+    "equation": "I_1=I_T\\frac{R_2+R_B}{R_1+R_2+2R_B},\\quad I_2=I_T-I_1",
+    "columns": [
+      "Each ballast",
+      "Branch currents",
+      "Ballast power, combined"
+    ],
+    "rows": [
+      [
+        "0 mΩ",
+        "6.0 A / 4.0 A",
+        "0"
+      ],
+      [
+        "20 mΩ",
+        "5.714 A / 4.286 A",
+        "1.020 W"
+      ],
+      [
+        "100 mΩ",
+        "5.333 A / 4.667 A",
+        "5.022 W"
+      ]
+    ],
+    "analysis": [
+      "Ballast improves sharing but can dominate dissipation in a low-resistance switch. The unballasted devices dissipate 1.44 and 0.96 W respectively; the lower-resistance branch draws more current and heats more. Temperature-dependent resistance can redistribute current, but total heat and thermal paths must still be solved.",
+      "The reassuring positive on-resistance temperature coefficient applies to the fully enhanced ohmic regime. Near threshold or during sustained linear operation, threshold and mobility effects can create different feedback. Unequal gate inductance can also create transient current imbalance despite acceptable DC sharing."
+    ],
+    "limits": "Compare the actual switching trajectories, individual gate drive, source inductance, temperature and SOA. Shared copper temperature does not guarantee equal junction temperature.",
+    "connections": [
+      [
+        "/current-sharing/",
+        "BJT electrothermal contrast"
+      ],
+      [
+        "/mosfet-linear/",
+        "Linear-region limits"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.1–3.6; Huijsing, Operational Amplifiers, MOS transconductance and bias stages"
+  },
+  "mos-bias-atlas": {
+    "title": "A supply-derived gate bias also couples supply ripple",
+    "setup": "An NMOS has $k=2$ mA/V², threshold 1 V, grounded source and 2 kΩ drain resistor. A divider sets its gate to 0.4 of the supply. Neglect body effect and channel-length modulation; all listed points are saturated.",
+    "equation": "I_D=\\tfrac12k(0.4V_{DD}-V_T)^2,\\quad\\frac{dV_D}{dV_{DD}}=1-0.4g_mR_D",
+    "columns": [
+      "Supply",
+      "Drain current",
+      "Drain voltage"
+    ],
+    "rows": [
+      [
+        "4.5 V",
+        "0.64 mA",
+        "3.22 V"
+      ],
+      [
+        "5.0 V",
+        "1.00 mA",
+        "3.00 V"
+      ],
+      [
+        "5.5 V",
+        "1.44 mA",
+        "2.62 V"
+      ]
+    ],
+    "analysis": [
+      "At the 5 V point, $g_m=2$ mS and the supply-to-drain local slope is −0.6 V/V. The gate-bias path can invert the drain’s response to supply change even though the drain resistor itself connects to the positive rail. Supply rejection must include bias generation.",
+      "A separately regulated gate voltage would remove this divider modulation, while source degeneration reduces current sensitivity. Both choices introduce their own reference, noise or headroom requirements."
+    ],
+    "limits": "The derivatives are local and the divider is assumed stiff enough despite any leakage. Include divider loading, supply noise spectrum and bias-reference impedance.",
+    "connections": [
+      [
+        "/regulators/",
+        "Bias references"
+      ],
+      [
+        "/mos-source-degeneration/",
+        "Sensitivity reduction"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-diode-load": {
+    "title": "Diode-load bias is a level-shift budget",
+    "setup": "A diode-connected upper NMOS carries 0.5 mA from a 3.3 V rail into a saturated lower stage. Threshold is 0.7 V and source follows its isolated bulk. Compare upper-device k while current stays fixed.",
+    "equation": "u_L=\\sqrt{2I/k_L},\\quad V_O=V_{DD}-V_{TL}-u_L",
+    "columns": [
+      "Load k",
+      "Load overdrive",
+      "DC output"
+    ],
+    "rows": [
+      [
+        "1 mA/V²",
+        "1.000 V",
+        "1.600 V"
+      ],
+      [
+        "4 mA/V²",
+        "0.500 V",
+        "2.100 V"
+      ],
+      [
+        "16 mA/V²",
+        "0.250 V",
+        "2.350 V"
+      ]
+    ],
+    "analysis": [
+      "A larger load geometry shifts output upward and lowers incremental resistance. It buys headroom for the lower transistor while usually reducing voltage-gain magnitude. A diode load therefore changes level, gain and input capacitance together.",
+      "If this node drives the next stage’s gate, choose its DC output from that stage’s required gate-source voltage before optimizing gain. Two individually valid stages can still have incompatible interstage levels."
+    ],
+    "limits": "Grounded-bulk upper devices need a revised threshold, and a directly connected load changes current. Each row assumes an independently established equal-current operating point.",
+    "connections": [
+      [
+        "/mos-two-stage-amplifier/",
+        "Interstage bias compatibility"
+      ],
+      [
+        "/mos-active-load/",
+        "Stiffer versus higher-gain loads"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-current-mirror": {
+    "title": "A resistor reference is not supply independent",
+    "setup": "A mirror reference NMOS has $k=2$ mA/V² and threshold 1 V. Its diode-connected drain is supplied through 5 kΩ. Ignore channel-length modulation and gate current.",
+    "equation": "I_{ref}=\\tfrac12ku^2,\\quad V_{DD}=V_T+u+I_{ref}R",
+    "columns": [
+      "Supply",
+      "Reference overdrive",
+      "Reference current"
+    ],
+    "rows": [
+      [
+        "3.3 V",
+        "0.5856 V",
+        "0.3429 mA"
+      ],
+      [
+        "5.0 V",
+        "0.8000 V",
+        "0.6400 mA"
+      ],
+      [
+        "6.0 V",
+        "0.9050 V",
+        "0.8190 mA"
+      ]
+    ],
+    "analysis": [
+      "The mirror copies the current established by the reference circuit; it does not remove the reference’s supply dependence. A high output resistance can coexist with a badly drifting reference. Distinguish current-copy accuracy from absolute current accuracy.",
+      "The quadratic solution is $u=[-1+\\sqrt{1+20(V_{DD}-1)}]/10$ for these units. At low supply the resistor has little voltage left after the diode-connected gate-source drop. A reference source with its own compliance and drift is needed for tighter absolute regulation."
+    ],
+    "limits": "Include reference-device threshold drift, resistor temperature coefficient and the output branch’s headroom. A perfect nominal mirror ratio does not establish a precise bias current.",
+    "connections": [
+      [
+        "/current-sources/",
+        "Reference versus output regulation"
+      ],
+      [
+        "/mos-cascode-mirror/",
+        "Reducing drain dependence"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-ratioed-mirrors": {
+    "title": "A bias tree’s total current includes every copy",
+    "setup": "A 50 μA reference generates output currents with ratios 1, 2 and 8. Use ideal matched geometry scaling and no gate current. Compare branch activation states.",
+    "equation": "I_{supply}=I_{ref}\\left(1+\\sum m_i\\right)",
+    "columns": [
+      "Enabled outputs",
+      "Total ideal current",
+      "Power from 3.3 V"
+    ],
+    "rows": [
+      [
+        "Ratio 1 only",
+        "100 μA",
+        "0.330 mW"
+      ],
+      [
+        "Ratios 1 and 2",
+        "200 μA",
+        "0.660 mW"
+      ],
+      [
+        "Ratios 1, 2 and 8",
+        "600 μA",
+        "1.980 mW"
+      ]
+    ],
+    "analysis": [
+      "The reference branch consumes power even if only one output is useful. Turning a stage off may require disabling its mirror branch rather than disconnecting its signal load. An output branch forced outside compliance can also interact with the shared gate through leakage or protection paths.",
+      "Integer-ratio unit cells allow systematic layout and common-centroid arrangements, but routing resistance and unequal drain voltages still create error. The bias-tree power is only the current delivered by these branches; any bias-generation or startup circuitry adds more."
+    ],
+    "limits": "Check each copy’s current density, drain voltage, source/bulk connections and startup. Include finite-voltage and mismatch effects separately from ideal ratio scaling.",
+    "connections": [
+      [
+        "/mos-mirror-loaded-differential/",
+        "Mirror loading"
+      ],
+      [
+        "/opamp-cmos-internals/",
+        "Total quiescent-current budget"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-source-degeneration": {
+    "title": "A bypass capacitor creates a gain shelf",
+    "setup": "A MOS stage has $g_m=2$ mS, $R_D=2$ kΩ and $R_S=500$ Ω. A capacitor bypasses the source resistor; neglect output conductance and body effect at an established bias.",
+    "equation": "A_v(s)=-g_mR_D\\frac{1+sR_SC_S}{1+g_mR_S+sR_SC_S}",
+    "columns": [
+      "Bypass capacitance",
+      "Gain zero",
+      "Gain pole"
+    ],
+    "rows": [
+      [
+        "1 μF",
+        "318.3 Hz",
+        "636.6 Hz"
+      ],
+      [
+        "10 μF",
+        "31.83 Hz",
+        "63.66 Hz"
+      ],
+      [
+        "100 μF",
+        "3.183 Hz",
+        "6.366 Hz"
+      ]
+    ],
+    "analysis": [
+      "Low-frequency gain is −2 and high-frequency gain approaches −4. The capacitor therefore creates a shelf with a zero and pole, rather than a single arbitrary “bypass corner.” DC source feedback remains because the capacitor is open at DC.",
+      "Choose the capacitor from the lowest frequency at which high gain is required and from the permitted gain/phase error. More capacitance extends the high-gain region downward but increases startup and overload charge storage."
+    ],
+    "limits": "Grounded-bulk feedback and finite device conductance change the coefficients. Capacitor leakage and ESR can alter DC bias or prevent a full high-frequency bypass.",
+    "connections": [
+      [
+        "/bjt-small-signal/",
+        "Emitter bypass comparison"
+      ],
+      [
+        "/poles/",
+        "Zeros and shelves"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-cascode-mirror": {
+    "title": "High output resistance can make a node slow to settle",
+    "setup": "A cascode current source has 5 MΩ local output resistance and drives a 20 pF node. Compare added external parallel resistance. This is a small-signal RC model, with DC bias separately maintained within compliance.",
+    "equation": "\\tau=(R_{out}\\parallel R_L)C,\\quad t_{0.1\\%}\\simeq6.908\\tau",
+    "columns": [
+      "External resistance",
+      "Node time constant",
+      "0.1% settling estimate"
+    ],
+    "rows": [
+      [
+        "Open",
+        "100 μs",
+        "691 μs"
+      ],
+      [
+        "500 kΩ",
+        "9.09 μs",
+        "62.8 μs"
+      ],
+      [
+        "50 kΩ",
+        "0.990 μs",
+        "6.84 μs"
+      ]
+    ],
+    "analysis": [
+      "The same resistance that improves current-source regulation increases the time needed for a voltage node to settle. A fast transconductance stage or global feedback may change the response, but the isolated node cannot be judged from output resistance alone.",
+      "Loading speeds this local RC tail at the cost of current-source stiffness and voltage gain if the node is part of an amplifier. At large excursions, capacitor charging current and saturation loss produce a different transient from the linear exponential."
+    ],
+    "limits": "Include internal cascode capacitance, reference dynamics and bias recovery. State the node’s actual load before quoting a settling time.",
+    "connections": [
+      [
+        "/mos-cascode-amplifier/",
+        "Loaded gain and poles"
+      ],
+      [
+        "/opamp-ac-limits/",
+        "Linear versus slew settling"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-wide-swing-mirror": {
+    "title": "Recovered headroom must survive bias error",
+    "setup": "A wide-swing output stack targets lower-device overdrive 0.3 V, upper overdrive 0.3 V and nominal protected-node margin 0.1 V. Approximate an upper-gate bias error as an equal protected-node shift while current remains nearly fixed.",
+    "equation": "V_X=u_1+m+\\Delta V_B,\\quad V_{out,min}\\simeq V_X+u_2",
+    "columns": [
+      "Bias error",
+      "Lower-device margin",
+      "Output minimum"
+    ],
+    "rows": [
+      [
+        "−80 mV",
+        "20 mV",
+        "0.620 V"
+      ],
+      [
+        "0",
+        "100 mV",
+        "0.700 V"
+      ],
+      [
+        "+80 mV",
+        "180 mV",
+        "0.780 V"
+      ]
+    ],
+    "analysis": [
+      "A negative bias error improves apparent upper-stack compliance while bringing the lower device close to triode. Minimum output voltage alone can therefore give a misleading impression of improvement. Preserve a positive protected-node margin across bias and threshold variation.",
+      "A replica generator should track device current density and body voltage. An external fixed voltage may not track either. Recovered swing is useful only if the whole reference and bias network remains feasible at minimum supply and temperature extremes."
+    ],
+    "limits": "The equal-shift approximation ignores finite conductances and body feedback. Solve the coupled stack for precision; use these rows as an initial margin budget.",
+    "connections": [
+      [
+        "/mosfet-physics/",
+        "Body-induced threshold shifts"
+      ],
+      [
+        "/mos-cascode-mirror/",
+        "Resistance requires saturation"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-common-source": {
+    "title": "Signal amplitude must be allocated against local curvature",
+    "setup": "A saturated common-source stage has 0.4 V overdrive and local gain −8. Ignore output modulation and clipping to isolate square-law second harmonic.",
+    "equation": "\\frac{H_2}{H_1}\\simeq\\frac{a}{4u},\\quad V_{out,pk}\\simeq|A_v|a",
+    "columns": [
+      "Input peak",
+      "Output peak estimate",
+      "Second harmonic estimate"
+    ],
+    "rows": [
+      [
+        "5 mV",
+        "40 mV",
+        "0.313%"
+      ],
+      [
+        "20 mV",
+        "160 mV",
+        "1.25%"
+      ],
+      [
+        "50 mV",
+        "400 mV",
+        "3.13%"
+      ]
+    ],
+    "analysis": [
+      "A perfectly valid bias and adequate voltage swing can still give unacceptable distortion. The local gain tells the tangent amplitude; the curvature gives a separate signal-size requirement. Compare these numbers with the application’s distortion budget before choosing a bias merely for maximum gain.",
+      "Source degeneration reduces curvature but also gain. A later feedback loop can suppress distortion within its bandwidth, provided no internal stage clips. If an AC load changes gain, recompute the output current and voltage budget rather than only scaling a gain label."
+    ],
+    "limits": "The harmonic expression is a small-amplitude saturation expansion. At larger amplitudes use the full device/load waveform and check every region boundary.",
+    "connections": [
+      [
+        "/mos-source-degeneration/",
+        "Local linearization"
+      ],
+      [
+        "/negative-feedback/",
+        "Distortion inside a loop"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-active-load": {
+    "title": "Current mismatch can consume the output window",
+    "setup": "An active-loaded node has 25 kΩ incremental output resistance and is biased at 2.5 V in a 1–4 V saturation window. Compare a DC current imbalance using a local linear model.",
+    "equation": "\\Delta V_O\\simeq\\Delta I\\,R_{out}",
+    "columns": [
+      "Current imbalance magnitude",
+      "Requested output shift",
+      "Window implication"
+    ],
+    "rows": [
+      [
+        "1 μA",
+        "25 mV",
+        "Small bias shift"
+      ],
+      [
+        "10 μA",
+        "250 mV",
+        "Noticeable margin loss"
+      ],
+      [
+        "100 μA",
+        "2.5 V",
+        "Outside the linear window"
+      ]
+    ],
+    "analysis": [
+      "The 100 μA row cannot be interpreted as an actual 5 V or 0 V linear output while both devices remain saturated. It is a warning that the current mismatch overwhelms the bias window. The nonlinear operating point must then be solved in a different region.",
+      "A feedback loop can rebalance input current to hold the external output, but its internal gate and node voltages must remain available. High gain makes small errors visible; it also makes an unregulated DC node fragile."
+    ],
+    "limits": "Include active-load bias drift, mirror ratio and drain-voltage mismatch. Output capacitance controls how quickly an imbalance moves the node before feedback corrects it.",
+    "connections": [
+      [
+        "/mos-mirror-loaded-differential/",
+        "Offset conversion"
+      ],
+      [
+        "/opamp-dc-errors/",
+        "Closed-loop DC budget"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-source-follower": {
+    "title": "Supply feedthrough and signal gain use different numerators",
+    "setup": "At independently established valid follower bias points, use $g_m=2$ mS, $g_{mb}=0.4$ mS and $g_{ds}=20$ μS. The bulk is grounded. Compare AC load conductance while treating these local parameters as fixed.",
+    "equation": "A_{signal}=\\frac{g_m}{g_m+g_{mb}+g_{ds}+G_L},\\quad A_{supply}=\\frac{g_{ds}}{g_m+g_{mb}+g_{ds}+G_L}",
+    "columns": [
+      "Load",
+      "Signal gain",
+      "Drain-supply feedthrough"
+    ],
+    "rows": [
+      [
+        "Open",
+        "0.8264",
+        "0.008264"
+      ],
+      [
+        "10 kΩ",
+        "0.7937",
+        "0.007937"
+      ],
+      [
+        "1 kΩ",
+        "0.5848",
+        "0.005848"
+      ]
+    ],
+    "analysis": [
+      "Heavier loading slightly reduces supply feedthrough in this local model, but it reduces signal gain at the same time. The improvement is not free supply rejection. Body transconductance reduces signal following even with an open signal load and separately retained bias current.",
+      "A physical load change may alter DC current, transconductance and threshold. The table deliberately compares fixed local models; to predict the same hardware after changing its DC load, first recompute its operating point."
+    ],
+    "limits": "Include bias-sink conductance and noise, input-source impedance and supply capacitance. This is a low-frequency derivative, not a wideband PSRR claim.",
+    "connections": [
+      [
+        "/mos-current-loaded-follower/",
+        "Bias sink effects"
+      ],
+      [
+        "/opamp-dc-errors/",
+        "Supply rejection budgets"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-current-loaded-follower": {
+    "title": "Sink noise appears at the output impedance",
+    "setup": "A follower has 500 Ω local output resistance including its bias sink and signal load. Compare uncorrelated white current noise injected by the sink over a rectangular 10 kHz band.",
+    "equation": "e_{out}=i_{sink}R_{node},\\quad V_{rms}=e_{out}\\sqrt B",
+    "columns": [
+      "Sink noise density",
+      "Output voltage density",
+      "Integrated output noise"
+    ],
+    "rows": [
+      [
+        "1 pA/√Hz",
+        "0.5 nV/√Hz",
+        "0.05 μV RMS"
+      ],
+      [
+        "10 pA/√Hz",
+        "5 nV/√Hz",
+        "0.5 μV RMS"
+      ],
+      [
+        "100 pA/√Hz",
+        "50 nV/√Hz",
+        "5 μV RMS"
+      ]
+    ],
+    "analysis": [
+      "An ideal current-sink symbol omits a potentially important noise source. Increasing follower transconductance lowers node impedance and this conversion, but costs bias power. The follower’s own channel noise, source resistor noise and gate-source noise still contribute.",
+      "Noise also depends on frequency-dependent node impedance. A capacitive load rolls off some output noise but may alter stability and settling; the effective integration bandwidth then differs from the rectangular band assumed here."
+    ],
+    "limits": "Use the actual sink’s noise model and combine powers at a common reference. Do not treat DC current accuracy as evidence of low noise.",
+    "connections": [
+      [
+        "/mos-noise-design/",
+        "Input-referred channel noise"
+      ],
+      [
+        "/opamp-input-tradeoffs/",
+        "Power-summed noise budgets"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-common-gate": {
+    "title": "A 50 Ω entrance requires substantial transconductance",
+    "setup": "Use ideal common-gate stages without body effect or output conductance, a 1 kΩ drain load and a 50 Ω signal-generator resistance. Compare independently chosen devices at 0.2 V overdrive and a 5 V supply.",
+    "equation": "R_{in}\\simeq1/g_m,\\quad I_D=g_mu/2,\\quad A_{generator}=g_mR_D\\frac{R_{in}}{50+R_{in}}",
+    "columns": [
+      "gm",
+      "Input resistance",
+      "Generator-to-output gain"
+    ],
+    "rows": [
+      [
+        "2 mS",
+        "500 Ω",
+        "+1.818"
+      ],
+      [
+        "10 mS",
+        "100 Ω",
+        "+6.667"
+      ],
+      [
+        "20 mS",
+        "50 Ω",
+        "+10.00"
+      ]
+    ],
+    "analysis": [
+      "The respective bias currents are 0.2, 1 and 2 mA, giving nominal path powers 1, 5 and 10 mW. Matching the input to 50 Ω consumes current and attenuates the source voltage by half at that input. The local source-to-drain gain is not the generator gain.",
+      "At fixed overdrive, these gm choices require different geometry/current density; they are not three gate settings of one unchanged transistor at identical current. At radio frequencies package and input capacitance modify the impedance."
+    ],
+    "limits": "Check DC load-line headroom: the 2 mA row drops 2 V across the 1 kΩ drain load. Include noise, parasitics and the source’s actual impedance across the band.",
+    "connections": [
+      [
+        "/impedance/",
+        "Frequency-specific matching"
+      ],
+      [
+        "/transconductance/",
+        "Current efficiency"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-cascode-amplifier": {
+    "title": "Two-sided cascodes can leave almost no output window",
+    "setup": "A simplified telescopic output has two equal-overdrive NMOS devices below the output and two equal-overdrive PMOS devices above it. Use a 3.3 V rail, independently generated wide-swing biases and no additional margin.",
+    "equation": "2u\\le V_O\\le V_{DD}-2u,\\quad V_{window}=V_{DD}-4u",
+    "columns": [
+      "Each device overdrive",
+      "Ideal output interval",
+      "Window width"
+    ],
+    "rows": [
+      [
+        "0.2 V",
+        "0.4–2.9 V",
+        "2.5 V"
+      ],
+      [
+        "0.4 V",
+        "0.8–2.5 V",
+        "1.7 V"
+      ],
+      [
+        "0.8 V",
+        "1.6–1.7 V",
+        "0.1 V"
+      ]
+    ],
+    "analysis": [
+      "High intrinsic gain can coexist with an unusably narrow signal window. Lower overdrive recovers swing but generally requires more device area at a fixed current, adding capacitance. A folded topology rearranges headroom but introduces its own current and noise costs.",
+      "The gate-bias generators may impose additional supply requirements beyond the output-stack inequalities. Check the reference network, input common-mode range and internal nodes before accepting the apparently broad low-overdrive row."
+    ],
+    "limits": "Add mismatch, body effect and intentional saturation margin. The table is a minimal stack estimate, not a complete op-amp rail-range specification.",
+    "connections": [
+      [
+        "/mos-wide-swing-mirror/",
+        "Bias-generator feasibility"
+      ],
+      [
+        "/opamp-cmos-internals/",
+        "Architecture tradeoffs"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-differential-pair": {
+    "title": "Symmetry cancels second harmonic but leaves third harmonic",
+    "setup": "A matched un-degenerated MOS pair has balanced overdrive 0.5 V and a fixed tail. Consider its differential current output under a small sinusoidal differential input, with both devices saturated.",
+    "equation": "I_1-I_2\\simeq g_{m0}\\left(v_d-\\frac{v_d^3}{8u_0^2}\\right),\\quad \\frac{H_3}{H_1}\\simeq\\frac{a^2}{32u_0^2}",
+    "columns": [
+      "Differential input peak",
+      "Third harmonic estimate",
+      "Relative scale"
+    ],
+    "rows": [
+      [
+        "20 mV",
+        "0.005%",
+        "Very local operation"
+      ],
+      [
+        "100 mV",
+        "0.125%",
+        "Curvature visible"
+      ],
+      [
+        "200 mV",
+        "0.5%",
+        "Needs fuller waveform check"
+      ]
+    ],
+    "analysis": [
+      "The matched differential output is an odd function, so its ideal second-order term cancels. This does not make it perfectly linear. A single branch voltage or a mismatched load can recover even-order distortion, and an active mirror introduces additional asymmetry.",
+      "The estimates are the cubic expansion, not an exact harmonic analysis. Use the complete steering law to verify larger signals and keep drain and tail compliance separate from the distortion calculation."
+    ],
+    "limits": "Include mismatch, finite tail resistance and load nonlinearity. Common-mode motion can modulate bias and distortion even when the differential signal is small.",
+    "connections": [
+      [
+        "/differential-amplifiers/",
+        "BJT symmetry comparison"
+      ],
+      [
+        "/mos-differential-degeneration/",
+        "Extending linear range"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-differential-range": {
+    "title": "Rejection must be compared with signal size",
+    "setup": "A measurement has 2 V common-mode interference and only 1 mV wanted differential signal. Compare equivalent input leakage for a system CMRR specified as a voltage ratio, assuming the circuit stays within common-mode range.",
+    "equation": "V_{error,input}=V_{cm}/10^{CMRR_{dB}/20}",
+    "columns": [
+      "CMRR",
+      "Equivalent differential error",
+      "Fraction of 1 mV signal"
+    ],
+    "rows": [
+      [
+        "80 dB",
+        "200 μV",
+        "20%"
+      ],
+      [
+        "100 dB",
+        "20 μV",
+        "2%"
+      ],
+      [
+        "120 dB",
+        "2 μV",
+        "0.2%"
+      ]
+    ],
+    "analysis": [
+      "A large decibel figure may still be inadequate when common mode dwarfs the signal. Choose CMRR from the actual interference-to-signal ratio and required error, then allocate mismatch between devices, loads, tail and external networks.",
+      "The same rejection figure must hold at the interference frequency. DC CMRR may deteriorate through capacitance mismatch or tail impedance. Input headroom is a separate prerequisite: no rejection calculation saves a pair whose tail or input devices are outside their valid region."
+    ],
+    "limits": "Check input protection and source impedance symmetry. Translate every CMRR claim into an input error before comparing it with the sensor resolution.",
+    "connections": [
+      [
+        "/opamp-difference/",
+        "External ratio CMRR"
+      ],
+      [
+        "/opamp-instrumentation/",
+        "High-common-mode measurements"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-mirror-loaded-differential": {
+    "title": "The mirrored signal path carries its own pole",
+    "setup": "The mirror’s diode-connected gate node has approximately 1 mS conductance. Compare total capacitance at that node. Ignore other poles to isolate the delay of the left-branch contribution.",
+    "equation": "f_{mirror}\\simeq\\frac{g_{mP}}{2\\pi C_{mirror}},\\quad\\phi_{path}=-\\tan^{-1}(f/f_{mirror})",
+    "columns": [
+      "Mirror-node capacitance",
+      "Pole",
+      "Path lag at 100 kHz"
+    ],
+    "rows": [
+      [
+        "10 pF",
+        "15.92 MHz",
+        "0.36°"
+      ],
+      [
+        "100 pF",
+        "1.592 MHz",
+        "3.60°"
+      ],
+      [
+        "1 nF",
+        "159.2 kHz",
+        "32.1°"
+      ]
+    ],
+    "analysis": [
+      "Only the mirrored contribution sees this pole; the direct right-branch current reaches the output through a different path. Their sum therefore changes in amplitude and phase, rather than simply becoming one identical-pole signal. High-frequency common-mode conversion can also grow when the paths cease to balance.",
+      "Larger mirror devices can improve matching or reduce flicker noise but add gate capacitance. More current raises gm and moves the pole upward at a power cost. Evaluate those changes together with output-node capacitance and gain."
+    ],
+    "limits": "The node conductance includes output conductance and any reference network in a fuller model. Include parasitic coupling and bias-source impedance.",
+    "connections": [
+      [
+        "/mos-two-stage-amplifier/",
+        "Multiple internal poles"
+      ],
+      [
+        "/mos-noise-design/",
+        "Area-noise-speed tradeoffs"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-differential-degeneration": {
+    "title": "Linearity, resistor noise and common-mode voltage share one choice",
+    "setup": "A pair carries a 2 mA tail, has balanced gm = 2 mS and uses equal source resistors. Threshold and overdrive are each 1 V; tail compliance is 0.3 V. Compare resistor thermal noise at 300 K, ignoring transistor noise.",
+    "equation": "G_{md}=\\frac{g_m}{1+g_mR_S},\\quad e_{R,diff}=\\sqrt{8k_BTR_S}",
+    "columns": [
+      "Each source resistor",
+      "Differential gm",
+      "Two-resistor voltage noise"
+    ],
+    "rows": [
+      [
+        "0 Ω",
+        "2.0 mS",
+        "0"
+      ],
+      [
+        "500 Ω",
+        "1.0 mS",
+        "4.07 nV/√Hz"
+      ],
+      [
+        "2 kΩ",
+        "0.4 mS",
+        "8.14 nV/√Hz"
+      ]
+    ],
+    "analysis": [
+      "Balanced lower common-mode bounds become 2.3, 2.8 and 4.3 V because each resistor carries 1 mA. The last choice can leave little range on a 5 V supply even though it gives strong local linearization. Resistor noise does not disappear when gain is reduced.",
+      "The differential resistor-noise estimate uses two independent resistors and input referral through the local source feedback. A complete stage also includes channel, load and tail noise and their transfer factors."
+    ],
+    "limits": "Check resistor matching and temperature coefficients as well as noise. A split-tail or other degeneration topology changes DC drop and must be analyzed from its actual connections.",
+    "connections": [
+      [
+        "/mos-differential-range/",
+        "Common-mode budget"
+      ],
+      [
+        "/mos-noise-design/",
+        "Complete noise integration"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-complementary-output": {
+    "title": "A capacitive load demands alternating current at zero voltage crossing",
+    "setup": "A complementary buffer drives a 2 V peak sine into 1 kΩ in parallel with 10 nF. Calculate load current independently of the output transistor model.",
+    "equation": "I_{R,pk}=V_p/R,\\quad I_{C,pk}=2\\pi fCV_p,\\quad I_{total,pk}=\\sqrt{I_{R,pk}^2+I_{C,pk}^2}",
+    "columns": [
+      "Frequency",
+      "Capacitive current peak",
+      "Total load-current peak"
+    ],
+    "rows": [
+      [
+        "1 kHz",
+        "0.126 mA",
+        "2.004 mA"
+      ],
+      [
+        "10 kHz",
+        "1.257 mA",
+        "2.362 mA"
+      ],
+      [
+        "100 kHz",
+        "12.57 mA",
+        "12.72 mA"
+      ]
+    ],
+    "analysis": [
+      "Resistive and capacitive currents are in quadrature, so their peak amplitudes combine as a vector rather than a direct sum. At high frequency the buffer must provide its largest capacitive current near the voltage zero crossing, a region where class-AB crossover behavior matters.",
+      "Gate-driver slew, output-device transconductance and available headroom must support this current. A quiescent resistance estimate cannot establish large-signal capacitive drive. Feedback can reduce crossover error only while it retains bandwidth and stability."
+    ],
+    "limits": "Include output capacitance, driver current and device dissipation along the reactive trajectory. Check both current directions and the intended load range.",
+    "connections": [
+      [
+        "/reactive-power/",
+        "Quadrature current"
+      ],
+      [
+        "/opamp-load-stability/",
+        "Capacitive feedback dynamics"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-two-stage-amplifier": {
+    "title": "A nulling resistor depends on second-stage gm",
+    "setup": "A two-stage amplifier uses $g_{m2}=2$ mS and a 50 pF Miller capacitor. In the simple compensated two-node model, compare a series resistor with the capacitor.",
+    "equation": "\\omega_z\\simeq\\frac{g_{m2}}{C_C(1-g_{m2}R_N)}",
+    "columns": [
+      "Nulling resistance",
+      "Approximate zero",
+      "Phase implication"
+    ],
+    "rows": [
+      [
+        "0 Ω",
+        "6.366 MHz, RHP",
+        "Adds lag"
+      ],
+      [
+        "500 Ω",
+        "Zero moved to infinity",
+        "Nominal cancellation"
+      ],
+      [
+        "1 kΩ",
+        "6.366 MHz, LHP",
+        "Can add lead"
+      ]
+    ],
+    "analysis": [
+      "The sign of the zero matters as much as its frequency. A right-half-plane zero has the magnitude trend of a zero but adds phase lag; a left-half-plane zero can add lead. The nominal 500 Ω cancellation relies on the actual second-stage gm.",
+      "If gm changes with bias or temperature, a fixed resistor no longer cancels exactly. Check the pole and zero movement across operating points rather than treating the nominal resistor as a universal stability cure."
+    ],
+    "limits": "Include output load, capacitor parasitics and all remaining poles. Phase margin and transient settling must be verified in the complete feedback loop.",
+    "connections": [
+      [
+        "/opamp-ac-limits/",
+        "Loop phase margin"
+      ],
+      [
+        "/opamp-load-stability/",
+        "Additional load poles"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages"
+  },
+  "mos-noise-design": {
+    "title": "A low-frequency limit changes flicker-noise integration",
+    "setup": "A device has white input density 5 nV/√Hz and a 100 Hz flicker corner, modeled as $e_n^2=e_0^2(1+f_c/f)$. Integrate up to 1 kHz with an ideal rectangular band.",
+    "equation": "V_{rms}^2=e_0^2\\left[(f_H-f_L)+f_c\\ln(f_H/f_L)\\right]",
+    "columns": [
+      "Low-frequency edge",
+      "White-plus-flicker RMS",
+      "Observation"
+    ],
+    "rows": [
+      [
+        "10 Hz",
+        "190.4 nV",
+        "Shorter measurement window"
+      ],
+      [
+        "1 Hz",
+        "205.5 nV",
+        "More flicker included"
+      ],
+      [
+        "0.1 Hz",
+        "219.1 nV",
+        "Longer-term noise increases"
+      ]
+    ],
+    "analysis": [
+      "The 1/f contribution grows logarithmically as the lower edge moves downward. A slow measurement’s noise budget therefore needs a defined observation time or low-frequency response. Quoting only a white density at 1 kHz can understate noise for DC sensing.",
+      "Larger input area can reduce a process-dependent flicker coefficient while increasing capacitance. Chopping can shift low-frequency errors, but introduces switching artifacts. Compare these options against the source and signal bandwidth."
+    ],
+    "limits": "The single-corner model omits drift and random-telegraph behavior. Use measured spectra and the actual filter’s weighting for an instrument.",
+    "connections": [
+      [
+        "/opamp-input-tradeoffs/",
+        "Low-frequency input selection"
+      ],
+      [
+        "/opamp-active-filters/",
+        "Noise weighting"
+      ]
+    ],
+    "sources": "Horowitz and Hill, The Art of Electronics, §§3.2 and 3.6; Huijsing, Operational Amplifiers, bias, transconductance and gain stages; AoE chapter 8"
+  },
+  "opamp-ideal": {
+    "title": "An accuracy target imposes a loop-gain target",
+    "setup": "Use a finite DC open-loop gain of 100,000 and resistive noninverting feedback. Compare ideal gains while preserving a valid linear output and input range.",
+    "equation": "G_{actual}=\\frac{NG}{1+NG/A_0},\\quad\\epsilon=\\frac{NG}{A_0+NG}",
+    "columns": [
+      "Ideal gain",
+      "Actual DC gain",
+      "Gain deficiency"
+    ],
+    "rows": [
+      [
+        "1",
+        "0.999990",
+        "0.001%"
+      ],
+      [
+        "10",
+        "9.999000",
+        "0.010%"
+      ],
+      [
+        "100",
+        "99.900100",
+        "0.100%"
+      ]
+    ],
+    "analysis": [
+      "A single open-loop gain specification supports different accuracies at different noise gains. For approximately 0.01% finite-gain error at noise gain 100, the required open-loop gain is roughly one million, not 100,000. External resistor ratio and offset errors must be budgeted in addition.",
+      "At signal frequency, use the complex open-loop gain rather than its DC value. A perfectly derived ideal equation can overstate accuracy once loop gain falls."
+    ],
+    "limits": "Check feedback polarity, input range, output current and stability first. A finite-gain correction does not repair saturation or an invalid input stage.",
+    "connections": [
+      [
+        "/negative-feedback/",
+        "Sensitivity and return ratio"
+      ],
+      [
+        "/opamp-dc-errors/",
+        "Other accuracy terms"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8"
+  },
+  "opamp-dc-errors": {
+    "title": "A calibrated offset budget still has drift and gain terms",
+    "setup": "A gain-100 measurement produces 1 V full-scale output. Use maximum input offset 10 μV, drift 0.2 μV/°C, bias-current source drop 10 μV and ratio error 100 ppm. Form a conservative absolute sum without assuming cancellation.",
+    "equation": "E_{out,max}\\simeq NG(V_{OS,max}+TC_{OS}\\Delta T+E_{bias})+E_{ratio}",
+    "columns": [
+      "Temperature change",
+      "Offset-plus-drift output",
+      "Total stated bound"
+    ],
+    "rows": [
+      [
+        "0 °C",
+        "1.0 mV",
+        "2.1 mV"
+      ],
+      [
+        "25 °C",
+        "1.5 mV",
+        "2.6 mV"
+      ],
+      [
+        "50 °C",
+        "2.0 mV",
+        "3.1 mV"
+      ]
+    ],
+    "analysis": [
+      "The 100 ppm ratio contribution is 0.1 mV at 1 V output, while the bias drop contributes 1 mV. These terms can dominate a nominally small offset. Calibrating initial offset can remove a repeatable value at the calibration condition but leaves drift and range-dependent behavior.",
+      "The absolute sum is appropriate for a guarantee without established correlations. A statistical root-sum-square estimate answers a different yield or uncertainty question and should not replace a worst-case limit silently."
+    ],
+    "limits": "Add finite loop gain, reference error, source variation, noise and CMRR/PSRR where relevant. Use guaranteed limits at the intended conditions rather than mixing typical and maximum figures.",
+    "connections": [
+      [
+        "/opamp-input-tradeoffs/",
+        "Source-dependent errors"
+      ],
+      [
+        "/opamp-function-design/",
+        "Complete instrument budget"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8"
+  },
+  "opamp-ac-limits": {
+    "title": "Large-step time contains both a rate limit and a settling requirement",
+    "setup": "A closed loop has 100 kHz first-order bandwidth and 0.5 V/μs slew. Compare output step sizes with a 0.1% final accuracy target. Treat slew and the linear tail as separate initial constraints.",
+    "equation": "t_{slew,min}=\\Delta V/SR,\\quad t_{linear,0.1\\%}=\\frac{\\ln1000}{2\\pi f_{CL}}",
+    "columns": [
+      "Output step",
+      "Slew-only lower bound",
+      "Small-step linear settling"
+    ],
+    "rows": [
+      [
+        "10 mV",
+        "0.020 μs",
+        "11.0 μs"
+      ],
+      [
+        "1 V",
+        "2.0 μs",
+        "11.0 μs"
+      ],
+      [
+        "4 V",
+        "8.0 μs",
+        "11.0 μs"
+      ]
+    ],
+    "analysis": [
+      "The small step may never slew, while the large step may spend a substantial interval current limited before entering its linear tail. These columns are not an exact sum for a real transition: the boundary between regimes depends on internal state and the remaining error.",
+      "A settling specification needs step amplitude and error band. A percentage band scales with the step; an absolute half-code band from an ADC can impose a different tail requirement. Ringing and overload recovery add behavior beyond this one-pole estimate."
+    ],
+    "limits": "Check load current and rail margin throughout the step. Small-signal bandwidth, slew and overload recovery are separate device characteristics.",
+    "connections": [
+      [
+        "/rc-circuits/",
+        "Accuracy-based settling"
+      ],
+      [
+        "/opamp-noninverting/",
+        "Acquisition drivers"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8"
+  },
+  "opamp-bjt-internals": {
+    "title": "Base shot noise matters for high source resistance",
+    "setup": "Use a simplified individual BJT input branch with beta 200 at 300 K. Estimate base-current shot-noise density as $\\sqrt{2qI_B}$, without claiming this is the complete noise model of an op amp.",
+    "equation": "I_B=I_C/\\beta,\\quad i_{B,n}\\simeq\\sqrt{2qI_B},\\quad e_{source}=i_{B,n}R_S",
+    "columns": [
+      "Collector current",
+      "Base shot-noise estimate",
+      "Through 100 kΩ"
+    ],
+    "rows": [
+      [
+        "10 μA",
+        "0.1266 pA/√Hz",
+        "12.66 nV/√Hz"
+      ],
+      [
+        "50 μA",
+        "0.2830 pA/√Hz",
+        "28.30 nV/√Hz"
+      ],
+      [
+        "100 μA",
+        "0.4003 pA/√Hz",
+        "40.03 nV/√Hz"
+      ]
+    ],
+    "analysis": [
+      "Increasing collector current improves transconductance and can lower voltage noise, but increases base current and this source-resistance conversion. A high-resistance source can therefore favor a different bias or input technology from a low-resistance source.",
+      "The full differential stage also includes the other input branch, current-source and mirror noise, correlations and frequency dependence. Bias cancellation circuitry can reduce average DC input current without eliminating all current-noise mechanisms."
+    ],
+    "limits": "Use actual amplifier noise spectra and bias specifications for a component choice. This shot-noise estimate explains one physical tradeoff rather than predicting an entire commercial device.",
+    "connections": [
+      [
+        "/opamp-input-tradeoffs/",
+        "Total source noise"
+      ],
+      [
+        "/transconductance/",
+        "Current-efficiency comparison"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8"
+  },
+  "opamp-cmos-internals": {
+    "title": "Rail-to-rail output is load dependent",
+    "setup": "Approximate an upper common-source output device near its rail as 50 Ω on resistance on a 3.3 V supply. Compare source current, without including any extra internal headroom or current limit.",
+    "equation": "V_{O,max}\\simeq V_{DD}-I_OR_{on}",
+    "columns": [
+      "Sourcing current",
+      "Rail drop",
+      "Estimated maximum output"
+    ],
+    "rows": [
+      [
+        "0.1 mA",
+        "5 mV",
+        "3.295 V"
+      ],
+      [
+        "1 mA",
+        "50 mV",
+        "3.250 V"
+      ],
+      [
+        "10 mA",
+        "500 mV",
+        "2.800 V"
+      ]
+    ],
+    "analysis": [
+      "The output can approach the rail at a light load but loses substantial swing at a heavier one. A “rail-to-rail” label must be paired with the load current and guaranteed output-swing conditions. The lower device can have a different resistance and sinking behavior.",
+      "Input rail range is a separate architecture question. Complementary input pairs can cover both rails while changing total gm through their overlap region; output devices do not establish that input behavior."
+    ],
+    "limits": "The ohmic model is only a local near-rail estimate. Driver range, temperature, current limiting and nonlinear device behavior can make actual swing worse.",
+    "connections": [
+      [
+        "/mos-complementary-output/",
+        "Follower output constraints"
+      ],
+      [
+        "/opamp-noninverting/",
+        "Load-current budgeting"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8"
+  },
+  "opamp-input-tradeoffs": {
+    "title": "Bandwidth limits white noise but may not remove drift",
+    "setup": "An illustrative amplifier has 5 nV/√Hz white input density. A first-order low-pass sets the noise bandwidth. Ignore flicker, current noise and all resistor sources for this isolated comparison.",
+    "equation": "B_{ENBW}=\\frac{\\pi}{2}f_c,\\quad V_{n,rms}=e_n\\sqrt{B_{ENBW}}",
+    "columns": [
+      "Low-pass corner",
+      "Equivalent noise bandwidth",
+      "White RMS noise"
+    ],
+    "rows": [
+      [
+        "10 Hz",
+        "15.71 Hz",
+        "19.82 nV"
+      ],
+      [
+        "100 Hz",
+        "157.1 Hz",
+        "62.67 nV"
+      ],
+      [
+        "1 kHz",
+        "1571 Hz",
+        "198.2 nV"
+      ]
+    ],
+    "analysis": [
+      "The −3 dB corner is not a rectangular integration width. Using it directly would understate this first-order filter’s white-noise power by a factor π/2. Narrowing bandwidth helps white noise but extends settling and does not automatically eliminate offset drift.",
+      "For a high-resistance source, current noise and resistor thermal noise can outweigh the quoted voltage density. For slow sensing, include flicker noise and switching artifacts from chopper/autozero architectures over the actual measurement window."
+    ],
+    "limits": "Integrate every noise source through its own transfer function. Do not use signal gain where a different noise gain applies.",
+    "connections": [
+      [
+        "/mos-noise-design/",
+        "Flicker integration"
+      ],
+      [
+        "/opamp-active-filters/",
+        "Filter weighting"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8"
+  },
+  "opamp-noninverting": {
+    "title": "Ratio tracking matters more than equal absolute temperature coefficients",
+    "setup": "A noninverting gain-11 stage uses a feedback ratio of 10. Both resistors change with temperature; compare differential temperature coefficients over a 50 °C change, using a first-order ratio approximation.",
+    "equation": "\\frac{\\Delta G}{G}\\simeq\\frac{G-1}{G}(TC_F-TC_G)\\Delta T",
+    "columns": [
+      "Differential TC",
+      "Ratio change",
+      "Gain change"
+    ],
+    "rows": [
+      [
+        "2 ppm/°C",
+        "0.010%",
+        "0.00909%"
+      ],
+      [
+        "10 ppm/°C",
+        "0.050%",
+        "0.04545%"
+      ],
+      [
+        "50 ppm/°C",
+        "0.250%",
+        "0.2273%"
+      ]
+    ],
+    "analysis": [
+      "Two resistors with large but closely tracked temperature coefficients can preserve a ratio better than two individually stable resistors whose coefficients differ. A matched network can also reduce unequal thermal gradients, although layout and self-heating remain relevant.",
+      "The gain change scales by $(G-1)/G$ because the noninverting gain includes the constant one. At high gain this factor approaches unity; near a follower it becomes small. Offset drift and source bias-current error are separate contributions."
+    ],
+    "limits": "Check ratio tolerance, tracking over the full range, resistor voltage coefficient and unequal dissipation. Calibration at one temperature cannot remove an unknown tracking curve.",
+    "connections": [
+      [
+        "/opamp-dc-errors/",
+        "Drift budgets"
+      ],
+      [
+        "/opamp-difference/",
+        "Ratio matching and CMRR"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8"
+  },
+  "opamp-inverting-summing": {
+    "title": "A quiet channel still changes noise gain",
+    "setup": "An inverting mixer uses equal 20 kΩ input and feedback resistors. N channels remain connected to ideal low-impedance sources even when their signal voltage is zero. The amplifier has nominal GBW 2 MHz.",
+    "equation": "NG=1+N,\\quad f_{CL}\\simeq f_t/(1+N)",
+    "columns": [
+      "Connected channels",
+      "Noise gain",
+      "One-pole bandwidth"
+    ],
+    "rows": [
+      [
+        "1",
+        "2",
+        "1.00 MHz"
+      ],
+      [
+        "2",
+        "3",
+        "0.667 MHz"
+      ],
+      [
+        "4",
+        "5",
+        "0.400 MHz"
+      ]
+    ],
+    "analysis": [
+      "Every signal coefficient remains −1, but the loop sees the parallel input conductances. Zero signal is not the same as an open channel. A gain/bandwidth calculation that counts only currently audible or nonzero channels can therefore be wrong.",
+      "A 10 μV input offset becomes about 20, 30 or 50 μV output in these three configurations. Channel switching also changes noise gain and can inject charge into the summing node. Keeping unused channels connected to a defined impedance can make behavior more predictable."
+    ],
+    "limits": "Include real source resistance, switch capacitance and all resistor noise. Verify stability for every intended channel configuration.",
+    "connections": [
+      [
+        "/opamp-ideal/",
+        "Noise versus signal gain"
+      ],
+      [
+        "/fet-switches/",
+        "Switching errors"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8"
+  },
+  "opamp-difference": {
+    "title": "Common-mode rejection is an absolute error budget",
+    "setup": "A subtractor processes a 10 mV difference on 10 V common mode. Assume its supplies and internal input range support that common mode. Compare total system CMRR, including ratios and the amplifier.",
+    "equation": "V_{error}=V_{cm}\\,10^{-CMRR_{dB}/20}",
+    "columns": [
+      "CMRR",
+      "Common-mode output error at unity gain",
+      "Fraction of 10 mV signal"
+    ],
+    "rows": [
+      [
+        "80 dB",
+        "1 mV",
+        "10%"
+      ],
+      [
+        "100 dB",
+        "0.1 mV",
+        "1%"
+      ],
+      [
+        "120 dB",
+        "0.01 mV",
+        "0.1%"
+      ]
+    ],
+    "analysis": [
+      "The required ratio matching follows from the desired error, not from a generic “precision resistor” label. A four-resistor stage’s CMRR may be dominated by source resistance or ratio tracking even when the op amp itself has an excellent intrinsic specification.",
+      "At higher signal gain, refer common-mode leakage to the input before comparing it with the sensor. Frequency-dependent source and parasitic mismatch can make AC rejection worse than the DC result."
+    ],
+    "limits": "Internal input voltage, resistor voltage ratings and fault conditions must also be valid. Mathematical cancellation does not imply the inputs can tolerate arbitrary common mode.",
+    "connections": [
+      [
+        "/opamp-instrumentation/",
+        "Buffering and first-stage gain"
+      ],
+      [
+        "/mos-differential-range/",
+        "Intrinsic range and rejection"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8"
+  },
+  "opamp-instrumentation": {
+    "title": "High input impedance still requires a bias-current budget",
+    "setup": "An instrumentation amplifier has total gain 200. Its two inputs see equal source Thévenin resistances, but input bias currents differ by 100 pA. Compute only the differential source-drop contribution.",
+    "equation": "V_{error,in}=\\Delta I_B R_S,\\quad V_{error,out}=G\\Delta I_B R_S",
+    "columns": [
+      "Each source resistance",
+      "Differential input error",
+      "Output error"
+    ],
+    "rows": [
+      [
+        "175 Ω",
+        "17.5 nV",
+        "3.5 μV"
+      ],
+      [
+        "10 kΩ",
+        "1 μV",
+        "0.2 mV"
+      ],
+      [
+        "1 MΩ",
+        "100 μV",
+        "20 mV"
+      ]
+    ],
+    "analysis": [
+      "The source resistance can turn a tiny current mismatch into a substantial measurement offset. Equal source resistances cancel equal signed currents, not unequal currents. Source-resistance mismatch adds a term from the average bias current as well.",
+      "A low-resistance bridge and a high-resistance electrochemical sensor impose different input requirements even at the same voltage range and gain. Provide bias returns for floating sensors, then include their loading, leakage and noise in the source model."
+    ],
+    "limits": "Check bias variation with common mode and temperature, intrinsic offset, internal swing and reference-pin impedance. High input impedance alone does not establish precision.",
+    "connections": [
+      [
+        "/opamp-dc-errors/",
+        "Signed current errors"
+      ],
+      [
+        "/opamp-input-tradeoffs/",
+        "Source-dependent selection"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8"
+  },
+  "opamp-transimpedance": {
+    "title": "Voltage noise rises through the capacitive noise gain",
+    "setup": "A TIA has $R_F=1$ MΩ, $C_F=5$ pF and total input capacitance 50 pF. An equivalent input voltage-noise density is 10 nV/√Hz. Assume adequate loop gain for this isolated noise-gain comparison.",
+    "equation": "NG(s)=1+sC_{in}\\frac{R_F}{1+sR_FC_F},\\quad e_{out}=e_n|NG|",
+    "columns": [
+      "Frequency",
+      "Noise-gain magnitude",
+      "Output voltage-noise density"
+    ],
+    "rows": [
+      [
+        "DC",
+        "1.000",
+        "10.0 nV/√Hz"
+      ],
+      [
+        "10 kHz",
+        "3.432",
+        "34.3 nV/√Hz"
+      ],
+      [
+        "100 kHz",
+        "10.486",
+        "104.9 nV/√Hz"
+      ]
+    ],
+    "analysis": [
+      "At high frequency noise gain tends toward $1+C_{in}/C_F=11$. The signal transimpedance rolls off while this voltage-noise contribution rises, so referring all noise through a constant 1 MΩ would give the wrong input-current spectrum.",
+      "The feedback resistor contributes about 128.7 nV/√Hz voltage noise at DC at 300 K before filtering, while detector shot noise and amplifier current noise follow different paths. Integrate the complete output noise before converting it to measurement uncertainty."
+    ],
+    "limits": "Finite loop gain modifies these transfers near crossover. Include compensation, detector bias, board capacitance and leakage in the actual TIA.",
+    "connections": [
+      [
+        "/opamp-input-tradeoffs/",
+        "Noise transfer functions"
+      ],
+      [
+        "/opamp-active-filters/",
+        "Integration bandwidth"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8"
+  },
+  "opamp-integrator": {
+    "title": "Offset sets the maximum uninterrupted integration time",
+    "setup": "An ideal integrator uses $R_{IN}=10$ kΩ and $C_F=100$ nF, starts at zero output and has 2 V available swing in the relevant direction. Compare constant equivalent input errors, with no leakage resistor.",
+    "equation": "\\dot V_O=-V_{error}/(R_{IN}C_F),\\quad t_{limit}=\\frac{V_{swing}R_{IN}C_F}{|V_{error}|}",
+    "columns": [
+      "Equivalent input error",
+      "Drift slope magnitude",
+      "Time to 2 V limit"
+    ],
+    "rows": [
+      [
+        "10 μV",
+        "0.01 V/s",
+        "200 s"
+      ],
+      [
+        "100 μV",
+        "0.1 V/s",
+        "20 s"
+      ],
+      [
+        "1 mV",
+        "1 V/s",
+        "2 s"
+      ]
+    ],
+    "analysis": [
+      "The integrator needs a time-window specification as well as a transfer function. A small offset that is harmless in a gain stage becomes an accumulating state. Reset, leakage feedback or anti-windup can bound it, but each changes measurement behavior.",
+      "Calibration can subtract an average drift slope under fixed conditions, while noise, leakage variation and dielectric absorption remain. A capacitor reset may inject charge or leave a memory tail."
+    ],
+    "limits": "Include initial charge, input bias currents, capacitor leakage and output recovery. A finite-DC-gain integrator reaches a bounded equilibrium only if that equilibrium fits the output range.",
+    "connections": [
+      [
+        "/real-capacitors/",
+        "Memory and leakage"
+      ],
+      [
+        "/temperature-control/",
+        "Windup"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8"
+  },
+  "opamp-differentiator": {
+    "title": "Differentiation emphasizes the top of the noise band",
+    "setup": "External sensor noise has flat 10 nV/√Hz density and is passed through an ideal derivative scale $H=j2\\pi f\\tau$, with $\\tau=100$ μs. Integrate only a rectangular band from zero to B, assumed well inside the derivative region.",
+    "equation": "V_{out,n}=e_{sensor}\\frac{2\\pi\\tau}{\\sqrt3}B^{3/2}",
+    "columns": [
+      "Noise-band upper edge",
+      "Derivative output noise RMS",
+      "Bandwidth effect"
+    ],
+    "rows": [
+      [
+        "100 Hz",
+        "3.63 nV",
+        "Reference"
+      ],
+      [
+        "1 kHz",
+        "114.7 nV",
+        "31.62 times larger"
+      ],
+      [
+        "5 kHz",
+        "1.283 μV",
+        "353.6 times larger"
+      ]
+    ],
+    "analysis": [
+      "Output noise grows as bandwidth to the three-halves power, rather than the square-root law of a flat-gain amplifier. This makes a derivative especially sensitive to fast sensor noise. A deliberate upper limit is part of the measurement specification.",
+      "This is external signal-path noise. The op amp’s own input voltage noise follows the circuit’s noise gain, and resistor/current-noise sources have their own paths; they cannot be substituted into this derivative formula automatically."
+    ],
+    "limits": "The practical series resistor and feedback capacitor bound the transfer. Integrate the actual band-limited response when the noise band approaches either corner.",
+    "connections": [
+      [
+        "/opamp-input-tradeoffs/",
+        "Separate noise paths"
+      ],
+      [
+        "/rc-filters/",
+        "Bandwidth specifications"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8; Fiore, AC Electrical Circuit Analysis, Fourier and Bode methods"
+  },
+  "opamp-active-filters": {
+    "title": "An anti-alias target can require another pole",
+    "setup": "An ideal fourth-order Butterworth low-pass has 1 kHz cutoff. An ADC samples at 10 kHz. Compare attenuation at frequencies approaching and reaching its 5 kHz Nyquist frequency.",
+    "equation": "L(f)=10\\log_{10}\\left[1+(f/f_c)^{2n}\\right]",
+    "columns": [
+      "Frequency",
+      "Fourth-order attenuation",
+      "Meaning"
+    ],
+    "rows": [
+      [
+        "1 kHz",
+        "3.010 dB",
+        "Cutoff"
+      ],
+      [
+        "2 kHz",
+        "24.10 dB",
+        "Transition band"
+      ],
+      [
+        "5 kHz",
+        "55.92 dB",
+        "Below a 60 dB target"
+      ]
+    ],
+    "analysis": [
+      "If the specification demands at least 60 dB at 5 kHz while retaining a 1 kHz Butterworth cutoff, four poles are insufficient in this ideal comparison. Five poles give about 69.9 dB there. Alternatively revise sampling rate, transition width or approximation, then recalculate passband and transient consequences.",
+      "Nyquist alone does not protect the measurement: out-of-band signals can fold into the wanted band. The required attenuation depends on their amplitude relative to the permitted aliased error, not only on ADC bit count."
+    ],
+    "limits": "Include component tolerance, amplifier bandwidth, internal resonant amplitude and actual ADC input loading. Filter −3 dB bandwidth and ENBW remain different quantities.",
+    "connections": [
+      [
+        "/poles/",
+        "Order and pole placement"
+      ],
+      [
+        "/opamp-function-design/",
+        "ADC error allocation"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8; Van Valkenburg, Analog Filter Design, approximation and realization"
+  },
+  "opamp-precision-rectifier": {
+    "title": "A rectifier-based meter is not automatically true RMS",
+    "setup": "A meter rectifies a waveform, averages its absolute value and scales the result to read the RMS of a sine. Compare unit-peak waveforms with zero DC offset.",
+    "equation": "V_{indicated}=\\frac{\\pi}{2\\sqrt2}\\langle|v|\\rangle",
+    "columns": [
+      "Waveform",
+      "True RMS",
+      "Sine-calibrated indication"
+    ],
+    "rows": [
+      [
+        "Sine",
+        "0.7071 V",
+        "0.7071 V"
+      ],
+      [
+        "Square",
+        "1.0000 V",
+        "1.1107 V"
+      ],
+      [
+        "Triangle",
+        "0.5774 V",
+        "0.5554 V"
+      ]
+    ],
+    "analysis": [
+      "The square wave reads about 11.1% high and the triangle about 3.8% low even with a perfect precision rectifier. The error comes from the chosen waveform conversion, not the diode drop. A calibrated average-responding meter and a true-RMS computation measure different quantities.",
+      "True RMS requires averaging the square and taking its root, or an equivalent thermal/algorithmic method. Crest factor, bandwidth and overload can still limit a practical RMS converter."
+    ],
+    "limits": "Check the waveform family, DC contribution, rectifier recovery and filter settling. A precise half-wave or absolute-value circuit does not establish a universal AC amplitude measurement.",
+    "connections": [
+      [
+        "/reactive-power/",
+        "RMS power definitions"
+      ],
+      [
+        "/opamp-function-design/",
+        "Analog function chains"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8; Fiore, AC Electrical Circuit Analysis, §1.2"
+  },
+  "opamp-current-servo": {
+    "title": "Kelvin sensing keeps wiring drop out of the commanded current",
+    "setup": "A current servo commands 1 V across a nominal 10 Ω sense resistor, targeting 100 mA. In a two-wire connection, an unintended series resistance is included in the sensed drop. Compare that resistance before adopting four-wire sensing.",
+    "equation": "I_{actual}=V_{set}/(R_{sense}+R_{wire})",
+    "columns": [
+      "Extra sensed resistance",
+      "Actual current",
+      "Error magnitude"
+    ],
+    "rows": [
+      [
+        "0.01 Ω",
+        "99.90 mA",
+        "0.0999%"
+      ],
+      [
+        "0.1 Ω",
+        "99.01 mA",
+        "0.990%"
+      ],
+      [
+        "1 Ω",
+        "90.91 mA",
+        "9.09%"
+      ]
+    ],
+    "analysis": [
+      "Feedback faithfully regulates the voltage it measures, including the unwanted wire drop. More loop gain does not correct a sense-boundary mistake. Separate sense leads can exclude most current-carrying lead resistance from the measured resistor voltage.",
+      "The sense return and amplifier reference must still share a valid low-noise reference. Ground shifts can become input errors, and remote sense wiring can add inductance or capacitance to the loop."
+    ],
+    "limits": "Include sense-resistor tolerance and heating, input offset, compliance and transistor dissipation. Kelvin sensing corrects a specific wiring error rather than the whole current budget.",
+    "connections": [
+      [
+        "/thevenin/",
+        "Choose the measurement boundary"
+      ],
+      [
+        "/opamp-dc-errors/",
+        "Input-referred voltage errors"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8"
+  },
+  "opamp-load-stability": {
+    "title": "Isolation trades load accuracy for a gentler dynamic load",
+    "setup": "Feedback senses the amplifier output before an isolation resistor. The downstream load includes 1 nF capacitance and draws 1 mA DC. Compare resistor values using only the external load-side RC estimate.",
+    "equation": "\\Delta V_{DC}=I_LR_{ISO},\\quad t_{0.1\\%,load}\\simeq6.908R_{ISO}C_L",
+    "columns": [
+      "Isolation resistance",
+      "Unsensed DC drop",
+      "Load-side RC settling"
+    ],
+    "rows": [
+      [
+        "10 Ω",
+        "10 mV",
+        "69.1 ns"
+      ],
+      [
+        "100 Ω",
+        "100 mV",
+        "0.691 μs"
+      ],
+      [
+        "1 kΩ",
+        "1 V",
+        "6.91 μs"
+      ]
+    ],
+    "analysis": [
+      "A larger resistor can isolate capacitance more effectively for some amplifiers but increases the error outside local feedback and slows the load-side response. These are design costs, not failures of the ideal amplifier law.",
+      "Remote sensing can correct the DC drop but moves the downstream dynamics into the loop. A dual-path network may combine slow remote accuracy with local high-frequency feedback, requiring a fresh return-ratio analysis."
+    ],
+    "limits": "The RC times omit amplifier bandwidth, slew and current limit. Select resistance with the actual output-impedance/load guidance and verify all intended load conditions.",
+    "connections": [
+      [
+        "/opamp-noninverting/",
+        "Buffer accuracy"
+      ],
+      [
+        "/negative-feedback/",
+        "Sensed and unsensed errors"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8"
+  },
+  "opamp-function-design": {
+    "title": "More converter bits do not remove analog noise",
+    "setup": "A 3.3 V full-scale ADC follows an analog chain with gain 100. Compare ideal quantization step and its uniform-error RMS referred to the sensor, assuming a sufficiently varying signal and no other converter errors.",
+    "equation": "LSB=V_{FS}/2^N,\\quad e_{q,input}=\\frac{LSB}{G\\sqrt{12}}",
+    "columns": [
+      "ADC resolution",
+      "Output LSB",
+      "Sensor-referred quantization RMS"
+    ],
+    "rows": [
+      [
+        "12 bits",
+        "805.7 μV",
+        "2.326 μV"
+      ],
+      [
+        "16 bits",
+        "50.35 μV",
+        "0.1454 μV"
+      ],
+      [
+        "20 bits",
+        "3.147 μV",
+        "0.00908 μV"
+      ]
+    ],
+    "analysis": [
+      "If the analog chain already contributes 1 μV RMS input noise, the 12-bit quantization estimate is larger than that noise, while the 16-bit case is much smaller. Moving to 20 ideal bits barely improves the complete noise floor unless analog noise is reduced too. Offset, drift and gain accuracy remain separate limits.",
+      "The uniform quantization-noise model can fail for static or correlated signals, and real converters have reference noise, nonlinearity and effective-resolution limits. Oversampling helps only under suitable noise and bandwidth conditions."
+    ],
+    "limits": "Allocate analog range, gain, filtering, reference and acquisition settling before interpreting code count as measurement accuracy.",
+    "connections": [
+      [
+        "/opamp-dc-errors/",
+        "Systematic accuracy"
+      ],
+      [
+        "/opamp-active-filters/",
+        "Noise and alias filtering"
+      ]
+    ],
+    "sources": "Asadi, Applied Op Amp Circuits, feedback applications; Huijsing, Operational Amplifiers, error and dynamic models; Horowitz and Hill, The Art of Electronics, chapters 4, 5 and 8; Selvam, Analog Function Circuits, measurement functions; AoE chapter 13"
+  }
+}

@@ -1,0 +1,20 @@
+---
+import studies from '../content/synthesis.json';
+import Equation from './Equation.astro';
+import {texToHtml} from './MathText';
+import {sitePath} from '../lib/site-path';
+const {chapter}=Astro.props;
+const study=studies[chapter as keyof typeof studies];
+---
+{study&&<section id="synthesis" class="chapter-synthesis">
+<div class="section-heading"><span>+</span><h2>Design synthesis</h2></div>
+<p class="tiny-label">CONNECT THE MODEL TO A DESIGN DECISION</p>
+<h3>{study.title}</h3>
+<p set:html={texToHtml(study.setup)}/>
+<Equation tex={study.equation}/>
+<div class="table-wrap"><table><thead><tr>{study.columns.map(x=><th set:html={texToHtml(x)}/>)}</tr></thead><tbody>{study.rows.map(row=><tr>{row.map(x=><td set:html={texToHtml(x)}/>)}</tr>)}</tbody></table></div>
+{study.analysis.map(p=><p set:html={texToHtml(p)}/>)}
+<aside class="margin-note"><strong>Check the complete design.</strong> <span set:html={texToHtml(study.limits)}/></aside>
+<p class="synthesis-connections"><strong>Carry this forward:</strong> {study.connections.map(([path,label],i)=><>{i>0&&' · '}<a href={sitePath(path)}>{label}</a></>)}</p>
+<p class="reference">Source connections: {study.sources}. Original study and numerical cases; assumptions stated above.</p>
+</section>}
