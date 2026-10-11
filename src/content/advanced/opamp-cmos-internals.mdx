@@ -165,6 +165,50 @@ A MOS gate's own leakage is tiny, but every input is protected by diodes to the 
 
 </section>
 
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Evaluate RRIO accuracy across common mode and load</h2></div>
+
+<h3>Rail-to-rail input range can contain an accuracy transition</h3>
+
+Two complementary input pairs can have different offsets. If their effective offsets are −20 µV and +30 µV, a smooth handover across a 0.5 V common-mode interval changes input-equivalent offset by 50 µV. The local effective CMRR is about $0.5/50\times10^{-6}=10000$, or **80 dB**, even when either pair alone has much better rejection. At noise gain 100 this is a 5 mV output change. A common-mode sweep can therefore expose a nonlinearity missed by testing at a single DC bias.
+
+Constant-transconductance control stabilizes bandwidth but does not automatically match those offsets or cancel the two pairs' current noise. A single input pair powered by an internal charge pump can avoid pair handover; the extra switching can introduce ripple, startup behavior and new filtering requirements. Check the architecture's consequences at the source impedance and bandwidth of the actual circuit.
+
+<h3>Output swing, output impedance and output accuracy are different tests</h3>
+
+Near a rail, the conducting MOSFET approaches triode operation. A 40 Ω effective on-resistance supplying 2 mA needs roughly 80 mV headroom. Feedback cannot remove this headroom once the gate drive has reached its limit. With lighter loading the output may get much closer; measure source and sink directions separately.
+
+Away from the rail, a common-source output can have appreciable **open-loop** resistance. Its gain depends on the load, so $A\beta$ can fall under heavy loading. The same load then affects gain error, distortion and stability, not just swing. Internal local feedback can shape this resistance with frequency; a single unloaded DC number is insufficient. Capacitive loads add an especially important extra state, developed in Chapter 93.
+
+For an ADC with a 0–3.3 V range, a 10 mV residual output floor loses roughly 199 codes of a 16-bit conversion, because one LSB is 50.35 µV. “Rail-to-rail output” alone cannot establish use of the last code. A pull-down or extra negative rail can improve the floor in some architectures, but changes loading, dissipation and power sequencing; verify the amplifier and converter constraints together.
+
+<h3>Class-AB current control keeps the handover smooth</h3>
+
+An efficient output stage should keep a small overlap current near zero load yet deliver much larger current on demand. One useful idealized control law is $I_NI_P=I_Q^2$ together with $I_N-I_P=I_L$. Solving gives
+
+<Equation tex={String.raw`I_N=\frac{I_L+\sqrt{I_L^2+4I_Q^2}}2,\qquad I_P=\frac{-I_L+\sqrt{I_L^2+4I_Q^2}}2`}/>
+
+With $I_Q=100$ µA and $I_L=1$ mA, the branches carry about 1.010 mA and 9.90 µA. The weak branch remains conducting, reducing abrupt crossover. This is an explanatory current-control model, not a transistor-level claim about every class-AB IC. Real bias circuits must remain controlled across temperature, supply, load and process spread; too much overlap wastes power, while too little increases distortion.
+
+<h3>Test RRIO across a grid of operating points</h3>
+
+Use at least low, middle and high common-mode voltages, both load polarities, minimum intended supply and temperature endpoints. At each point check offset, large-step recovery, distortion and swing. Input range and output range can fail independently: an inverting circuit holds the inputs near a fixed reference while its output swings, whereas a follower sweeps both. That is why the same chip can look good in one connection and poor in another.
+
+<details>
+<summary>Worked self-check: where should a ground-referenced sensor be biased?</summary>
+<div>
+
+Suppose an amplifier's accuracy transition occupies 1.2–1.7 V on a 3.3 V supply. Biasing a ±100 mV follower signal at 1.45 V traverses it every cycle. Biasing at 0.8 V avoids that transition if the specified common-mode range and output swing support 0.7–0.9 V. Changing the bias is useful only after checking those independent limits and the destination's required reference.
+
+</div>
+</details>
+
+<p className="reference-note">Source connections: TAOE §§4.6.3 and 5.9.1–5.9.2; Huijsing's complementary input-pair and class-AB output design discussions. Numerical assumptions are original.</p>
+
+
+</section>
+
 <section id="check">
 
 <div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>

@@ -971,6 +971,10 @@ export const advancedChapters = [
         "Treat rail range and low noise as separate goals"
       ],
       [
+        "precision-depth",
+        "Evaluate RRIO accuracy across common mode and load"
+      ],
+      [
         "check",
         "Check your understanding"
       ]

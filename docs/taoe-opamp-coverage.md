@@ -49,3 +49,5 @@ Completed checkpoint: [78 — Real op amps: the DC error budget](https://hebert.
 Completed checkpoint: [79 — Bandwidth, slew and stability](https://hebert.phd/electronics/opamp-ac-limits/#precision-depth). Added “Compensate the complete loop and budget dynamic precision” with original analysis and worked examples.
 
 Completed checkpoint: [80 — Inside a bipolar op amp](https://hebert.phd/electronics/opamp-bjt-internals/#precision-depth). Added “Connect internal design choices to precision and overload behavior” with original analysis and worked examples.
+
+Completed checkpoint: [81 — Inside a CMOS op amp](https://hebert.phd/electronics/opamp-cmos-internals/#precision-depth). Added “Evaluate RRIO accuracy across common mode and load” with original analysis and worked examples.
