@@ -4728,5 +4728,48 @@
       ]
     ],
     "sources": "The Art of Electronics, §§13.2–13.4; ADI DAC tutorials; original PWM example"
+  },
+  "digital-logic-timing": {
+    "title": "Positive clock skew trades setup against hold",
+    "setup": "Use tCQ,max = 0.7 ns, maximum path 3.5 ns, setup 0.4 ns, setup uncertainty 0.3 ns, and minimum tCQ + path = 0.25 ns. Hold is 0.1 ns with zero extra hold uncertainty.",
+    "equation": "T_{min}=4.9\\,\\mathrm{ns}-s,\\qquad margin_{hold}=0.15\\,\\mathrm{ns}-s",
+    "columns": [
+      "Capture skew",
+      "Minimum setup period",
+      "Hold margin"
+    ],
+    "rows": [
+      [
+        "−0.2 ns",
+        "5.1 ns",
+        "0.35 ns"
+      ],
+      [
+        "0 ns",
+        "4.9 ns",
+        "0.15 ns"
+      ],
+      [
+        "+0.2 ns",
+        "4.7 ns",
+        "−0.05 ns"
+      ]
+    ],
+    "analysis": [
+      "Later capture increases next-edge setup time but makes the same-edge hold condition harder.",
+      "A slower clock can satisfy setup while the negative hold margin remains; hold needs minimum-path or clock correction."
+    ],
+    "limits": "Actual timing constraints include clock uncertainty, device corners, route delays and recovery/removal conditions.",
+    "connections": [
+      [
+        "/transmission-lines/",
+        "Board delay"
+      ],
+      [
+        "/differential-pairs/",
+        "Skew and symmetry"
+      ]
+    ],
+    "sources": "The Art of Electronics, Chapters 10 and 12; original timing timeline"
   }
 }

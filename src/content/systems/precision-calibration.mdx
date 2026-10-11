@@ -20,7 +20,7 @@ import {SystemsLab} from '../../components/SystemsLab';
 
 A complete instrument has a sensor, excitation, interconnect, amplifier, reference, converter and software scale factor. Assign errors to that chain before selecting a nominal bit depth. A useful local model is $y=ax+b+r(x,T,t)+n$: gain $a$, offset $b$, residual nonlinearity and drift $r$, and random noise $n$. Calibration estimates repeatable parameters; it cannot remove an unknown disturbance that changes between calibration and use.
 
-Two known inputs $x_1,x_2$ give measured outputs $y_1,y_2$. Estimate the slope and intercept, then invert the fitted line:
+Two known inputs $x_1,x_2$ give measured outputs $y_1,y_2$. Write the model at both points, $y_1 = ax_1 + b$ and $y_2 = ax_2 + b$. Subtracting eliminates $b$ and gives the slope; substituting back into the first gives the intercept; solving $y = \hat ax + \hat b$ for $x$ inverts the line:
 
 <Equation tex={String.raw`\hat a=\frac{y_2-y_1}{x_2-x_1},\quad \hat b=y_1-\hat a x_1,\quad \hat x=\frac{y-\hat b}{\hat a}`}/>
 Choose calibration points far enough apart to estimate slope without magnifying reading noise. They must remain inside the linear range, including amplifier headroom and ADC overrange margin. A correction computed using a saturated endpoint is not a valid gain calibration.
@@ -38,14 +38,14 @@ Store coefficients with units, date, temperature, range and hardware identity. A
 
 Resolution is the smallest displayed or encoded increment. Repeatability describes how successive readings spread under fixed conditions. Accuracy concerns closeness to the true measurand, which is assessed through traceable standards and an uncertainty budget. A display with six decimals can have poor accuracy; a coarse display may report a highly accurate rounded result.
 
-For $z=f(x_1,\ldots,x_m)$, small uncertainties propagate through sensitivities $c_i=\partial f/\partial x_i$. For independent standard uncertainties:
+For $z=f(x_1,\ldots,x_m)$, small uncertainties propagate through sensitivities $c_i=\partial f/\partial x_i$. Linearize: $\delta z \approx \sum_ic_i\,\delta x_i$. Square and average. Each diagonal term gives $c_i^2u_i^2$; each cross term gives $2c_ic_j\overline{\delta x_i\delta x_j}$, which is the covariance and vanishes when the inputs are independent:
 
 <Equation tex={String.raw`u_z^2=\sum_i c_i^2u_i^2,\qquad u_z^2=\sum_i c_i^2u_i^2+2\sum_{i<j}c_ic_j\operatorname{cov}(x_i,x_j)`}/>
 Use the second form when quantities are correlated. A bridge and ADC sharing one reference are the important counterexample to blind root-sum-square addition: correlated excitation changes may cancel. Convert guaranteed rectangular bounds to standard uncertainty only when that probability model is justified; a tolerance divided by $\sqrt3$ assumes a uniform distribution. A worst-case design check can instead add magnitudes of bounded contributions directly.
 
 Suppose independent standard contributions referred to the input are 20 μV from the standard, 10 μV from reading noise and 15 μV from residual drift. Their combined standard uncertainty is 26.93 μV. An expanded value with coverage factor 2 is 53.85 μV, but its interpretation depends on distribution and degrees of freedom. It is not automatically a guaranteed maximum. Separately check a 100 μV possible overload-recovery error; averaging does not make that bound disappear.
 
-If samples are independent and zero-mean, averaging $M$ reduces standard deviation by $\sqrt M$. With serial correlation, the effective number of independent samples is smaller. Observe the noise versus averaging time: a plateau or rise reveals drift or correlated noise. An ADC digital filter may already correlate adjacent output samples, so treating every data-ready event as independent can overstate the benefit.
+If samples are independent and zero-mean, averaging $M$ reduces standard deviation by $\sqrt M$: the mean is $\tfrac1M\sum x_k$, the propagation formula with $c_k = 1/M$ gives variance $M\cdot\sigma^2/M^2 = \sigma^2/M$. With serial correlation, the effective number of independent samples is smaller. Observe the noise versus averaging time: a plateau or rise reveals drift or correlated noise. An ADC digital filter may already correlate adjacent output samples, so treating every data-ready event as independent can overstate the benefit.
 
 </section>
 
@@ -56,11 +56,13 @@ If samples are independent and zero-mean, averaging $M$ reduces standard deviati
 In a two-wire resistance measurement, the instrument sees sensor resistance plus both lead resistances. Exciting a 100 Ω sensor at 1 mA gives 100 mV; two 1 Ω leads add 2 mV, a 2% resistance error. A four-wire arrangement sends current through one pair and senses voltage through another. Negligible sense current makes the sense-lead voltage drops negligible, but input bias current, leakage and protection resistors still need a budget.
 
 <Equation tex={String.raw`R_x=\frac{V_{sense}}{I_{exc}},\qquad P_x=I_{exc}^2R_x`}/>
-A 100 Ω platinum sensor near 0 °C has a local slope approximately 0.385 Ω/K. At 1 mA, sensitivity is about 385 μV/K. A 10 μV voltage error becomes about 0.026 K. The sensor dissipates 0.1 mW. If a teaching thermal model gives 0.4 K/mW in its mounting, self-heating is 0.04 K: already larger than that voltage contribution. Reducing current to 0.25 mA lowers heat by sixteen times but lowers electrical sensitivity by four times. Sensor standards and calibration determine the actual resistance-temperature curve; the local linear approximation is limited.
 
-Current reversal separates an additive thermal EMF from the desired resistance voltage. If $V_+=IR+E$ and $V_-=-IR+E$, then $R=(V_+-V_-)/(2I)$ and $E=(V_++V_-)/2$. This assumes EMF, resistance and current magnitude remain sufficiently constant through both readings. Wait for electrical settling after reversal but do not wait so long that thermal drift changes the offset between the two phases.
+Why four wires work: by KVL around the sense loop, $V_{sense} = I_{exc}R_x + I_{sense}(R_{lead,3} + R_{lead,4})$. The excitation leads are outside this loop, and the sense-lead term is multiplied by the tiny sense current, so it vanishes when $I_{sense} \to 0$.
+A 100 Ω platinum sensor near 0 °C has a local slope approximately 0.385 Ω/K. Differentiating $V = IR(T)$ at constant current, $dV/dT = I\,dR/dT$: at 1 mA, sensitivity is about 385 μV/K. A 10 μV voltage error becomes about 0.026 K. The sensor dissipates 0.1 mW. If a teaching thermal model gives 0.4 K/mW in its mounting, self-heating is 0.04 K: already larger than that voltage contribution. Reducing current to 0.25 mA lowers heat by sixteen times but lowers electrical sensitivity by four times. Sensor standards and calibration determine the actual resistance-temperature curve; the local linear approximation is limited.
 
-A ratiometric arrangement senses a precision reference resistor carrying the same current. Then $R_x=R_{ref}V_x/V_{ref,res}$. Excitation-current accuracy cancels to first order. Reference-resistor tolerance, ratio drift, sensor heating and sequential-conversion timing remain. Use low-thermal-EMF connections and check compliance at the largest sensor resistance.
+Current reversal separates an additive thermal EMF from the desired resistance voltage. If $V_+=IR+E$ and $V_-=-IR+E$, subtracting cancels $E$ and adding cancels $IR$: $R=(V_+-V_-)/(2I)$ and $E=(V_++V_-)/2$. This assumes EMF, resistance and current magnitude remain sufficiently constant through both readings. Wait for electrical settling after reversal but do not wait so long that thermal drift changes the offset between the two phases.
+
+A ratiometric arrangement senses a precision reference resistor carrying the same current. With one current $I$ through both, $V_x = IR_x$ and $V_{ref,res} = IR_{ref}$; dividing removes $I$, so $R_x=R_{ref}V_x/V_{ref,res}$. Excitation-current accuracy cancels to first order. Reference-resistor tolerance, ratio drift, sensor heating and sequential-conversion timing remain. Use low-thermal-EMF connections and check compliance at the largest sensor resistance.
 
 </section>
 

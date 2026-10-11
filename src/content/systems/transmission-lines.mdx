@@ -18,9 +18,28 @@ import {SystemsLab} from '../../components/SystemsLab';
 
 <div className="section-heading"><span>01</span><h2>Replace one wire with distributed storage</h2></div>
 
-A connection stores magnetic energy along its current path and electric energy between conductors. Represent a short segment with series inductance $L'\Delta x$ and shunt capacitance $C'\Delta x$, then let its length shrink. The lossless telegrapher equations give:
+A connection stores magnetic energy along its current path and electric energy between conductors. Represent a short segment with series inductance $L'\Delta x$ and shunt capacitance $C'\Delta x$, then let its length shrink.
 
-<Equation tex={String.raw`\frac{\partial v}{\partial x}=-L'\frac{\partial i}{\partial t},\quad\frac{\partial i}{\partial x}=-C'\frac{\partial v}{\partial t},\quad v_p=\frac{1}{\sqrt{L'C'}},\quad Z_0=\sqrt{L'/C'}`}/>
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE TELEGRAPHER EQUATIONS, WAVE SPEED AND Z<sub>0</sub></span>
+
+1. **KVL along the segment.** The voltage drop across the series inductance is $L'\Delta x\,\partial i/\partial t$: $v(x) - v(x+\Delta x) = L'\Delta x\,\partial i/\partial t$.
+
+2. **KCL at the segment's far node.** Current entering minus current leaving charges the shunt capacitance: $i(x) - i(x+\Delta x) = C'\Delta x\,\partial v/\partial t$.
+
+3. **Shrink the segment.** Divide both by $\Delta x$ and let $\Delta x \to 0$:
+<Equation tex={String.raw`\frac{\partial v}{\partial x}=-L'\frac{\partial i}{\partial t},\qquad\frac{\partial i}{\partial x}=-C'\frac{\partial v}{\partial t}`}/>
+
+4. **Wave equation.** Differentiate the first with respect to $x$ and substitute the second: $\partial^2v/\partial x^2 = L'C'\,\partial^2v/\partial t^2$. Any shape $v = f(t - x/v_p)$ satisfies it, provided $1/v_p^2 = L'C'$. So disturbances travel without changing shape at $v_p = 1/\sqrt{L'C'}$.
+
+5. **Voltage-to-current ratio.** For a forward wave, $\partial v/\partial x = -f'/v_p$. The first telegrapher equation gives $\partial i/\partial t = f'/(L'v_p)$, so $i = v/(L'v_p) = v\sqrt{C'/L'}$. The ratio $v/i$ is $Z_0 = \sqrt{L'/C'}$, a resistance that dissipates nothing: the "absorbed" energy is moving down the line in the fields.
+
+</div>
+
+Collected:
+
+<Equation tex={String.raw`v_p=\frac{1}{\sqrt{L'C'}},\qquad Z_0=\sqrt{L'/C'}`}/>
 $Z_0$ is the voltage-to-current ratio of a traveling wave, not conductor DC resistance. A 50 Ω cable can have very low DC resistance. Initially a source sees 50 Ω because it launches energy into distributed fields; a remote load cannot affect the source until a reflection returns.
 
 A teaching line with 300 nH/m and 120 pF/m has 50 Ω impedance and velocity $1.667\times10^8$ m/s. A 10 cm trace has 0.6 ns one-way delay. A 1 ns edge changes significantly during that flight, even if the clock repeats only at 1 MHz. Use the fastest rise/fall time, not only repetition frequency.
@@ -33,7 +52,7 @@ A conservative screening heuristic treats a connection as distributed when one-w
 
 <div className="section-heading"><span>02</span><h2>Calculate launch and load reflection</h2></div>
 
-Model the driver as step source $V_s$ with resistance $R_s$. Before any reflection returns, its launched wave is the divider into $Z_0$. At the load, voltage is the sum of incident and reflected waves; current is their difference divided by $Z_0$. Requiring $V_L/I_L=Z_L$ gives the load reflection coefficient:
+Model the driver as step source $V_s$ with resistance $R_s$. Before any reflection returns, the line looks like a resistance $Z_0$ (step 5 above), so its launched wave is the divider into $Z_0$. At the load, voltage is the sum of incident and reflected waves, $V^+ + V^-$; current is their difference divided by $Z_0$, because a backward wave carries current in the negative direction. Requiring $V_L/I_L=Z_L$: $(V^+ + V^-)Z_0 = Z_L(V^+ - V^-)$, which solves to $V^-/V^+ = (Z_L - Z_0)/(Z_L + Z_0)$, the load reflection coefficient:
 
 <Equation tex={String.raw`V^+=V_s\frac{Z_0}{R_s+Z_0},\quad\Gamma_L=\frac{Z_L-Z_0}{Z_L+Z_0},\quad V_L=V^+(1+\Gamma_L),\quad I_L=\frac{V^+}{Z_0}(1-\Gamma_L)`}/>
 An open load requires zero current, so $\Gamma_L=+1$ and first voltage doubles. A short requires zero voltage, so $\Gamma_L=-1$ and the reflection inverts. A matched load has $\Gamma_L=0$. Reactive loads have frequency-dependent reflection and change the edge shape.
@@ -49,10 +68,10 @@ This plot uses a matched source, which absorbs the return. With another source r
 
 <div className="section-heading"><span>03</span><h2>Follow the wave back to the source</h2></div>
 
-For the returning incremental wave, set the independent voltage source to zero and use source impedance as its boundary. Then $\Gamma_S=(R_s-Z_0)/(R_s+Z_0)$. Each round trip multiplies the next incident load wave by $\Gamma_L\Gamma_S$.
+For the returning incremental wave, set the independent voltage source to zero (superposition: the source already launched its step) and use source impedance as its boundary. The same boundary algebra gives $\Gamma_S=(R_s-Z_0)/(R_s+Z_0)$. Each round trip multiplies the next incident load wave by $\Gamma_L\Gamma_S$, and each arrival adds $(1+\Gamma_L)$ times that wave to the load voltage.
 
 <Equation tex={String.raw`\Delta V_{L,n}=V^+(1+\Gamma_L)(\Gamma_L\Gamma_S)^n,\qquad t_n=(2n+1)t_d`}/>
-A 1 V step with 10 Ω source, 50 Ω line and 100 Ω load launches 0.8333 V. First load arrival is 1.1111 V. Here $\Gamma_S=-2/3$ and $\Gamma_L=1/3$: at three flight times the next increment is −0.2469 V, leaving 0.8642 V; at five flight times it rises another 0.05487 V. The geometric series converges to the ordinary DC divider, $100/(10+100)=0.9091$ V.
+A 1 V step with 10 Ω source, 50 Ω line and 100 Ω load launches 0.8333 V. First load arrival is 1.1111 V. Here $\Gamma_S=-2/3$ and $\Gamma_L=1/3$: at three flight times the next increment is −0.2469 V, leaving 0.8642 V; at five flight times it rises another 0.05487 V. Summing the geometric series, $\sum_n(\Gamma_L\Gamma_S)^n = 1/(1 - \Gamma_L\Gamma_S)$, so the final load voltage is $V^+(1+\Gamma_L)/(1-\Gamma_L\Gamma_S)$. Substituting the three expressions and simplifying gives exactly $V_sZ_L/(R_s + Z_L)$: the geometric series converges to the ordinary DC divider, $100/(10+100)=0.9091$ V, and $Z_0$ drops out as it must.
 
 A receiver threshold can be crossed several times during these bounces. An eventually correct DC level does not prove reliable clocking. Input clamps can conduct on overshoot and change the boundary nonlinearly, injecting current into rails. CMOS driver resistance also varies with voltage, polarity, temperature and process. Use a suitable driver/receiver model or measurement for a real channel.
 
@@ -67,7 +86,7 @@ The laboratory separates first arrival from eventual DC for resistive ends. It o
 
 A far-end resistor equal to $Z_0$ absorbs the incident wave but draws DC current. The driver must meet the load and signal-standard voltage requirements. A Thevenin termination uses two resistors to rails whose parallel value is $Z_0$, producing a chosen bias with continuing power consumption.
 
-Source-series termination makes driver resistance plus added series resistance approximately $Z_0$. With a high-impedance far end, the first arriving half-amplitude wave doubles to the desired full voltage; the returning wave is absorbed at the source. This usually has little static dissipation and suits point-to-point CMOS. An intermediate receiver can see the smaller initial wave until later reflections arrive, so this is not automatically a good multidrop solution.
+Source-series termination makes driver resistance plus added series resistance approximately $Z_0$. With a high-impedance far end, the launch divider gives $V^+ = V_s/2$, the open end has $\Gamma_L = +1$ so the load sees $V^+(1 + 1) = V_s$, and the returning wave finds $\Gamma_S = 0$ and is absorbed at the source. This usually has little static dissipation and suits point-to-point CMOS. An intermediate receiver can see the smaller initial wave until later reflections arrive, so this is not automatically a good multidrop solution.
 
 If driver resistance is about 18 Ω on a 50 Ω line, an added 32 Ω is an initial estimate. Verify both edge polarities and receiver timing rather than treating driver resistance as a fixed precision resistor. An AC termination can reduce static consumption but creates pattern-dependent response and potential baseline wander; derive its RC behavior for the pulse lengths that matter.
 

@@ -18,7 +18,7 @@ import {SystemsLab} from '../../components/SystemsLab';
 
 <div className="section-heading"><span>01</span><h2>Define the two signals a pair can carry</h2></div>
 
-A differential receiver responds mainly to the voltage difference between two inputs, but both inputs also have an absolute voltage relative to their local return. Define $v_d=v_+-v_-$ and $v_{cm}=(v_++v_-)/2$. Then $v_+=v_{cm}+v_d/2$ and $v_-=v_{cm}-v_d/2$. A 0.8 V peak-to-peak differential swing centered on 0.6 V makes each conductor move only 0.4 V between its two levels.
+A differential receiver responds mainly to the voltage difference between two inputs, but both inputs also have an absolute voltage relative to their local return. Define $v_d=v_+-v_-$ and $v_{cm}=(v_++v_-)/2$. Adding and subtracting these two definitions solves for the individual voltages: $v_+=v_{cm}+v_d/2$ and $v_-=v_{cm}-v_d/2$. A 0.8 V peak-to-peak differential swing centered on 0.6 V makes each conductor move only 0.4 V between its two levels.
 
 <Equation tex={String.raw`v_d=v_+-v_-,\qquad v_{cm}=\tfrac12(v_++v_-),\qquad v_\pm=v_{cm}\pm\tfrac12v_d`}/>
 Opposite equal signals excite the **odd mode**; equal same-polarity signals excite the **even mode**. A symmetric channel can propagate each mode independently, but asymmetry converts between them. Trace length, capacitive loading, via geometry and dielectric variation can all break symmetry. A differential input's finite common-mode rejection is only part of the total immunity; the channel may already have converted a common-mode disturbance into differential voltage.
@@ -31,7 +31,19 @@ Differential signaling reduces some external pickup and radiation when the two p
 
 <div className="section-heading"><span>02</span><h2>Derive odd and even mode impedance</h2></div>
 
-Use a symmetric coupled-line model with self inductance per length $L$, mutual inductance $M$, capacitance from each conductor to reference $C_g$, and mutual capacitance between conductors $C_m$. In odd mode, opposite currents reduce effective inductance to $L-M$, while the opposite voltage across mutual capacitance makes its contribution twice $C_m$. In even mode, mutual capacitance has no voltage across it and equal currents increase effective inductance to $L+M$.
+Use a symmetric coupled-line model with self inductance per length $L$, mutual inductance $M$, capacitance from each conductor to reference $C_g$, and mutual capacitance between conductors $C_m$. <div className="derivation">
+
+<span className="tiny-label">DERIVATION / MODE IMPEDANCES OF A COUPLED PAIR</span>
+
+1. **Odd mode: conductor 1 at $+v$ carrying $+i$, conductor 2 at $-v$ carrying $-i$.** The charge per length on conductor 1 is its capacitance to reference times its voltage plus the mutual capacitance times the voltage across it, $C_gv + C_m(v - (-v)) = (C_g + 2C_m)v$. Its flux linkage per length is $Li + M(-i) = (L - M)i$.
+
+2. **Apply the single-line result** of Chapter 104, $Z_0 = \sqrt{L'/C'}$, with these effective per-length values. The odd-mode impedance is the ratio $v/i$ on one conductor.
+
+3. **Even mode: both conductors at $+v$ carrying $+i$.** The mutual capacitance has no voltage across it, so the charge is $C_gv$; the flux linkage is $(L + M)i$.
+
+4. **Port definitions.** Differential impedance is the voltage between the conductors, $2v$, divided by the current in one conductor, $i$: twice the odd-mode value. Common-mode impedance is the common voltage $v$ divided by the total current $2i$: half the even-mode value.
+
+</div>
 
 <Equation tex={String.raw`Z_{odd}=\sqrt{\frac{L-M}{C_g+2C_m}},\quad Z_{even}=\sqrt{\frac{L+M}{C_g}},\quad Z_{diff}=2Z_{odd},\quad Z_{cm}=Z_{even}/2`}/>
 The last expression defines common-mode impedance using the common voltage and **total pair current**; some tools use a per-conductor convention, so inspect definitions. Differential impedance uses voltage across the pair divided by current in one conductor. Mixing these definitions creates factor-of-two errors.
@@ -48,17 +60,21 @@ Mode propagation velocities also differ in some structures. For this model, $v_{
 
 <div className="section-heading"><span>03</span><h2>Quantify what unmatched timing creates</h2></div>
 
-Let each conductor make an opposite transition of magnitude $A$ with rise time $t_r$, but delay one by $\Delta t$. During the interval when the edges are misaligned, their sum no longer stays constant. For linear ramps and $\Delta t<t_r$, the common-mode excursion is approximately $A\Delta t/(2t_r)$.
+Let each conductor make an opposite transition of magnitude $A$ with rise time $t_r$, but delay one by $\Delta t$. During the interval when the edges are misaligned, their sum no longer stays constant. For linear ramps and $\Delta t<t_r$: while the leading conductor has moved $A\Delta t/t_r$, the delayed one has not yet started, so the sum departs from its constant value by $A\Delta t/t_r$ and the common-mode voltage, half the sum, by $A\Delta t/(2t_r)$.
 
 <Equation tex={String.raw`\Delta v_{cm,pk}\simeq\frac{A}{2}\frac{\Delta t}{t_r}`}/><SystemsPlot kind="skew"/>
 Here each conductor moves 0.4 V in 1 ns and one is delayed 300 ps, giving 60 mV transient common mode. A termination only across the two conductors absorbs odd-mode energy but does not directly terminate that generated even-mode wave. It can travel and reflect according to the pair's common-mode environment, contributing to emissions and receiver stress.
 
-For opposite sinusoidal signals of amplitude $A$ with delay $\Delta t$, algebra gives differential amplitude $2A|\cos(\omega\Delta t/2)|$ and common-mode amplitude $A|\sin(\omega\Delta t/2)|$. Thus:
+For opposite sinusoidal signals of amplitude $A$ with delay $\Delta t$, write $v_+ = A\cos\omega t$ and $v_- = -A\cos\omega(t - \Delta t)$. Sum-to-product identities give
+
+<Equation tex={String.raw`v_d=2A\cos\frac{\omega\Delta t}{2}\cos\left(\omega t-\frac{\omega\Delta t}{2}\right),\qquad v_{cm}=-A\sin\frac{\omega\Delta t}{2}\sin\left(\omega t-\frac{\omega\Delta t}{2}\right)`}/>
+
+so the differential amplitude is $2A|\cos(\omega\Delta t/2)|$ and the common-mode amplitude is $A|\sin(\omega\Delta t/2)|$. Their ratio is:
 
 <Equation tex={String.raw`\left|\frac{v_{cm}}{v_d}\right|=\frac12\left|\tan\left(\frac{\omega\Delta t}{2}\right)\right|`}/>
 The importance of a given skew grows with frequency. At 1 GHz and 100 ps skew, differential amplitude is reduced to 95.1% of its zero-skew value and common-mode amplitude is 15.45% of that original differential amplitude. Do not use a length tolerance without translating it into delay at the actual propagation velocity and then into the interface timing or spectral requirement.
 
-If velocity is 150 mm/ns, a 30 ps intrapair skew budget corresponds to 4.5 mm electrical-length difference. Connector and package delays count too. Large meanders can add coupling and loss or change delay differently from their drawn centerline length. Match where imbalance is introduced, keep both paths exposed to similar geometry, and avoid excessive serpentine length merely to satisfy a CAD number.
+Since delay is length divided by velocity, a skew budget converts to length as $\Delta\ell = v_p\Delta t$: if velocity is 150 mm/ns, a 30 ps intrapair skew budget corresponds to 4.5 mm electrical-length difference. Connector and package delays count too. Large meanders can add coupling and loss or change delay differently from their drawn centerline length. Match where imbalance is introduced, keep both paths exposed to similar geometry, and avoid excessive serpentine length merely to satisfy a CAD number.
 
 </section>
 

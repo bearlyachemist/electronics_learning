@@ -1,0 +1,101 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot,PowerCircuit,MatchCircuit,LadderCircuit} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 111</span><span className="hairline"/>DIGITAL SYSTEMS</div>
+
+<h1>Digital logic, timing and clock domains<br/><em>A bit is an analog waveform with a deadline.</em></h1>
+
+<p className="dek">Calculate logic margins, dynamic power and setup/hold budgets, then handle level shifting, metastability, pulses, resets and multi-bit clock-domain transfers.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="levels">
+
+<div className="section-heading"><span>01</span><h2>Use guaranteed voltage ranges</h2></div>
+
+Digital circuits classify voltages into logic states, but every wire still obeys analog current, capacitance and propagation laws. A receiver guarantees low below $V_{IL,max}$ and high above $V_{IH,min}$; the interval between is not a valid guaranteed logic state. A driver guarantees $V_{OL,max}$ and $V_{OH,min}$ only at specified supply, current and temperature.
+
+<Equation tex={String.raw`NM_L=V_{IL,max}-V_{OL,max},\qquad NM_H=V_{OH,min}-V_{IH,min}`}/>
+Suppose a receiver requires low below 0.8 V and high above 2.0 V. A driver guarantees 0.4 V low and 2.4 V high at the intended load, giving 0.4 V margins in both directions. A 0.3 V return-path shift consumes much of that margin. A nominal 3.3 V label does not establish compatibility with an arbitrary 5 V input or prove that the pin tolerates 5 V.
+
+A CMOS input usually draws little static gate current, but its protection network and leakage are nonzero. Driving a pin while its supply is absent can forward-bias protection structures and back-power the device. Check powered-off input tolerance and injection limits when rails sequence independently. Leaving an input floating can produce switching, current consumption and uncertain logic; provide a defined state appropriate to the device.
+
+A Schmitt input uses separate rising and falling thresholds. It can clean slow noisy transitions or assist debounce, but threshold tolerances and propagation delay still matter. Do not use a slow ramp into an ordinary input unless its rise-time requirements permit it.
+
+</section>
+
+<section id="power">
+
+<div className="section-heading"><span>02</span><h2>Calculate charge, edge current and loading</h2></div>
+
+Charging capacitance C from zero to V draws energy $CV^2$ from an ideal rail; half is stored and half is dissipated in the charging path. Discharging dissipates the stored half. Thus one complete low-high-low cycle dissipates approximately $CV^2$, ignoring short-circuit and leakage losses.
+
+<Equation tex={String.raw`P_{dynamic}\simeq\alpha CV^2f,\qquad i=C\frac{dv}{dt}`}/>
+Here $\alpha f$ is the number of complete charging events per second under the stated activity convention. A 20 pF net making 50 million low-to-high transitions each second at 3.3 V has about 10.89 mW charging-power scale. Multiple outputs can draw substantial transient current even when static input current is tiny. A 3.3 V transition over 1 ns into 20 pF implies 66 mA average capacitive current during that rise.
+
+Output resistance and capacitance set a first edge estimate $t_{10-90}\approx2.2R_{out}C$. With 30 Ω and 50 pF this is about 3.3 ns. A long trace requires a transmission-line model instead of treating all its capacitance as one lump. Fan-out includes input and trace capacitance, threshold/current requirements and timing, not merely a count of gate symbols.
+
+Decouple supplies locally and contain clock/driver return currents. Slowing an edge can reduce ringing and EMI but consumes timing margin. Use the actual driver slew setting and interconnect model rather than maximizing drive strength by default.
+
+</section>
+
+<section id="synchronous">
+
+<div className="section-heading"><span>03</span><h2>Derive setup and hold from the launch/capture timeline</h2></div>
+
+A launch flip-flop changes its output after clock-to-Q delay. Logic and routing then deliver the value to a capture flip-flop, which requires it stable before the capture edge by setup time and after that edge by hold time. Define clock skew $s=t_{capture}-t_{launch}$: positive skew means the capture clock arrives later.
+
+<Equation tex={String.raw`T\ge t_{cq,max}+t_{path,max}+t_{setup}+t_{uncertainty}-s`}/><Equation tex={String.raw`t_{cq,min}+t_{path,min}\ge t_{hold}+s+t_{hold,uncertainty}`}/>
+Positive skew helps setup by giving more time to the next capture edge, but hurts hold because the current capture edge arrives later. Setup is a longest-path check; hold is a shortest-path check. Lowering clock frequency usually helps setup but does not inherently fix hold.
+
+If clock-to-Q is 0.7 ns, maximum path 3.5 ns, setup 0.4 ns, uncertainty 0.3 ns and skew +0.2 ns, required period is at least 4.7 ns, about 212.8 MHz maximum under this budget. If minimum clock-to-Q plus path is 0.25 ns, hold is 0.1 ns and the same skew is 0.2 ns, hold fails even before additional uncertainty. Add controlled minimum delay or correct the clock/path arrangement using the implementation tool's timing analysis.
+
+For an external source-synchronous interface, include board flight time, device output-valid delay and the data-clock relationship. Moving the sample edge may center a data eye, but both setup and hold limits must remain satisfied across process, voltage and temperature. A logic analyzer that decodes one captured transaction is useful evidence, not proof of worst-case timing.
+
+</section>
+
+<section id="domains">
+
+<div className="section-heading"><span>04</span><h2>Handle metastability without promising it disappears</h2></div>
+
+An asynchronous transition can arrive inside a flip-flop's aperture and leave its internal state near an unstable balance. It may resolve late. Metastability is an analog property, not a third logic value that software can reliably test. A receiving flip-flop can sample the late transition inconsistently if insufficient resolution time is allowed.
+
+A two-flop synchronizer for a suitable single-bit level lets the first stage resolve before the second is used. Mean time between propagated failures typically improves exponentially with available resolution time, with device-specific constants and transition/clock rates. More stages can improve that probability while adding latency. Place and constrain the synchronizer as intended; consuming first-stage output elsewhere defeats the design.
+
+<SystemsFlow labels={["Asynchronous level|unknown phase", "First register|may resolve late", "Second register|resolution time", "Local logic|synchronized level"]} caption="The receiving logic uses the later stage. The chain lowers propagation probability; it cannot guarantee zero metastability."/>
+A narrow pulse can occur entirely between receiving clock edges, so two flops may miss it even without metastability. Stretch it when a bound is known, use a toggle protocol or transfer it through a handshake. Independently synchronizing each bit of a bus can produce a word that never existed at the sender. Use a stable-data handshake, appropriate Gray-coded control crossing or an asynchronous FIFO with correctly synchronized pointers.
+
+A Gray code changes one bit per logical transition, but routing constraints still matter: large inter-bit delays can let several source transitions overlap at the receiver. Synchronization design includes both coding and physical timing. Clock-domain-crossing tools identify structures and unsafe uses; their reports need review against the intended protocol. [Intel’s metastability analysis documentation](https://www.intel.com/content/www/us/en/docs/programmable/683068/18-1/metastability-analysis.html) explains synchronizer-chain identification and MTBF reporting.
+
+</section>
+
+<section id="interfaces">
+
+<div className="section-heading"><span>05</span><h2>Shift levels and define reset behavior</h2></div>
+
+A resistor divider can lower a slow logic voltage, but source impedance and receiver capacitance delay the edge, while overshoot and input protection affect the limits. It does not translate low voltage upward. A push-pull level translator actively drives both states and needs defined direction or an architecture suitable for the intended signal. Check voltage ranges, enable behavior and power sequencing.
+
+An open-drain interface actively drives low and lets a resistor establish high. Pulling to the receiver's allowed rail can translate levels when every connected pin tolerates that rail. A small MOSFET bidirectional circuit can couple low states between two open-drain rails: one direction turns the channel on by gate-source voltage, the other initially uses body-diode conduction before the channel follows. Its capacitance, threshold and pull-ups limit rise behavior. It is not a general solution for two push-pull drivers that might contend.
+
+Reset assertion may need to act asynchronously when no clock is present; releasing reset is often synchronized separately in each clock domain to meet recovery/removal timing. The exact device reset structure determines requirements. Debouncing a switch requires a stability interval or filtering plus hysteresis; a synchronizer alone does not remove repeated mechanical transitions.
+
+Before choosing UART, SPI or I²C, define voltage domain, direction, idle state, startup state, cable length, edge rate and permitted latency. After conversion, digital design still has analog supply, return-path and timing budgets. Source connections: The Art of Electronics, Chapters 10 and 12, especially logic interfacing and clocked operation; apply the chosen logic family's and FPGA/MCU vendor's timing and CDC guidance for implementation.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/digital-logic-timing/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, Chapters 10 and 12; original voltage, power and setup/hold calculations. Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>

@@ -39,12 +39,16 @@ The lab displays floor-coded bins and endpoint clipping explicitly. It does not 
 If quantization error is sufficiently uncorrelated with the input and approximately uniformly distributed across $[-q/2,q/2]$, integrate its mean square:
 
 <Equation tex={String.raw`\sigma_q^2=\frac1q\int_{-q/2}^{q/2}e^2\,de=\frac{q^2}{12},\qquad\sigma_q=q/\sqrt{12}`}/>
-A full-span sine has rms amplitude $V_S/(2\sqrt2)$. Dividing by the rms error gives:
+A full-span sine has peak $V_S/2$ and rms amplitude $V_S/(2\sqrt2)$. Divide by the rms error, using $V_S = 2^Nq$:
+
+<Equation tex={String.raw`\frac{V_S/(2\sqrt2)}{q/\sqrt{12}}=\frac{2^N\sqrt{12}}{2\sqrt2}=2^N\sqrt{1.5}`}/>
+
+Take $20\log_{10}$: $20\log_{10}2^N = 6.02N$ and $20\log_{10}\sqrt{1.5} = 1.76$. The result is:
 
 <Equation tex={String.raw`SNR_{ideal}=20\log_{10}\frac{V_S/(2\sqrt2)}{q/\sqrt{12}}\simeq6.02N+1.76\ \mathrm{dB}`}/>
 This is an ideal full-scale-sine result over the relevant full Nyquist band. Small periodic inputs can produce correlated quantization spurs rather than white noise. Dither can decorrelate error and permit finer estimates through averaging, but it adds noise and cannot remove analog nonlinearity or create information from a static input stuck inside one noiseless bin.
 
-SNR usually excludes harmonic distortion according to a stated measurement definition. SINAD includes noise and distortion; SFDR compares the wanted signal with the largest unwanted spectral spur over a stated band. Effective number of bits derived from a full-scale sine is $(SINAD-1.76)/6.02$. A device with 74 dB SINAD has about 12 effective bits in that test, even if its output word is 16 bits. A backed-off test signal needs appropriate normalization before using this formula.
+SNR usually excludes harmonic distortion according to a stated measurement definition. SINAD includes noise and distortion; SFDR compares the wanted signal with the largest unwanted spectral spur over a stated band. Effective number of bits derived from a full-scale sine is the ideal formula solved for $N$ with the measured SINAD in place of SNR: $(SINAD-1.76)/6.02$. A device with 74 dB SINAD has about 12 effective bits in that test, even if its output word is 16 bits. A backed-off test signal needs appropriate normalization before using this formula.
 
 Noise-free resolution is a DC histogram or peak-to-peak concept and is not identical to sine-derived ENOB. FFT bin width, window and excluded bins change apparent noise density. Integrate noise over the actual measurement band. Source purity and clock quality must exceed the ADC performance being measured.
 
@@ -54,7 +58,7 @@ Noise-free resolution is a DC histogram or peak-to-peak concept and is not ident
 
 <div className="section-heading"><span>03</span><h2>Explain why the analog filter comes first</h2></div>
 
-Sampling a sine at $f$ produces values $\sin(2\pi fn/f_s+\phi)$. Frequencies separated by integer multiples of $f_s$ produce the same sequence, with possible frequency-sign reversal. In the first Nyquist zone, a convenient folded frequency is the smallest distance from $f$ to an integer multiple of $f_s$.
+Sampling a sine at $f$ produces values $\sin(2\pi fn/f_s+\phi)$. Replace $f$ by $f + kf_s$: the argument gains $2\pi kn$, an integer number of full turns, so every sample is unchanged. Frequencies separated by integer multiples of $f_s$ produce the same sequence. Replacing $f$ by $kf_s - f$ gives $\sin(-2\pi fn/f_s + \phi)$, the same frequency with its sign (and so its phase direction) reversed. In the first Nyquist zone, a convenient folded frequency is the smallest distance from $f$ to an integer multiple of $f_s$.
 
 <Equation tex={String.raw`f_{alias}=\min_{k\in\mathbb Z}|f-kf_s|,\qquad0\le f_{alias}\le f_s/2`}/>
 At 10 kS/s, a 7 kHz tone folds to 3 kHz. A digital filter that passes 3 kHz cannot determine whether the sequence came from a genuine 3 kHz input or an aliased 7 kHz input. Reject unwanted energy **before sampling**. The filter must attenuate blockers and broadband noise, not merely meet a nominal signal-band cutoff.
@@ -69,12 +73,12 @@ Bandpass sampling deliberately aliases a **selected band** to a lower frequency.
 
 <div className="section-heading"><span>04</span><h2>Translate jitter and acquisition into voltage error</h2></div>
 
-An aperture-time error $\delta t$ gives $\delta v\approx(dv/dt)\delta t$. For a sine, the rms ratio leads to the jitter-limited SNR:
+An aperture-time error $\delta t$ gives $\delta v\approx(dv/dt)\delta t$. For $v = A\sin\omega t$, $dv/dt = A\omega\cos\omega t$, whose rms value is $A\omega/\sqrt2$. With independent random timing errors of rms $\sigma_t$, the rms voltage error is $A\omega\sigma_t/\sqrt2$, while the signal rms is $A/\sqrt2$. The amplitude cancels from the ratio, leaving $1/(\omega\sigma_t)$, the jitter-limited SNR:
 
 <Equation tex={String.raw`SNR_{jitter}\simeq-20\log_{10}(2\pi f_{in}\sigma_t)`}/>
 At 1 MHz and 1 ps rms jitter, the limit is about 104 dB. At 100 MHz with the same jitter it is about 64 dB. Use the analog input frequency, not the output sample rate. ADC aperture jitter and clock jitter may combine in root-sum-square if independent and evaluated over appropriate integration bands; correlated sources and deterministic jitter require different treatment.
 
-The input often samples through a switch onto a capacitor. For a first-order source resistance $R$ and sampling capacitance $C$, a full-span step leaves fractional error $e^{-t/(RC)}$. Settling below half a bin requires:
+The input often samples through a switch onto a capacitor. For a first-order source resistance $R$ and sampling capacitance $C$, a full-span step leaves fractional error $e^{-t/(RC)}$ (the RC charging solution). Half a bin is a fraction $(q/2)/V_S = 2^{-(N+1)}$ of the span. Setting $e^{-t/RC} \le 2^{-(N+1)}$ and taking logarithms, settling below half a bin requires:
 
 <Equation tex={String.raw`t_{acq}\ge (N+1)\ln2\,RC`}/>
 For 16 bits, 1 kΩ and 20 pF, this is 235.7 ns. Acquisition time is the time the sample switch is actually connected, not the entire sample period. A buffer's small-signal bandwidth, slew rate, nonlinear settling, kickback and output impedance modify this RC model. Multiplexing a high channel next to a low channel creates the largest initial error; repeated samples of one input can conceal it.
@@ -90,7 +94,7 @@ A local capacitor can supply kickback charge while a small series resistor isola
 Offset translates the transfer; gain error changes its slope. Two-point calibration can correct those terms under fixed conditions. Integral nonlinearity is the remaining deviation from a specified ideal line, which may be an endpoint or best-fit line. Differential nonlinearity describes individual code-width error:
 
 <Equation tex={String.raw`DNL_k=\frac{T_{k+1}-T_k}{q}-1`}/>
-Here $T_k$ are sorted code thresholds. A zero-width code has DNL = −1 and is missing; reported guarantees about missing codes must be read with the converter's definitions. INL and DNL are not interchangeable. A converter can have well-behaved adjacent widths while its accumulated curve bows significantly. Monotonicity and missing-code specifications are architecture- and definition-sensitive; check the datasheet rather than inferring them from nominal bits.
+Here $T_k$ are sorted code thresholds, so $T_{k+1} - T_k$ is the actual width of code $k$ and DNL is its fractional departure from the ideal width $q$. A zero-width code has DNL = −1 and is missing; reported guarantees about missing codes must be read with the converter's definitions. INL and DNL are not interchangeable. A converter can have well-behaved adjacent widths while its accumulated curve bows significantly. Monotonicity and missing-code specifications are architecture- and definition-sensitive; check the datasheet rather than inferring them from nominal bits.
 
 For a signal-chain budget, carry amplifier offset, gain-ratio error, reference drift, ADC INL, acquisition residual and integrated noise to input-referred units. Add bounded worst-case contributions according to the design requirement; combine independent random noise powers separately. Then check latency, sample timing, multiplexing and digital-output bandwidth. A converter that meets DC accuracy may still fail a control loop because its filtered output arrives too late.
 

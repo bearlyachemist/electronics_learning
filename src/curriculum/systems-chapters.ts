@@ -614,5 +614,43 @@ export const systemsChapters = [
         "Check your understanding"
       ]
     ]
+  },
+  {
+    "id": "digital-logic-timing",
+    "number": "111",
+    "title": "Digital logic, timing and clock domains",
+    "href": "/digital-logic-timing/",
+    "practice": "/digital-logic-timing/practice/",
+    "group": "Digital systems",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "levels",
+        "Use guaranteed voltage ranges"
+      ],
+      [
+        "power",
+        "Calculate charge, edge current and loading"
+      ],
+      [
+        "synchronous",
+        "Derive setup and hold from the launch/capture timeline"
+      ],
+      [
+        "domains",
+        "Handle metastability without promising it disappears"
+      ],
+      [
+        "interfaces",
+        "Shift levels and define reset behavior"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
   }
 ];

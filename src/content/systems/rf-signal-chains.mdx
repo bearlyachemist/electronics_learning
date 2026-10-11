@@ -20,12 +20,30 @@ import {SystemsLab} from '../../components/SystemsLab';
 
 A receiver must detect a wanted signal while larger unwanted signals may occupy the same input bandwidth. Gain before a noisy stage can preserve sensitivity, but it also magnifies blockers that compress or intermodulate in later stages. Start with two separate budgets: minimum detectable signal and maximum tolerable signal.
 
-Thermal available noise power from a matched source is $kTB$. At 290 K, density is approximately −174 dBm/Hz. In a 100 kHz noise bandwidth, source noise is roughly −124 dBm. A receiver with 4 dB noise figure has an input-referred noise floor about −120 dBm. If a required demodulated SNR is 10 dB and no processing gain is included, a first sensitivity estimate is −110 dBm.
+Thermal available noise power from a matched source is $kTB$: the resistor's open-circuit noise $4kTRB$ (mean square) delivered into a matched load, which takes a quarter of it, as for any source (Chapter 102). At 290 K, $kT$ = 4.0 × 10⁻²¹ W/Hz, and $10\log_{10}(4.0\times10^{-21}/10^{-3})$ ≈ −174 dBm/Hz. In a 100 kHz noise bandwidth, source noise is roughly −124 dBm. A receiver with 4 dB noise figure has an input-referred noise floor about −120 dBm. If a required demodulated SNR is 10 dB and no processing gain is included, a first sensitivity estimate is −110 dBm.
 
 Noise factor is $F=SNR_{in}/SNR_{out}$, and noise figure is $NF=10\log_{10}F$. Use **linear power gains** and linear factors in the cascade equation:
 
 <Equation tex={String.raw`F_{tot}=F_1+\frac{F_2-1}{G_1}+\frac{F_3-1}{G_1G_2}+\cdots`}/>
-Derive it by referring each stage's added output noise back through preceding power gain. The first stage's noise remains undivided; later contributions shrink as earlier gain increases. A passive matched attenuator at the reference temperature has noise factor equal to its power loss. A 2 dB filter before an otherwise 2 dB-NF receiver therefore raises total NF to about 4 dB, although the filter may prevent blockers from overloading the receiver.
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE CASCADED NOISE FACTOR</span>
+
+1. **One stage.** With a matched source at $T_0$ = 290 K, input noise is $N_i = kT_0B$. A stage of power gain $G$ and noise factor $F$ outputs $FGkT_0B$ (from $F = SNR_{in}/SNR_{out}$ with signal gain $G$). Of that, $GkT_0B$ is amplified source noise, so the stage's own added output noise is $(F-1)GkT_0B$.
+
+2. **Two stages.** At the second stage's output, collect three independent powers: source noise amplified by both stages, stage 1's added noise amplified by stage 2, and stage 2's own added noise:
+<Equation tex={String.raw`N_o=kT_0B\left[G_1G_2+(F_1-1)G_1G_2+(F_2-1)G_2\right]`}/>
+
+3. **Divide by what an ideal cascade would output,** $G_1G_2kT_0B$:
+<Equation tex={String.raw`F_{12}=F_1+\frac{F_2-1}{G_1}`}/>
+
+4. **More stages.** Treat stages 1–2 as one stage of gain $G_1G_2$ and repeat; each later stage's excess factor $F_k - 1$ is divided by the total gain ahead of it.
+
+5. **Passive attenuator.** A matched lossy network at $T_0$ outputs exactly $kT_0B$ (it is a resistor in equilibrium), while its signal gain is $1/L$. So $SNR_{out} = SNR_{in}/L$ and $F = L$.
+
+</div>
+
+The first stage's noise remains undivided; later contributions shrink as earlier gain increases. A passive matched attenuator at the reference temperature has noise factor equal to its power loss. A 2 dB filter before an otherwise 2 dB-NF receiver therefore raises total NF to about 4 dB, although the filter may prevent blockers from overloading the receiver.
 
 <SystemsFlow labels={["Preselector|reject blockers", "LNA|noise + gain", "Mixer + LO|translate band", "IF + ADC|select and measure"]} caption="Preselector loss hurts sensitivity, while its rejection can preserve large-signal headroom. Both budgets are needed."/>
 For a 20 dB-gain, 1.5 dB-NF LNA, a −6 dB-gain, 6 dB-NF mixer and a 30 dB-gain, 5 dB-NF IF stage, the model gives 1.842 dB total NF and 44 dB gain. Adding 2 dB front-end loss gives 3.842 dB NF and 42 dB gain. Frequency-converting stages require consistent definitions of signal and image-sideband noise; a blindly applied single-sideband/double-sideband mix can produce a several-dB mistake.
@@ -38,7 +56,23 @@ For a 20 dB-gain, 1.5 dB-NF LNA, a −6 dB-gain, 6 dB-NF mixer and a 30 dB-gain,
 
 A weakly nonlinear amplifier can be modeled locally as $v_o=a_1v+a_2v^2+a_3v^3+\cdots$. Two input tones at $f_1,f_2$ produce third-order products at $2f_1-f_2$ and $2f_2-f_1$, often close enough to the wanted channel to pass the output filter. Their small-signal amplitudes scale as the cube of input amplitude, while the wanted response scales linearly.
 
-The third-order intercept is the extrapolated point where these slopes intersect; it is not an operating point that the amplifier can necessarily reach. For equal tones of input power $P_{in}$ in dBm, small-signal gain $G$ in dB and input intercept $IIP3$ in dBm:
+The third-order intercept is the extrapolated point where these slopes intersect; it is not an operating point that the amplifier can necessarily reach.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / WHERE IM3 COMES FROM AND HOW IT SCALES</span>
+
+1. **Expand the cube.** Apply $v = A(\cos\theta_1 + \cos\theta_2)$. The cubic term contains $3a_3A^3\cos^2\theta_1\cos\theta_2$. Using $\cos^2\theta_1 = \tfrac12(1+\cos2\theta_1)$ and then the product-to-sum identity, $\tfrac32a_3A^3\cos2\theta_1\cos\theta_2$ contains $\tfrac34a_3A^3\cos(2\theta_1 - \theta_2)$. By symmetry the same amplitude appears at $2\theta_2 - \theta_1$.
+
+2. **Ratio to the fundamental.** For small $A$ the fundamental output is $a_1A$. The IM3-to-fundamental amplitude ratio is $\tfrac34|a_3|A^2/|a_1|$: it grows as $A^2$, so in dB it rises 2 dB for every 1 dB of input.
+
+3. **Define the intercept** as the input amplitude where the extrapolated lines meet, $|a_1|A_{IP} = \tfrac34|a_3|A_{IP}^3$. Then the ratio in step 2 is simply $(A/A_{IP})^2$.
+
+4. **Convert to dB.** $P_{IM3} - P_{fund} = 2(P_{in} - IIP3)$. Add $P_{fund,out} = P_{in} + G$:
+
+</div>
+
+For equal tones of input power $P_{in}$ in dBm, small-signal gain $G$ in dB and input intercept $IIP3$ in dBm:
 
 <Equation tex={String.raw`P_{fund,out}=P_{in}+G,\qquad P_{IM3,out}\simeq3P_{in}+G-2IIP3`}/>
 With $IIP3=+10$ dBm and each input tone at −20 dBm, IM3 is approximately 60 dB below each fundamental. Raise each tone to −5 dBm and the separation falls to 30 dB. This cubic extrapolation fails near compression, but it demonstrates why a modest blocker increase can create a much larger in-band error.
@@ -74,7 +108,7 @@ An oscillator needs a loop whose phase permits reinforcement and whose small-sig
 
 Phase noise describes random phase modulation versus offset frequency, often as dBc/Hz. A strong blocker can mix with LO sideband noise and raise the noise floor in a nearby wanted channel: reciprocal mixing. Narrowing the IF filter cannot remove LO noise that already translated the blocker into that channel. Integrated phase noise over a stated band can be converted to rms phase and timing jitter, but spurs and integration limits must be handled explicitly.
 
-A PLL compares a divided VCO phase to a reference and adjusts control voltage. The loop passes reference-related phase fluctuations mainly inside its bandwidth and suppresses free-running VCO fluctuations there; outside, VCO noise increasingly dominates. In the ideal integer-N limit, reference phase fluctuations multiplied into the output produce a $20\log_{10}N$ phase-noise increase relative to their input level.
+A PLL compares a divided VCO phase to a reference and adjusts control voltage. The loop passes reference-related phase fluctuations mainly inside its bandwidth and suppresses free-running VCO fluctuations there; outside, VCO noise increasingly dominates. In the ideal integer-N limit, reference phase fluctuations multiplied into the output produce a $20\log_{10}N$ phase-noise increase relative to their input level. Why: in lock the detector forces the divided phase $\phi_o/N$ to track $\phi_{ref}$, so $\phi_o = N\phi_{ref}$; phase noise is a power quantity in the phase, which scales as $N^2$, or $20\log_{10}N$ dB.
 
 <Equation tex={String.raw`f_o=Nf_{ref},\qquad \phi_o\simeq N\phi_{ref}\quad\text{inside the tracking band}`}/>
 Fractional-N synthesis permits finer steps without a very low comparison frequency, but divider modulation and spurs need management. Loop bandwidth trades settling against reference, detector and VCO noise. A crystal reference can set long-term frequency accuracy while still having poor short-term noise in the application band. Analyze the whole loop and supply coupling.

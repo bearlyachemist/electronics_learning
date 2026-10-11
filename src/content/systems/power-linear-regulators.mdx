@@ -21,11 +21,17 @@ import {SystemsLab} from '../../components/SystemsLab';
 A linear regulator compares a divided output voltage with a reference and controls a series pass element. The output capacitor supplies current before the feedback loop catches up; the pass transistor then restores the average voltage. This is the same feedback reasoning as the op-amp chapters, with substantial load current and dissipation added.
 
 <SystemsFlow labels={["Input|available headroom", "Pass device|controlled loss", "Output|load + capacitor", "Feedback|reference comparison"]} caption="The pass element dissipates the voltage drop. The capacitor and control loop share the transient-current job."/>
-For a simple adjustable regulator, $V_o\approx V_{ref}(1+R_{top}/R_{bot})$ when feedback-pin current is negligible. A current flowing out of the feedback pin adds a term proportional to $R_{top}$; a current flowing into it has the opposite effect for the same defined direction. Use the manufacturer's signed equation instead of guessing. Divider current trades consumption against bias-current sensitivity and coupled noise.
+For a simple adjustable regulator, the loop holds the feedback pin at $V_{ref}$. Write KCL at that pin, with $I_{FB}$ defined as current flowing out of the pin into the divider node:
+
+<Equation tex={String.raw`\frac{V_o-V_{ref}}{R_{top}}+I_{FB}=\frac{V_{ref}}{R_{bot}}\quad\Longrightarrow\quad V_o=V_{ref}\left(1+\frac{R_{top}}{R_{bot}}\right)-I_{FB}R_{top}`}/>
+
+So $V_o\approx V_{ref}(1+R_{top}/R_{bot})$ when feedback-pin current is negligible. A current flowing out of the feedback pin supplies part of the bottom resistor's current, so $R_{top}$ needs to carry less and the output is lower by $I_{FB}R_{top}$; a current flowing into the pin has the opposite effect. (Some datasheets define the opposite direction as positive, which flips the sign.) Use the manufacturer's signed equation instead of guessing. Divider current trades consumption against bias-current sensitivity and coupled noise.
 
 **Dropout** is the headroom required for the regulator to maintain its specified behavior at a particular current and temperature. Below that point the error amplifier cannot demand more useful conduction. Output then follows the input through the pass element rather than the nominal setpoint. A quoted typical dropout at 100 mA does not establish guaranteed headroom at 500 mA and high temperature. Some architectures also require a separate bias rail above the regulated input.
 
 <Equation tex={String.raw`V_{in,min}\ge V_o+V_{drop,max}(I,T)+V_{ripple,pk}+V_{path,drop}`}/>
+
+This is KVL from the input rail's lowest instantaneous value, through the wiring and the pass element, to the output: each drop must fit inside the available input voltage at the ripple trough.
 If the upstream rail has 100 mV peak ripple, reserve that ripple at its trough. A 3.3 V LDO needing 250 mV maximum dropout at load requires at least 3.65 V before additional routing loss. Designing around a 3.6 V average would periodically enter dropout. Once that happens, a linear small-signal PSRR curve is not the appropriate ripple model.
 
 </section>
@@ -34,7 +40,7 @@ If the upstream rail has 100 mV peak ripple, reserve that ripple at its trough. 
 
 <div className="section-heading"><span>02</span><h2>Calculate input power and junction temperature</h2></div>
 
-Ignoring small auxiliary terms, pass-element loss is $(V_{in}-V_o)I_o$. Input power also includes ground or quiescent current. The resulting efficiency is approximately $V_o/V_{in}$ only when load current dominates quiescent current.
+Ignoring small auxiliary terms, the same load current $I_o$ flows through the pass element (KCL along the series path), which has $V_{in}-V_o$ across it, so the pass-element loss is $(V_{in}-V_o)I_o$. Input power also includes ground or quiescent current, which flows from $V_{in}$ to ground without reaching the load. Efficiency is output power $V_oI_o$ divided by input power $V_{in}(I_o + I_q)$. The resulting efficiency is approximately $V_o/V_{in}$ only when load current dominates quiescent current.
 
 <Equation tex={String.raw`P_{loss}\simeq(V_{in}-V_o)I_o+V_{in}I_q,\qquad \eta=\frac{V_oI_o}{V_{in}(I_o+I_q)},\qquad T_j\simeq T_a+\theta_{JA}P_{loss}`}/>
 A 5-to-3.3 V regulator at 200 mA dissipates 0.34 W in its pass path. With a teaching board thermal resistance of 60 K/W, temperature rise is 20.4 K. At 12 V input the same load dissipates 1.74 W and the rise becomes 104.4 K. A current rating says little about feasibility without the voltage drop and board thermal design.
@@ -49,14 +55,14 @@ At light load, quiescent current dominates. A regulator drawing 1 mA to supply a
 
 <div className="section-heading"><span>03</span><h2>Let charge conservation set the first response</h2></div>
 
-Immediately after a load step, the feedback loop cannot change pass current infinitely fast. The output capacitor supplies the difference. Let a load increase by $\Delta I$ and assume, for a first bound, that the regulator contributes no additional current for response time $t_r$. Capacitor discharge and ESR give:
+Immediately after a load step, the feedback loop cannot change pass current infinitely fast. The output capacitor supplies the difference. Let a load increase by $\Delta I$ and assume, for a first bound, that the regulator contributes no additional current for response time $t_r$. The capacitor law $i = C\,dv/dt$ with constant deficit $\Delta I$ gives a linear droop of $\Delta I\,t_r/C$ over the interval. The capacitor's series resistance and inductance add Ohm's-law and $L\,di/dt$ drops at the instant the current changes:
 
 <Equation tex={String.raw`\Delta V_C\simeq\frac{\Delta I\,t_r}{C},\qquad\Delta V_{ESR}\simeq\Delta I\,ESR,\qquad\Delta V_{ESL}=ESL\frac{di}{dt}`}/>
 For 100 mA over 10 μs and 22 μF effective capacitance, the charge term is 45.5 mV. At 20 mΩ ESR, the immediate resistive step adds 2 mV. The calculation is conservative for a regulator that ramps current during the interval, but optimistic if the ceramic capacitor loses value under DC bias or the interconnect adds inductance.
 
 For a more informative measurement, plot load current and output voltage together. The voltage recovery shape reveals both loop damping and current limits. A rapid unloading step may overshoot because stored current charges the capacitor while the pass element turns off. Many LDOs cannot actively sink that charge. A larger capacitor can reduce the excursion but slows startup and changes loop dynamics.
 
-Load capacitance also requires startup current $C\,dv/dt$. Charging 100 μF to 3.3 V in 1 ms needs 330 mA before normal load current. Soft-start, foldback and minimum input voltage determine whether startup succeeds. Test the actual load's power-on behavior rather than replacing it with a resistor that lacks its input capacitance and sequencing needs.
+Load capacitance also requires startup current $C\,dv/dt$. A linear ramp from 0 to $V$ in time $t$ has $dv/dt = V/t$: charging 100 μF to 3.3 V in 1 ms needs 330 mA before normal load current. Soft-start, foldback and minimum input voltage determine whether startup succeeds. Test the actual load's power-on behavior rather than replacing it with a resistor that lacks its input capacitance and sequencing needs.
 
 </section>
 
@@ -67,6 +73,8 @@ Load capacitance also requires startup current $C\,dv/dt$. Charging 100 μF to 3
 The regulator's loop includes its error amplifier, pass element, output impedance and capacitor. The output pole varies with load. An ESR zero appears at $1/(2\pi C\,ESR)$ and may provide useful phase lead. A regulator designed for a particular ESR range can be unstable with a nearly ideal ceramic capacitor; another architecture may be designed specifically for low ESR.
 
 <Equation tex={String.raw`f_{z,ESR}=\frac{1}{2\pi C\,ESR}`}/>
+
+The zero comes from the capacitor's own impedance: $Z = ESR + 1/(sC) = (1 + sC\,ESR)/(sC)$. Its numerator vanishes at $s = -1/(C\,ESR)$. Above that frequency the capacitor looks resistive, which removes 90° of the phase lag the output pole would otherwise add.
 A 10 μF capacitor with 0.2 Ω ESR has a zero near 79.6 kHz; at 5 mΩ it moves to 3.18 MHz. Changing capacitor technology can therefore move a compensating zero by forty times. Follow the allowed capacitance and ESR region at minimum and maximum load and temperature. Check effective ceramic capacitance and the location of the capacitor relative to the sensing terminals.
 
 Remote sensing compensates cable or trace drops only within the loop's permitted topology. A sense wire can introduce a pole or antenna, and an open sense connection may command excessive output. Use the manufacturer's remote-sense implementation, or a regulator intended for that purpose. Kelvin routing of a local divider is often enough for a board rail; do not carry switch or connector currents through its ground leg.
@@ -80,6 +88,8 @@ Remote sensing compensates cable or trace drops only within the loop's permitted
 Power-supply rejection is frequency dependent and varies with headroom, current, capacitance and operating mode. A 60 dB PSRR at one frequency reduces a small 100 mV input component to 100 μV at the output under the specified conditions. It says nothing about the regulator's own output noise, and it cannot be extrapolated to a switching edge or dropout.
 
 <Equation tex={String.raw`\left|\frac{v_{ripple,out}}{v_{ripple,in}}\right|=10^{-PSRR/20},\qquad \sigma_{total}^2=\sigma_{reg}^2+\int |H_{supply}(f)|^2S_{upstream}(f)\,df`}/>
+
+The first form inverts the definition $\mathrm{PSRR} = 20\log_{10}|v_{in}/v_{out}|$. The second adds the regulator's own noise and the filtered upstream noise in power, because the two are independent (Chapter 96).
 A switcher followed by an LDO can give good efficiency and a quieter local rail. Allocate enough headroom at the lowest switcher output, ripple trough and maximum LDO load; excess headroom wastes heat. Check high-frequency coupling that bypasses the LDO through ground impedance or parasitic capacitance. A ferrite bead adds impedance but can resonate with capacitors and requires damping; its impedance is not a fixed resistor at all frequencies.
 
 Reverse current is another state to analyze. If an output capacitor or external source holds the output above an unpowered input, an internal diode or pass channel may conduct backwards. Some regulators block it, some tolerate limited current and some need external protection. Sequence multi-rail loads so input pins are not driven beyond their rails during startup or shutdown. Validate the rail at the load terminals with a short probe return and with realistic current slew; a long oscilloscope ground lead can invent ringing.

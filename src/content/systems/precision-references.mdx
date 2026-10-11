@@ -23,6 +23,8 @@ A 16-bit converter reports a ratio to its reference. If its reference changes by
 For an ideal unipolar converter, let $V_S$ be the full input span and $D$ the unsigned code. Away from the endpoints:
 
 <Equation tex={String.raw`D\simeq 2^N\frac{V_{in}}{V_{ref}},\qquad \frac{\delta D}{D}\simeq\frac{\delta V_{in}}{V_{in}}-\frac{\delta V_{ref}}{V_{ref}}`}/>
+
+The second result follows by taking logarithms of the first, $\ln D = N\ln2 + \ln V_{in} - \ln V_{ref}$, and differentiating: $dD/D = dV_{in}/V_{in} - dV_{ref}/V_{ref}$. A quotient turns fractional errors into a difference.
 The minus sign matters. A rising reference makes the same input look smaller. Reference error is a gain error; it approaches zero in input-referred volts near zero input, unlike converter offset. A bipolar converter may use a different scale factor and coding, but the ratio dependence remains.
 
 A **shunt reference** regulates its terminal voltage by drawing the unused current. A feed resistor must supply the load plus the minimum reference current at the lowest supply, while staying below reference current and dissipation limits at the highest supply. A **series reference** controls the current delivered from its input to its output; it has dropout, quiescent current and source/sink limitations. Three terminals do not guarantee that it can absorb current returned by a load.
@@ -36,9 +38,27 @@ Use the reference datasheet's load range, recommended capacitor and stability co
 
 <div className="section-heading"><span>02</span><h2>Derive temperature cancellation</h2></div>
 
-A forward-biased bipolar junction has a base-emitter voltage that usually decreases with temperature at a specified current. Two matched junctions operated at different current densities have a voltage difference proportional to absolute temperature. With density ratio $m$ and thermal voltage $V_T=kT/q$:
+A forward-biased bipolar junction has a base-emitter voltage that usually decreases with temperature at a specified current. Two matched junctions operated at different current densities have a voltage difference proportional to absolute temperature.
 
-<Equation tex={String.raw`\Delta V_{BE}=V_T\ln m,\qquad V_{BG}=V_{BE}+a\Delta V_{BE},\qquad a=-\frac{dV_{BE}/dT}{(k/q)\ln m}`}/>
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / FIRST-ORDER BANDGAP CANCELLATION</span>
+
+1. **Two junction laws.** For matched transistors with saturation-current density $J_S$, $V_{BE} = V_T\ln(J/J_S)$. Run one at density $J_1$ and the other at $J_2 = J_1/m$ (equal currents in an $m$-times-larger device, or $m$ times less current in an equal one).
+
+2. **Subtract.** The unknown, strongly temperature-dependent $J_S$ cancels:
+<Equation tex={String.raw`\Delta V_{BE}=V_T\ln\frac{J_1}{J_S}-V_T\ln\frac{J_2}{J_S}=V_T\ln m=\frac{kT}{q}\ln m`}/>
+   This difference is exactly proportional to absolute temperature (PTAT), with slope $(k/q)\ln m$.
+
+3. **Sum with a weight.** Form $V_{BG} = V_{BE} + a\,\Delta V_{BE}$ (in a circuit, a resistor ratio sets $a$). Differentiate with respect to temperature:
+<Equation tex={String.raw`\frac{dV_{BG}}{dT}=\frac{dV_{BE}}{dT}+a\frac{k}{q}\ln m`}/>
+
+4. **Choose $a$ for zero slope** at the operating temperature:
+<Equation tex={String.raw`a=-\frac{dV_{BE}/dT}{(k/q)\ln m}`}/>
+
+5. **What value results.** From Chapter 26, $V_{BE}(T) \approx V_{G0} - (V_{G0} - V_{BE0})T/T_0$ plus a small curvature term. Its slope is $-(V_{G0}-V_{BE0})/T_0$, so the PTAT term needed to cancel it contributes $(V_{G0} - V_{BE0})$ at $T_0$. Adding it to $V_{BE0}$ leaves about $V_{G0}$: the extrapolated silicon bandgap, near 1.2 V. The curvature term (the $3V_T\ln(T_0/T)$ of Chapter 26) is what remains uncancelled.
+
+</div>
 The first term is commonly called CTAT, the second PTAT. At $m=8$, $(k/q)\ln m$ is about 179 μV/K. If the junction slope at the chosen operating point is −1.8 mV/K, the first-order coefficient is $a\approx10.05$. At 300 K, the difference is about 53.8 mV. Adding ten times that difference to a roughly 0.65 V junction gives about 1.19 V.
 
 The calculation cancels the local slope; it does not cancel curvature over all temperatures. Junction current changes, resistor ratios, amplifier offset and package stress perturb the result. Practical bandgap references use trimming and sometimes curvature correction, then amplify or divide the internal voltage to produce a convenient output. The extrapolated silicon bandgap voltage is the physical origin of the name, not a promise that every reference outputs exactly 1.2 V.
@@ -56,6 +76,8 @@ Consider a hypothetical 4.096 V reference, a 16-bit converter and an application
 A 2 ppm/K slope allowance over 40 K gives 80 ppm, or 327.68 μV, about 5.24 codes. A 10 μV rms integrated reference-noise specification is 0.16 code rms at full scale. Do not add an rms noise value directly to a guaranteed drift limit and label the sum a confidence interval. Keep deterministic bounds, statistical variation and random noise in separate columns.
 
 <Equation tex={String.raw`\epsilon_{ref,ppm}=10^6\frac{\delta V_{ref}}{V_{ref}},\qquad \delta V_{in,eq}\simeq V_{in}\epsilon_{ref},\qquad \sigma_{in,ref}=\left|\frac{V_{in}}{V_{ref}}\right|\sigma_{ref}`}/>
+
+The middle term comes from the ratio result above: a fractional reference error $\epsilon_{ref}$ produces the same code change as a fractional input error of $-\epsilon_{ref}$, which is $V_{in}\epsilon_{ref}$ volts at the input. The noise term applies the same scaling to a standard deviation.
 The last equation uses fractional error in the middle term and volts in the noise term. It also assumes that input and reference fluctuations are uncorrelated. If both are produced by the same source, a covariance term can cancel or reinforce them.
 
 Check whether temperature coefficient is a fitted slope or a box specification: a box value divides the maximum excursion over a stated temperature interval by that interval and nominal voltage. It does not guarantee a perfectly linear slope between arbitrary nearby temperatures. Long-term drift, thermal hysteresis after a temperature cycle, soldering shift and humidity sensitivity describe different mechanisms. Allow warm-up, document calibration conditions and avoid extrapolating a typical aging graph into a guaranteed service-life bound.
@@ -66,9 +88,9 @@ Check whether temperature coefficient is a fitted slope or a box specification: 
 
 <div className="section-heading"><span>04</span><h2>Design static and dynamic loading</h2></div>
 
-For a 2.5 V shunt on a 3.0–3.6 V supply, suppose the load draws at most 100 μA and the reference needs at least 200 μA. The feed resistor must satisfy $R\le(3.0-2.5)/(300\,\mu\mathrm A)=1.67$ kΩ. Choose 1.5 kΩ before tolerances: at 3.0 V it supplies 333 μA, leaving 233 μA for the reference at maximum load. At 3.6 V with no load it supplies 733 μA. Check that current, the 1.83 mW reference dissipation, feed-resistor dissipation and all tolerance corners fit the actual part.
+For a 2.5 V shunt on a 3.0–3.6 V supply, suppose the load draws at most 100 μA and the reference needs at least 200 μA. KCL at the reference node says the feed current $(V_S - V_Z)/R$ divides between the load and the reference, so the reference current is $(V_S - V_Z)/R - I_L$. The worst case for keeping it above its minimum is lowest supply and highest load: $(V_{S,min} - V_Z)/R - I_{L,max} \ge I_{Z,min}$. The feed resistor must satisfy $R\le(3.0-2.5)/(300\,\mu\mathrm A)=1.67$ kΩ. The opposite corner, highest supply and no load, sets the maximum reference current $(V_{S,max} - V_Z)/R$. Choose 1.5 kΩ before tolerances: at 3.0 V it supplies 333 μA, leaving 233 μA for the reference at maximum load. At 3.6 V with no load it supplies 733 μA. Check that current, the 1.83 mW reference dissipation, feed-resistor dissipation and all tolerance corners fit the actual part.
 
-A converter reference input can be a switched-capacitor load. If a conversion removes charge $Q$ from a local capacitor $C$, its immediate droop is $Q/C$. Taking a teaching charge impulse of 50 pC from 1 μF gives 50 μV: already 0.8 code for the earlier 16-bit span. Recharge current and the reference's output impedance determine the following recovery. The average current $Qf_s$ is only 50 μA at 1 MS/s; a DC load test alone misses the transient requirement.
+A converter reference input can be a switched-capacitor load. If a conversion removes charge $Q$ from a local capacitor $C$ faster than the reference can respond, charge conservation on $C$ gives an immediate droop $Q/C$. Removing $Q$ on each of $f_s$ conversions per second is an average current $Qf_s$. Taking a teaching charge impulse of 50 pC from 1 μF gives 50 μV: already 0.8 code for the earlier 16-bit span. Recharge current and the reference's output impedance determine the following recovery. The average current $Qf_s$ is only 50 μA at 1 MS/s; a DC load test alone misses the transient requirement.
 
 <Equation tex={String.raw`\Delta V=\frac{Q}{C},\qquad I_{avg}=Qf_s,\qquad V_{pin}(s)=V_{source}(s)-I_{load}(s)Z_{out}(s)`}/>
 Increasing capacitance lowers impulse droop but may slow startup, alter stability or cause ringing with package inductance. Use the converter manufacturer's specified reference-drive network, including buffer, reservoir capacitor, ESR and routing. Place the reservoir at the reference pins; connect its return to the reference return with a short path. A capacitor at the reference source several centimeters away is separated from the ADC by inductance.
@@ -81,7 +103,7 @@ Kelvin sensing means observing the voltage where it matters rather than at the p
 
 <div className="section-heading"><span>05</span><h2>Cancel a reference by measuring a ratio</h2></div>
 
-A resistive bridge excited by the same voltage used as the ADC reference can reject slow excitation variation. Suppose bridge output is $V_{in}=\alpha V_{exc}$ and $V_{ref}=V_{exc}$, after matching any scale factors. Then $D\simeq2^N\alpha$: excitation disappears algebraically.
+A resistive bridge excited by the same voltage used as the ADC reference can reject slow excitation variation. Suppose bridge output is $V_{in}=\alpha V_{exc}$ and $V_{ref}=V_{exc}$, after matching any scale factors. Then $D\simeq2^N\alpha V_{exc}/V_{exc} = 2^N\alpha$: excitation disappears algebraically. In the error equation above, $\delta V_{in}/V_{in} = \delta V_{exc}/V_{exc} = \delta V_{ref}/V_{ref}$, so the two terms cancel exactly.
 
 The cancellation requires the **same actual voltage**, not merely two rails with the same label. Lead resistance can change the voltage delivered to a remote bridge. Sense the excitation at the bridge terminals where possible; a gain stage with an independent reference, unequal filtering delays or time-multiplexed sampling can break the cancellation. Reference noise at frequencies outside the bridge signal path does not necessarily cancel either.
 

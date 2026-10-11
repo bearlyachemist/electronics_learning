@@ -558,5 +558,40 @@
         }
       ]
     }
+  ],
+  "digital-logic-timing": [
+    {
+      "tag": "MARGINS",
+      "title": "Check logic compatibility",
+      "prompt": "A driver guarantees 0.25 V low and 2.9 V high. The receiver allows low up to 0.7 V and requires high at least 2.2 V. Find margins.",
+      "hint": "Use guaranteed extrema.",
+      "solution": [
+        {
+          "text": "Low margin is 0.45 V; high margin is 0.7 V. Check load current, temperature, supply and ground shift as well."
+        }
+      ]
+    },
+    {
+      "tag": "SETUP",
+      "title": "Find an allowed period",
+      "prompt": "Use tCQ,max = 1 ns, path = 6 ns, setup = 0.5 ns, uncertainty = 0.3 ns and positive capture skew = 0.2 ns. Find minimum period.",
+      "hint": "Later capture helps the next-edge setup check.",
+      "solution": [
+        {
+          "text": "Minimum period is 1 + 6 + 0.5 + 0.3 − 0.2 = 7.6 ns, about 131.6 MHz. Hold is a separate minimum-path check."
+        }
+      ]
+    },
+    {
+      "tag": "CDC",
+      "title": "A pulse crosses slowly",
+      "prompt": "A 5 ns source pulse goes into a two-flop synchronizer clocked every 20 ns. Is capture guaranteed?",
+      "hint": "Synchronization probability and pulse visibility are different questions.",
+      "solution": [
+        {
+          "text": "No. The pulse can fit entirely between receiving edges. Use a suitable handshake, toggle or pulse-stretching scheme with proven event-rate and timing assumptions."
+        }
+      ]
+    }
   ]
 }

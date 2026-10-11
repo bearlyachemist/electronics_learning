@@ -23,7 +23,7 @@ RF circuits are ordinary electrical circuits whose dimensions, parasitics and pr
 A sinusoidal voltage only specifies power when the impedance and voltage convention are known. For a resistance $R$, $P=V_{rms}^2/R$. A 1 V peak sine has 0.707 V rms and delivers 10 mW into 50 Ω, or +10 dBm. The same voltage into 1 kΩ delivers 0.5 mW. Voltage gain in dB and power gain in dB coincide only when their impedance scaling is accounted for.
 
 <Equation tex={String.raw`P_{dBm}=10\log_{10}\!\left(P/1\,\mathrm{mW}\right),\qquad G_P=10\log_{10}(P_o/P_i)`}/>
-A generator modeled as an open-circuit voltage $V_s$ with resistance $R_s$ delivers maximum available power to a matched resistive load: $P_{av}=V_s^2/(4R_s)$ for rms $V_s$. The matched load voltage is half the open-circuit voltage. Many generators display the voltage intended for a selected load impedance; a high-impedance oscilloscope can then read twice the number. State whether a voltage is open circuit, loaded, peak, peak-to-peak or rms.
+A generator modeled as an open-circuit voltage $V_s$ with resistance $R_s$ delivers maximum available power to a matched resistive load: with $R_L = R_s$ the current is $V_s/(2R_s)$ and the load power is $(V_s/2R_s)^2R_s = V_s^2/(4R_s)$ for rms $V_s$. The matched load voltage is half the open-circuit voltage, because the two equal resistances form a 1:1 divider. Many generators display the voltage intended for a selected load impedance; a high-impedance oscilloscope can then read twice the number. State whether a voltage is open circuit, loaded, peak, peak-to-peak or rms.
 
 An attenuator pad deliberately loses power while improving isolation and maintaining a specified impedance. A 3 dB pad roughly halves power and scales voltage by 0.708 for equal impedances. It can reduce sensitivity to source/load mismatch and protect the next stage, at the price of noise figure if placed before a low-noise amplifier.
 
@@ -33,14 +33,32 @@ An attenuator pad deliberately loses power while improving isolation and maintai
 
 <div className="section-heading"><span>02</span><h2>Derive what matching actually optimizes</h2></div>
 
-For a source $Z_s=R_s+jX_s$ and load $Z_L=R_L+jX_L$, delivered average power is proportional to $R_L/|Z_s+Z_L|^2$. Setting $X_L=-X_s$ cancels reactance; maximizing with respect to $R_L$ gives $R_L=R_s$. Thus maximum available power is obtained at the conjugate match $Z_L=Z_s^*$ for this linear source model.
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE CONJUGATE MATCH</span>
+
+1. **Current.** The source and load are in series, so the phasor current is $I = V_s/(Z_s + Z_L)$, with magnitude $|V_s|/|Z_s + Z_L|$.
+
+2. **Power.** Only the load's resistance absorbs average power: $P_L = |I|^2R_L$ (rms phasors). Writing out the magnitude of the total impedance gives the expression below.
+
+3. **Reactance.** $X_L$ appears only in the denominator, as $(X_s + X_L)^2$, which is smallest (zero) at $X_L = -X_s$.
+
+4. **Resistance.** With the reactances cancelled, $P_L \propto R_L/(R_s + R_L)^2$. Differentiate with respect to $R_L$: the numerator of the derivative is $(R_s + R_L)^2 - 2R_L(R_s + R_L) = (R_s + R_L)(R_s - R_L)$, which is zero at $R_L = R_s$.
+
+5. **Together:** $Z_L = R_s - jX_s = Z_s^*$, and the delivered power is the available power $|V_s|^2/(4R_s)$.
+
+</div>
+
+Thus maximum available power is obtained at the conjugate match $Z_L=Z_s^*$ for this linear source model.
 
 <Equation tex={String.raw`P_L=\frac{|V_s|^2R_L}{(R_s+R_L)^2+(X_s+X_L)^2},\qquad Z_L=Z_s^*`}/>
 For a purely resistive source, this equals matching resistance. For an amplifier, the best source impedance for minimum added noise may differ from the conjugate impedance that maximizes gain. Stability may require another compromise. A matching network chosen from transistor capacitance alone does not establish minimum noise figure or safe unconditional stability.
 
-On a transmission line with real characteristic impedance $Z_0$, the voltage reflection coefficient is $\Gamma=(Z_L-Z_0)/(Z_L+Z_0)$. A matched load absorbs the incident wave; an unmatched one returns a fraction. For a real reference impedance, the reflected power fraction is $|\Gamma|^2$. Return loss is $-20\log_{10}|\Gamma|$; larger positive return loss is better. The logarithmic S₁₁ magnitude is often shown as a negative dB value, so keep the sign convention explicit.
+On a transmission line with real characteristic impedance $Z_0$, the voltage reflection coefficient is $\Gamma=(Z_L-Z_0)/(Z_L+Z_0)$. (At the load, total voltage $V^+ + V^-$ and total current $(V^+ - V^-)/Z_0$ must satisfy Ohm's law for $Z_L$; solving for $V^-/V^+$ gives this ratio. Chapter 104 derives it in full.) A matched load absorbs the incident wave; an unmatched one returns a fraction. For a real reference impedance, the reflected power fraction is $|\Gamma|^2$. Return loss is $-20\log_{10}|\Gamma|$; larger positive return loss is better. The logarithmic S₁₁ magnitude is often shown as a negative dB value, so keep the sign convention explicit.
 
 <Equation tex={String.raw`RL=-20\log_{10}|\Gamma|,\qquad VSWR=\frac{1+|\Gamma|}{1-|\Gamma|}`}/>
+
+VSWR is the ratio of the largest to the smallest voltage amplitude along the line. Where the incident and reflected waves add in phase the amplitude is $|V^+|(1 + |\Gamma|)$; where they oppose it is $|V^+|(1 - |\Gamma|)$.
 A 100 Ω load on a 50 Ω line has $\Gamma=1/3$, return loss 9.54 dB and VSWR 2. It reflects one ninth of incident power. A matching network can reduce this reflection around a frequency, but loss, bandwidth and component tolerance must be checked.
 
 </section>
@@ -53,7 +71,11 @@ Suppose a 50 Ω source must drive 200 Ω at 10 MHz. Put a capacitor across the 2
 
 <MatchCircuit/>
 
-Set $Q=\omega C R_H$. The branch real part is $R_H/(1+Q^2)$, so choosing it equal to $R_L$ gives $Q=\sqrt{R_H/R_L-1}$. The branch imaginary magnitude is $QR_L$. Therefore:
+Set $Q=\omega C R_H$ and rationalize the branch impedance by multiplying top and bottom by $1 - jQ$:
+
+<Equation tex={String.raw`\frac{R_H}{1+jQ}=\frac{R_H(1-jQ)}{1+Q^2}=\frac{R_H}{1+Q^2}-j\,\frac{QR_H}{1+Q^2}`}/>
+
+The branch real part is $R_H/(1+Q^2)$, so choosing it equal to $R_L$ gives $1 + Q^2 = R_H/R_L$, that is $Q=\sqrt{R_H/R_L-1}$. The branch imaginary magnitude is then $Q\cdot R_H/(1+Q^2) = QR_L$, which the series inductor must cancel: $X_s = QR_L$. The shunt capacitor's reactance is $1/(\omega C) = R_H/Q$. Therefore:
 
 <Equation tex={String.raw`Q=\sqrt{\frac{R_H}{R_L}-1},\quad X_s=QR_L,\quad |X_p|=R_H/Q,\quad L=\frac{X_s}{\omega_0},\quad C=\frac{1}{\omega_0|X_p|}`}/>
 Here $Q=\sqrt3=1.732$, $X_s=86.60$ Ω and $|X_p|=115.47$ Ω. At 10 MHz, $L=1.378$ μH and $C=137.8$ pF. The parallel branch is $50-j86.60$ Ω; adding the inductor gives $50+j0$ Ω. This complex-impedance verification is more reliable than memorizing a component-order diagram.

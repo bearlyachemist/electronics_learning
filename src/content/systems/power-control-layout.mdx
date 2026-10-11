@@ -23,6 +23,8 @@ A voltage-mode converter compares its output error with a ramp to set PWM duty. 
 Cycle-by-cycle current limiting compares against the current sense signal. Peak switch limit is not the same as average output current. Sense resistance, amplifier gain, leading-edge spikes, blanking interval and propagation delay affect the actual peak. If current rises at 2 A/μs and the total turn-off delay is 50 ns, it increases by another 0.1 A after the threshold crossing. Inductor saturation can steepen the ramp and make the overshoot worse.
 
 <Equation tex={String.raw`\Delta I_{delay}=\frac{V_L}{L}t_{delay},\qquad V_{sense}=I_{pk}R_s`}/>
+
+The first is $v_L = L\,di/dt$ rearranged: during the delay the inductor voltage keeps its on-state value, so the current keeps rising at $V_L/L$.
 A 20 mΩ sense resistor at 3 A gives 60 mV. Its rms dissipation depends on the waveform, not just the peak. Kelvin connections keep load-current trace drops out of the sense voltage. Filtering rejects switching spikes, but delay in that filter changes current limiting and loop dynamics; use the controller's approved network.
 
 </section>
@@ -31,7 +33,27 @@ A 20 mΩ sense resistor at 3 A gives 60 mV. Its rms dissipation depends on the w
 
 <div className="section-heading"><span>02</span><h2>Derive why peak-current control may alternate cycles</h2></div>
 
-For a simple fixed-frequency CCM peak-current loop, let the on-current slope be $m_1>0$, the magnitude of the off-current slope $m_2>0$, and an added compensation ramp have slope $m_a$ in equivalent current units. Perturbing the current at the start of a cycle shifts the trip time. The next-cycle perturbation is multiplied by:
+For a simple fixed-frequency CCM peak-current loop, let the on-current slope be $m_1>0$, the magnitude of the off-current slope $m_2>0$, and an added compensation ramp have slope $m_a$ in equivalent current units. Perturbing the current at the start of a cycle shifts the trip time.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE PEAK-CURRENT PERTURBATION MULTIPLIER</span>
+
+1. **Trip condition.** The switch turns off when the sensed current reaches the control level minus the compensation ramp: $i(t) = i_c - m_at$, with $i_c$ held constant over the cycle.
+
+2. **Earlier start, earlier trip.** Start the cycle $\delta_0$ above the steady value. The current rises at $m_1$ and the threshold falls at $m_a$, so they meet earlier by $\delta t$, where the gap closes at the combined rate $m_1 + m_a$:
+<Equation tex={String.raw`\delta t=-\frac{\delta_0}{m_1+m_a}`}/>
+
+3. **Peak change.** The peak is the threshold at the trip time, $i_c - m_at_{trip}$, so it changes by $-m_a\,\delta t = m_a\delta_0/(m_1+m_a)$. Without a ramp the peak would not change at all.
+
+4. **End of cycle.** The off-interval is longer by $-\delta t$, and the current falls at $m_2$ for that extra time, so the end-of-cycle current changes by
+<Equation tex={String.raw`\delta_1=\frac{m_a\delta_0}{m_1+m_a}+m_2\,\delta t=\frac{m_a-m_2}{m_1+m_a}\,\delta_0`}/>
+
+5. **Stability.** Each cycle multiplies the perturbation by $\lambda = \delta_1/\delta_0$, so the perturbation decays if $|\lambda| < 1$. The binding side is $\lambda > -1$, that is $m_a - m_2 > -(m_1 + m_a)$, which rearranges to $m_a > (m_2 - m_1)/2$. For a buck, $m_1 = (V_{in}-V_o)/L$ and $m_2 = V_o/L$, so $m_2 > m_1$ exactly when $D > 0.5$.
+
+</div>
+
+The next-cycle perturbation is multiplied by:
 
 <Equation tex={String.raw`\lambda=\frac{m_a-m_2}{m_1+m_a},\qquad |\lambda|<1\ \Rightarrow\ m_a>\frac{m_2-m_1}{2}`}/>
 Without added slope, $\lambda=-m_2/m_1$. A buck with $D>0.5$ has a steeper falling slope than rising slope, so the magnitude can exceed one. Successive cycles alternate high and low peaks: a subharmonic near half the switching frequency can appear even when the slow outer loop seems well compensated.
@@ -47,7 +69,7 @@ An average-current controller regulates a filtered current signal instead of the
 
 <div className="section-heading"><span>03</span><h2>Define startup, overload and shutdown states</h2></div>
 
-Soft-start ramps a reference or limits commanded current. Charging the output capacitor requires $I=C\,dv/dt$ in addition to load current. For 220 μF charged to 5 V over 5 ms, capacitor current is 0.22 A. A constant-power load can draw substantial current at low startup voltage and prevent the rail reaching regulation; test the actual load's undervoltage behavior.
+Soft-start ramps a reference or limits commanded current. Charging the output capacitor requires $I=C\,dv/dt$ in addition to load current. For a linear ramp, $dv/dt = V/t_{ss}$: 220 μF charged to 5 V over 5 ms needs 0.22 A of capacitor current. A constant-power load can draw substantial current at low startup voltage and prevent the rail reaching regulation; test the actual load's undervoltage behavior.
 
 Undervoltage lockout should prevent operation when gate drive or control bias is inadequate. Hysteresis avoids repeated attempts around the threshold. A battery's internal resistance can make input voltage collapse under startup current, then recover when the converter shuts off, producing oscillatory startup. Include cable resistance and input capacitance in the test.
 
@@ -64,6 +86,8 @@ An output overvoltage can follow a failed feedback connection or damaged switch.
 Switch-node ringing often involves loop inductance and device capacitance. A first estimate is $f_r=1/(2\pi\sqrt{L_pC_p})$. At 10 nH and 200 pF it is about 112.5 MHz: far above a 500 kHz switching repetition rate. Edge rate excites that resonance. Measuring it with a long probe ground adds inductance and can change the apparent circuit.
 
 <Equation tex={String.raw`f_r=\frac{1}{2\pi\sqrt{L_pC_p}},\qquad Z_r=\sqrt{L_p/C_p},\qquad P_{snub}\sim C_{snub}V_{step}^2f_s`}/>
+
+The resonance is where the reactances are equal, $\omega L_p = 1/(\omega C_p)$, and $Z_r$ is that common reactance, $\omega_rL_p = \sqrt{L_p/C_p}$. A resistor near $Z_r$ in series with the snubber capacitor damps the tank close to critically. The snubber power follows from charging a capacitor through a resistor: each charge dissipates $\tfrac12CV^2$ in the resistor regardless of its value (Chapter 46), and so does each discharge, giving $CV^2$ per cycle.
 The characteristic impedance here is about 7.07 Ω. It is a starting scale for damping resistance, not a universal optimal snubber. An RC snubber trades ringing reduction for charging loss. A 1 nF snubber across a 12 V switching excursion at 500 kHz has a 72 mW energy-per-cycle scale under full charge/discharge assumptions. Verify resistor pulse power, actual voltage excursion and temperature.
 
 A useful experiment adds a known capacitance and observes the new ringing frequency to estimate the original parasitic capacitance and inductance. Because devices have nonlinear capacitance, the result is an operating-point estimate. First improve the current loop; then tune damping under the intended voltages and load. A slower gate edge can reduce ringing and EMI while increasing overlap loss. Measure that trade rather than judging only the waveform's appearance.

@@ -22,12 +22,14 @@ A boost places the inductor in the input path. When the switch turns on, its swi
 
 <PowerCircuit kind="boost"/>
 
-In steady CCM operation, volt-second balance and output charge balance give:
+In steady CCM operation, apply the two balance conditions. **Volt-seconds:** with the switch on the inductor sees $V_{in}$ for $DT_s$; with it off, its right end is clamped to $V_o$ through the diode, so it sees $V_{in} - V_o$ for $(1-D)T_s$, and the net change in current over a cycle must be zero. **Charge:** the output receives inductor current only through the diode, during the off-interval, so the average diode current $I_L(1-D)$ must equal the load current. Together:
 
 <Equation tex={String.raw`V_{in}D+(V_{in}-V_o)(1-D)=0,\qquad V_o=\frac{V_{in}}{1-D},\qquad I_L=\frac{I_o}{1-D}`}/><Equation tex={String.raw`\Delta I_L=\frac{V_{in}D}{Lf_s},\qquad I_{pk}=\frac{I_o}{1-D}+\frac{\Delta I_L}{2}`}/>
+
+(The ripple is the on-interval slope $V_{in}/L$ times the on-time $D/f_s$; the peak is the average plus half the ripple.)
 For 5-to-12 V conversion at 0.5 A, $D=0.5833$ and average inductor current is 1.2 A. With 22 μH at 500 kHz, ripple is 0.2652 A and peak is 1.3326 A. A device advertised with a 1 A switch limit cannot supply this 0.5 A output under the ideal assumptions. Input current increases further when efficiency is below unity: at 90%, the average input for 6 W output is 1.333 A.
 
-The output capacitor supplies load throughout the on interval. A first estimate of discharge ripple is $I_oD/(f_sC_o)$; for 22 μF it is 26.5 mV. ESR adds a step from the discontinuous diode current, so the ripple waveform differs from the buck's triangular capacitor current. The input current is comparatively continuous, although local input bypass is still required.
+The output capacitor supplies load throughout the on interval. Treating the load current as constant, it removes charge $I_oDT_s$, so a first estimate of discharge ripple is $I_oD/(f_sC_o)$; for 22 μF it is 26.5 mV. ESR adds a step from the discontinuous diode current, so the ripple waveform differs from the buck's triangular capacitor current. The input current is comparatively continuous, although local input bypass is still required.
 
 The diode gives an input-to-output path even when switching is disabled. A basic boost therefore cannot regulate below its input or inherently disconnect an output short. An output short can draw current through the inductor and diode independently of the switch controller. Use a topology or load-disconnect element that provides the needed fault behavior.
 
@@ -39,7 +41,24 @@ The diode gives an input-to-output path even when switching is disabled. A basic
 
 Increasing duty keeps the boost switch on longer. That raises stored inductor current, eventually delivering more energy. But it immediately shortens the interval during which current reaches the output. The output may initially fall before it rises. This delayed inversion is the physical origin of a right-half-plane zero in the CCM duty-to-output transfer function.
 
-For an ideal averaged boost with resistive load, a commonly useful zero frequency is:
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE BOOST RIGHT-HALF-PLANE ZERO</span>
+
+1. **Averaged equations.** Over a cycle the switch node averages to $(1-d)v_o$, and the output receives inductor current a fraction $(1-d)$ of the time:
+<Equation tex={String.raw`L\frac{di}{dt}=V_{in}-(1-d)v_o,\qquad C\frac{dv_o}{dt}=(1-d)i-\frac{v_o}{R}`}/>
+
+2. **Linearize** about $D$, $V_o$, $I_L = V_o/[R(1-D)]$. The products $(1-d)v_o$ and $(1-d)i$ each produce two first-order terms, for example $(1-D)\hat v_o - V_o\hat d$. Transforming, with $V_{in}$ fixed:
+<Equation tex={String.raw`sL\hat i=V_o\hat d-(1-D)\hat v_o,\qquad sC\hat v_o=(1-D)\hat i-I_L\hat d-\frac{\hat v_o}{R}`}/>
+
+3. **Eliminate $\hat i$.** Multiply the second equation by $sL$ and substitute $sL\hat i$ from the first:
+<Equation tex={String.raw`\hat v_o\left[s^2LC+\frac{sL}{R}+(1-D)^2\right]=\hat d\left[(1-D)V_o-sLI_L\right]`}/>
+
+4. **The zero.** The numerator vanishes at $s = +(1-D)V_o/(LI_L)$, a positive real frequency. Substituting $I_L = V_o/[R(1-D)]$ gives $s = R(1-D)^2/L$. The minus sign in front of $sLI_L$ is the $-I_L\hat d$ term of step 2: more duty immediately diverts current away from the output.
+
+</div>
+
+For an ideal averaged boost with resistive load, the zero frequency is therefore:
 
 <Equation tex={String.raw`f_{z,RHP}=\frac{R(1-D)^2}{2\pi L}`}/>
 At 12 V and 0.5 A, $R=24$ Ω. Using $D=0.5833$ and 22 μH gives about 30.1 kHz. At 1 A the resistance halves and the zero falls to about 15.1 kHz. At lower input, larger duty reduces it further. A feedback crossover placed too near this zero accumulates unfavorable phase; unlike a left-half-plane zero, its increasing magnitude does not bring useful phase lead.
@@ -54,7 +73,7 @@ At very large duty, switch peak current, off-time, diode conduction and input un
 
 <div className="section-heading"><span>03</span><h2>Choose inversion or four switches deliberately</h2></div>
 
-The inverting buck–boost stores energy from the input during its on interval and releases it into a negative output during the off interval. With output magnitude $|V_o|$, ideal CCM balance gives:
+The inverting buck–boost stores energy from the input during its on interval and releases it into a negative output during the off interval. With output magnitude $|V_o|$, ideal CCM balance gives the following. During the on-interval the inductor sees $V_{in}$; during the off-interval it is connected across the output and sees $-|V_o|$; volt-second balance, $V_{in}D = |V_o|(1-D)$, gives the ratio. The output receives inductor current only during the off-interval, so $I_L(1-D) = I_o$. With the switch off, its terminal swings from the input rail to the negative output, so it blocks the sum:
 
 <Equation tex={String.raw`\frac{|V_o|}{V_{in}}=\frac{D}{1-D},\qquad I_{L,avg}=\frac{I_o}{1-D},\qquad V_{stress}\simeq V_{in}+|V_o|`}/>
 Generating −5 V from +12 V needs $D=5/17=0.2941$. For 0.2 A output, average inductor current is 0.2833 A and ideal switch/diode blocking stress is 17 V, before overshoot. Input and output currents are both pulsed. The controller's ground and gate-drive reference may sit at the negative rail in some implementations; its pin voltages must be checked in that reference frame, especially for enable and feedback interfaces.
@@ -71,7 +90,7 @@ SEPIC gives a noninverting step-up/step-down output using an energy-transfer cap
 
 A flyback uses a coupled magnetic element with designed magnetizing inductance. During primary switch on, magnetizing current rises and energy is stored; the secondary rectifier is reverse biased. During off time, polarity reverses and energy is released through the secondary. It is useful to think of it as an isolated buck–boost rather than an ordinary transformer delivering load power simultaneously through both windings.
 
-Let $n=N_s/N_p$. For an ideal CCM flyback, volt-second balance referred to the primary gives $V_o/V_{in}=nD/(1-D)$. In DCM, if magnetizing current starts at zero and reaches $I_{pk}$ each cycle, transferred energy is approximately $L_m I_{pk}^2/2$, so ideal output power is that energy times switching frequency.
+Let $n=N_s/N_p$. For an ideal CCM flyback, volt-second balance on the magnetizing inductance referred to the primary: it sees $V_{in}$ during $DT_s$ and the reflected output $-V_o/n$ during $(1-D)T_s$, so $V_{in}D = (V_o/n)(1-D)$, which gives $V_o/V_{in}=nD/(1-D)$. In DCM, if magnetizing current starts at zero and reaches $I_{pk}$ each cycle, the stored energy $\int Li\,di = L_m I_{pk}^2/2$ is delivered to the output once per cycle, so ideal output power is that energy times switching frequency.
 
 <Equation tex={String.raw`\frac{V_o}{V_{in}}=\frac{N_s}{N_p}\frac{D}{1-D},\qquad P_{DCM}\simeq\frac12 L_m I_{pk}^2f_s`}/>
 For 50 μH, 1 A peak and 200 kHz, that ideal DCM energy rate is 5 W. Actual delivered power is lower by losses, and the secondary must fully demagnetize before the next cycle for the DCM formula to apply. Leakage inductance stores energy that does not transfer perfectly; it causes drain spikes and often needs a clamp or snubber. Primary switch blocking stress includes input plus reflected output and leakage overshoot.
@@ -88,7 +107,7 @@ Isolation requires an insulation system, layout spacing, barrier capacitance and
 
 A charge pump moves charge by reconnecting a flying capacitor between two states. In one state it charges from the input; in the next it is stacked, inverted or connected to the output. The unloaded voltage follows the conversion ratio, but finite switch resistance, capacitor ESR and charge-transfer frequency produce output resistance and ripple.
 
-For a simple teaching model, equivalent switched-capacitor resistance scales as $1/(f_sC_{fly})$ with a topology-dependent coefficient. A 1 μF flying capacitor at 100 kHz gives a 10 Ω scale; a 10 mA load can therefore cause roughly a 0.1 V drop before other losses. Increasing frequency reduces this charge-transfer term but raises switching and gate-drive loss. More detailed models distinguish slow-switching and fast-switching limits.
+For a simple teaching model, suppose the flying capacitor's voltage changes by $\Delta V$ between the two states. Each cycle it then moves charge $Q = C_{fly}\Delta V$, and $f_s$ cycles per second give an average current $I = f_sC_{fly}\Delta V$. The voltage lost per unit current is $\Delta V/I = 1/(f_sC_{fly})$: equivalent switched-capacitor resistance scales as $1/(f_sC_{fly})$ with a topology-dependent coefficient. A 1 μF flying capacitor at 100 kHz gives a 10 Ω scale; a 10 mA load can therefore cause roughly a 0.1 V drop before other losses. Increasing frequency reduces this charge-transfer term but raises switching and gate-drive loss. More detailed models distinguish slow-switching and fast-switching limits.
 
 <Equation tex={String.raw`R_{SC}\propto\frac{1}{f_sC_{fly}},\qquad V_o\simeq M V_{in}-I_oR_{eq}`}/>
 Charge pumps can be compact for modest currents, negative bias rails and fractional-ratio conversion. They do not automatically provide quiet power: charge impulses, regulation mode and clock feedthrough matter to precision analog loads. Choose inductive versus capacitive conversion using voltage ratio, load range, allowable ripple, layout and total efficiency.
