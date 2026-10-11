@@ -71,3 +71,5 @@ Completed checkpoint: [89 — Band-limited differentiators](https://hebert.phd/e
 Completed checkpoint: [91 — Precision rectifiers and peak detection](https://hebert.phd/electronics/opamp-precision-rectifier/#precision-depth). Added “Analyze acquisition, clamping and reset leakage by circuit state” with original analysis and worked examples.
 
 Completed checkpoint: [92 — Op-amp current servos](https://hebert.phd/electronics/opamp-current-servo/#precision-depth). Added “Build a low-voltage meter and analyze current-loop bandwidth” with original analysis and worked examples.
+
+Completed checkpoint: [93 — Capacitive loads and feedback placement](https://hebert.phd/electronics/opamp-load-stability/#precision-depth). Added “Combine precision and power without hiding an extra loop” with original analysis and worked examples.

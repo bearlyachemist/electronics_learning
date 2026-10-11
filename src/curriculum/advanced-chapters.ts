@@ -1495,6 +1495,10 @@ export const advancedChapters = [
         "Verify both stability and delivered accuracy"
       ],
       [
+        "precision-depth",
+        "Combine precision and power without hiding an extra loop"
+      ],
+      [
         "check",
         "Check your understanding"
       ]
