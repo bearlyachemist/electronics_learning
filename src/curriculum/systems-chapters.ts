@@ -378,5 +378,43 @@ export const systemsChapters = [
         "Check your understanding"
       ]
     ]
+  },
+  {
+    "id": "differential-pairs",
+    "number": "105",
+    "title": "Differential pairs and high-speed PCB channels",
+    "href": "/differential-pairs/",
+    "practice": "/differential-pairs/practice/",
+    "group": "Interconnects",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "modes",
+        "Define the two signals a pair can carry"
+      ],
+      [
+        "impedance",
+        "Derive odd and even mode impedance"
+      ],
+      [
+        "skew",
+        "Quantify what unmatched timing creates"
+      ],
+      [
+        "routing",
+        "Preserve symmetry and the return environment"
+      ],
+      [
+        "interface",
+        "Terminate and assess the actual channel"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
   }
 ];

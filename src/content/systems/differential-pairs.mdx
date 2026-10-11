@@ -1,0 +1,105 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot,PowerCircuit,MatchCircuit} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 105</span><span className="hairline"/>INTERCONNECTS</div>
+
+<h1>Differential pairs and high-speed PCB channels<br/><em>Balance the fields as well as the lengths.</em></h1>
+
+<p className="dek">Derive differential and common-mode impedances, quantify skew-induced common mode, and design pair geometry, terminations, layer transitions and receiver margins.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="modes">
+
+<div className="section-heading"><span>01</span><h2>Define the two signals a pair can carry</h2></div>
+
+A differential receiver responds mainly to the voltage difference between two inputs, but both inputs also have an absolute voltage relative to their local return. Define $v_d=v_+-v_-$ and $v_{cm}=(v_++v_-)/2$. Then $v_+=v_{cm}+v_d/2$ and $v_-=v_{cm}-v_d/2$. A 0.8 V peak-to-peak differential swing centered on 0.6 V makes each conductor move only 0.4 V between its two levels.
+
+<Equation tex={String.raw`v_d=v_+-v_-,\qquad v_{cm}=\tfrac12(v_++v_-),\qquad v_\pm=v_{cm}\pm\tfrac12v_d`}/>
+Opposite equal signals excite the **odd mode**; equal same-polarity signals excite the **even mode**. A symmetric channel can propagate each mode independently, but asymmetry converts between them. Trace length, capacitive loading, via geometry and dielectric variation can all break symmetry. A differential input's finite common-mode rejection is only part of the total immunity; the channel may already have converted a common-mode disturbance into differential voltage.
+
+Differential signaling reduces some external pickup and radiation when the two paths are balanced. It does not automatically provide isolation or unlimited ground-offset tolerance. The receiver has an allowed common-mode range and absolute maximum pin voltages. Those conditions must hold at both ends of the cable or PCB route, including startup and transients.
+
+</section>
+
+<section id="impedance">
+
+<div className="section-heading"><span>02</span><h2>Derive odd and even mode impedance</h2></div>
+
+Use a symmetric coupled-line model with self inductance per length $L$, mutual inductance $M$, capacitance from each conductor to reference $C_g$, and mutual capacitance between conductors $C_m$. In odd mode, opposite currents reduce effective inductance to $L-M$, while the opposite voltage across mutual capacitance makes its contribution twice $C_m$. In even mode, mutual capacitance has no voltage across it and equal currents increase effective inductance to $L+M$.
+
+<Equation tex={String.raw`Z_{odd}=\sqrt{\frac{L-M}{C_g+2C_m}},\quad Z_{even}=\sqrt{\frac{L+M}{C_g}},\quad Z_{diff}=2Z_{odd},\quad Z_{cm}=Z_{even}/2`}/>
+The last expression defines common-mode impedance using the common voltage and **total pair current**; some tools use a per-conductor convention, so inspect definitions. Differential impedance uses voltage across the pair divided by current in one conductor. Mixing these definitions creates factor-of-two errors.
+
+With $L=400$ nH/m, $M=80$ nH/m, $C_g=100$ pF/m and $C_m=20$ pF/m, odd impedance is 47.81 Ω and differential impedance is 95.62 Ω. Even impedance is 69.28 Ω and pair common-mode impedance is 34.64 Ω. These teaching parameters are not a PCB stack-up recipe. A field solver derives them from the actual geometry and material properties.
+
+As spacing grows, coupling decreases and differential impedance approaches twice the isolated single-ended impedance. Thus two 50 Ω traces far apart approach 100 Ω differential, but bringing them close changes both capacitance and inductance. A universal rule to make each conductor 50 Ω and route at any spacing is wrong. Specify width, spacing, dielectric and copper together with the board manufacturer.
+
+Mode propagation velocities also differ in some structures. For this model, $v_{odd}=1/\sqrt{(L-M)(C_g+2C_m)}$ and $v_{even}=1/\sqrt{(L+M)C_g}$. Homogeneous ideal stripline can make modal velocities equal; microstrip's mixed dielectric environment can produce different effective permittivities. Even if conductor lengths match, modal dispersion and asymmetric transitions can still distort the channel.
+
+</section>
+
+<section id="skew">
+
+<div className="section-heading"><span>03</span><h2>Quantify what unmatched timing creates</h2></div>
+
+Let each conductor make an opposite transition of magnitude $A$ with rise time $t_r$, but delay one by $\Delta t$. During the interval when the edges are misaligned, their sum no longer stays constant. For linear ramps and $\Delta t<t_r$, the common-mode excursion is approximately $A\Delta t/(2t_r)$.
+
+<Equation tex={String.raw`\Delta v_{cm,pk}\simeq\frac{A}{2}\frac{\Delta t}{t_r}`}/><SystemsPlot kind="skew"/>
+Here each conductor moves 0.4 V in 1 ns and one is delayed 300 ps, giving 60 mV transient common mode. A termination only across the two conductors absorbs odd-mode energy but does not directly terminate that generated even-mode wave. It can travel and reflect according to the pair's common-mode environment, contributing to emissions and receiver stress.
+
+For opposite sinusoidal signals of amplitude $A$ with delay $\Delta t$, algebra gives differential amplitude $2A|\cos(\omega\Delta t/2)|$ and common-mode amplitude $A|\sin(\omega\Delta t/2)|$. Thus:
+
+<Equation tex={String.raw`\left|\frac{v_{cm}}{v_d}\right|=\frac12\left|\tan\left(\frac{\omega\Delta t}{2}\right)\right|`}/>
+The importance of a given skew grows with frequency. At 1 GHz and 100 ps skew, differential amplitude is reduced to 95.1% of its zero-skew value and common-mode amplitude is 15.45% of that original differential amplitude. Do not use a length tolerance without translating it into delay at the actual propagation velocity and then into the interface timing or spectral requirement.
+
+If velocity is 150 mm/ns, a 30 ps intrapair skew budget corresponds to 4.5 mm electrical-length difference. Connector and package delays count too. Large meanders can add coupling and loss or change delay differently from their drawn centerline length. Match where imbalance is introduced, keep both paths exposed to similar geometry, and avoid excessive serpentine length merely to satisfy a CAD number.
+
+</section>
+
+<section id="routing">
+
+<div className="section-heading"><span>04</span><h2>Preserve symmetry and the return environment</h2></div>
+
+A tightly coupled pair confines more odd-mode field between its conductors; a loosely coupled pair has more field relative to the reference plane. Both still need a defined reference environment, particularly for even-mode current and imperfections. A plane split beneath a pair can alter impedance and force common-mode return around a large loop. Equal trace length across that split does not repair the field discontinuity.
+
+Keep pair spacing consistent through bends, connector launches and via escapes where practical. A short unavoidable change may be acceptable within the channel budget; model its length and discontinuity rather than applying a mystical spacing rule. Route adjacent pairs far enough apart for the allowed crosstalk, using a field solver or validated guidance for the stack-up. Edge rate and parallel length matter as well as separation.
+
+For a layer transition, use symmetric signal vias and nearby return vias connected to the proper reference. If the reference changes between different planes, provide a suitable AC return path according to the power/ground structure. Keep unused via stubs under control at demanding rates. Connector ground pins, anti-pads and pad capacitance can dominate a channel whose long traces are otherwise well matched.
+
+A common-mode choke presents different impedances to even and odd excitation. It can reduce some cable common-mode current but adds differential parasitics and can resonate or saturate. Select it for the specific interface and verify the eye and emissions. It is not a substitute for a continuous return path or a balanced launch.
+
+</section>
+
+<section id="interface">
+
+<div className="section-heading"><span>05</span><h2>Terminate and assess the actual channel</h2></div>
+
+A differential resistor equal to $Z_{diff}$ between the pair absorbs odd-mode waves. Two resistors to a controlled midpoint can provide a different common-mode termination and bias; their values and midpoint decoupling depend on the standard. Internal receiver termination may already be present, so adding another resistor can overload the driver. AC coupling removes a DC path and allows different transmitter/receiver biases, but the receiver needs its own valid bias network.
+
+AC coupling creates a high-pass response. Long runs without sufficient transitions can produce baseline wander, so line coding and protocol behavior matter. LVDS, CML, USB and high-speed Ethernet links have different driver, common-mode, termination and coupling rules; “differential” does not make their components interchangeable.
+
+An eye diagram overlays many bit intervals. Vertical opening summarizes voltage margin; horizontal opening summarizes timing margin. Inter-symbol interference, jitter, noise and reflections close the eye in different ways. A clean isolated transition is insufficient because previous bits influence the current waveform. Test the relevant patterns and data rates, including aggressor channels and supply variation.
+
+Mixed-mode S parameters distinguish differential transmission, differential reflection and differential-to-common conversion. A differential TDR can locate odd-mode impedance discontinuities; a common-mode stimulus reveals another set. Measure at consistent reference planes and include package, connector and receiver parasitics in simulation.
+
+Primary practical reference: [TI, High-Speed Layout Guidelines for Reducing EMI for LVDS SerDes Designs](https://www.ti.com/lit/an/snla302/snla302.pdf). Apply its symmetry and return-path principles alongside the interface's own electrical specification.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/differential-pairs/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §12.10; TI SNLA302 (linked above); original modal and timing analysis. Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>

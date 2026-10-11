@@ -348,5 +348,40 @@
         }
       ]
     }
+  ],
+  "differential-pairs": [
+    {
+      "tag": "MODES",
+      "title": "Translate a differential swing",
+      "prompt": "A pair has 1.2 V common mode and +0.6 V differential voltage. Find the two conductor voltages.",
+      "hint": "Split differential voltage equally around the common value.",
+      "solution": [
+        {
+          "text": "The plus conductor is 1.5 V and minus conductor is 0.9 V. Check each pin’s allowed common-mode and absolute voltage range."
+        }
+      ]
+    },
+    {
+      "tag": "SKEW",
+      "title": "A timing mismatch becomes common mode",
+      "prompt": "Each conductor transitions by 0.5 V in 0.8 ns. One is delayed 80 ps. Estimate transient common-mode excursion for linear ramps.",
+      "hint": "Use half the single-ended transition times the fractional skew.",
+      "solution": [
+        {
+          "text": "Excursion is 0.5/2 × 0.08/0.8 = 25 mV. This assumes equal shapes and skew smaller than rise time."
+        }
+      ]
+    },
+    {
+      "tag": "LENGTH",
+      "title": "Allocate an electrical-length budget",
+      "prompt": "A channel allows 25 ps intrapair skew and propagation velocity is 160 mm/ns. Find the length difference budget and name other contributors.",
+      "hint": "Convert time to distance, then budget packages and connectors too.",
+      "solution": [
+        {
+          "text": "Length difference is 4 mm if all skew is assigned to PCB traces. Package, connector, via and material asymmetry consume part of the same timing budget."
+        }
+      ]
+    }
   ]
 }

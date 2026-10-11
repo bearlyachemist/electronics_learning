@@ -4470,5 +4470,48 @@
       ]
     ],
     "sources": "The Art of Electronics, §§12.9–12.10 and Appendix H"
+  },
+  "differential-pairs": {
+    "title": "Skew creates a common-mode pulse",
+    "setup": "Opposite linear transitions each move 0.4 V in 1 ns. Compare delays smaller than rise time.",
+    "equation": "\\Delta v_{cm}=0.2\\,\\Delta t/(1\\,\\mathrm{ns})",
+    "columns": [
+      "Skew",
+      "Common-mode excursion",
+      "Length equivalent at 150 mm/ns"
+    ],
+    "rows": [
+      [
+        "50 ps",
+        "10 mV",
+        "7.5 mm"
+      ],
+      [
+        "150 ps",
+        "30 mV",
+        "22.5 mm"
+      ],
+      [
+        "300 ps",
+        "60 mV",
+        "45 mm"
+      ]
+    ],
+    "analysis": [
+      "The differential pair generates common mode internally when its paths are delayed unequally; external noise need not be present.",
+      "A resistor only across the pair terminates odd mode. Common-mode energy sees a different boundary and can continue to reflect."
+    ],
+    "limits": "The linear-ramp model excludes modal dispersion, amplitude imbalance and receiver clamps.",
+    "connections": [
+      [
+        "/transmission-lines/",
+        "Wave boundaries"
+      ],
+      [
+        "/opamp-difference/",
+        "Common-mode rejection"
+      ]
+    ],
+    "sources": "The Art of Electronics, §12.10; TI SNLA302; original coupled-line and skew derivations"
   }
 }
