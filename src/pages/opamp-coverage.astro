@@ -1,0 +1,26 @@
+---
+import '../styles/global.css';
+import coverage from '../content/opamp-coverage.json';
+import {advancedChapters} from '../curriculum/advanced-chapters';
+import {sitePath} from '../lib/site-path';
+const opamps=advancedChapters.filter(c=>Number(c.number)>=77);
+const label=(id:string)=>{const c=opamps.find(c=>c.id===id)!;return `${c.number} · ${c.title}`;};
+---
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="description" content="Find every op-amp and precision-circuit topic from The Art of Electronics chapters 4 and 5 in the Analog Notebook."/><title>Op amps and precision · Topic guide · The Analog Notebook</title></head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar"><a class="brand" href={sitePath('/')}><span class="brand-icon" aria-hidden="true">∿</span> the analog notebook<span class="brand-dot">.</span></a><span class="edition">OP AMPS <span> / </span> PRECISION</span><a class="top-link" href={sitePath('/opamp-ideal/')}>Start at Chapter 77 ↗</a></header>
+<div class="book-shell">
+<aside class="sidebar"><a class="course-label" href={sitePath('/')}>FOUNDATIONS <span>94 CHAPTERS</span></a><p class="sidebar-title">Op amps and precision</p><nav aria-label="Op-amp chapters">{opamps.map(c=><a href={sitePath(c.href)}>{c.number} · {c.title}</a>)}</nav></aside>
+<main id="main">
+<div class="chapter-hero"><div class="eyebrow"><span>TOPIC GUIDE</span><span class="hairline"/>CHAPTERS 77–94</div><h1>Op amps and precision<br/><em>Find the circuit, then follow its limits.</em></h1><p class="dek">A topic-by-topic route through feedback, practical applications and precision design. This guide maps all sections and numbered subsections of The Art of Electronics, third edition, Chapters 4 and 5 to original explanations, worked examples, schematics and practice in this notebook.</p></div>
+<div class="guide-intro"><p>Read Chapters 77–82 for the ideal model, real errors and internal construction; Chapters 83–94 develop the circuits. The explanations also draw on Johan Huijsing’s <em>Operational Amplifiers: Theory and Design</em> and Farzin Asadi’s <em>Applied Op Amp Circuits</em>, with filter and function-circuit connections where useful.</p><p>Source numbers below refer to the books; linked numbers refer to this website. The text, example values and drawings are original. Historic instrument case studies teach architectural principles; device-selection tables compare design classes rather than reproduce dated prices or availability.</p><p><a href={sitePath('/opamp-active-filters/')}>Go directly to the expanded Sallen–Key derivation →</a></p></div>
+{[4,5].map(bookChapter=><section id={`source-${bookChapter}`}><div class="section-heading"><span>{bookChapter}</span><h2>{bookChapter===4?'Operational amplifiers':'Precision circuits'}</h2></div><div class="coverage-grid">{coverage.filter(r=>r.section.startsWith(`${bookChapter}.`)).map(row=><article class="coverage-card" id={`topic-${row.section.replaceAll('.','-')}`}><span class="tiny-label">SOURCE §{row.section}</span><h3>{row.title}</h3><p>{row.topics}</p><ul>{row.chapters.map(id=><li><a href={sitePath(`/${id}/`)+(id==='opamp-active-filters'?'#model':'#precision-depth')}>{label(id)}</a></li>)}</ul>{row.subsections.length>0&&<p class="coverage-sections">Includes {row.subsections.join(', ')}</p>}</article>)}</div></section>)}
+<section class="guide-review"><h2>Test the whole design</h2><p>Each chapter includes solved self-checks, a separate practice set and a design-synthesis study. Before accepting a result, check its DC operating point, input common mode, output swing/current, component tolerance, noise bandwidth, settling and the validity of feedback in every circuit state.</p><p><a href={sitePath('/opamp-function-design/practice/')}>Complete-chain design practice →</a></p></section>
+</main></div><footer class="footer"><span>The Analog Notebook · Foundations</span><span>Original teaching material · Models and assumptions stated in each chapter</span></footer>
+</body></html>
+<style>
+.guide-intro{margin-bottom:3rem}.coverage-grid{display:grid;gap:1.4rem}.coverage-card{border:1px solid var(--line);padding:1.5rem;background:var(--paper)}.coverage-card h3{margin:.5rem 0 1rem}.coverage-card p{margin:.7rem 0}.coverage-card ul{margin:1rem 0;padding-left:1.25rem}.coverage-card li{margin:.35rem 0}.coverage-sections{font-size:.8rem;color:var(--muted);line-height:1.7;overflow-wrap:anywhere}.guide-review{margin:3rem 0}
+</style>

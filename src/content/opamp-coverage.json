@@ -1,0 +1,405 @@
+[
+  {
+    "section": "4.1",
+    "subsections": [
+      "4.1.1",
+      "4.1.2",
+      "4.1.3"
+    ],
+    "title": "Feedback and the ideal model",
+    "topics": "Open-loop behavior, negative feedback, virtual short and its operating limits.",
+    "chapters": [
+      "opamp-ideal"
+    ]
+  },
+  {
+    "section": "4.2",
+    "subsections": [
+      "4.2.1",
+      "4.2.2",
+      "4.2.3",
+      "4.2.4",
+      "4.2.5",
+      "4.2.6",
+      "4.2.7"
+    ],
+    "title": "Basic feedback circuits",
+    "topics": "Inverting, noninverting, follower, difference, current sources, integrators and practical cautions.",
+    "chapters": [
+      "opamp-inverting-summing",
+      "opamp-noninverting",
+      "opamp-difference",
+      "opamp-current-servo",
+      "opamp-integrator"
+    ]
+  },
+  {
+    "section": "4.3",
+    "subsections": [
+      "4.3.1",
+      "4.3.2",
+      "4.3.3",
+      "4.3.4",
+      "4.3.5",
+      "4.3.6"
+    ],
+    "title": "Linear and nonlinear building blocks",
+    "topics": "Summing, conversion, nonlinear feedback, triangle generation, pinch-off testing, programmed pulse width and active low-pass filtering.",
+    "chapters": [
+      "opamp-inverting-summing",
+      "opamp-transimpedance",
+      "opamp-integrator",
+      "opamp-input-tradeoffs",
+      "opamp-function-design",
+      "opamp-active-filters"
+    ]
+  },
+  {
+    "section": "4.4",
+    "subsections": [
+      "4.4.1",
+      "4.4.2",
+      "4.4.3",
+      "4.4.4"
+    ],
+    "title": "Real behavior and sensitive measurements",
+    "topics": "Offset, bias, gain and dynamic limits; sensitive millivoltmeter and frequency-dependent current-source impedance.",
+    "chapters": [
+      "opamp-dc-errors",
+      "opamp-ac-limits",
+      "opamp-current-servo"
+    ]
+  },
+  {
+    "section": "4.5",
+    "subsections": [
+      "4.5.1",
+      "4.5.2",
+      "4.5.3",
+      "4.5.4",
+      "4.5.5",
+      "4.5.6",
+      "4.5.7"
+    ],
+    "title": "Rectification, storage and rate circuits",
+    "topics": "Peak capture, sample/hold, active clamp, absolute value, integration drift, two-switch leakage cure and band-limited differentiation.",
+    "chapters": [
+      "opamp-precision-rectifier",
+      "opamp-integrator",
+      "opamp-differentiator"
+    ]
+  },
+  {
+    "section": "4.6",
+    "subsections": [
+      "4.6.1",
+      "4.6.2",
+      "4.6.3",
+      "4.6.4",
+      "4.6.5",
+      "4.6.6",
+      "4.6.7"
+    ],
+    "title": "Single-supply operation and timing",
+    "topics": "AC bias, references, capacitive loads, ground-sensing/RRIO range, VCO, physical construction, zero crossings and selection.",
+    "chapters": [
+      "opamp-noninverting",
+      "opamp-load-stability",
+      "opamp-cmos-internals",
+      "opamp-function-design",
+      "opamp-input-tradeoffs"
+    ]
+  },
+  {
+    "section": "4.7",
+    "subsections": [],
+    "title": "Other amplifier architectures",
+    "topics": "Buffers, current-feedback amplifiers, OTAs, power, isolation, instrumentation, programmable gain and differential output.",
+    "chapters": [
+      "opamp-input-tradeoffs",
+      "opamp-bjt-internals",
+      "opamp-cmos-internals"
+    ]
+  },
+  {
+    "section": "4.8",
+    "subsections": [
+      "4.8.1",
+      "4.8.2",
+      "4.8.3",
+      "4.8.4"
+    ],
+    "title": "Measurement applications",
+    "topics": "Laboratory gain/offset chain, stuck-node tracer, Kelvin load-current sensing and optical charge/dose monitoring.",
+    "chapters": [
+      "opamp-noninverting",
+      "opamp-transimpedance",
+      "opamp-difference",
+      "opamp-integrator"
+    ]
+  },
+  {
+    "section": "4.9",
+    "subsections": [
+      "4.9.1",
+      "4.9.2",
+      "4.9.3"
+    ],
+    "title": "Frequency compensation",
+    "topics": "Gain/phase, return ratio, dominant and Miller poles, pole-zero shaping, decompensation and frequency-dependent feedback.",
+    "chapters": [
+      "opamp-ac-limits",
+      "opamp-load-stability"
+    ]
+  },
+  {
+    "section": "5.1",
+    "subsections": [
+      "5.1.1",
+      "5.1.2"
+    ],
+    "title": "Precision and dynamic range",
+    "topics": "Zero versus scale errors, resolution versus accuracy and input-referred error budgeting.",
+    "chapters": [
+      "opamp-dc-errors"
+    ]
+  },
+  {
+    "section": "5.2",
+    "subsections": [
+      "5.2.1",
+      "5.2.2"
+    ],
+    "title": "Low-voltage millivoltmeter",
+    "topics": "10 mV full scale, 10 MΩ input, 1.8 V supply: current feedback, compliance, protection and a complete budget.",
+    "chapters": [
+      "opamp-current-servo"
+    ]
+  },
+  {
+    "section": "5.3",
+    "subsections": [],
+    "title": "Unspecified parameters",
+    "topics": "Guaranteed versus typical limits, characterization, screened components and whole-instrument validation.",
+    "chapters": [
+      "opamp-dc-errors",
+      "opamp-current-servo"
+    ]
+  },
+  {
+    "section": "5.4",
+    "subsections": [
+      "5.4.1"
+    ],
+    "title": "Analog null memory",
+    "topics": "Slow nulling loop, stored baseline, gain changes and hold drift.",
+    "chapters": [
+      "opamp-dc-errors"
+    ]
+  },
+  {
+    "section": "5.5",
+    "subsections": [
+      "5.5.1"
+    ],
+    "title": "A complete precision budget",
+    "topics": "Refer errors through the gain chain; deterministic bounds, random noise and calibration residuals.",
+    "chapters": [
+      "opamp-dc-errors"
+    ]
+  },
+  {
+    "section": "5.6",
+    "subsections": [
+      "5.6.1",
+      "5.6.2",
+      "5.6.3"
+    ],
+    "title": "External component errors",
+    "topics": "Resistor ratio/temperature tracking, holding-capacitor leakage and absorption, reset-switch charge and leakage.",
+    "chapters": [
+      "opamp-dc-errors",
+      "opamp-precision-rectifier",
+      "opamp-integrator"
+    ]
+  },
+  {
+    "section": "5.7",
+    "subsections": [
+      "5.7.1",
+      "5.7.2",
+      "5.7.3",
+      "5.7.4",
+      "5.7.5",
+      "5.7.6"
+    ],
+    "title": "Input-related errors",
+    "topics": "Input impedance, bias, offset, CMRR, PSRR and nulling-amplifier input errors.",
+    "chapters": [
+      "opamp-dc-errors",
+      "opamp-input-tradeoffs"
+    ]
+  },
+  {
+    "section": "5.8",
+    "subsections": [
+      "5.8.1",
+      "5.8.2",
+      "5.8.3",
+      "5.8.4",
+      "5.8.5",
+      "5.8.6",
+      "5.8.7"
+    ],
+    "title": "Output and dynamic precision",
+    "topics": "Slew, settling, crossover, output impedance, power buffers, finite-gain/nonlinearity and phase compensation.",
+    "chapters": [
+      "opamp-ac-limits",
+      "opamp-load-stability"
+    ]
+  },
+  {
+    "section": "5.9",
+    "subsections": [
+      "5.9.1",
+      "5.9.2"
+    ],
+    "title": "RRIO tradeoffs",
+    "topics": "Input-pair handover, class-AB current control, loaded swing, output resistance and converter endpoint codes.",
+    "chapters": [
+      "opamp-cmos-internals"
+    ]
+  },
+  {
+    "section": "5.10",
+    "subsections": [
+      "5.10.1",
+      "5.10.2",
+      "5.10.3",
+      "5.10.4",
+      "5.10.5",
+      "5.10.6",
+      "5.10.7",
+      "5.10.8",
+      "5.10.9",
+      "5.10.10",
+      "5.10.11",
+      "5.10.12"
+    ],
+    "title": "Choosing a precision amplifier",
+    "topics": "Seven design classes, package count, supply/range, single supply, offset, voltage/current noise, bias, CMRR/PSRR, speed/settling, distortion and composites.",
+    "chapters": [
+      "opamp-input-tradeoffs",
+      "opamp-ac-limits",
+      "opamp-load-stability"
+    ]
+  },
+  {
+    "section": "5.11",
+    "subsections": [
+      "5.11.1",
+      "5.11.2",
+      "5.11.3",
+      "5.11.4"
+    ],
+    "title": "Auto-zero and chopping",
+    "topics": "Mechanisms, application fit, selection, input switching current, ripple, aliasing, recovery and thermal effects.",
+    "chapters": [
+      "opamp-input-tradeoffs"
+    ]
+  },
+  {
+    "section": "5.12",
+    "subsections": [
+      "5.12.1",
+      "5.12.2",
+      "5.12.3",
+      "5.12.4",
+      "5.12.5"
+    ],
+    "title": "Precision DMM architecture lessons",
+    "topics": "JFET followers and differential gain stages, constant current/VDS, low leakage, accurate ranges, integration and resolution versus absolute accuracy.",
+    "chapters": [
+      "opamp-transimpedance",
+      "opamp-integrator"
+    ]
+  },
+  {
+    "section": "5.13",
+    "subsections": [],
+    "title": "Naming the differential ports",
+    "topics": "Difference computation, high-impedance instrumentation input and controlled differential output.",
+    "chapters": [
+      "opamp-difference"
+    ]
+  },
+  {
+    "section": "5.14",
+    "subsections": [
+      "5.14.1",
+      "5.14.2",
+      "5.14.3",
+      "5.14.4"
+    ],
+    "title": "Precision difference amplifiers",
+    "topics": "Node derivation, reference control, shunts/line reception, ratio and AC CMRR, source/loading and circuit variations.",
+    "chapters": [
+      "opamp-difference"
+    ]
+  },
+  {
+    "section": "5.15",
+    "subsections": [
+      "5.15.1",
+      "5.15.2",
+      "5.15.3",
+      "5.15.4",
+      "5.15.5"
+    ],
+    "title": "Instrumentation architecture",
+    "topics": "Buffered subtraction versus early differential gain, three-amplifier operation, input design, discrete/integrated construction and transient protection.",
+    "chapters": [
+      "opamp-instrumentation"
+    ]
+  },
+  {
+    "section": "5.16",
+    "subsections": [
+      "5.16.1",
+      "5.16.2",
+      "5.16.3",
+      "5.16.4",
+      "5.16.5",
+      "5.16.6",
+      "5.16.7",
+      "5.16.8",
+      "5.16.9",
+      "5.16.10",
+      "5.16.11",
+      "5.16.12",
+      "5.16.13"
+    ],
+    "title": "Instrumentation in real systems",
+    "topics": "Current/noise, CMRR, source imbalance, EMI/protection, trim, remote sense, bias paths, output range, current control, alternative architectures, auto-zero, programmable gain and differential output.",
+    "chapters": [
+      "opamp-instrumentation",
+      "opamp-current-servo",
+      "opamp-function-design"
+    ]
+  },
+  {
+    "section": "5.17",
+    "subsections": [
+      "5.17.1",
+      "5.17.2",
+      "5.17.3",
+      "5.17.4",
+      "5.17.5"
+    ],
+    "title": "Fully differential interfaces",
+    "topics": "Differential/common-mode coordinates, balanced link, ADC drive, impedance matching and selection constraints.",
+    "chapters": [
+      "opamp-function-design"
+    ]
+  }
+]

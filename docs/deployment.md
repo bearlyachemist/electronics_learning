@@ -60,3 +60,5 @@ git -C ../hebert.phd add -- public/electronics
 git -C ../hebert.phd commit -m 'Update electronics notebook'
 git -C ../hebert.phd push origin main
 ```
+
+The precision coverage guide is included in the hosted build. `npm run check:precision` validates all 26 TAOE Chapter 4–5 section groups, all 113 subsection references, the 18 target chapters and critical connections in the new sample/hold, clamp, reset, meter, VCO, tester and differential-driver diagrams. This check also runs before automatic publication.

@@ -16,9 +16,9 @@ unequal-component KCL and numerical noise-bandwidth checks accompany the text.
 
 Source coverage: TAOE §4.3.6 and filter context §§6.2–6.3; Van Valkenburg §6.5.
 
-## Remaining chapter checkpoints
+## Completed chapter map
 
-| Website chapter | Source topics to audit and deepen |
+| Website chapter | Source topics covered and deepened |
 |---|---|
 | 77 Ideal op amps | 4.1.1–4.1.3; golden-rule conditions and feedback polarity |
 | 78 DC errors | 4.4.1–4.4.3; 5.1–5.7; millivoltmeter, nulling and complete precision budget |
@@ -75,3 +75,7 @@ Completed checkpoint: [92 — Op-amp current servos](https://hebert.phd/electron
 Completed checkpoint: [93 — Capacitive loads and feedback placement](https://hebert.phd/electronics/opamp-load-stability/#precision-depth). Added “Combine precision and power without hiding an extra loop” with original analysis and worked examples.
 
 Completed checkpoint: [94 — Analog functions and a complete design](https://hebert.phd/electronics/opamp-function-design/#precision-depth). Added “Generate timed signals and drive differential converters” with original analysis and worked examples.
+
+## Section-level coverage audit
+
+All 26 top-level sections and their 113 numbered subsections are mapped in `src/content/opamp-coverage.json` and the published topic guide. Original solved self-checks and existing practice sets provide the exercise/review role. The instrument examples extract design principles rather than reproduce proprietary instrument schematics.

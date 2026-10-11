@@ -41,7 +41,7 @@ The staging command replaces only the generated `public/electronics` directory
 in the hebert.phd checkout. Review and commit that directory in the host
 repository, then push to `main`; its existing Cloudflare Pages integration
 publishes the update. The homepage source and build configuration need no edits.
-`check:hosted` verifies all 188 HTML pages and their local links, scripts, styles,
+`check:hosted` verifies all 189 HTML pages (188 chapter/practice pages and the op-amp topic guide) and their local links, scripts, styles,
 React island modules, and font assets under `/electronics`.
 
 ## Chapters
@@ -153,3 +153,7 @@ figures. They cover component choices, measurement loading, charge and startup,
 feedback architectures, internal bias, filter states and analog multiplication.
 `npm run check:practical` verifies their published anchors, navigation and new
 circuit relationships; `npm test` also checks the figure models and arithmetic.
+
+## Op-amp and precision topic guide
+
+The [published guide](https://hebert.phd/electronics/opamp-coverage/) maps all 26 top-level sections and 113 numbered subsections of TAOE Chapters 4–5 to Chapters 77–94. The full coverage pass adds original derivations, numerical operating points, solved self-checks and 13 additional teaching visuals. Each chapter was independently committed, verified and pushed. `check:precision` verifies the guide and critical connections in the new schematics; precision tests also check strict math and complex feedback KCL.

@@ -21,3 +21,15 @@ test('new precision teaching equations parse in strict KaTeX',()=>{
  for(const m of block.matchAll(/String\.raw`([^`]+)`|(?<!\$)\$([^$\n]+)\$(?!\$)/g))katex.renderToString(m[1]??m[2],{throwOnError:true,strict:'error'});
  }
 });
+
+test('TAOE topic map includes every numbered subsection and resolves to a real expanded chapter',()=>{
+ const rows=JSON.parse(readFileSync('src/content/opamp-coverage.json','utf8'));
+ const counts={4:[3,7,6,4,7,7,0,4,3],5:[2,2,0,1,1,3,6,7,2,12,4,5,0,4,5,13,5]};
+ assert.equal(rows.length,26);const seen=new Set();
+ for(const [parent,list] of Object.entries(counts))for(let i=0;i<list.length;i++){
+ const section=`${parent}.${i+1}`,row=rows.find(r=>r.section===section);assert.ok(row,section);
+ assert.deepEqual(row.subsections,Array.from({length:list[i]},(_,n)=>`${section}.${n+1}`));
+ for(const id of row.chapters){seen.add(id);const s=readFileSync(`src/content/advanced/${id}.mdx`,'utf8');assert.ok(s.includes(id==='opamp-active-filters'?'id="model"':'id="precision-depth"'),id);}
+ }
+ assert.equal(seen.size,18);
+});

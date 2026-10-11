@@ -27,6 +27,7 @@ const currentIndex=chapters.indexOf(current), previous=chapters[currentIndex-1],
 <details class="course-contents"><summary>Browse all {chapters.length} chapters</summary><nav class="course-nav" aria-label="All chapters">{chapters.map(c=><a href={c.href} class={c.id===chapter?'current-chapter':''} aria-current={c.id===chapter?'page':undefined}>{c.number}<span>{c.title}</span></a>)}</nav>
 </details>
 <p class="sidebar-title">{current.title}</p>
+{Number(current.number)>=77&&<a class="practice-link" href={sitePath('/opamp-coverage/')}>Op amps and precision · topic guide →</a>}
 <nav aria-label="Chapter sections">{current.sections.map(([id,label],i)=><><a href={current.href+'#'+id}>{String(i).padStart(2,'0')} <span set:html={sub(label)}/></a>{practicalNote?.section===id&&<a class="sidebar-extension" href={current.href+'#book-notes'}>↳ <span>{practicalNote.title}</span></a>}</>)}</nav>
 <a class={practice?'practice-link selected':'practice-link'} href={current.practice}>Practice independently <span>→</span></a>
 <div class="sidebar-note"><span class="tiny-label">THE APPROACH</span><p>Build intuition.<br/>Follow the mathematics.<br/>Try the circuit.</p></div>

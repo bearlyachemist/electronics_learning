@@ -123,3 +123,11 @@ Additional nearby pages were extracted locally as context; extraction is not a
 claim of exhaustive review. Circuit-law examples use independently selected
 values. The source record and each chapter's further-reading pointer distinguish
 the inspected material from the original teaching extensions.
+
+## Full op-amp and precision section coverage
+
+TAOE Chapters 4–5 were locally indexed/extracted (PDF pp. 256–321 and 325–421). Focused new inspection included pinch-off/pulse/filter discussion, integrator drift and reset leakage (292–293), VCO and construction (300–302), lab/tracer/load/dose applications and compensation (308–317), low-voltage meter (327–329), nulling/budget/holding components (330–333), PSRR and null-input errors (339), gain nonlinearity (346), RRIO behavior (350–351), auto-zero selection (372), instrument architecture (376–377), INA/protection/guard/programmable-gain sections (391–405), and differential driver/ADC/matching sections (407 and 413–416). Extraction is not a claim of line-by-line inspection of every page. Huijsing’s previously inspected internal/compensation chapters and Asadi’s application analyses provide complementary explanations.
+
+The [section coverage record](taoe-opamp-coverage.md) and website topic guide identify the completed chapter checkpoints. All explanations, values and diagrams are independently authored; the instrument case studies discuss design principles rather than republish book schematics.
+
+Final focused source checks: Huijsing §10.5, PDF pp. 380–382, for stored correction, active integration, noise folding and alternating input stages; TAOE PDF pp. 361–363 and 373 for GBW/crossover conventions, slew-efficiency factor, distortion-test conditions and auto-zero miscellany; Asadi PDF pp. 191 and 197–198 for comparator-versus-op-amp behavior and zero-crossing conversion.
