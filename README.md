@@ -144,3 +144,12 @@ ongoing prose/figure revisions and live in `src/content/synthesis.json`.
 `npm run check:synthesis` verifies all published studies, chapter-section
 targets and rendered math. The test suite checks representative numerical
 quantities in every study against circuit equations or the independent engines.
+
+## Practical explanations from the reference review
+
+[The practical-depth index](docs/practical-depth-review.md) records 42 further
+explanations integrated into the relevant chapter sections, with six original
+figures. They cover component choices, measurement loading, charge and startup,
+feedback architectures, internal bias, filter states and analog multiplication.
+`npm run check:practical` verifies their published anchors, navigation and new
+circuit relationships; `npm test` also checks the figure models and arithmetic.

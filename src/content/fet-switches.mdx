@@ -141,6 +141,20 @@ CMOS logic uses a p-channel pull-up and n-channel pull-down. At a valid static i
 
 For any switch application, follow the signal through all supply states. Off leakage, clamp conduction, diode paths and unpowered inputs are circuit behaviors, not exceptional cases outside the analysis.
 
+
+
+<h3 id="book-notes">A multiplexer remembers the previous channel through capacitance</h3>
+
+A multiplexer does more than select a resistor. Its output capacitor is initially charged to the previous channel's voltage. After changing channels, the new source must supply or absorb that charge through its own resistance and the switch's on-resistance.
+
+With $R_S=100$ kΩ, $R_{ON}=500$ Ω and a 20 pF sampling node, the time constant is 2.01 µs. For a full-scale channel jump and a 12-bit target of half an LSB, the residual must fall below $1/8192$ of the step. The ideal settling requirement is $\tau\ln8192=\mathbf{18.1\ \mu s}$, before amplifier acquisition or recovery is counted. Converting immediately after selection can therefore report a mixture of the old and new channels.
+
+Off-channel capacitance causes another error. A 3 V transition coupled through 1 pF into an otherwise floating 100 pF node gives an initial charge-sharing step of about $3\times1/(100+1)=\mathbf{29.7\ mV}$. A finite source then discharges that error; “off” resistance says little about its initial amplitude.
+
+Break-before-make switching avoids briefly shorting two sources together, but creates an interval when the output is floating. Check that interval, source impedance, charge injection and amplifier overload recovery as a sequence. For fast or high-accuracy scanning, lower source impedance or individual channel buffers may help more than selecting a switch with a slightly smaller on-resistance.
+
+<p className="reference-note">Further reading: Selvam, §§1.11–1.13, PDF pp. 39–41; Horowitz and Hill, §3.4.1, PDF pp. 204–205. This extension uses original explanations and design values.</p>
+
 </section>
 
 

@@ -143,6 +143,20 @@ Temperature acts on the reference too. The threshold falls by about 2 mV/°C, wh
 
 Precision references therefore derive the current from a stable voltage, typically a bandgap reference of about 1.2 V forced across a resistor by a feedback loop (Chapter 92 builds one with an op amp). Self-biased circuits that make the reference from the mirror itself, the "$\beta$ multiplier", remove the supply dependence but have a second stable state at zero current and need a start-up circuit.
 
+
+
+<h3 id="book-notes">A beta-multiplier can define transconductance instead of current</h3>
+
+A useful bias generator makes equal drain currents flow in two MOSFETs that share a gate but have different size: $k_2=N k_1$. Give the larger device a source resistor R. In the long-channel model with equal thresholds, negligible body effect and channel-length modulation, its smaller required overdrive leaves a voltage across R.
+
+<Equation tex={String.raw`IR=u_1-u_2=u_1\left(1-\frac1{\sqrt N}\right),\qquad g_{m1}=\frac{2I}{u_1}=\frac{2(1-1/\sqrt N)}{R}`}/>
+
+With N = 4 and R = 1 kΩ, $g_{m1}=\mathbf{1\ mS}$. If $k_1=2$ mA/V², the nonzero solution is I = 250 µA, $u_1=0.5$ V and $u_2=0.25$ V. The current changes with process mobility while the ideal transconductance is set chiefly by a resistor and ratio. This is attractive when bandwidth $g_m/(2\pi C)$ needs to remain predictable.
+
+The derivation omits real feedback circuitry that forces equal currents, as well as its headroom and dynamics. A common substrate with the raised source can create body-effect threshold inequality; include that term or use a suitable isolated-body structure. The loop also admits a **zero-current equilibrium**, so a startup circuit must disturb the all-off state and then become inactive without corrupting the intended bias. A solved nonzero DC point does not establish reliable power-on behavior.
+
+<p className="reference-note">Further reading: Huijsing, §4.1.4, PDF pp. 91–93. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="matching">

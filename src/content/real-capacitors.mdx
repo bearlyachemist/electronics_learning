@@ -138,6 +138,20 @@ Different technologies favor different compromises. C0G ceramics and suitable fi
 
 Ripple heating is another calculation: at 0.5 A RMS and an applicable ESR of 0.1 Ω, loss is $I^2R =$ **25 mW**. A real ripple waveform may span frequencies with different ESR, and a thermal rating applies under stated conditions. For electrolytic capacitors heat is also the main aging mechanism: a common rule of thumb says lifetime roughly halves for every 10 °C rise in core temperature.
 
+
+
+<h3 id="book-notes">Choose the dielectric by the error it would introduce</h3>
+
+The same nominal capacitance can serve very different jobs. Use the table to decide which property to look up, then check the actual part at its operating voltage and temperature.
+
+<div className="table-wrap"><table><thead><tr><th>Technology</th><th>Useful starting role</th><th>Reason to examine it more closely</th></tr></thead><tbody><tr><td>C0G/NP0 ceramic</td><td>Small precision timing, resonant and signal capacitors</td><td>Stable capacitance; available values and parasitic mounting effects still limit the design</td></tr><tr><td>High-permittivity ceramic</td><td>Compact local decoupling</td><td>DC-bias loss, temperature dependence and mechanical coupling can matter</td></tr><tr><td>Suitable film dielectric</td><td>Precision integration, coupling and pulse service</td><td>Absorption, size, pulse-current and dV/dt ratings vary with construction</td></tr><tr><td>Aluminum electrolytic</td><td>Bulk charge storage and low-frequency ripple filtering</td><td>Polarity, leakage, ESR, ripple heating and lifetime conditions</td></tr></tbody></table></div>
+
+For a hypothetical 10 µF ceramic whose measured capacitance at the intended bias is 6 µF, a 20 mA load lasting 30 µs causes **100 mV** of charge droop, not the 60 mV predicted from the marking. Those values illustrate the calculation, rather than a universal derating factor. In an integrator, the same dependence makes slope change with signal voltage and creates distortion even when the small-signal filter corner looks correct.
+
+Do not make a blanket substitution based on lower ESR. A regulator or damping network may have been designed around a particular impedance range. A more nearly ideal capacitor can change the loop or resonance that made the original circuit behave well.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §§1.4.1 and 1.4.5, PDF pp. 53–54 and 61. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="measurement">

@@ -171,6 +171,22 @@ Find the peak and RMS currents separately. Estimate voltage-time requirements, e
 
 The interactive figure intentionally holds inductance constant and models no saturation. Its clean curves are a way to understand the equations, not a claim that an arbitrary real coil follows them at every current.
 
+
+
+<h3 id="book-notes">Stored energy and winding loss impose different current limits</h3>
+
+An inductor needs both a magnetic check and a thermal check. The saturation-current specification concerns how much the core's incremental inductance falls; the RMS-current specification concerns winding heating under stated conditions. Neither can replace the other, and manufacturers may define their test thresholds differently.
+
+For a 100 µH inductor carrying a triangular ripple between 0.5 and 1.5 A, the average current is 1 A and the ripple is 1 A peak-to-peak. Its total RMS current is
+
+<Equation tex={String.raw`I_{\mathrm{rms}}=\sqrt{I_{\mathrm{avg}}^2+\frac{\Delta I_{pp}^2}{12}}=1.041\ \mathrm A`}/>
+
+At 0.3 Ω winding resistance that means **0.325 W** of copper loss. Peak magnetic energy, using the constant-L approximation, is $\tfrac12\times100\ \mu\text{H}\times(1.5\text{ A})^2=112.5$ µJ. Check saturation at 1.5 A, heating at 1.041 A RMS, and additional core loss at the switching frequency.
+
+Once the core begins saturating, $di/dt=v/L$ increases as L falls. A current ramp that bends upward is therefore a diagnostic clue, not merely a different straight-line slope. Air cores avoid ferromagnetic saturation but usually require more turns or volume; a gap in a magnetic core permits useful energy storage while changing the required ampere-turns. “More permeability” is not automatically the better power inductor.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §1.5.1, PDF pp. 61–62. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="check">

@@ -126,6 +126,22 @@ This is a **charge amplifier**. Because the summing node does not move, the sens
 
 **In control loops** an integrator provides the I of a PI controller (Chapter 45): it drives the steady-state error to zero. When the actuator saturates, the integrator keeps accumulating error, **winds up**, and the loop overshoots badly on recovery. Anti-windup, by clamping the integrator's output or resetting it, changes the equations while engaged and must be designed deliberately.
 
+
+
+<h3 id="book-notes">Dual-slope integration makes a time ratio instead of a capacitor calibration</h3>
+
+Integrate an unknown constant voltage $V_X$ through R for a known interval $T_1$. The output changes by $-V_XT_1/(RC)$. Then apply an opposite-polarity reference of magnitude $V_R$ through the **same** R and integrate until the output returns to its initial voltage. The charge-balance condition is
+
+<Equation tex={String.raw`V_XT_1=V_RT_2,\qquad V_X=V_R\frac{T_2}{T_1}`}/>
+
+For $V_X=0.75$ V, $V_R=1.5$ V and $T_1=20$ ms, the return time is **10 ms**. With R = 100 kΩ and C = 100 nF, the first integration excursion is 1.5 V. That excursion must fit the amplifier's output range, but ideal R and C cancel from the final time-ratio measurement.
+
+Cancellation requires the same effective integration path in both phases. Different switch resistances, reference settling, offset, bias current and dielectric absorption introduce unequal charge. The zero-crossing comparator's delay adds a timing term that matters most for short return times. Reset must also establish a reproducible initial condition without leaving charge-injection residue.
+
+The first phase averages the input over a defined window. For a sinusoidal interference at frequency f, that rectangular average has a magnitude response $|\sin(\pi fT_1)/(\pi fT_1)|$. An exactly 20 ms window rejects an ideal 50 Hz component, but rejects 60 Hz less completely. Thus the architecture connects precision conversion, integration and interference rejection; the clock and reference still determine practical accuracy.
+
+<p className="reference-note">Further reading: Selvam, chapters 6 and 8, integration-based function principles, PDF pp. 118–120; Asadi, integrator application analysis. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="limits">

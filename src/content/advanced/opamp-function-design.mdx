@@ -146,6 +146,22 @@ Letting the op amp clip instead of controlling $K$ also limits the amplitude, bu
 
 </div>
 
+
+
+<h3 id="book-notes">Multiplication can be made from time, switching and averaging</h3>
+
+A voltage need not control transistor transconductance to become one factor in a product. Compare $V_X$ with a rising ramp from zero to $V_R$. For $0\le V_X\le V_R$, the comparator produces a duty fraction $D=V_X/V_R$. An analog switch then selects $V_Y$ for that fraction and zero for the remainder. A low-pass averages the switched waveform:
+
+<Equation tex={String.raw`\overline V_O=D V_Y=\frac{V_XV_Y}{V_R}`}/>
+
+With $V_X=1.2$ V, $V_Y=2.0$ V and a 3 V ramp range, D = 0.4 and the ideal output is **0.8 V**. This joins the switch, ramp generator, comparator and filter chapters into a time-division multiplier. It is initially a unipolar construction: signed multiplication requires additional switching or offset arrangements.
+
+The averaging filter must pass changes in the desired product while rejecting switching ripple. A single-pole 100 Hz corner driven at 10 kHz attenuates the switching fundamental by about 40 dB, but it also makes the product's response slow. Ramp nonlinearity becomes multiplication nonlinearity; comparator delay creates a duty error proportional to delay divided by period; switch charge injection and reference drift add further terms.
+
+Multiplying two sinusoids and averaging provides a **phase-sensitive detector**. With inputs $A\cos\omega t$ and $B\cos(\omega t+\phi)$, a multiplier normalized by $V_R$ gives a DC term $AB\cos\phi/(2V_R)$ and a term at twice the frequency. A quadrature reference gives the sine component as well. For A = 1 V, B = 0.1 V, $V_R=1$ V and $\phi=60°$, the in-phase output is **25 mV**. This detects a known-frequency signal amid other frequencies, but interference synchronous with the reference remains, and a square-wave switching reference also responds to its odd harmonics.
+
+<p className="reference-note">Further reading: Selvam, §§6.1 and 21.1, PDF pp. 118–119 and 434–435. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="limits">

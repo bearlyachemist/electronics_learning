@@ -146,6 +146,18 @@ An analyzed design proceeds in a definite order: establish the current and volta
 
 The practical lesson is conditional: fully enhanced resistance can encourage static sharing, while near-threshold linear operation can encourage thermal concentration. The operating region, drive circuit and thermal path determine which feedback loop wins.
 
+
+
+<h3 id="book-notes">Switching optimization does not certify linear-mode current sharing</h3>
+
+The positive temperature coefficient of fully enhanced on-resistance can help sharing when parallel MOSFETs act as low-resistance switches. A pass element holding substantial drain voltage at small overdrive is a different operating point: threshold reduction can encourage local current crowding. The thermal behavior must be evaluated in the region actually used.
+
+The broad statement that a power MOSFET's SOA is limited only by total dissipation should not be carried into a linear design. Manufacturer guidance identifies thermal-instability limits and the importance of hot SOA. Check the device's linear-mode SOA at the intended voltage, pulse duration and temperature; a low on-resistance alone does not qualify it. See <a href="https://www.nexperia.com/applications/interactive-app-notes/IAN50006_Power_MOSFETs_in_linear_mode">Nexperia's linear-mode application note</a>.
+
+For example, three parallel devices sharing a 30 W pass load have a nominal average of 10 W each. If a local hot region inside one die attracts current, the global 30 W balance remains true while that region fails. Equal case temperatures, aggregate heatsink capacity and external source ballast do not prove that each die's internal cells share safely. Ballast helps device-to-device sharing; qualification still requires each device to stay inside its own relevant SOA.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §3.5.1, PDF p. 220; Nexperia, IAN50006, Power MOSFETs in linear mode. This extension uses original explanations and design values.</p>
+
 </section>
 
 

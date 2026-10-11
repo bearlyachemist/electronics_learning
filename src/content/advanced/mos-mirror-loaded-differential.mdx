@@ -1,3 +1,4 @@
+import {FoldedCurrentFigure} from '../../components/PracticalBookFigures';
 import Equation from '../../components/Equation.astro';
 import {MosDifferentialFigure} from '../../components/MosAnalogFigures';
 import {OtaCurrentFigure,OtaTransferFigure} from '../../components/MosStudyFigures';
@@ -125,6 +126,20 @@ a pole at $p_m$ and a zero at $2p_m$, a "doublet". At $p_m$ the gain falls by at
 **Headroom.** The diode-connected PMOS costs a full $V_{TP} + u_P$ of headroom in the left branch, which is one reason low-voltage op amps use folded-cascode input stages instead.
 
 **Polarity.** With the input ordered left minus right, the gain is positive. A common-source second stage inverts it. When you label an op amp's plus and minus inputs, follow the actual current and voltage changes through every stage; do not assume.
+
+
+
+<h3 id="book-notes">A folded cascode redirects signal current instead of stacking every device</h3>
+
+In a telescopic stack, input devices and their cascodes occupy the same vertical supply path. A **folded cascode** routes the input branch's changing current into a common-gate device of the opposite polarity. This changes how input common-mode range and output compliance share the supply, while retaining a high-resistance output node.
+
+<FoldedCurrentFigure/>
+
+The local current budget is the starting point: an upper bias branch supplies $I_B$ to node X; the input stage takes $I_{IN}$; the opposite-polarity common-gate branch carries $I_F=I_B-I_{IN}$. With $I_B=200$ µA and quiescent $I_{IN}=100$ µA, folded current is 100 µA. A +20 µA input-branch change reduces it to 80 µA. A matched 100 µA output sink then leaves a **−20 µA** net current at the output, discharging its capacitance.
+
+Folding does not eliminate headroom or current limits. The bias branch, input device and folding device must each remain in their intended region; if $I_{IN}$ approaches $I_B$, the folded path runs out of current. Extra bias branches consume power and add noise. The diagram is one current-folding half-path, not a complete differential amplifier; a full design also needs the second half, current summation, bias generators and output-load analysis. The benefit is a more flexible allocation of node voltages, paid for with those added branches.
+
+<p className="reference-note">Further reading: Huijsing, §7.1.2, PDF pp. 241–242. This extension uses original explanations and design values.</p>
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>The mirror adds the two halves' current changes, so one output receives the full $g_{m0}v_d$: gain $g_{m0}(r_{oN} \parallel r_{oP})$, common-mode cancellation by the mirror, and <em>zero systematic offset when the output sits at the mirror's own voltage</em>.</p></div>
 

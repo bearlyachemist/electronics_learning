@@ -1,3 +1,4 @@
+import {RailGmExtensionFigure} from '../../components/PracticalBookFigures';
 import Equation from '../../components/Equation.astro';
 import {InternalAmplifierFigure} from '../../components/OpAmpFigures';
 import {RailToRailInputFigure,RroOutputCircuit,RroSwingFigure,LeakageTempFigure} from '../../components/OpAmpStudyFigures';
@@ -63,6 +64,24 @@ The last relation is Chapter 80's slew rate per unit bandwidth with $I_T/g_{m1} 
 <p>The slew rate is $I_T/C_C$ = 100 µA / 20 pF = <strong>5 V/µs</strong> in all three. So the lowest overdrive gives the most bandwidth and the least noise for the same slew rate, but needs the widest devices, with more capacitance and worse matching relative to signal (Chapter 59).</p>
 
 </div>
+
+
+
+<h3 id="book-notes">Constant total tail current does not guarantee constant MOS transconductance</h3>
+
+With matched effective device factors in strong inversion, each complementary input pair's small-signal transconductance is proportional to the square root of its tail current. If a fixed total current is divided as fractions x and $1-x$ between the two pairs, the summed transconductance, normalized to one pair carrying all the current, is
+
+<Equation tex={String.raw`\frac{G_{m,tot}}{G_{m,edge}}=\sqrt{x}+\sqrt{1-x}`}/>
+
+<RailGmExtensionFigure/>
+
+At an edge, only one pair operates and the ratio is 1. At equal current sharing it is $\sqrt2=\mathbf{1.414}$. Thus even perfectly constant total tail current leaves a 41.4% transconductance hill in this square-law example. With a fixed compensation capacitor that can move crossover frequency and change phase margin as common-mode input changes.
+
+In bipolar or weak-inversion input stages, transconductance is approximately proportional to current, so constant current sum is a more direct solution. Strong-inversion CMOS needs a different allocation or extra effective device width. For example, keeping the same summed transconductance when only one equal-width pair remains active requires four times one pair's previous tail current, because its transconductance must double. That is a power tradeoff, not a free rail-range extension.
+
+Real complementary pairs have different mobilities, dimensions, offsets and handover shapes. Constant-$g_m$ control addresses bandwidth variation; it does not automatically remove an offset step or switching-current disturbance during handover. Test distortion and settling across common mode as well as at mid-supply.
+
+<p className="reference-note">Further reading: Huijsing, §§4.4.1–4.4.2, PDF pp. 108–111. This extension uses original explanations and design values.</p>
 
 </section>
 

@@ -174,6 +174,22 @@ The gain depends only on the Early voltage. For $V_A$ = 100 V it is 100/(2 × 0.
 
 </div>
 
+
+
+<h3 id="book-notes">The lowest-noise collector current depends on source resistance</h3>
+
+More collector current raises transconductance and lowers the voltage-equivalent collector shot noise. It also raises base shot noise, which becomes a voltage when it flows through source resistance. These effects compete even before power and headroom are considered.
+
+For one input transistor, retain only collector and base shot noise, use $g_m=I_C/U_T$ and a constant beta, and assume independent noise sources. With source resistance $R_S$:
+
+<Equation tex={String.raw`e_{n,\mathrm{device}}^2\approx\frac{2qU_T^2}{I_C}+\frac{2qI_C R_S^2}{\beta},\qquad I_{C,\mathrm{opt}}=\frac{U_T\sqrt\beta}{R_S}`}/>
+
+At $U_T=25.85$ mV and beta = 100, the simplified optimum is **25.85 µA** for 10 kΩ, **2.585 mA** for 100 Ω and **2.585 µA** for 100 kΩ. Two identical input devices with equal source resistances add two copies of these terms to differential input noise; the optimum current per device is unchanged in this symmetrical model.
+
+Source-resistor thermal noise remains $4k_BT R_S$ per side and is not reduced by selecting a different collector current. Base spreading resistance, flicker noise, finite-frequency beta, bias-current accuracy and unequal source impedances can all move the practical optimum. This is a method for understanding the trade, not a universal current recommendation. In particular, a high-resistance sensor can prefer a FET input even if a BJT has a lower voltage-noise specification in isolation.
+
+<p className="reference-note">Further reading: Huijsing, §4.2, PDF pp. 94–96; Horowitz and Hill, chapter 8 input-noise analysis. This extension uses original explanations and design values.</p>
+
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A long-tailed pair <em>steers a fixed tail current</em>: the difference of the inputs decides how it divides, and their common level does not. A current-source tail gives high CMRR; a mirror load gives high gain.</p></div>
 
 <p className="reference-note">Coverage: The Art of Electronics §2.3.8, with the active-load stage of integrated op-amps. For further circuit analysis, see the [MIT 6.012 lecture notes](https://ocw.mit.edu/courses/6-012-microelectronic-devices-and-circuits-fall-2009/pages/lecture-notes/).</p>

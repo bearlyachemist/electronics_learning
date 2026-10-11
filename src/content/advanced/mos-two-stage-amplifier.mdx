@@ -153,6 +153,20 @@ Here 2.2 × (1/4) × 10 pF = 5.5 pF, consistent with the table. The ratio $g_{m2
 
 These are the reasons an op amp is more than a differential pair with a large gain label. It needs bias generation, compensation, output drive and overload recovery. Chapter 77 begins the op-amp chapters with the ideal model; Chapters 79–81 restore these real properties one at a time.
 
+
+
+<h3 id="book-notes">Adding a third gain stage requires another compensation argument</h3>
+
+A third high-resistance node can multiply DC gain while adding another phase lag. The two-stage rule $f_u\approx g_{m1}/(2\pi C_C)$ does not, by itself, establish stability after that change. At crossover, every significant pole and zero still contributes phase.
+
+As a simple three-pole illustration, assume the dominant pole already contributes nearly 90°. If both other poles lie at $f_u$, they each contribute 45°, leaving approximately **zero phase margin**. If each is at $3f_u$, their lags are 18.43° each, giving about **53.1°** margin before any zeros or further parasitics. Adding gain without controlling those poles can therefore turn a useful feedback amplifier into an oscillator.
+
+**Nested Miller compensation** builds an inner compensation loop around an appropriate stage combination, then an outer loop around a larger combination. Capacitor placement and stage polarity are essential: a capacitor spanning the wrong sign of gain need not provide the intended local negative feedback. The loops' bandwidths must be separated so the outer loop sees a sufficiently settled inner response. Feedforward zeros, loading, slew and recovery remain part of the design.
+
+This is why the two-stage circuit is a useful teaching foundation. Higher-order amplifiers can improve DC gain or drive, but their compensation cannot be derived by copying one capacitor onto an arbitrary three-stage chain. Establish the small-signal transfer and local return ratios, then check large-step behavior independently.
+
+<p className="reference-note">Further reading: Huijsing, §6.2.3.1, PDF pp. 203–204. This extension uses original explanations and design values.</p>
+
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Two stages multiply their gains, and their two poles would make a feedback loop oscillate. A Miller capacitor <em>splits the poles</em>, giving a unity-gain frequency of $g_{m1}/2\pi C_C$, and a nulling resistor removes its right-half-plane zero.</p></div>
 
 </section>

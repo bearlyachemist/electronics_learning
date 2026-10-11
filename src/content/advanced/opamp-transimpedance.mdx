@@ -129,6 +129,20 @@ Three noise sources compete, and the input capacitance reorders them with freque
 
 </div>
 
+
+
+<h3 id="book-notes">A dark-current error and a shot-noise floor need different corrections</h3>
+
+A photodiode's steady dark current produces a DC output $-I_DR_F$, which can sometimes be measured and subtracted. Its shot noise remains after that subtraction. For independent carrier arrivals, the one-sided current-noise density is $i_n=\sqrt{2qI}$, using the total relevant mean photocurrent and dark current.
+
+With an illustrative 1 µA mean current, the shot-noise density is **0.566 pA/√Hz**. In an ideal flat 10 kHz equivalent noise bandwidth, that becomes 56.6 pA RMS. A 1 MΩ transimpedance converts it to **56.6 µV RMS**, even if the mean output is perfectly calibrated. Reducing DC offset does not remove this random term.
+
+Feedback resistance produces its own thermal current noise, $\sqrt{4k_BT/R_F}$, about 0.129 pA/√Hz for 1 MΩ at 300 K. Shot and resistor terms add in power. Amplifier current noise and frequency-shaped voltage noise must then join the budget with their actual transfer functions. If the transimpedance rolls off within the band, integrate that response instead of multiplying every density by the same square-root bandwidth.
+
+Strong illumination can also overload the receiver, leaving a recovery problem when the detector returns to darkness. A larger feedback resistor increases sensitivity but reduces the mean-current range. Define maximum expected DC current, smallest signal modulation, noise bandwidth and overload sequence together; a noise calculation made only in darkness can miss the dominant operating case.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §8.11, PDF pp. 570–571; Huijsing, §4.2. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="limits">

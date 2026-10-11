@@ -154,6 +154,18 @@ The formula shows the designer’s levers and their costs. A heavier, thicker em
 
 Because $\beta$ is a ratio of two small loss terms, it varies a great deal between transistors of the same type, with temperature (often rising over part of the operating range), and with current (it falls at low current, where depletion-region recombination adds base current, and at high current, where the injected electrons become comparable to the base doping). **$\beta$ is a poor quantity to design around.** The next chapters build circuits that work whatever $\beta$ is, provided it is large.
 
+
+
+<h3 id="book-notes">Why beta measured at one current does not define the whole device</h3>
+
+The transport model explains gain around a chosen carrier density. At very low collector current, leakage and recombination can consume a larger fraction of base drive. At high current density, high-level injection and internal resistive drops disturb the assumptions that made current proportional to a single exponential. Beta often has a useful middle-current region rather than remaining constant over decades.
+
+This matters when scaling a transistor. At the same collector current, a larger die works at lower current density and generally has more junction capacitance. At equal current density, scaling area and current together leaves the required junction voltage approximately unchanged, while absolute transconductance and capacitance both grow. The gain-speed tradeoff therefore cannot be inferred from package size alone.
+
+A practical bias design uses a guaranteed beta range at the intended current and voltage, then checks how the circuit behaves outside the typical value. In a switch, use the specified saturation test current ratio instead of active-region beta. In a low-noise input stage, look at base resistance, current noise and junction capacitance as well as gain. A device chosen to carry amperes can be a poor microamp input transistor even if its printed current gain looks impressive.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §§2.1–2.3 and transistor tables; PDF pp. 104–107 and 124. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="explore">

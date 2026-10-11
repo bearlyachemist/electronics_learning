@@ -224,6 +224,18 @@ flows into the 3.3 V rail. If the rest of the board draws less than 20.4 mA—sa
 
 A **crowbar** deliberately shorts a supply when it exceeds a limit, relying on a fuse or current limit upstream. It is the shunt-diode-and-fuse idea applied to over-voltage: a sensing circuit fires a thyristor or MOSFET across the rail. It protects the load absolutely but turns an overvoltage into a hard fault that must be cleared.
 
+
+
+<h3 id="book-notes">A crowbar trades overvoltage for a sustained fault current</h3>
+
+A clamp absorbs current while holding voltage near its clamp level. An SCR crowbar instead latches a low-resistance path across the protected rail after an overvoltage trigger. It stays on until current falls below its holding current. That memory can protect a load after a regulator fails, but it means the upstream source, fuse and crowbar must survive the resulting fault together.
+
+For an illustrative 5 V rail delivering a limited 2 A, a shunt clamp at 6 V must dispose of roughly **12 W** while the fault persists. A latched crowbar dropping 1 V disposes of about **2 W**, but makes the source operate into a near-short. If the source limits current below the fuse's opening threshold, the fuse may never clear and both devices need sustained-fault ratings.
+
+For a fuse-clearing design, compare the fault-current waveform and fuse clearing integral $\int i^2dt$ with the SCR's surge rating, wiring and capacitor-discharge stress. A 1000 µF reservoir at 5 V stores 12.5 mJ and can deliver a short pulse not limited by the regulator's steady current limit. Set the trigger threshold above legitimate supply tolerance and overshoot but below the protected load's limit. An SCR trigger is not an accurate “zener voltage plus one diode” constant across component spread and temperature.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §9.13.1, PDF pp. 723–725. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="timing">

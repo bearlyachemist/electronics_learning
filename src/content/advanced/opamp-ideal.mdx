@@ -154,6 +154,22 @@ Feedback does not create power or perfect accuracy. It reduces errors generated 
 
 <p className="caption">Live lab. A single-pole op amp in a noninverting circuit. Set the gain to 1, then 100, and watch the closed-loop bandwidth fall by the same factor. Lower the DC open-loop gain until the low-frequency closed-loop gain visibly misses the requested value; then calculate the error from $1/(1 + T)$.</p>
 
+
+
+<h3 id="book-notes">Choose the transferred quantity before choosing the amplifier model</h3>
+
+The familiar op amp is a voltage-output device, but a circuit's useful input and output need not both be voltages. Four transfers organize many applications:
+
+<div className="table-wrap"><table><thead><tr><th>Transfer</th><th>Gain units</th><th>Desired input behavior</th><th>Desired output behavior</th></tr></thead><tbody><tr><td>Voltage → voltage</td><td>V/V</td><td>High impedance</td><td>Low impedance</td></tr><tr><td>Current → voltage</td><td>Ω</td><td>Low impedance</td><td>Low impedance</td></tr><tr><td>Voltage → current</td><td>S</td><td>High impedance</td><td>High impedance</td></tr><tr><td>Current → current</td><td>A/A</td><td>Low impedance</td><td>High impedance</td></tr></tbody></table></div>
+
+A photodiode wants a current-to-voltage transfer: keeping its input node at nearly constant voltage can be more useful than giving that node a large voltage gain. A resistor-driven LED wants a voltage-to-current transfer whose output current remains steady while LED voltage changes. Their preferred input and output impedances follow from which quantity should remain undisturbed.
+
+Huijsing develops distinct ideal operational devices by which input/output ports are internally connected or allowed to float: operational voltage, inverting, current and floating amplifiers. A floating **signal port** here does not promise galvanic isolation. Practical voltage-output op amps can implement many transfers with external feedback and, for a current output, a pass device or suitable network. An OTA directly supplies a signal-dependent output current, which can charge a capacitor instead of driving a low-impedance voltage load.
+
+A current-feedback op amp is another practical architecture and should not be identified solely with an ideal current-to-current transfer. Its feedback-resistor constraints and input-port behavior require its own model. Start with the desired transfer, then choose the active device and feedback path that can support it.
+
+<p className="reference-note">Further reading: Huijsing, chapter 1, PDF pp. 30–35. This extension uses original explanations and design values.</p>
+
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Closed-loop gain is $(1/\beta)/(1 + 1/T)$. The virtual short is <em>a result of working negative feedback</em>, valid only while the loop gain is large, the output is in range and the polarity is right.</p></div>
 
 </section>

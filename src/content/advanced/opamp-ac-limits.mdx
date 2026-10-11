@@ -142,6 +142,20 @@ A large step settles in two phases. First the output slews at $SR$ until it is c
 
 <p className="caption">Live lab. Single-pole op amp plus an adjustable second pole. Set the second pole to 200 kHz and the noise gain to 1, and look for peaking near the crossing: that is low phase margin. Raise the noise gain to 10 and watch the peaking disappear while the bandwidth falls. The slew-limit readout is independent of the small-signal curve.</p>
 
+
+
+<h3 id="book-notes">Small-step settling, slew and overload recovery require separate tests</h3>
+
+A small-step response stays near the operating point and tests the linear closed-loop poles. For a true first-order 100 kHz bandwidth, $\tau=1/(2\pi f)=1.592$ µs and reaching 0.1% of the step takes $\tau\ln1000=\mathbf{11.0\ \mu s}$. A real multi-pole amplifier may ring or have a much longer low-amplitude tail even with the same −3 dB bandwidth.
+
+A large but valid step can hit a current limit charging an internal or external capacitor. An 8 V output change at 1 V/µs needs at least **8 µs just for the rate-limited movement**, after which linear settling still matters. Adding 8 µs and 11 µs gives a useful rough budget, not an exact transient prediction: the boundary between slew and linear operation depends on the loop and internal states.
+
+An **overload** test first commands an impossible output or exceeds a valid input range, then returns to a valid command. Internal nodes may have charged far beyond their normal values, transistors may have stored charge, and protection circuits may have engaged. Recovery can include a delay before the output begins moving. Neither the ordinary bandwidth nor the published slew rate alone specifies that delay.
+
+For an ADC driver, test the actual sequence: previous-channel amplitude, switching kick, new-channel step and time until sampling. For a comparator-like use, test the duration and size of preceding overdrive. A clean small-step trace is valuable evidence about linear stability, but it does not establish recovery after clipping.
+
+<p className="reference-note">Further reading: Huijsing, chapter 6 and protection discussion in §7.8.3, PDF pp. 203–204 and 293–294; Asadi, §8.5, PDF pp. 242–243. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="limits">

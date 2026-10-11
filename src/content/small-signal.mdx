@@ -185,6 +185,18 @@ Transconductance relates a voltage at one port to a current at another; it is **
 
 Feedback can change the resistance seen at a port. A resistor-like small-signal model may describe an entire active circuit, even when no physical resistor of that value exists.
 
+
+
+<h3 id="book-notes">A zener reference has a finite incremental stiffness</h3>
+
+A zener may have 5 V across it while its small-signal resistance is only 20 Ω. The ratio $V/I$ describes the operating point; $r_z=dV/dI$ describes movement around it. Model a reference as its DC voltage plus this tangent resistance, supplied through a 1 kΩ resistor.
+
+For a small supply perturbation, the ideal DC voltage source disappears from the incremental circuit. The resulting divider passes $r_z/(R+r_z)$ of the perturbation: $20/1020=0.01961$, so 100 mV of supply ripple becomes about **1.96 mV** of reference ripple. A 100 µA increase in external load current produces an additional output decrease of $(1\,\mathrm{k}\Omega\parallel20\ \Omega)\times100\ \mu\text{A}=1.96$ mV.
+
+These predictions require the zener to remain in its intended breakdown-current range. If the load takes nearly all the resistor current, the operating point leaves the stiff part of the curve; the original 20 Ω tangent is no longer useful. Low incremental resistance also does not imply low noise or low temperature drift. Those are separate reference specifications, and a capacitor suppresses AC variation while leaving long-term drift.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §§1.2.6 and 1.6.5; supporting material in PDF pp. 40–41 and 73–74. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="limits">

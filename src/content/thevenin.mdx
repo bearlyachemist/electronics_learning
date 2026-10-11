@@ -135,6 +135,22 @@ The open-circuit voltage is a **conductance-weighted average** of the two source
 
 </div>
 
+
+
+<h3 id="book-notes">Superposition and a three-terminal reduction</h3>
+
+The conductance-weighted source formula can also be obtained by **superposition**. For the earlier 12 V/3 kΩ and 3 V/6 kΩ network, ground the 3 V source while retaining its resistor: the 12 V source contributes 8 V. Ground the 12 V source instead: the 3 V source contributes 1 V. Their sum is 9 V. The sources are deactivated one at a time; dependent sources remain part of each linear response.
+
+Add voltages or currents before computing power. If those two contributions appear across one resistor, its power contains $(8+1)^2/R$, including the cross term $2\times8\times1/R$. Adding $8^2/R$ and $1^2/R$ would miss it. Superposition applies to the circuit equations, not to a nonlinear function of their solution.
+
+A bridge can also contain a triangle of resistors with no simple series or parallel reduction. Label the triangle edges $R_{AB}$, $R_{BC}$ and $R_{CA}$. Replace it with a star whose three arms meet at a new internal node:
+
+<Equation tex={String.raw`R_A=\frac{R_{AB}R_{CA}}{\Sigma},\quad R_B=\frac{R_{AB}R_{BC}}{\Sigma},\quad R_C=\frac{R_{BC}R_{CA}}{\Sigma},\quad\Sigma=R_{AB}+R_{BC}+R_{CA}`}/>
+
+For a 3 kΩ, 6 kΩ, 9 kΩ triangle in that order, the star arms are 1.5 kΩ, 1 kΩ and 3 kΩ. With C externally open, the A–B resistance is 2.5 kΩ in either drawing: $3\parallel(6+9)$ versus $1.5+1$. This is a **three-terminal** replacement, so C must remain connected to the same external node when the network is used in a larger circuit. Nodal analysis is often simpler than converting several triangles.
+
+<p className="reference-note">Further reading: Fiore, §§5.3 and 5.6, PDF pp. 153–154 and 179–181. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="explore">

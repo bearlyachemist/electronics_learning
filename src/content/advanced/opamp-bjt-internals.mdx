@@ -63,6 +63,20 @@ The pair's steering law is exponential, not square law (Chapter 36):
 
 Its differential transconductance at balance is $I_T/2U_T$, but it saturates quickly: expanding $\tanh x \approx x - x^3/3$, the gain is compressed by 1% at $v_d$ ≈ 9 mV, and the pair is fully steered by about ±100 mV.
 
+
+
+<h3 id="book-notes">PTAT bias keeps input transconductance from falling with temperature</h3>
+
+A bipolar transistor's $g_m=I_C/U_T$ depends on absolute temperature because $U_T=k_BT/q$. If its collector current stays constant, transconductance falls as temperature rises. The same compensation capacitor then gives a smaller unity-gain frequency even if all node resistances were unchanged.
+
+At 300 K and 50 µA, $U_T\approx25.85$ mV and $g_m\approx1.934$ mS. At 360 K with the same current, $U_T$ is 20% larger and $g_m$ becomes **1.612 mS**, 16.7% lower. Raising the current proportionally to absolute temperature, from 50 to 60 µA, keeps the ideal transconductance constant. This is **PTAT bias**, proportional to absolute temperature.
+
+A matched BJT pair operating at unequal current densities can generate $\Delta V_{BE}=U_T\ln N$. For N = 8, that difference is about 53.75 mV at 300 K; placing it across a stable resistor generates a PTAT current. The circuit's matching, resistor temperature coefficient, finite beta and startup determine its practical accuracy.
+
+Constant transconductance does not make every amplifier property temperature independent. Base current still depends on the growing collector current and changing beta; leakage and output-stage limits follow other laws. PTAT bias is an internal design tool for stabilizing a particular quantity, with power and error terms that must still be budgeted.
+
+<p className="reference-note">Further reading: Huijsing, §4.1.4, PDF pp. 91–93. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="cases">

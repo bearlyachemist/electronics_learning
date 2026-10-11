@@ -133,6 +133,20 @@ A transistor emitter follower driven by a zener can provide more load current, b
 
 <DropoutFigure/>
 
+
+
+<h3 id="book-notes">An adjustable regulator also has a reference-pin current</h3>
+
+A common adjustable-regulator arrangement holds a reference voltage $V_{REF}$ between output and adjustment pin. Put $R_1$ from output to adjustment, and $R_2$ from adjustment to ground. If current $I_{ADJ}$ leaves the adjustment pin into the divider:
+
+<Equation tex={String.raw`V_O=V_{REF}\left(1+\frac{R_2}{R_1}\right)+I_{ADJ}R_2`}/>
+
+For illustrative $V_{REF}=1.25$ V, $R_1=240$ Ω, $R_2=720$ Ω and $I_{ADJ}=50$ µA, the output is **5.036 V**, rather than exactly 5 V. The upper resistor draws 5.208 mA. Making both resistors ten times larger preserves the ideal ratio but magnifies the adjustment-current term tenfold and reduces the divider's contribution to any required minimum load.
+
+Integrated current and thermal protection do not establish closed-loop performance. Check dropout at actual load and temperature, the allowed output capacitance and ESR, minimum load and startup, and reverse current when an externally driven output remains above an unpowered input. These are properties of the chosen regulator, not consequences of the three-terminal symbol. A modern LDO may use a different adjustment architecture, so derive its divider from the manufacturer's equation rather than assuming the formula above applies universally.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §9.3, PDF pp. 633–636. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="thermal">

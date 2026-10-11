@@ -122,6 +122,18 @@ Below the limit the voltage loop controls output. Beyond it, current control tak
 
 Foldback reduces allowed current as output voltage collapses to reduce short-circuit stress. That can create startup trouble with capacitive or demanding loads. A hard current limit is simpler conceptually but may dissipate more power into a sustained fault.
 
+
+
+<h3 id="book-notes">Foldback protects the pass device but can prevent startup</h3>
+
+A constant current limit makes the pass device hottest near a short, where it simultaneously carries the limit current and drops nearly all the input voltage. **Foldback** deliberately reduces allowed current as output voltage collapses. For an illustrative 12 V input, a 1 A limit at a 5 V output gives 7 W in the pass device; the same limit into a short gives 12 W. Reducing short-circuit current to 0.2 A lowers that fault loss to about **2.4 W**.
+
+That reduction introduces a startup problem. At zero output, a discharged output capacitor looks like a short. With 1000 µF and 0.2 A available, ideal no-load slew is $I/C=200$ V/s: reaching 5 V requires at least **25 ms**, even if the limiter allows more current as voltage rises. A load demanding more than the available current at low voltage can hold the supply in the folded-back state indefinitely.
+
+A resistive load draws less current as voltage falls; a downstream regulated converter can instead try to maintain power and draw more current. For a hypothetical 1 W constant-power load, current demand is 0.2 A at 5 V but 1 A at 1 V. That is a poor match to a 0.2 A startup limit unless the load is disabled until the rail is ready. Foldback threshold, startup sequencing and load characteristic must be designed together, rather than treating the protection as independent of normal operation.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §§9.1–9.2 and 9.13.1; PDF pp. 628–633 and 725. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="explore">

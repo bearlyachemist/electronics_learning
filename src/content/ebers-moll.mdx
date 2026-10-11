@@ -118,6 +118,20 @@ The ideal BJT gives high transconductance per unit current: $g_m/I_C=1/V_T$. Com
 
 Circuit design is largely the art of building near-perfect behavior from imperfect devices: emitter degeneration for predictable gain, stiff dividers for $\beta$-independent bias, matched pairs for temperature-independent behavior, and, most powerfully, negative feedback.
 
+
+
+<h3 id="book-notes">Static saturation and charge-storage recovery are different models</h3>
+
+The static Ebers–Moll equations can say that both junctions are forward biased, but they do not say how quickly stored carriers disappear. A useful first dynamic estimate treats saturation as excess charge $Q_S$ that must be removed by reverse base current or recombination.
+
+If a switch has an illustrative 20 nC of excess charge and the driver initially extracts a nearly constant 2 mA, the extraction timescale is $Q_S/I_{B,reverse}=\mathbf{10\ \mu s}$. Removing forward base drive is not the same as providing that reverse current. A base-emitter resistor can help, but its discharge current falls as the base voltage changes; the constant-current estimate then ceases to apply.
+
+A **Baker clamp** diverts excess base drive as collector voltage falls, limiting deep collector-base forward bias. It can reduce stored charge at the cost of a larger on-state voltage and a more complicated drive path. A Schottky clamp is attractive because its lower forward drop can act before the silicon collector-base junction becomes strongly forward biased. Actual switching delay still depends on drive current, load, charge distribution and temperature.
+
+This distinction explains why stronger forward base drive can improve a switch's LOW voltage yet worsen turn-off, and why an amplifier driven into a rail can take longer to recover than its small-signal bandwidth suggests. A DC operating-point solution and a charge-aware transient model answer different questions.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §§2.1–2.3; PDF pp. 104–107 and 123–124; Huijsing, §7.8.3, PDF pp. 293–294. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="mirrors">

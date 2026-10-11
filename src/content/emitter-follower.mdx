@@ -1,3 +1,4 @@
+import {CapacitanceMultiplierFigure} from '../components/PracticalBookFigures';
 import {FollowerRegulatorFigure,FollowerLoadingFigure} from '../components/BjtTheoryFigures';
 import Equation from '../components/Equation.astro';
 import {FollowerLab} from '../components/BjtLabs';
@@ -149,6 +150,22 @@ Chapter 15’s zener regulator wastes current: the resistor must supply the full
 </div>
 
 The output still changes with load current through the transistor’s $r_e$ and the zener’s dynamic resistance divided by $\beta$, and with temperature through $V_{BE}$. Feedback regulators (Chapter 15’s preview, and later chapters) compare the output with a reference and correct both.
+
+
+
+<h3 id="book-notes">A capacitance multiplier filters the base, not the load current</h3>
+
+Feed an NPN collector directly from the noisy input supply, but feed its base through R and shunt the base to ground with C. Take the filtered supply from the emitter. The capacitor handles base-node charging and signal current while the transistor provides most of the load current. This is the source of the name **capacitance multiplier**; no passive component has acquired extra stored energy.
+
+<CapacitanceMultiplierFigure/>
+
+For small supply ripple, a stiff load bias and negligible collector-to-emitter feedthrough, the output approximately follows the base's RC low-pass. With R = 1 kΩ and C = 100 µF, the corner is 1.59 Hz and attenuation at 100 Hz is about **36.0 dB**. A 100 mV RMS ripple can therefore become roughly 1.59 mV RMS in that simplified model.
+
+The DC cost remains. At 50 mA emitter current and $\beta=100$, base current is 0.495 mA; R drops 0.495 V. Adding a 0.7 V base-emitter drop costs about **1.20 V** of headroom. If beta is only 50, the resistor drop rises to 0.980 V. Once input ripple valleys take the collector close to the emitter, saturation destroys the assumed isolation and ripple passes through.
+
+This is not a voltage regulator: no loop compares output with a stable reference. Output follows slow supply changes and changes with load, beta and temperature. Startup is also deliberately slow, and a rapidly falling input can leave C holding the base above the collector. Check the discharge and reverse-junction paths separately before using a large base capacitor.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §8.15.1, PDF p. 611. This extension uses original explanations and design values.</p>
 
 </section>
 

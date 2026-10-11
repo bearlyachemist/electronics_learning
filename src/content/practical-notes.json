@@ -1,0 +1,266 @@
+{
+  "thevenin": {
+    "section": "derive",
+    "title": "Superposition and a three-terminal reduction",
+    "source": "Fiore, §§5.3 and 5.6, PDF pp. 153–154 and 179–181",
+    "figures": []
+  },
+  "small-signal": {
+    "section": "circuit",
+    "title": "A zener reference has a finite incremental stiffness",
+    "source": "Horowitz and Hill, §§1.2.6 and 1.6.5; supporting material in PDF pp. 40–41 and 73–74",
+    "figures": []
+  },
+  "power": {
+    "section": "waveforms",
+    "title": "Decibels need a reference and an impedance",
+    "source": "Horowitz and Hill, §1.3.2A, PDF p. 48",
+    "figures": []
+  },
+  "capacitors": {
+    "section": "connections",
+    "title": "Read the marking before using the number",
+    "source": "Horowitz and Hill, §1.10, PDF pp. 97–98",
+    "figures": []
+  },
+  "rc-circuits": {
+    "section": "design",
+    "title": "An RC delay depends on the decision threshold",
+    "source": "Horowitz and Hill, §1.4.2, PDF pp. 54–55; Asadi, chapter 7, PDF pp. 197–198",
+    "figures": []
+  },
+  "real-capacitors": {
+    "section": "selection",
+    "title": "Choose the dielectric by the error it would introduce",
+    "source": "Horowitz and Hill, §§1.4.1 and 1.4.5, PDF pp. 53–54 and 61",
+    "figures": []
+  },
+  "inductors": {
+    "section": "real",
+    "title": "Stored energy and winding loss impose different current limits",
+    "source": "Horowitz and Hill, §1.5.1, PDF pp. 61–62",
+    "figures": []
+  },
+  "transformers": {
+    "section": "design",
+    "title": "VA describes winding stress, not DC output watts",
+    "source": "Horowitz and Hill, §1.5.2, PDF pp. 63–64; Fiore, chapter 7, PDF pp. 261–262",
+    "figures": []
+  },
+  "diodes": {
+    "section": "selection",
+    "title": "The fastest diode can still transfer a capacitive current pulse",
+    "source": "Horowitz and Hill, §1.6.1, PDF pp. 65–66",
+    "figures": []
+  },
+  "rectifiers": {
+    "section": "paths",
+    "title": "A center tap changes the current path and blocking voltage",
+    "source": "Horowitz and Hill, §§1.6.2–1.6.4, PDF pp. 66–70",
+    "figures": []
+  },
+  "regulators": {
+    "section": "series",
+    "title": "An adjustable regulator also has a reference-pin current",
+    "source": "Horowitz and Hill, §9.3, PDF pp. 633–636",
+    "figures": []
+  },
+  "protection-circuits": {
+    "section": "surges",
+    "title": "A crowbar trades overvoltage for a sustained fault current",
+    "source": "Horowitz and Hill, §9.13.1, PDF pp. 723–725",
+    "figures": []
+  },
+  "phasors": {
+    "section": "conventions",
+    "title": "Fourier analysis explains what a square wave asks of an amplifier",
+    "source": "Fiore, §1.3, PDF pp. 25–27",
+    "figures": [
+      "FourierExtensionFigure"
+    ]
+  },
+  "reactive-power": {
+    "section": "complex",
+    "title": "Balanced three-phase power uses line values carefully",
+    "source": "Fiore, §9.2, PDF pp. 341–344",
+    "figures": []
+  },
+  "poles": {
+    "section": "sketch",
+    "title": "An all-pass circuit changes phase without changing magnitude",
+    "source": "Van Valkenburg, §4.5, PDF p. 124 (printed p. 109)",
+    "figures": [
+      "AllPassExtensionFigure"
+    ]
+  },
+  "emitter-follower": {
+    "section": "regulator",
+    "title": "A capacitance multiplier filters the base, not the load current",
+    "source": "Horowitz and Hill, §8.15.1, PDF p. 611",
+    "figures": [
+      "CapacitanceMultiplierFigure"
+    ]
+  },
+  "current-sources": {
+    "section": "uses",
+    "title": "A second transistor can sense current directly",
+    "source": "Horowitz and Hill, §2.2.6 and §9.3.14; PDF pp. 119–120 and 656",
+    "figures": []
+  },
+  "transistor-physics": {
+    "section": "beta",
+    "title": "Why beta measured at one current does not define the whole device",
+    "source": "Horowitz and Hill, §§2.1–2.3 and transistor tables; PDF pp. 104–107 and 124",
+    "figures": []
+  },
+  "ebers-moll": {
+    "section": "perfect",
+    "title": "Static saturation and charge-storage recovery are different models",
+    "source": "Horowitz and Hill, §§2.1–2.3; PDF pp. 104–107 and 123–124; Huijsing, §7.8.3, PDF pp. 293–294",
+    "figures": []
+  },
+  "differential-amplifiers": {
+    "section": "limits",
+    "title": "The lowest-noise collector current depends on source resistance",
+    "source": "Huijsing, §4.2, PDF pp. 94–96; Horowitz and Hill, chapter 8 input-noise analysis",
+    "figures": []
+  },
+  "negative-feedback": {
+    "section": "effects",
+    "title": "Sampling and mixing predict which impedances feedback changes",
+    "source": "Horowitz and Hill, §2.5, PDF pp. 148–149; Huijsing, chapters 1 and 3",
+    "figures": []
+  },
+  "regulated-supplies": {
+    "section": "limits",
+    "title": "Foldback protects the pass device but can prevent startup",
+    "source": "Horowitz and Hill, §§9.1–9.2 and 9.13.1; PDF pp. 628–633 and 725",
+    "figures": []
+  },
+  "bjt-logic": {
+    "section": "timing",
+    "title": "CMOS removes the static pull-up loss, but not transition current",
+    "source": "Horowitz and Hill, §3.5 and chapter 10 CMOS logic; PDF pp. 220–221",
+    "figures": []
+  },
+  "jfet-bias": {
+    "section": "sources",
+    "title": "A current-regulator diode is a JFET with a compliance requirement",
+    "source": "Horowitz and Hill, §9.3.14, PDF pp. 655–656",
+    "figures": []
+  },
+  "fet-switches": {
+    "section": "applications",
+    "title": "A multiplexer remembers the previous channel through capacitance",
+    "source": "Selvam, §§1.11–1.13, PDF pp. 39–41; Horowitz and Hill, §3.4.1, PDF pp. 204–205",
+    "figures": []
+  },
+  "mosfet-power": {
+    "section": "layout",
+    "title": "Gate-driver peak current and average power answer different questions",
+    "source": "Horowitz and Hill, §3.5.1A and switching discussion, PDF pp. 220–221 and 226–229",
+    "figures": []
+  },
+  "parallel-mosfets": {
+    "section": "soa",
+    "title": "Switching optimization does not certify linear-mode current sharing",
+    "source": "Horowitz and Hill, §3.5.1, PDF p. 220; Nexperia, IAN50006, Power MOSFETs in linear mode",
+    "figures": []
+  },
+  "mos-current-mirror": {
+    "section": "reference",
+    "title": "A beta-multiplier can define transconductance instead of current",
+    "source": "Huijsing, §4.1.4, PDF pp. 91–93",
+    "figures": []
+  },
+  "mos-cascode-mirror": {
+    "section": "limits",
+    "title": "Measure output resistance without making the instrument the load",
+    "source": "Huijsing, §2.6, amplifier measurement methods; Horowitz and Hill, practical source-loading analysis",
+    "figures": []
+  },
+  "mos-mirror-loaded-differential": {
+    "section": "limits",
+    "title": "A folded cascode redirects signal current instead of stacking every device",
+    "source": "Huijsing, §7.1.2, PDF pp. 241–242",
+    "figures": [
+      "FoldedCurrentFigure"
+    ]
+  },
+  "mos-two-stage-amplifier": {
+    "section": "limits",
+    "title": "Adding a third gain stage requires another compensation argument",
+    "source": "Huijsing, §6.2.3.1, PDF pp. 203–204",
+    "figures": []
+  },
+  "mos-noise-design": {
+    "section": "white",
+    "title": "An active load's noise is referred through the input stage",
+    "source": "Huijsing, §4.2 and §7.1.2, PDF pp. 94–96 and 241; Horowitz and Hill, chapter 8",
+    "figures": []
+  },
+  "opamp-ideal": {
+    "section": "limits",
+    "title": "Choose the transferred quantity before choosing the amplifier model",
+    "source": "Huijsing, chapter 1, PDF pp. 30–35",
+    "figures": []
+  },
+  "opamp-dc-errors": {
+    "section": "null",
+    "title": "Null the assembled measurement, and keep calibration conditions",
+    "source": "Asadi, §§2.3 and 2.8, PDF pp. 53–54 and 81–82",
+    "figures": []
+  },
+  "opamp-ac-limits": {
+    "section": "settle",
+    "title": "Small-step settling, slew and overload recovery require separate tests",
+    "source": "Huijsing, chapter 6 and protection discussion in §7.8.3, PDF pp. 203–204 and 293–294; Asadi, §8.5, PDF pp. 242–243",
+    "figures": []
+  },
+  "opamp-bjt-internals": {
+    "section": "derive",
+    "title": "PTAT bias keeps input transconductance from falling with temperature",
+    "source": "Huijsing, §4.1.4, PDF pp. 91–93",
+    "figures": []
+  },
+  "opamp-cmos-internals": {
+    "section": "derive",
+    "title": "Constant total tail current does not guarantee constant MOS transconductance",
+    "source": "Huijsing, §§4.4.1–4.4.2, PDF pp. 108–111",
+    "figures": [
+      "RailGmExtensionFigure"
+    ]
+  },
+  "opamp-instrumentation": {
+    "section": "bridge",
+    "title": "The reference pin is part of the precision signal path",
+    "source": "Huijsing, instrumentation-amplifier reference discussion, PDF p. 379; Selvam, §2.8, PDF pp. 56–57",
+    "figures": []
+  },
+  "opamp-transimpedance": {
+    "section": "noise",
+    "title": "A dark-current error and a shot-noise floor need different corrections",
+    "source": "Horowitz and Hill, §8.11, PDF pp. 570–571; Huijsing, §4.2",
+    "figures": []
+  },
+  "opamp-integrator": {
+    "section": "charge",
+    "title": "Dual-slope integration makes a time ratio instead of a capacitor calibration",
+    "source": "Selvam, chapters 6 and 8, integration-based function principles, PDF pp. 118–120; Asadi, integrator application analysis",
+    "figures": []
+  },
+  "opamp-active-filters": {
+    "section": "design",
+    "title": "A state-variable filter exposes the states and controls damping separately",
+    "source": "Selvam, §5.6, PDF pp. 109–111; Van Valkenburg, §5.2, PDF pp. 138–140 (printed pp. 123–125)",
+    "figures": [
+      "StateVariableExtensionFigure"
+    ]
+  },
+  "opamp-function-design": {
+    "section": "chain",
+    "title": "Multiplication can be made from time, switching and averaging",
+    "source": "Selvam, §§6.1 and 21.1, PDF pp. 118–119 and 434–435",
+    "figures": []
+  }
+}

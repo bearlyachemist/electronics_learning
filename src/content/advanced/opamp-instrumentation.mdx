@@ -120,6 +120,20 @@ With a 0.1% subtractor (66 dB) and a first-stage gain of 100, the INA reaches ab
 
 Long sensor cables pick up radio-frequency interference as common mode, and an INA's CMRR falls at high frequency. An RC low-pass in each input helps, but only if the two are matched. If one leg's filter capacitor is 5% larger than the other's, a common-mode signal is filtered slightly differently on the two sides and becomes a differential one. With 4.99 kΩ and 1 nF per leg, at 10 kHz, a 5% capacitor mismatch converts about **1.4%** of the common mode into a differential signal, which the INA then amplifies by its full gain. Standard practice adds a differential capacitor across the inputs, about ten times larger than each common-mode capacitor, so that the differential bandwidth is set by one part and the mismatch matters far less.
 
+
+
+<h3 id="book-notes">The reference pin is part of the precision signal path</h3>
+
+The familiar expression $V_O=G(V_+-V_-)+V_{REF}$ assumes a sufficiently stiff reference node. In a discrete three-op-amp INA, that reference enters the final difference amplifier through a resistor network. Reference-source resistance changes the network ratio and lets common-mode output from the first stage appear at the final output.
+
+For a unity-gain final difference stage with four nominal 10 kΩ resistors, adding 100 Ω in series with the reference-side resistor makes that arm 10.1 kΩ. The noninverting divider factor becomes $10.1/(10+10.1)=0.502488$ instead of 0.5. With the inverting side still balanced, equal 2 V first-stage outputs then leave about **9.95 mV** of unintended final output. A “small” 100 Ω reference impedance has consumed substantial common-mode rejection.
+
+A divider making mid-supply may therefore need a suitable buffer rather than being connected directly to the reference pin. For an integrated INA, use its documented reference-input model: internal architecture and allowable source impedance vary. Keep load-return current away from the reference's sensing connection; a millivolt ground difference is directly a millivolt output error in the ideal transfer.
+
+When several channels share a reference, calculate the loading and transient coupling of the complete group. A reference capacitor can reduce high-frequency movement while leaving DC source impedance, buffer stability and startup to solve. “Common ground” on a schematic does not make every physical return point equipotential.
+
+<p className="reference-note">Further reading: Huijsing, instrumentation-amplifier reference discussion, PDF p. 379; Selvam, §2.8, PDF pp. 56–57. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="limits">

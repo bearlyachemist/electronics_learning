@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import ChapterSynthesis from '../components/ChapterSynthesis.astro';
 import synthesis from '../content/synthesis.json';
+import practicalNotes from '../content/practical-notes.json';
 import 'katex/dist/katex.min.css';
 import {chapters as chapterData} from '../curriculum/chapters';
 import {sitePath} from '../lib/site-path';
@@ -10,6 +11,7 @@ const sub=(s:string)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/([A-
 const chapters=chapterData.map(c=>({...c, href:sitePath(c.href), practice:sitePath(c.practice), sections:c.id in synthesis?[...c.sections,['synthesis','Design synthesis']]:c.sections})).sort((a,b)=>Number(a.number)-Number(b.number));
 const {title, practice=false, chapter='dividers'} = Astro.props;
 const current=chapters.find(c=>c.id===chapter) ?? chapters[0];
+const practicalNote=practicalNotes[chapter as keyof typeof practicalNotes];
 const currentIndex=chapters.indexOf(current), previous=chapters[currentIndex-1], next=chapters[currentIndex+1];
 ---
 <!doctype html>
@@ -25,7 +27,7 @@ const currentIndex=chapters.indexOf(current), previous=chapters[currentIndex-1],
 <details class="course-contents"><summary>Browse all {chapters.length} chapters</summary><nav class="course-nav" aria-label="All chapters">{chapters.map(c=><a href={c.href} class={c.id===chapter?'current-chapter':''} aria-current={c.id===chapter?'page':undefined}>{c.number}<span>{c.title}</span></a>)}</nav>
 </details>
 <p class="sidebar-title">{current.title}</p>
-<nav aria-label="Chapter sections">{current.sections.map(([id,label],i)=><a href={current.href+'#'+id}>{String(i).padStart(2,'0')} <span set:html={sub(label)}/></a>)}</nav>
+<nav aria-label="Chapter sections">{current.sections.map(([id,label],i)=><><a href={current.href+'#'+id}>{String(i).padStart(2,'0')} <span set:html={sub(label)}/></a>{practicalNote?.section===id&&<a class="sidebar-extension" href={current.href+'#book-notes'}>↳ <span>{practicalNote.title}</span></a>}</>)}</nav>
 <a class={practice?'practice-link selected':'practice-link'} href={current.practice}>Practice independently <span>→</span></a>
 <div class="sidebar-note"><span class="tiny-label">THE APPROACH</span><p>Build intuition.<br/>Follow the mathematics.<br/>Try the circuit.</p></div>
 </aside>

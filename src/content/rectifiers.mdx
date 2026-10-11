@@ -56,6 +56,18 @@ The bridge costs two forward drops and produces two pulses per input cycle. With
 
 **Worked example.** A 9 V RMS sine has peak $\sqrt2 \times 9 = 12.73$ V. An unloaded reservoir behind a bridge with 0.7 V drops can approach 11.33 V. Calling the output "9 V DC" confuses RMS source voltage with capacitor peak charging.
 
+
+
+<h3 id="book-notes">A center tap changes the current path and blocking voltage</h3>
+
+A center-tapped full-wave rectifier uses the two half-windings on alternate half-cycles. If each half is 9 V RMS relative to the center tap, the capacitor peak is approximately $9\sqrt2-0.7=12.0$ V with one silicon diode conducting. The winding is 18 V RMS end-to-end; inserting that full value into the output calculation would double the intended result.
+
+While one diode conducts, the opposite winding end is near the negative peak. The blocked diode must withstand the difference between that end and the positive reservoir voltage: approximately **twice the half-winding peak**, about 25.5 V before allowances for transients and voltage spread. Saving a conducting diode drop has changed the reverse-voltage requirement.
+
+For separate positive and negative rails, define the center tap as the common reference and follow the current loop for each reservoir capacitor. Unequal rail loads create unequal winding and capacitor currents; neither capacitor should be assumed to recharge at the same rate merely because their voltages have equal magnitude. A bridge on a single winding and a two-diode center-tap rectifier are useful alternatives, but their transformer utilization, diode paths and voltage labels differ. Draw the winding connections before selecting diode and capacitor ratings.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §§1.6.2–1.6.4, PDF pp. 66–70. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="reservoir">

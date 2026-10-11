@@ -102,6 +102,22 @@ The reactive power also has an energy meaning. Averaged over a cycle an inductor
 
 <aside className="margin-note"><strong>Peak phasors need a factor of ½.</strong> If phasors carry peak amplitudes, S = ½ $V_p$ $I_p$*. Mixing a peak voltage with an RMS current gives an answer off by √2. Decide once per calculation.</aside>
 
+
+
+<h3 id="book-notes">Balanced three-phase power uses line values carefully</h3>
+
+In a balanced three-phase system, equal phase voltages are separated by 120°. For a star (Y) load, each line carries its phase current and line-to-line voltage is $\sqrt3$ times phase voltage. For a delta load, each branch sees line voltage and line current is $\sqrt3$ times branch current. The factors arise from subtracting phasors, not from adding their magnitudes.
+
+Using RMS line values and the phase load's impedance angle $\phi$:
+
+<Equation tex={String.raw`P=\sqrt3 V_{LL}I_L\cos\phi,\quad Q=\sqrt3 V_{LL}I_L\sin\phi,\quad |S|=\sqrt3 V_{LL}I_L`}/>
+
+An ideal balanced Y load of 10 Ω per phase on 24 V line-to-line has 13.856 V per branch, 1.386 A line current and **57.6 W** total power. Reconnecting the same three resistors as delta puts 24 V across every resistor, gives 2.4 A per branch and 4.157 A in each line: **172.8 W**. A reconnection changed each resistor's voltage; it did not merely rename the same operating point.
+
+The balanced sinusoidal model has zero neutral current in Y. With unequal loads or harmonics, that cancellation may disappear. In particular, triplen harmonics can add in a neutral instead of cancelling. Apply the single-frequency balanced formula only after establishing those assumptions; otherwise analyze the phase waveforms and sum their actual powers.
+
+<p className="reference-note">Further reading: Fiore, §9.2, PDF pp. 341–344. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="explore">

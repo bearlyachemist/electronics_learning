@@ -144,6 +144,18 @@ The base needs a voltage that is stable and stiff compared with the base current
 
 </div>
 
+
+
+<h3 id="book-notes">A second transistor can sense current directly</h3>
+
+A simple two-transistor sink uses Q1 as the load transistor and puts a sense resistor in its emitter. Q2's base senses the top of that resistor and its emitter goes to ground; its collector steals current from Q1's base-drive node. When the sense voltage rises, Q2 takes more base drive away, reducing Q1's current. This is local negative feedback around a measured current rather than an externally fixed base voltage.
+
+The rough setpoint is $I_E\approx V_{BE2}/R_S$. With an illustrative 0.65 V sensing drop and 65 Ω, the emitter current is 10 mA. At Q1 beta = 100, collector current is about **9.90 mA**, because the resistor also carries Q1 base current. There must be enough drive current for both Q1 and the regulating Q2 at the lowest supply.
+
+The sensed voltage is a transistor junction, so the current is not a precision constant. A −2 mV/°C junction coefficient at 0.65 V corresponds to roughly **−0.31%/°C**, before resistor drift and the current dependence of $V_{BE}$. The load also needs compliance for the sense drop plus Q1's active-region collector-emitter voltage. This topology is useful as a modest current limiter or LED sink; an op-amp servo replaces the junction threshold with a controlled reference when accuracy matters (Chapter 92).
+
+<p className="reference-note">Further reading: Horowitz and Hill, §2.2.6 and §9.3.14; PDF pp. 119–120 and 656. This extension uses original explanations and design values.</p>
+
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Fix the emitter voltage and you fix the collector current. The <em>emitter resistor</em> sets the value and multiplies the output resistance; <em>compliance</em> sets how much voltage the load may use.</p></div>
 
 <p className="reference-note">Coverage: The Art of Electronics §2.2.6, with the output-resistance analysis from §2.3. Current mirrors follow in Chapter 34.</p>

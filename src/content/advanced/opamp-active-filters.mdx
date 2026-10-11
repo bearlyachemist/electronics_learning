@@ -1,3 +1,4 @@
+import {StateVariableExtensionFigure} from '../../components/PracticalBookFigures';
 import Equation from '../../components/Equation.astro';
 import {OpAmpFigure} from '../../components/OpAmpFigures';
 import {OpAmpLab} from '../../components/OpAmpLabs';
@@ -132,6 +133,26 @@ The equal-component design sets $Q$ with the gain, which makes $Q$ sensitive to 
 <p><strong>Tolerance.</strong> With 1% capacitors, $Q$ (which depends on $\sqrt{C_1/C_2}$) varies by about ±1% and $f_0$ by about ±1%; the passband edge moves by a fraction of a decibel. A Chebyshev design's $Q$ = 3.56 section would be far more sensitive.</p>
 
 </div>
+
+
+
+<h3 id="book-notes">A state-variable filter exposes the states and controls damping separately</h3>
+
+A state-variable realization combines a summer with two integrators. In one explicit sign convention, let h, b and l be high-pass, band-pass and low-pass outputs, and u the input:
+
+<Equation tex={String.raw`\dot b=\omega_0 h,\qquad\dot l=\omega_0 b,\qquad h=u-\frac bQ-l`}/>
+
+The integrators can be built from the inverting integrators in Chapter 88 with the required sign inversions in the summing paths. Eliminating the internal states gives a common denominator $D(s)=s^2+(\omega_0/Q)s+\omega_0^2$ and three transfers:
+
+<Equation tex={String.raw`\begin{aligned}H_{HP}&=\frac{s^2}{D}\\H_{BP}&=\frac{\omega_0s}{D}\\H_{LP}&=\frac{\omega_0^2}{D}\\H_{notch}&=H_{HP}+H_{LP}\end{aligned}`}/>
+
+<StateVariableExtensionFigure/>
+
+At $f_0=1$ kHz and Q = 2, the two integrator scale factors correspond to $RC=159.15$ µs; 10 nF and about 15.9 kΩ give that scale. The damping coefficient in the summer is $1/Q=0.5$. At the center frequency, all three state magnitudes are 2, while the high-pass and low-pass states are opposite in phase and ideally sum to zero at the notch output. For a unit-peak input, internal states can therefore need **2 V peak**, even where the externally selected notch output is tiny.
+
+Changing damping without changing both integrator time constants makes Q easier to adjust independently than in some Sallen–Key arrangements. The cost is more active devices, noise paths, internal swing and sensitivity to finite integrator gain. A 1% relative amplitude mismatch between the two center-frequency notch contributions leaves about 0.02 of input amplitude in this Q = 2 example, roughly **34 dB** rejection rather than an infinite notch. Select topology by tuning, internal range and component sensitivity as well as the final transfer function.
+
+<p className="reference-note">Further reading: Selvam, §5.6, PDF pp. 109–111; Van Valkenburg, §5.2, PDF pp. 138–140 (printed pp. 123–125). This extension uses original explanations and design values.</p>
 
 </section>
 

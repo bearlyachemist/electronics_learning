@@ -53,6 +53,7 @@ npm run check:hosted
 npm run check:schematics
 npm run check:advanced
 npm run check:synthesis
+npm run check:practical
 git -C ../hebert.phd pull --ff-only
 node scripts/stage-hosted.mjs ../hebert.phd
 git -C ../hebert.phd add -- public/electronics

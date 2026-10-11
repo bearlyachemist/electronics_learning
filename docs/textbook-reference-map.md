@@ -91,3 +91,35 @@ starting on PDF pp. 34, 51, 61, 104, 113, 123, 132, 138, 148, 174, 198, 204,
 on PDF pp. 23–24 was inspected in addition to the source pages recorded above.
 An extracted/indexed page list is not a claim of line-by-line review of every
 page; the design cases are independently derived from their stated models.
+
+
+## Practical explanation and construction pass
+
+The [practical-depth review](practical-depth-review.md) records 42 additions placed
+inside existing chapter sections, rather than adding another general end-of-chapter
+study. New source review included AoE's decibels (PDF p. 48), capacitor
+construction/markings (pp. 52–54 and 97–98), inductors (pp. 61–62),
+capacitance multiplier (p. 611), regulator context (p. 633), two-terminal current
+regulators (p. 656), and crowbar discussion (pp. 723–725). Existing transistor,
+FET and noise reading also informed the original explanations.
+
+Fiore's Fourier discussion (PDF pp. 25–27), superposition (p. 153), delta–Y
+conversion (pp. 179–181), and balanced three-phase connections (pp. 341–344)
+were inspected. Huijsing's port classifications (pp. 30–35), constant-gm bias
+(pp. 91–93), complementary-pair current control (pp. 108–111), nested Miller
+compensation (pp. 203–204), folded cascode (pp. 241–242), protection/recovery
+(pp. 293–294), and reference-port discussion (p. 379) informed amplifier notes.
+
+Asadi's offset measurement and model limitation (PDF pp. 53–54 and 81–82),
+comparator discussion (pp. 197–198) and filter transient workflow (pp. 229–231
+and 242–243) were inspected. Selvam's multiplexer discussion (pp. 39–41),
+state-variable filters (pp. 109–111), time-division multiplication (pp. 118–120)
+and phase-sensitive detection (pp. 434–436) were inspected. Van Valkenburg's
+all-pass phase discussion (PDF p. 124, printed p. 109), biquad introduction
+(PDF p. 138, printed p. 123) and circuit parameterization (PDF p. 140,
+printed p. 125) were visually inspected from the scan.
+
+Additional nearby pages were extracted locally as context; extraction is not a
+claim of exhaustive review. Circuit-law examples use independently selected
+values. The source record and each chapter's further-reading pointer distinguish
+the inspected material from the original teaching extensions.

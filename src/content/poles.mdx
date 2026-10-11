@@ -1,3 +1,4 @@
+import {AllPassExtensionFigure} from '../components/PracticalBookFigures';
 import Equation from '../components/Equation.astro';
 import {PoleLab} from '../components/AcLabs';
 import {DecibelFigure,CascadeCircuitFigure,CascadeLoadingFigure,TwinTFigure,ShelfFigure} from '../components/AcFigures';
@@ -208,6 +209,22 @@ There is a pole at 1/(2π($R_1$ + $R_2$)C) and a higher zero at $1/(2πR_2C)$. B
 </div>
 
 <ShelfFigure/>
+
+
+
+<h3 id="book-notes">An all-pass circuit changes phase without changing magnitude</h3>
+
+Poles do not always mean attenuation. A first-order all-pass has a left-half-plane pole and a right-half-plane zero:
+
+<Equation tex={String.raw`H(s)=\frac{1-s\tau}{1+s\tau},\quad |H(j\omega)|=1,\quad\angle H=-2\tan^{-1}(\omega\tau)`}/>
+
+<AllPassExtensionFigure/>
+
+For $\tau=100$ µs, the phase is −90° at 1.592 kHz while amplitude remains unity. This can adjust the phase between signals without deliberately changing their relative amplitudes. A plain RC low-pass at that frequency has −45° phase and −3.01 dB magnitude; it cannot supply the same operation.
+
+An all-pass is also not a constant time delay over all frequencies. Its group delay is $\tau_g=-d\angle H/d\omega=2\tau/[1+(\omega\tau)^2]$: 200 µs near DC, 100 µs at the corner and falling thereafter. Equal-amplitude frequencies can therefore arrive with different relative timing and distort a pulse. Cascaded all-pass sections can shape that timing over a chosen band, with extra amplifier bandwidth, tolerance and headroom requirements. The right-half-plane zero is why magnitude alone cannot reveal this circuit's phase response.
+
+<p className="reference-note">Further reading: Van Valkenburg, §4.5, PDF p. 124 (printed p. 109). This extension uses original explanations and design values.</p>
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Each pole bends the magnitude down 20 dB/decade and takes 90° of phase; each zero does the reverse. <em>Corners add</em>—if the sections do not load each other.</p></div>
 

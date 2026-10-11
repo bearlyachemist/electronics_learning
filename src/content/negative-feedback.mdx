@@ -137,6 +137,20 @@ These tendencies refer to an appropriately defined loaded forward circuit. A fee
 
 **Limits.** Feedback cannot supply missing voltage headroom, remove resistor thermal noise, make a slow device respond infinitely fast, or recover a saturated transistor instantaneously. Once the correcting element reaches a rail, the linear equation is no longer the whole story.
 
+
+
+<h3 id="book-notes">Sampling and mixing predict which impedances feedback changes</h3>
+
+Feedback can be classified by the output quantity measured and the way the correction is combined with the input. **Voltage sampling** measures across the output; **current sampling** measures in series with the load. **Series mixing** compares an input voltage difference; **shunt mixing** subtracts currents at an input node.
+
+<div className="table-wrap"><table><thead><tr><th>Input mixing</th><th>Output sampling</th><th>Natural closed-loop function</th><th>Ideal impedance trend</th></tr></thead><tbody><tr><td>Series</td><td>Voltage</td><td>Voltage amplifier</td><td>Input rises, output falls</td></tr><tr><td>Shunt</td><td>Voltage</td><td>Transimpedance amplifier</td><td>Input falls, output falls</td></tr><tr><td>Series</td><td>Current</td><td>Transconductance amplifier</td><td>Input rises, output rises</td></tr><tr><td>Shunt</td><td>Current</td><td>Current amplifier</td><td>Input falls, output rises</td></tr></tbody></table></div>
+
+For a simple isolated series-voltage loop, a return ratio T multiplies input resistance by $1+T$ and divides output resistance by $1+T$. With 10 kΩ and 1 kΩ open-loop resistances and T = 99, the corresponding closed-loop estimates are 1 MΩ and 10 Ω. These transformations concern the appropriate driving-point impedances with other independent sources deactivated; feedback-network loading can alter the underlying values.
+
+The inverting op-amp's summing node illustrates shunt mixing: feedback reduces that node's impedance, while a source outside the circuit still sees its input resistor. The current servo illustrates current sampling: feedback raises the output resistance seen by its load. “Feedback lowers output impedance” is true for a voltage-controlled output, not for every useful loop.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §2.5, PDF pp. 148–149; Huijsing, chapters 1 and 3. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="explore">

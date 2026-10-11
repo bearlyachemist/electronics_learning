@@ -163,6 +163,18 @@ Approximate conduction loss by the average of $v_D(t)\,i_D(t)$. A constant 0.8 V
 
 No family wins every combination of leakage, capacitance, voltage, loss and cost.
 
+
+
+<h3 id="book-notes">The fastest diode can still transfer a capacitive current pulse</h3>
+
+Reverse recovery and junction capacitance are different mechanisms. A minority-carrier diode can continue conducting while stored charge is extracted after reversal. A Schottky junction largely avoids that minority-carrier storage mechanism, but its voltage-dependent capacitance still draws current when voltage changes.
+
+With a local capacitance of 100 pF and a voltage edge of 10 V in 20 ns, $i=C\,dv/dt$ gives a **50 mA** displacement-current scale. That pulse can upset a high-impedance detector or flow through a switch even when a recovery-time specification seems negligible. For a large voltage change, use the charge integral $\Delta Q=\int C(V)\,dV$ rather than multiplying the initial capacitance by the full step.
+
+Select a diode by its job: a low-drop power rectifier emphasizes conduction loss and leakage; a peak-hold diode emphasizes leakage and capacitance; a fast commutation diode emphasizes recovery charge at the relevant current and edge conditions. Breakdown rating alone addresses none of those. A low forward drop can come with greater leakage, and reverse leakage increases with temperature, so a diode that improves power efficiency may worsen a long-duration hold measurement.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §1.6.1, PDF pp. 65–66. This extension uses original explanations and design values.</p>
+
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A diode is an exponential curve.<br/>Pick the model by the question,<br/><em>and let the circuit choose the operating point.</em></p></div>
 
 </section>

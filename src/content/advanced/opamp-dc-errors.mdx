@@ -122,6 +122,20 @@ An initial offset is repeatable, so it can be trimmed out. Many op amps have nul
 
 Nulling has costs. It holds at one temperature: an op amp nulled at 25 °C still drifts. For some bipolar op amps, nulling with the internal pins actually changes the drift; for an external network, the divider's own resistors and the rails' stability enter the budget. Calibrating in software, by measuring the offset and subtracting it, achieves the same thing without a trimmer, and can be repeated as the temperature changes.
 
+
+
+<h3 id="book-notes">Null the assembled measurement, and keep calibration conditions</h3>
+
+For an undistorted symmetric waveform, the midpoint between positive and negative output peaks estimates its DC displacement. Peaks at +121 mV and −79 mV have 200 mV peak-to-peak span but a **+21 mV** midpoint. An AC-coupled scope can hide that displacement; use a DC measurement when deciding whether to trim. With asymmetric distortion, the peak midpoint is not the time average.
+
+Calibrate with the source configuration the instrument will actually use. Suppose noise gain is 100, input offset is +100 µV, and a bias-current drop adds +1 mV through a 10 kΩ source. The output error is 110 mV. Shorting the input to ground during trimming removes the source resistance and reveals only 10 mV. After the real source is reconnected, **100 mV remains** from the term the calibration never saw.
+
+A zero-input calibration corrects an intercept at one temperature, supply and common-mode level. A second known input is needed to separate gain error from offset. Repeating those measurements at temperature reveals drift. Matching source resistances can cancel mean bias-current effects when the two currents track, but offset-current mismatch remains.
+
+Simulation is useful only for the mechanisms included in its model. Asadi's offset-trim example points out that a symbol may display adjustment pins whose action is absent from the supplied model. Likewise, a macro-model with fixed offset cannot demonstrate drift or calibration repeatability. Check the model description before concluding that a failed simulated trim means the real circuit cannot be trimmed.
+
+<p className="reference-note">Further reading: Asadi, §§2.3 and 2.8, PDF pp. 53–54 and 81–82. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="limits">

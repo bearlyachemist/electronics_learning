@@ -1,0 +1,58 @@
+# Textbook practical-detail review
+
+This pass compared the 94-chapter coverage inventory and headings with the six supplied books, then inspected relevant chapter sections for useful gaps. It adds 42 targeted explanations inside the existing subject sections, with 6 original figures (4 computed plots and 2 anchor-based schematics). This is selective deepening, not a claim to have reproduced every subject or inspected every page of the books.
+
+The earlier 94 design studies remain in place. These additions explain mechanisms, construction choices, measurement pitfalls and model boundaries. Existing coverage was retained where a second treatment would repeat it. Each addition has a local further-reading note and a navigation link beneath its parent section.
+
+| Chapter | Added explanation | Further reading |
+|---|---|---|
+| 02 · Thévenin equivalent circuits | [Superposition and a three-terminal reduction](https://hebert.phd/electronics/thevenin/#book-notes) | Fiore, §§5.3 and 5.6, PDF pp. 153–154 and 179–181 |
+| 03 · Small-signal resistance | [A zener reference has a finite incremental stiffness](https://hebert.phd/electronics/small-signal/#book-notes) | Horowitz and Hill, §§1.2.6 and 1.6.5; supporting material in PDF pp. 40–41 and 73–74 |
+| 04 · Power dissipation & heating | [Decibels need a reference and an impedance](https://hebert.phd/electronics/power/#book-notes) | Horowitz and Hill, §1.3.2A, PDF p. 48 |
+| 05 · Capacitors: charge & energy | [Read the marking before using the number](https://hebert.phd/electronics/capacitors/#book-notes) | Horowitz and Hill, §1.10, PDF pp. 97–98 |
+| 06 · RC circuits | [An RC delay depends on the decision threshold](https://hebert.phd/electronics/rc-circuits/#book-notes) | Horowitz and Hill, §1.4.2, PDF pp. 54–55; Asadi, chapter 7, PDF pp. 197–198 |
+| 09 · Ideal & real capacitors | [Choose the dielectric by the error it would introduce](https://hebert.phd/electronics/real-capacitors/#book-notes) | Horowitz and Hill, §§1.4.1 and 1.4.5, PDF pp. 53–54 and 61 |
+| 10 · Inductors | [Stored energy and winding loss impose different current limits](https://hebert.phd/electronics/inductors/#book-notes) | Horowitz and Hill, §1.5.1, PDF pp. 61–62 |
+| 11 · Transformers | [VA describes winding stress, not DC output watts](https://hebert.phd/electronics/transformers/#book-notes) | Horowitz and Hill, §1.5.2, PDF pp. 63–64; Fiore, chapter 7, PDF pp. 261–262 |
+| 13 · Diode properties & models | [The fastest diode can still transfer a capacitive current pulse](https://hebert.phd/electronics/diodes/#book-notes) | Horowitz and Hill, §1.6.1, PDF pp. 65–66 |
+| 14 · Rectification & filtering | [A center tap changes the current path and blocking voltage](https://hebert.phd/electronics/rectifiers/#book-notes) | Horowitz and Hill, §§1.6.2–1.6.4, PDF pp. 66–70 |
+| 15 · Voltage regulators | [An adjustable regulator also has a reference-pin current](https://hebert.phd/electronics/regulators/#book-notes) | Horowitz and Hill, §9.3, PDF pp. 633–636 |
+| 18 · Protection & bypass diodes | [A crowbar trades overvoltage for a sustained fault current](https://hebert.phd/electronics/protection-circuits/#book-notes) | Horowitz and Hill, §9.13.1, PDF pp. 723–725 |
+| 19 · Sinusoids, complex numbers & phasors | [Fourier analysis explains what a square wave asks of an amplifier](https://hebert.phd/electronics/phasors/#book-notes) | Fiore, §1.3, PDF pp. 25–27 |
+| 21 · Power in reactive circuits | [Balanced three-phase power uses line values carefully](https://hebert.phd/electronics/reactive-power/#book-notes) | Fiore, §9.2, PDF pp. 341–344 |
+| 23 · Poles, slopes & band filters | [An all-pass circuit changes phase without changing magnitude](https://hebert.phd/electronics/poles/#book-notes) | Van Valkenburg, §4.5, PDF p. 124 (printed p. 109) |
+| 26 · Transistor physics | [Why beta measured at one current does not define the whole device](https://hebert.phd/electronics/transistor-physics/#book-notes) | Horowitz and Hill, §§2.1–2.3 and transistor tables; PDF pp. 104–107 and 124 |
+| 28 · The emitter follower | [A capacitance multiplier filters the base, not the load current](https://hebert.phd/electronics/emitter-follower/#book-notes) | Horowitz and Hill, §8.15.1, PDF p. 611 |
+| 31 · Transistor current sources | [A second transistor can sense current directly](https://hebert.phd/electronics/current-sources/#book-notes) | Horowitz and Hill, §2.2.6 and §9.3.14; PDF pp. 119–120 and 656 |
+| 34 · The Ebers–Moll model | [Static saturation and charge-storage recovery are different models](https://hebert.phd/electronics/ebers-moll/#book-notes) | Horowitz and Hill, §§2.1–2.3; PDF pp. 104–107 and 123–124; Huijsing, §7.8.3, PDF pp. 293–294 |
+| 36 · Differential amplifiers | [The lowest-noise collector current depends on source resistance](https://hebert.phd/electronics/differential-amplifiers/#book-notes) | Huijsing, §4.2, PDF pp. 94–96; Horowitz and Hill, chapter 8 input-noise analysis |
+| 42 · Negative feedback | [Sampling and mixing predict which impedances feedback changes](https://hebert.phd/electronics/negative-feedback/#book-notes) | Horowitz and Hill, §2.5, PDF pp. 148–149; Huijsing, chapters 1 and 3 |
+| 44 · Regulated power supplies | [Foldback protects the pass device but can prevent startup](https://hebert.phd/electronics/regulated-supplies/#book-notes) | Horowitz and Hill, §§9.1–9.2 and 9.13.1; PDF pp. 628–633 and 725 |
+| 46 · Simple BJT & diode logic | [CMOS removes the static pull-up loss, but not transition current](https://hebert.phd/electronics/bjt-logic/#book-notes) | Horowitz and Hill, §3.5 and chapter 10 CMOS logic; PDF pp. 220–221 |
+| 48 · JFET characteristics & bias | [A current-regulator diode is a JFET with a compliance requirement](https://hebert.phd/electronics/jfet-bias/#book-notes) | Horowitz and Hill, §9.3.14, PDF pp. 655–656 |
+| 51 · FETs as signal switches | [A multiplexer remembers the previous channel through capacitance](https://hebert.phd/electronics/fet-switches/#book-notes) | Selvam, §§1.11–1.13, PDF pp. 39–41; Horowitz and Hill, §3.4.1, PDF pp. 204–205 |
+| 54 · Power MOSFET switching | [Gate-driver peak current and average power answer different questions](https://hebert.phd/electronics/mosfet-power/#book-notes) | Horowitz and Hill, §3.5.1A and switching discussion, PDF pp. 220–221 and 226–229 |
+| 56 · Parallel MOSFETs & thermal stability | [Switching optimization does not certify linear-mode current sharing](https://hebert.phd/electronics/parallel-mosfets/#book-notes) | Horowitz and Hill, §3.5.1, PDF p. 220; Nexperia, IAN50006, Power MOSFETs in linear mode |
+| 59 · The basic MOS current mirror | [A beta-multiplier can define transconductance instead of current](https://hebert.phd/electronics/mos-current-mirror/#book-notes) | Huijsing, §4.1.4, PDF pp. 91–93 |
+| 62 · The cascode current mirror | [Measure output resistance without making the instrument the load](https://hebert.phd/electronics/mos-cascode-mirror/#book-notes) | Huijsing, §2.6, amplifier measurement methods; Horowitz and Hill, practical source-loading analysis |
+| 72 · Mirror-loaded differential stages | [A folded cascode redirects signal current instead of stacking every device](https://hebert.phd/electronics/mos-mirror-loaded-differential/#book-notes) | Huijsing, §7.1.2, PDF pp. 241–242 |
+| 75 · Build a two-stage MOS voltage amplifier | [Adding a third gain stage requires another compensation argument](https://hebert.phd/electronics/mos-two-stage-amplifier/#book-notes) | Huijsing, §6.2.3.1, PDF pp. 203–204 |
+| 76 · MOS noise and transconductance efficiency | [An active load's noise is referred through the input stage](https://hebert.phd/electronics/mos-noise-design/#book-notes) | Huijsing, §4.2 and §7.1.2, PDF pp. 94–96 and 241; Horowitz and Hill, chapter 8 |
+| 77 · Ideal op amps and feedback | [Choose the transferred quantity before choosing the amplifier model](https://hebert.phd/electronics/opamp-ideal/#book-notes) | Huijsing, chapter 1, PDF pp. 30–35 |
+| 78 · Real op amps: the DC error budget | [Null the assembled measurement, and keep calibration conditions](https://hebert.phd/electronics/opamp-dc-errors/#book-notes) | Asadi, §§2.3 and 2.8, PDF pp. 53–54 and 81–82 |
+| 79 · Bandwidth, slew and stability | [Small-step settling, slew and overload recovery require separate tests](https://hebert.phd/electronics/opamp-ac-limits/#book-notes) | Huijsing, chapter 6 and protection discussion in §7.8.3, PDF pp. 203–204 and 293–294; Asadi, §8.5, PDF pp. 242–243 |
+| 80 · Inside a bipolar op amp | [PTAT bias keeps input transconductance from falling with temperature](https://hebert.phd/electronics/opamp-bjt-internals/#book-notes) | Huijsing, §4.1.4, PDF pp. 91–93 |
+| 81 · Inside a CMOS op amp | [Constant total tail current does not guarantee constant MOS transconductance](https://hebert.phd/electronics/opamp-cmos-internals/#book-notes) | Huijsing, §§4.4.1–4.4.2, PDF pp. 108–111 |
+| 86 · Instrumentation amplifiers | [The reference pin is part of the precision signal path](https://hebert.phd/electronics/opamp-instrumentation/#book-notes) | Huijsing, instrumentation-amplifier reference discussion, PDF p. 379; Selvam, §2.8, PDF pp. 56–57 |
+| 87 · Transimpedance amplifiers | [A dark-current error and a shot-noise floor need different corrections](https://hebert.phd/electronics/opamp-transimpedance/#book-notes) | Horowitz and Hill, §8.11, PDF pp. 570–571; Huijsing, §4.2 |
+| 88 · Practical op-amp integrators | [Dual-slope integration makes a time ratio instead of a capacitor calibration](https://hebert.phd/electronics/opamp-integrator/#book-notes) | Selvam, chapters 6 and 8, integration-based function principles, PDF pp. 118–120; Asadi, integrator application analysis |
+| 90 · Active filters and Sallen–Key design | [A state-variable filter exposes the states and controls damping separately](https://hebert.phd/electronics/opamp-active-filters/#book-notes) | Selvam, §5.6, PDF pp. 109–111; Van Valkenburg, §5.2, PDF pp. 138–140 (printed pp. 123–125) |
+| 94 · Analog functions and a complete design | [Multiplication can be made from time, switching and averaging](https://hebert.phd/electronics/opamp-function-design/#book-notes) | Selvam, §§6.1 and 21.1, PDF pp. 118–119 and 434–435 |
+
+## Source handling and validation
+
+The relevant source pointers identify further reading rather than claiming that the worked values come from the books. All added prose, numerical cases, plots and circuit layouts are original. The source PDFs and scanned figures remain outside the repository. See [the inspected-reference map](textbook-reference-map.md) for the reading record.
+
+One practical qualification was checked against current manufacturer guidance: [Nexperia IAN50006](https://www.nexperia.com/applications/interactive-app-notes/IAN50006_Power_MOSFETs_in_linear_mode) explains linear-mode thermal instability and hot SOA. The MOSFET chapter retains its existing distinction between fully enhanced switching and linear pass operation. [TI, Simplifying Stability Checks](https://www.ti.com/lit/an/slva381b/slva381b.pdf) supports using load-transient behavior as a practical loop check; component-specific capacitance/ESR requirements still come from the chosen regulator.
+
+Checks cover strict KaTeX for every added equation, all 42 unique anchors and navigation links, independent Fourier mean-square and symmetry relations, state-variable integrator/summer equations, all-pass group delay, complementary-pair transconductance, representative charge/noise/power budgets, and the two new circuits’ critical net relationships. The hosted build and full schematic/link checks cover the combined book. These are teaching models and rendered-content checks, not hardware qualification.

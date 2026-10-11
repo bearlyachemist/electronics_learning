@@ -146,6 +146,18 @@ Lower current raises $R_{out}$ steeply but lowers $g_m$, and the headroom cost f
 
 **Verify by sweeping.** Sweep the output voltage and record every device's saturation margin $V_{DS} - u$. Quote the output resistance only over the range where all margins are positive.
 
+
+
+<h3 id="book-notes">Measure output resistance without making the instrument the load</h3>
+
+A cascode's output resistance is a slope at fixed bias, not $V_O/I_O$. If the mirror delivers 100 µA and its output resistance is 100 MΩ, changing output voltage by 1 V should change current by only **10 nA**. The ratio 5 V/100 µA = 50 kΩ at one operating point answers a different question.
+
+A 10 MΩ voltmeter connected from output to ground draws 0.5 µA at 5 V, and its incremental conductance is ten times the mirror's. A resistance inferred from voltage behavior with that meter still attached can approach $100\,\mathrm{M}\Omega\parallel10\,\mathrm{M}\Omega=9.09\,\mathrm{M}\Omega$. Either account for the instrument current or use an arrangement that imposes the drain voltage and measures the mirror branch separately.
+
+Small current differences are also sensitive to drift. If the reference changes by 0.02% between the two measurements, a 100 µA mirror moves 20 nA, twice the expected 1 V slope effect. Sweep slowly enough to settle capacitances, quickly enough to limit drift, and record reference current and compliance margins at every point. A curve that bends at low voltage may show lost saturation, while a constant offset can be loading or leakage. Those mechanisms require different corrections.
+
+<p className="reference-note">Further reading: Huijsing, §2.6, amplifier measurement methods; Horowitz and Hill, practical source-loading analysis. This extension uses original explanations and design values.</p>
+
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A cascode multiplies output resistance by the intrinsic gain $g_mr_o$ <em>and costs at least one more overdrive of swing</em>; the simple diode-stack bias wastes a threshold besides.</p></div>
 
 </section>

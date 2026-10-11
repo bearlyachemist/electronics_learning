@@ -40,3 +40,5 @@ var{font-style:italic}.plot-key sub{line-height:0}
 @media(max-width:540px){.support-figure:has(.advanced-circuit)::before{content:"Swipe across the circuit to see all connections.";display:block;font:11px/1.6 var(--sans);color:var(--muted);margin-bottom:8px}}
 
 .chapter-synthesis{margin-top:56px;padding-top:0}.chapter-synthesis h3{margin-top:18px}.synthesis-connections{font-size:14px}
+
+.sidebar nav a.sidebar-extension{padding:0 8px 9px 24px;gap:8px;color:var(--accent)}.sidebar nav a.sidebar-extension span{font-size:12px;color:var(--accent)}

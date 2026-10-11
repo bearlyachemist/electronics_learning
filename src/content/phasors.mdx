@@ -1,3 +1,4 @@
+import {FourierExtensionFigure} from '../components/PracticalBookFigures';
 import Equation from '../components/Equation.astro';
 import {PhasorLab} from '../components/AcLabs';
 import {EulerFigure,PhaseTimingFigure,CancellationFigure} from '../components/AcFigures';
@@ -249,6 +250,22 @@ Two sinusoids add constructively when their phasors point the same way and cance
 <p>A single scope trace determines phase only modulo a cycle. A delay of 540 µs has the same phase at 2 kHz as 40 µs; measuring at several frequencies helps distinguish the delays.</p>
 
 </div>
+
+
+
+<h3 id="book-notes">Fourier analysis explains what a square wave asks of an amplifier</h3>
+
+One phasor describes one sinusoidal frequency. A square wave needs a family of phasors. For a symmetric wave switching between $\pm V_P$:
+
+<Equation tex={String.raw`v(t)=\frac{4V_P}{\pi}\sum_{m=0}^{\infty}\frac{\sin[(2m+1)\omega_0t]}{2m+1}`}/>
+
+<FourierExtensionFigure/>
+
+The fundamental has peak amplitude $4V_P/\pi$, **larger than the final square-wave level**. Higher harmonics cancel part of its peak and build the edges. For a 1 V-peak square wave, the fundamental is 0.9003 V RMS and accounts for 81.06% of the mean-square voltage. The full waveform is 1 V RMS; its other harmonics supply the remaining 18.94% of mean-square voltage.
+
+Pass each harmonic through the linear transfer function at its own frequency, then sum the time-domain outputs. Do not combine different-frequency phasors into one vector. A bandwidth-limited amplifier removes higher harmonics, rounding the edges; a nonlinear amplifier creates new harmonics and invalidates this simple superposition. Adding more terms to the ideal series also leaves overshoot near each discontinuity, the Gibbs phenomenon: the affected region narrows, but its limiting fractional overshoot does not vanish. A real bandwidth limit determines the measured transition.
+
+<p className="reference-note">Further reading: Fiore, §1.3, PDF pp. 25–27. This extension uses original explanations and design values.</p>
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>In sinusoidal steady state, a signal is an arrow, a derivative is a <em>quarter turn and a stretch</em>, and circuit equations are complex algebra.</p></div>
 

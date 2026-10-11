@@ -117,6 +117,18 @@ For finite output resistance $r_o$, a source resistor increases current-source o
 
 Derive it by holding the gate at AC ground, applying a test drain voltage and noting $v_s$ = $i_d R_S$. Substitute $v_{gs}$ = −$i_d R_S$ and $v_{ds}$ = $v_d$ − $i_d R_S$ into $i_d$ = $g_m v_{gs}$ + $v_{ds}$/$r_o$. The improvement comes from the same local loop that stabilizes bias. It is valid only while the device remains in its current-source region.
 
+
+
+<h3 id="book-notes">A current-regulator diode is a JFET with a compliance requirement</h3>
+
+Tie a JFET's gate to its source and use drain and source as the two external terminals. At $V_{GS}=0$, the saturated-current model gives $I_D=I_{DSS}$. Packaging this connection as a two-terminal component creates a **current-regulator diode**, even though its regulating mechanism is a transistor channel, not a diode breakdown voltage.
+
+For a teaching device with $I_{DSS}=8$ mA and $V_P=-4$ V, the ideal saturation boundary is near $V_{DS}=4$ V. Below that headroom, the device behaves more like a voltage-dependent resistance. Above it, finite output conductance makes the current rise with voltage rather than remaining perfectly flat. At a 24 V drop, nominal dissipation is **192 mW**; the low-current appearance of the component does not remove its thermal budget.
+
+A resistor between source and gate introduces self-bias and reduces current, but its setpoint still depends on the JFET's spread in $I_{DSS}$ and pinch-off voltage. Such a component can simplify bias, LED current or a pull-up current when broad accuracy is acceptable. For a reference current, examine current tolerance, minimum regulating voltage, temperature coefficient, maximum voltage and dissipation together. Below compliance, neither a nominal current label nor the square-law plateau predicts the actual circuit.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §9.3.14, PDF pp. 655–656. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="spread">

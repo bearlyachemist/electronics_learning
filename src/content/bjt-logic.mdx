@@ -194,6 +194,22 @@ Discrete diode/BJT logic remains useful for simple interlocks, signal inversion,
 
 Keep the analog questions beside the Boolean ones: who supplies or sinks current, what voltage counts as a valid state, how long does the transition take, and what happens when one circuit is unpowered? Answering those questions turns a logical diagram into an electrical design.
 
+
+
+<h3 id="book-notes">CMOS removes the static pull-up loss, but not transition current</h3>
+
+A complementary MOS inverter uses a PMOS to pull up and an NMOS to pull down. At valid settled input levels, one device is off, so the ideal channel model has no continuous supply-to-ground path. This removes the static HIGH-state resistor current or LOW-state pull-up dissipation of many bipolar logic examples.
+
+Every transition still moves charge. A load capacitance C switched from zero to $V_{DD}$ draws $CV_{DD}^2$ of energy from the supply: half is stored in C and half is dissipated during charging. Discharge dissipates the stored half. For an activity factor $\alpha$ counting 0-to-1 transitions per clock:
+
+<Equation tex={String.raw`P_{dynamic}=\alpha C_LV_{DD}^2 f`}/>
+
+At 3.3 V, 20 pF, 10 MHz and $\alpha=0.5$, capacitive switching alone consumes **1.089 mW**. Leakage, internal capacitance and supply-to-ground current while both transistors briefly conduct are additional terms.
+
+A slowly varying input spends longer near the inverter's transition region, where both devices can conduct and noise may cause repeated switching. A Schmitt-trigger input provides hysteresis for slow signals, but does not make input or supply ratings disappear. Conversely, a CMOS output driving a large capacitor can have low average power yet require a large instantaneous charging current. Static current, transition time and noise margin remain separate design budgets.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §3.5 and chapter 10 CMOS logic; PDF pp. 220–221. This extension uses original explanations and design values.</p>
+
 </section>
 
 

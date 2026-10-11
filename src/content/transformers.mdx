@@ -181,6 +181,18 @@ When evaluating a transformer, distinguish turns ratio, no-load current, loaded 
 
 The interactive model intentionally leaves out magnetizing and leakage currents. It shows ideal power transfer and a separate illustrative flux check so their different roles remain visible. If the flux estimate exceeds its displayed target, the clean ideal waveforms should not be read as a prediction of unsaturated hardware.
 
+
+
+<h3 id="book-notes">VA describes winding stress, not DC output watts</h3>
+
+The winding rating uses RMS voltage and RMS current because copper loss is proportional to $I_{\mathrm{rms}}^2R$. A 12 V, 1 A secondary is a 12 VA winding; it is not automatically a 12 W regulated DC supply after a bridge and reservoir capacitor.
+
+Consider an illustrative recharge waveform that supplies 4 A for one quarter of each cycle and zero for the remainder. Its average is 1 A, but its RMS is **2 A**. A winding with 0.5 Ω resistance then dissipates 2 W, four times the 0.5 W it would dissipate at a steady 1 A. A real capacitor-input rectifier has a smoother pulse determined by transformer resistance, leakage inductance and capacitor charge, so calculate or measure its waveform rather than assigning a universal conversion factor.
+
+Core flux is chiefly set by applied volts per turn and frequency; copper heating is chiefly set by RMS winding current. This separates two common mistakes: a larger reservoir capacitor does not directly increase the voltage-driven core flux, but it can narrow recharge pulses and increase RMS current. Conversely, using the transformer at a lower frequency with unchanged voltage raises core flux even at light load. The voltage rating, frequency rating and VA rating must therefore all fit the application.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §1.5.2, PDF pp. 63–64; Fiore, chapter 7, PDF pp. 261–262. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="check">

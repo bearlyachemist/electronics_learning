@@ -65,6 +65,20 @@ That is the thermal noise of a resistor of value $\gamma_n/g_m$. More $g_m$ mean
 
 A MOSFET's gate draws almost no current, so its input **current** noise (shot noise of gate leakage) is tiny at low frequency. That makes it the natural choice for high source impedances, where a bipolar transistor's base-current shot noise, flowing through the source resistance, would dominate.
 
+
+
+<h3 id="book-notes">An active load's noise is referred through the input stage</h3>
+
+An active load improves voltage gain because its output resistance is large, but its channel noise also injects current into the high-impedance output node. If one load device contributes white current-noise density $4k_BT\gamma g_{mL}$, dividing that current by the input stage's signal transconductance $G_m$ gives the corresponding input-voltage-noise term:
+
+<Equation tex={String.raw`e_{n,L}^2=\frac{4k_BT\gamma g_{mL}}{G_m^2}`}/>
+
+For the illustrative values T = 300 K, $\gamma=2/3$, $g_{mL}=1$ mS and $G_m=2$ mS, this one contribution is **1.66 nV/√Hz**. Several independent load and bias devices add in mean-square noise; a mirror may also correlate currents through its shared reference node, so trace the complete noise transfer before simply counting devices.
+
+At fixed load current, choosing larger load overdrive reduces $g_{mL}=2I/u_L$ and can reduce this input-referred channel-noise contribution. The price is headroom. Larger input transconductance lowers the referred load noise, but costs input capacitance or current. Reducing flicker noise by adding device area addresses another mechanism and cannot be substituted for this white-noise budget. Noise design therefore assigns different roles to the input pair, active load and bias devices, rather than choosing the same overdrive everywhere.
+
+<p className="reference-note">Further reading: Huijsing, §4.2 and §7.1.2, PDF pp. 94–96 and 241; Horowitz and Hill, chapter 8. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="cases">

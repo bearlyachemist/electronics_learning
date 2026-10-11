@@ -146,6 +146,18 @@ Common-source inductance creates L di/dt voltage between the power source termin
 
 The [Infineon gate-drive application note](https://www.infineon.com/dgdl/Infineon-Gate_drive_for_power_MOSFETs_in_switchtin_applications-ApplicationNotes-v01_00-EN.pdf?fileId=8ac78c8c80027ecd0180467c871b3622) provides manufacturer guidance on interpreting switching charge and driver behavior. Use the loss equations as a first budget, then check actual device conditions and switching waveforms.
 
+
+
+<h3 id="book-notes">Gate-driver peak current and average power answer different questions</h3>
+
+A gate charge of 50 nC moved in 100 ns requires an average current of **0.5 A during the edge**. At 100 kHz and a 10 V drive swing, the corresponding gate-drive energy budget is $P\approx Q_GV_{drive}f=\mathbf{50\ mW}$. A small average power is therefore compatible with substantial pulse current. The driver, its local capacitor and the gate loop must carry that pulse.
+
+Use Miller charge for the drain-voltage transition. With $Q_{GD}=15$ nC and 0.3 A available during the plateau, the approximate drain-transition time is 50 ns. A driver's advertised peak current is not necessarily the current available there: output resistance, external gate resistance and the difference between drive voltage and plateau voltage set it.
+
+Common-source inductance couples the power path back into the gate drive. If 10 nH shared by both paths carries a 2 A change in 10 ns, its voltage is $L\,di/dt=\mathbf{2\ V}$. The driver may be producing the intended voltage relative to board ground while the transistor sees a different $V_{GS}$. A short local gate loop, separate source return where available, and individual gate resistors address this mechanism. Measure gate-to-source at the device terminals; measuring gate-to-ground can hide the cause of ringing or delayed switching.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §3.5.1A and switching discussion, PDF pp. 220–221 and 226–229. This extension uses original explanations and design values.</p>
+
 </section>
 
 

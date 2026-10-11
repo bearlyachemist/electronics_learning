@@ -185,6 +185,18 @@ Initial energy is 1.25 mJ; final total energy is 0.625 mJ. The remaining 0.625 m
 
 If a load draws an extra 20 mA for 50 µs and allowable ideal capacitive droop is 0.1 V, the minimum capacitance from charge balance is $I\,\Delta t/\Delta V =$ **10 µF**. This is only the capacitive part of the answer. ESR causes an additional current-dependent drop, ESL matters during the edge, and effective capacitance can differ from its marked value (Chapter 9).
 
+
+
+<h3 id="book-notes">Read the marking before using the number</h3>
+
+On a capacitor using the common three-digit picofarad code, the first two digits are significant figures and the third is a decimal multiplier: **104** means $10\times10^4$ pF = 100 nF; **473** means 47 nF. A printed decimal, a legacy direct-picofarad marking and a manufacturer-specific code can mean something different. Many small ceramic chips are unmarked, so a photograph or package size is insufficient to identify their value.
+
+Capacitance, tolerance, voltage rating and polarity are separate pieces of information. “104” does not specify any of the last three. The schematic value may omit units, but the parts list should not. Measure an unknown part with an appropriate test frequency and retain its provenance before assigning it to a precision or power role.
+
+A useful assembly check is to ask what failure the wrong decade would cause. If a 10 kΩ timing resistor was intended to charge 100 nF, the time constant is 1 ms. Substituting 10 nF gives 0.1 ms; substituting 1 µF gives 10 ms. The circuit can appear to work while its timing is wrong by tenfold. This is also why measuring capacitance after assembly may be misleading: other parallel capacitors and semiconductor junctions contribute to the reading.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §1.10, PDF pp. 97–98. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="check">

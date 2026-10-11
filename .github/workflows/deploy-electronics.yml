@@ -48,6 +48,7 @@ jobs:
           npm run check:schematics
           npm run check:advanced
           npm run check:synthesis
+          npm run check:practical
 
       - name: Check deployment credential
         env:

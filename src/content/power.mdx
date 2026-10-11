@@ -124,6 +124,20 @@ Across 100 Ω, 4 V DC plus a 3 V peak sine ripple dissipates $(16 + 9/2)/100 =$ 
 
 If an electrical period is much shorter than the relevant thermal time constants, average power can approximate the slower temperature behavior. It does not erase local peak temperatures or short-pulse limitations. The smaller the part, the smaller its thermal mass and the larger the jump each pulse produces.
 
+
+
+<h3 id="book-notes">Decibels need a reference and an impedance</h3>
+
+A decibel expresses a **ratio**, so logarithms turn cascaded gains into sums. Power gain is $10\log_{10}(P_2/P_1)$. Voltage gain is conventionally $20\log_{10}|V_2/V_1|$: doubling voltage gives 6.02 dB. Calling that a 6.02 dB power increase requires equal resistive impedances; otherwise include the impedance ratio:
+
+<Equation tex={String.raw`10\log_{10}\frac{P_2}{P_1}=20\log_{10}\frac{V_{2,\mathrm{rms}}}{V_{1,\mathrm{rms}}}+10\log_{10}\frac{R_1}{R_2}`}/>
+
+For example, 1 V RMS across 1 kΩ is 1 mW. Increasing the voltage to 2 V across 10 kΩ gives only 0.4 mW: voltage gain is +6.02 dB, but power change is **−3.98 dB**. The load absorbed less power despite seeing more voltage.
+
+Absolute levels name their reference: **dBV** compares RMS voltage with 1 V; **dBm** compares power with 1 mW. Thus 100 mV RMS is −20 dBV, independent of load, but corresponds to −10 dBm in 100 Ω and −20 dBm in 1 kΩ. A value in dBm cannot be converted into voltage without the impedance. For noise, also retain whether the specification is integrated RMS or a spectral density; a bandwidth change alters integrated noise even when its density is unchanged.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §1.3.2A, PDF p. 48. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="thermal">

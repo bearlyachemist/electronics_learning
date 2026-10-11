@@ -123,6 +123,20 @@ A 390 nF choice gives a nominal settling time of 17.96 ms. If $R$ can be 1% high
 
 </div>
 
+
+
+<h3 id="book-notes">An RC delay depends on the decision threshold</h3>
+
+An RC network becomes a timer when a comparator decides that its voltage has crossed a threshold. With a sudden supply step to $V_S$, initial capacitor voltage $V_0$ and a fixed threshold $V_H$:
+
+<Equation tex={String.raw`t_H=RC\ln\frac{V_S-V_0}{V_S-V_H},\qquad V_0<V_H<V_S`}/>
+
+A 100 kΩ resistor and 100 nF capacitor have $RC=10$ ms. Starting at zero and comparing with half the same supply gives $t_H=RC\ln2=6.93$ ms. A threshold at 60% of supply instead gives 9.16 ms. The time constant alone does not specify the delay.
+
+The 50% threshold can be made ratiometric with a divider, so its fraction follows the final supply level. That still assumes a fast supply step. During a slow power ramp the capacitor already charges while the reference is rising, and the crossing can occur much earlier relative to “power good.” After a brief interruption, residual capacitor charge likewise shortens the next delay. A discharge path, comparator hysteresis and a defined valid-supply condition address three different problems. For precision timing, resistor/capacitor tolerances and input leakage also matter: 100 nA through 100 kΩ shifts the node by 10 mV.
+
+<p className="reference-note">Further reading: Horowitz and Hill, §1.4.2, PDF pp. 54–55; Asadi, chapter 7, PDF pp. 197–198. This extension uses original explanations and design values.</p>
+
 </section>
 
 <section id="frequency">
