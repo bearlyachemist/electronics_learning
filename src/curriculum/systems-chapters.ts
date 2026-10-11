@@ -264,5 +264,43 @@ export const systemsChapters = [
         "Check your understanding"
       ]
     ]
+  },
+  {
+    "id": "rf-impedance-matching",
+    "number": "102",
+    "title": "RF impedance and matching networks",
+    "href": "/rf-impedance-matching/",
+    "practice": "/rf-impedance-matching/practice/",
+    "group": "RF circuits",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "power",
+        "State the impedance behind every RF number"
+      ],
+      [
+        "conjugate",
+        "Derive what matching actually optimizes"
+      ],
+      [
+        "lmatch",
+        "Derive a low-pass L network"
+      ],
+      [
+        "bandwidth",
+        "Let parasitics and frequency change the answer"
+      ],
+      [
+        "measurement",
+        "Read S parameters at the stated reference planes"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
   }
 ];

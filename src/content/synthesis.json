@@ -4341,5 +4341,48 @@
       ]
     ],
     "sources": "The Art of Electronics, §9.6; original sampled-ramp derivation; TI implementation notes"
+  },
+  "rf-impedance-matching": {
+    "title": "Resistance mismatch on a 50 Ω port",
+    "setup": "Purely resistive loads terminate a lossless 50 Ω line. Compare reflection magnitude and return loss.",
+    "equation": "\\Gamma=(R-50)/(R+50),\\quad RL=-20\\log_{10}|\\Gamma|",
+    "columns": [
+      "Load",
+      "Reflection coefficient",
+      "Return loss"
+    ],
+    "rows": [
+      [
+        "25 Ω",
+        "−0.3333",
+        "9.542 dB"
+      ],
+      [
+        "50 Ω",
+        "0",
+        "Infinite ideal return loss"
+      ],
+      [
+        "200 Ω",
+        "0.6",
+        "4.437 dB"
+      ]
+    ],
+    "analysis": [
+      "A low resistance returns an inverted voltage wave; a high resistance returns a wave of the same polarity.",
+      "Perfect matching eliminates the ideal reflected wave, but real fixtures, frequency-dependent parasitics and measurement uncertainty set finite measured limits."
+    ],
+    "limits": "The power interpretation assumes real positive reference impedance and no line loss.",
+    "connections": [
+      [
+        "/impedance/",
+        "Complex impedances"
+      ],
+      [
+        "/resonance/",
+        "Resonance and Q"
+      ]
+    ],
+    "sources": "Fiore, AC Electrical Circuit Analysis; ADI matching tutorial; original wave-boundary example"
   }
 }

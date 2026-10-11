@@ -243,5 +243,40 @@
         }
       ]
     }
+  ],
+  "rf-impedance-matching": [
+    {
+      "tag": "POWER",
+      "title": "Translate a measured sine",
+      "prompt": "A 0.4 V peak sine drives 50 Ω. Find power and dBm.",
+      "hint": "Convert peak to rms first.",
+      "solution": [
+        {
+          "text": "Power is (0.4/√2)²/50 = 1.6 mW, or +2.041 dBm."
+        }
+      ]
+    },
+    {
+      "tag": "MATCH",
+      "title": "Design a resistance transformation",
+      "prompt": "Match a 25 Ω source to 100 Ω at 1 MHz using series L and shunt C on the load.",
+      "hint": "Derive Q, then series and shunt reactances.",
+      "solution": [
+        {
+          "text": "Q = √3; Xs = 43.30 Ω, |Xp| = 57.735 Ω. L = 6.892 μH and C = 2.757 nF. Verify the parallel branch is 25 − j43.30 Ω."
+        }
+      ]
+    },
+    {
+      "tag": "REFLECTION",
+      "title": "Interpret a return-loss claim",
+      "prompt": "A port has 20 dB return loss at one frequency. Find reflection magnitude and reflected power fraction.",
+      "hint": "Use amplitude dB for Γ, then square it.",
+      "solution": [
+        {
+          "text": "|Γ| = 0.1; reflected power is 1%. This specifies a match at that condition, not insertion loss or broadband performance."
+        }
+      ]
+    }
   ]
 }

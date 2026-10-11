@@ -36,3 +36,10 @@ export function PowerCircuit({kind='buck'}:{kind?:'buck'|'boost'}){
  <S.Text x={80} y={238} kind="value">Ideal switch and diode model; capacitor and load share output.</S.Text>
  </S.Schematic></Figure>;
 }
+
+export function MatchCircuit(){return <Figure caption="Low-pass L match from a 50 Ω source port to a 200 Ω load at 10 MHz. The shunt capacitor is on the higher-resistance side; the return conductor is continuous."><S.Schematic width={640} height={240} description="Series 1.378 microhenry followed by shunt 137.8 picofarad across a 200 ohm load, matching to a 50 ohm source at 10 megahertz.">
+ <S.Terminal at={[80,70]} label="50 Ω port" side="above"/><S.Ind a={[80,70]} b={[280,70]} label="L" value="1.378 μH"/>
+ <S.Wire pts={[[280,70],[460,70]]}/><S.Cap a={[280,70]} b={[280,190]} label="C" value="137.8 pF"/>
+ <S.Res a={[460,70]} b={[460,190]} label="R_L" value="200 Ω"/>
+ <S.Wire pts={[[80,190],[280,190],[460,190]]}/><S.Terminal at={[80,190]} label="Return"/><S.Ground at={[280,190]}/><S.Dot at={[280,70]}/><S.Dot at={[280,190]}/>
+ </S.Schematic></Figure>;}

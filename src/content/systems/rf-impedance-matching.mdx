@@ -1,0 +1,104 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot,PowerCircuit,MatchCircuit} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 102</span><span className="hairline"/>RF CIRCUITS</div>
+
+<h1>RF impedance and matching networks<br/><em>Think in waves and available power.</em></h1>
+
+<p className="dek">Connect voltage gain to RF power, derive an L match from complex impedance, and distinguish resonance, impedance matching, noise matching and S-parameter measurements.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="power">
+
+<div className="section-heading"><span>01</span><h2>State the impedance behind every RF number</h2></div>
+
+RF circuits are ordinary electrical circuits whose dimensions, parasitics and propagation delays have become important relative to the signal period and edge time. At a sufficiently low frequency, a short wire is nearly one node. At a sufficiently high frequency, different points on that wire have different phase and its return path stores field energy. Start with circuit impedance, then transition to wave variables when interconnects need them.
+
+A sinusoidal voltage only specifies power when the impedance and voltage convention are known. For a resistance $R$, $P=V_{rms}^2/R$. A 1 V peak sine has 0.707 V rms and delivers 10 mW into 50 Ω, or +10 dBm. The same voltage into 1 kΩ delivers 0.5 mW. Voltage gain in dB and power gain in dB coincide only when their impedance scaling is accounted for.
+
+<Equation tex={String.raw`P_{dBm}=10\log_{10}\!\left(P/1\,\mathrm{mW}\right),\qquad G_P=10\log_{10}(P_o/P_i)`}/>
+A generator modeled as an open-circuit voltage $V_s$ with resistance $R_s$ delivers maximum available power to a matched resistive load: $P_{av}=V_s^2/(4R_s)$ for rms $V_s$. The matched load voltage is half the open-circuit voltage. Many generators display the voltage intended for a selected load impedance; a high-impedance oscilloscope can then read twice the number. State whether a voltage is open circuit, loaded, peak, peak-to-peak or rms.
+
+An attenuator pad deliberately loses power while improving isolation and maintaining a specified impedance. A 3 dB pad roughly halves power and scales voltage by 0.708 for equal impedances. It can reduce sensitivity to source/load mismatch and protect the next stage, at the price of noise figure if placed before a low-noise amplifier.
+
+</section>
+
+<section id="conjugate">
+
+<div className="section-heading"><span>02</span><h2>Derive what matching actually optimizes</h2></div>
+
+For a source $Z_s=R_s+jX_s$ and load $Z_L=R_L+jX_L$, delivered average power is proportional to $R_L/|Z_s+Z_L|^2$. Setting $X_L=-X_s$ cancels reactance; maximizing with respect to $R_L$ gives $R_L=R_s$. Thus maximum available power is obtained at the conjugate match $Z_L=Z_s^*$ for this linear source model.
+
+<Equation tex={String.raw`P_L=\frac{|V_s|^2R_L}{(R_s+R_L)^2+(X_s+X_L)^2},\qquad Z_L=Z_s^*`}/>
+For a purely resistive source, this equals matching resistance. For an amplifier, the best source impedance for minimum added noise may differ from the conjugate impedance that maximizes gain. Stability may require another compromise. A matching network chosen from transistor capacitance alone does not establish minimum noise figure or safe unconditional stability.
+
+On a transmission line with real characteristic impedance $Z_0$, the voltage reflection coefficient is $\Gamma=(Z_L-Z_0)/(Z_L+Z_0)$. A matched load absorbs the incident wave; an unmatched one returns a fraction. For a real reference impedance, the reflected power fraction is $|\Gamma|^2$. Return loss is $-20\log_{10}|\Gamma|$; larger positive return loss is better. The logarithmic S₁₁ magnitude is often shown as a negative dB value, so keep the sign convention explicit.
+
+<Equation tex={String.raw`RL=-20\log_{10}|\Gamma|,\qquad VSWR=\frac{1+|\Gamma|}{1-|\Gamma|}`}/>
+A 100 Ω load on a 50 Ω line has $\Gamma=1/3$, return loss 9.54 dB and VSWR 2. It reflects one ninth of incident power. A matching network can reduce this reflection around a frequency, but loss, bandwidth and component tolerance must be checked.
+
+</section>
+
+<section id="lmatch">
+
+<div className="section-heading"><span>03</span><h2>Derive a low-pass L network</h2></div>
+
+Suppose a 50 Ω source must drive 200 Ω at 10 MHz. Put a capacitor across the 200 Ω load and an inductor in series with the source. Require the parallel branch to have real part 50 Ω and negative imaginary part that the inductor cancels. Its impedance is $R_H/(1+j\omega C R_H)$.
+
+<MatchCircuit/>
+
+Set $Q=\omega C R_H$. The branch real part is $R_H/(1+Q^2)$, so choosing it equal to $R_L$ gives $Q=\sqrt{R_H/R_L-1}$. The branch imaginary magnitude is $QR_L$. Therefore:
+
+<Equation tex={String.raw`Q=\sqrt{\frac{R_H}{R_L}-1},\quad X_s=QR_L,\quad |X_p|=R_H/Q,\quad L=\frac{X_s}{\omega_0},\quad C=\frac{1}{\omega_0|X_p|}`}/>
+Here $Q=\sqrt3=1.732$, $X_s=86.60$ Ω and $|X_p|=115.47$ Ω. At 10 MHz, $L=1.378$ μH and $C=137.8$ pF. The parallel branch is $50-j86.60$ Ω; adding the inductor gives $50+j0$ Ω. This complex-impedance verification is more reliable than memorizing a component-order diagram.
+
+At the design frequency, reactive power circulates in the network. The loaded-network Q comes from the impedance transformation; it is not the inductor's component Q. A finite-Q inductor introduces series resistance $R_{loss}=\omega L/Q_{component}$. With component Q 50, the example adds about 1.73 Ω at 10 MHz. The exact match, insertion loss and voltage stress must then be recomputed with that loss included.
+
+A high-pass alternative uses a series capacitor and shunt inductor. For a complex load, absorb or cancel the load reactance as part of the design. Pi and T networks can choose an additional impedance or Q and provide more filtering, but often at greater circulating current and narrower usable bandwidth. Broadband transformers or resistive pads may be more appropriate when bandwidth is more important than loss.
+
+</section>
+
+<section id="bandwidth">
+
+<div className="section-heading"><span>04</span><h2>Let parasitics and frequency change the answer</h2></div>
+
+Away from 10 MHz, the inductor reactance grows with frequency and capacitor reactance falls. Their cancellation is exact only at the design point. For the preceding ideal L match, evaluate $Z_{in}(\omega)=j\omega L+R_H/(1+j\omega CR_H)$ and then compute $\Gamma$. At half frequency the example gives approximately $114.29-j55.67$ Ω; at twice frequency it gives approximately $15.38+j119.91$ Ω. Both are poorly matched to 50 Ω despite correct nominal values.
+
+<Equation tex={String.raw`Z_{in}=j\omega L+\frac{R_H}{1+j\omega C R_H},\qquad\Gamma_{in}=\frac{Z_{in}-50}{Z_{in}+50}`}/>
+Package and PCB capacitance shift the effective shunt value; pad and via inductance shift the series value. Use components below their self-resonant frequencies in the intended model. Above self resonance an inductor can look capacitive and a capacitor inductive. Dielectric loss, core loss and current-dependent behavior can add distortion or heat. Account for DC bias flowing through the matching path as well as RF current.
+
+A matching network is also a filter. Its response can suppress harmonics or unwanted mixer products, but a match does not guarantee a required stopband attenuation. Specify both reflection and transmission over a band. When the load itself changes with frequency or bias, use its measured or modeled impedance over that band rather than a single nominal resistor.
+
+</section>
+
+<section id="measurement">
+
+<div className="section-heading"><span>05</span><h2>Read S parameters at the stated reference planes</h2></div>
+
+S parameters relate incident and outgoing waves at defined ports. S₁₁ measures input reflection with other ports terminated in their reference impedances; S₂₁ measures forward wave transmission under those conditions. They do not directly give the voltage gain into an arbitrary high-impedance load. Reference impedance, reference planes, bias state and frequency are part of the data.
+
+A vector network analyzer calibration removes defined fixture errors up to the calibration planes. Connector launches and adapters beyond those planes remain in the measurement unless de-embedded. A poor cable or moving connector can look like a bad matching network. Verify a known load, keep cables stable and characterize the fixture. A Smith chart is a mapping of complex reflection coefficient: the center is matched, the perimeter corresponds to unit magnitude and constant resistance/reactance curves help visualize transformations.
+
+For an active two-port, reverse coupling and reflections at both ends can cause oscillation. Stability factors such as K and μ summarize linear two-port stability under stated conditions; they do not prove behavior at unmodeled frequencies or large-signal operation. Bias-network resonances and low-frequency supply feedback can matter even in an RF amplifier.
+
+Primary design connection: [ADI, LNA Matching Techniques for Optimizing Noise Figures](https://www.analog.com/en/resources/technical-articles/lownoise-amplifier-lna-matching-techniques-for-optimizing-noise-figures.html), which distinguishes gain matching from noise matching. The equations and 50-to-200 Ω example above are independent circuit derivations.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/rf-impedance-matching/practice/).
+
+<p className="reference">Source connections: Fiore, AC Electrical Circuit Analysis (complex impedance and resonance); The Art of Electronics, Appendix H; ADI matching tutorial (linked above). Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>
