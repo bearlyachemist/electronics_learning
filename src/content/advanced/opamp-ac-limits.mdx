@@ -1,3 +1,4 @@
+import {PrecisionLoopFigure} from '../../components/PrecisionTeachingFigures';
 import Equation from '../../components/Equation.astro';
 import {OpAmpLab} from '../../components/OpAmpLabs';
 import {ClosedLoopBodeFigure,SlewDistortionFigure,FullPowerFigure,PhaseMarginStepFigure} from '../../components/OpAmpStudyFigures';
@@ -169,6 +170,52 @@ For an ADC driver, test the actual sequence: previous-channel amplitude, switchi
 **Simulation.** To measure phase margin in a simulator, break the loop without disturbing its DC operating point and compute the return ratio. A closed-loop step can confirm the damping but cannot by itself reveal every margin.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Small-signal bandwidth is $f_t/NG$; the largest clean sine is limited by $SR/2\pi f$; ringing is set by the phase margin at the loop crossing. <em>Check all three</em>, at the noise gain and amplitude you will actually use.</p></div>
+
+</section>
+
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Compensate the complete loop and budget dynamic precision</h2></div>
+
+<h3>Plot the return ratio, including the feedback network</h3>
+
+For a voltage-feedback amplifier, ground independent signal sources in the **small-signal** model while preserving the bias point. If the impedance from minus input to AC ground is $Z_G$ and the feedback impedance is $Z_F$, then $\beta=Z_G/(Z_G+Z_F)$, $NG=1/\beta$, and $T=A\beta$. The imaginary parts matter: crossing magnitude curves locates a candidate crossover, while the complex return ratio establishes the phase margin. Multiple crossings or right-half-plane poles need a fuller stability analysis than a single margin number.
+
+A series input resistor can make a differentiator's signal gain flatten without making every parasitic harmless. Input capacitance, output loading and additional active stages all belong inside the loop model. Use a loop-injection method that retains DC feedback and the original impedances on both sides; simply opening a wire can put the amplifier at a rail and measure a different system.
+
+<h3>What a feedback capacitor really does</h3>
+
+Take $R_F$ shunted by $C_F$, and a grounded $R_G$ shunted by total summing-node capacitance $C_I$. The noise gain is
+
+<Equation tex={String.raw`NG(s)=1+\frac{R_F}{1+sR_FC_F}\left(\frac1{R_G}+sC_I\right)=\frac{1+R_F/R_G+sR_F(C_F+C_I)}{1+sR_FC_F}`}/>
+
+Its low-frequency value is $1+R_F/R_G$ and its high-frequency value is $1+C_I/C_F$. Without $C_F$, input capacitance makes noise gain rise; its inverse adds lag to the loop. A chosen feedback capacitor stops that rise before crossover. But with negligible $C_I$, the same capacitor drives noise gain **down toward 1**, which can be unsuitable for a decompensated amplifier. “Put a few pF across feedback” is not a universal stability cure.
+
+<PrecisionLoopFigure/>
+
+For $R_F=100$ kΩ, $R_G=10$ kΩ, $C_I=100$ pF and $C_F=10$ pF, the pole is 159 kHz, the zero is also 159 kHz, and noise gain is exactly 11 in this ideal network. With only 2 pF feedback capacitance, the zero is about 172 kHz but the pole is 796 kHz, giving high-frequency noise gain 51 and a lagging feedback factor. With 30 pF, the pole is 53.1 kHz and the zero 134.7 kHz; the noise gain falls to 4.33. Recompute the actual crossing and phase rather than treating those frequencies as the closed-loop signal bandwidth.
+
+<h3>Compensation inside and outside the amplifier</h3>
+
+**Dominant-pole compensation** moves the first pole down until crossover occurs before excessive lag from later poles. It sacrifices high-frequency open-loop gain to buy margin. **Miller compensation** puts a capacitor across an inverting gain stage: its input sees a much larger effective capacitance, and pole splitting can move a later pole upward. A feedforward current through that capacitor can also create an unwanted right-half-plane zero; a suitable series resistance or current buffer changes that path. **Pole-zero compensation** supplies phase lead to counter a known pole, but imperfect cancellation and component variation must be allowed for. **Decompensation** deliberately uses less compensation and requires sufficient noise gain to lower crossover. Huijsing's multi-stage and nested-Miller designs extend these ideas to more internal states; more DC gain is useful only if all relevant loops remain stable.
+
+<h3>Precision includes amplitude and phase error</h3>
+
+For a single dominant pole at frequencies above that pole, a noninverting gain $G$ approximately has $H/G=1/(1+jGf/f_t)$. At $f_t=10$ MHz, $G=10$, $f=10$ kHz, the magnitude error is only 0.005%, but phase lag is 0.573°. A phase-sensitive measurement can therefore fail while its amplitude looks excellent. A lead network can compensate a known lag over a limited band, at the cost of higher noise and sensitivity to model variation; it cannot restore unlimited bandwidth.
+
+At DC, finite-gain fractional error is approximately $NG/A$. For $NG=100$, a change in open-loop gain from $10^6$ near mid-swing to $10^5$ near a heavily loaded rail changes this term from 100 ppm to 1000 ppm. A one-point gain calibration cannot remove the resulting **gain nonlinearity**. Distortion also depends on loop gain at the generated harmonic frequencies, output current, common-mode transitions and thermal feedback.
+
+<details>
+<summary>Worked self-check: what does 16-bit settling demand?</summary>
+<div>
+
+Half an LSB over a full-scale step is $1/131072$ of the step. A first-order 100 kHz stage needs $\ln131072/(2\pi\times100000)=18.75$ µs for its linear tail. Slewing, ringing, overload recovery and thermal tails may make the actual time longer. A 10 µs sample interval cannot be justified by quoting only a 100 kHz bandwidth.
+
+</div>
+</details>
+
+<p className="reference-note">Source connections: TAOE §§4.9.1–4.9.3 and 5.8.1–5.8.2, 5.8.5–5.8.7; Huijsing, chapter 6, compensation of multiple gain stages. Network derivation and numerical cases are original.</p>
+
 
 </section>
 

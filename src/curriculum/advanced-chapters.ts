@@ -885,6 +885,10 @@ export const advancedChapters = [
         "Measure the relevant form of speed"
       ],
       [
+        "precision-depth",
+        "Compensate the complete loop and budget dynamic precision"
+      ],
+      [
         "check",
         "Check your understanding"
       ]
