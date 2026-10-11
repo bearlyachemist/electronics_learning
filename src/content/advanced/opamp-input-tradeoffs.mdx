@@ -1,3 +1,4 @@
+import {PinchOffTesterFigure} from '../../components/PrecisionTeachingFigures';
 import Equation from '../../components/Equation.astro';
 import {OpAmpLab} from '../../components/OpAmpLabs';
 import {TechNoiseFigure,ChopperBlockFigure,LowFreqNoiseFigure} from '../../components/OpAmpStudyFigures';
@@ -142,6 +143,64 @@ Some typical outcomes:
 Source impedance is often complex: a piezoelectric sensor is mostly capacitance, a photodiode is capacitance in parallel with a large resistance, a filter network varies with frequency. Use $Z_S(f)$ in the budget when a single resistance does not describe it.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Compare amplifiers by <em>total</em> error with your source: $e_n$ matters for low impedances, $i_n$ and bias current for high ones, drift and $1/f$ noise for slow measurements. $R_{opt} = e_n/i_n$ tells you which kind of source an amplifier was made for.</p></div>
+
+</section>
+
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Select the amplifier by source, operating point and architecture</h2></div>
+
+<h3>A pinch-off tester measures an operating point, not a magic constant</h3>
+
+<PinchOffTesterFigure/>
+
+The servo holds the JFET source near zero by driving its gate. A 5 MΩ resistor to −5 V requests approximately 1 µA drain current; the drain is at +5 V. If the source rises, the minus input rises, the op amp lowers the gate voltage, and conduction decreases: restoring feedback. Gate voltage is then approximately $V_{GS}$ at 1 µA. The output-connected small capacitor provides a direct high-frequency feedback path around the slower JFET/source node; choose it by loop response, not by treating the JFET as instantaneous.
+
+For the teaching Shockley model $I_D=I_{DSS}(1-V_{GS}/V_P)^2$, take $I_{DSS}=2$ mA and $V_P=-3$ V. At 1 µA,
+
+<Equation tex={String.raw`V_{GS}=V_P\left(1-\sqrt{I_D/I_{DSS}}\right)=-2.933\ \mathrm V`}/>
+
+That is close to, but not exactly, −3 V. Datasheets define $V_{GS(off)}$ at a specified residual current and drain voltage; compare like conditions. A 10 nA bias current at the sensed source is already 1% of the test current. Offset changes the source voltage, test current and inferred gate-source voltage. Guard and clean the high-impedance node, keep the gate junction reverse biased, and provide enough output swing for the most negative expected gate voltage. A device outside that swing gives a saturated tester, not a valid pinch-off reading.
+
+<h3>Seven useful precision classes</h3>
+
+A selection table is most useful when it compares constraints at the same supply, temperature, common mode and load. These are design classes rather than a shopping list of historic parts:
+
+| Class | Principal strength | Tradeoff to calculate |
+|---|---|---|
+| Conventional precision bipolar | Low voltage noise and stable offset | Bias current and current noise with source impedance |
+| Super-beta or bias-compensated bipolar | Smaller DC current error | Residual current noise, protection and current sign |
+| Precision JFET | Low input current and useful AC performance | Temperature leakage, input capacitance and common-mode range |
+| Conventional CMOS | Low supply voltage and small room-temperature bias | Flicker noise, mismatch and RRIO handover |
+| Chopper / auto-zero | Small low-frequency offset and drift | Switching current, ripple, aliasing and recovery |
+| Micropower precision | Battery life and low heating | Bandwidth, slew, output current and settling |
+| Wideband precision | Dynamic accuracy and low distortion | Supply current, layout, gain restrictions and load stability |
+
+Check minimum and maximum supply, signal range, offset and its temperature dependence, **integrated** voltage noise, signed bias current and current noise, frequency-dependent CMRR/PSRR, GBW, slew rate, settling and distortion. Test output current and common-mode transitions too. Single, dual and quad packages change board area, routing, thermal coupling and channel interactions. Unused channels require a valid stable connection; leaving their inputs floating can cause oscillation or excess current.
+
+<h3>Auto-zero details that decide whether it helps</h3>
+
+A low DC offset is valuable for bridges and thermocouples, but input switching draws short pulses that a large source impedance converts to voltage. For an illustrative 20 fC net charge per cycle at 50 kHz, the average current is 1 nA; across 1 MΩ that is 1 mV. Balanced switching may reduce the net charge greatly, while still leaving pulse-related noise. Input RC filtering can reduce pulses but changes the input's impedance, acquisition and bias-error path.
+
+Auto-zero sampling folds wideband noise into baseband. Chopping shifts offset and flicker away from DC but leaves ripple and harmonics. Hybrid architectures use both mechanisms. A 5 nV/√Hz flat noise density over 10 Hz ENBW gives 15.8 nV RMS; it says nothing about a 100 kHz ripple spur. Check spectra, overload recovery, common-mode-dependent input current, multiplexed-source settling and startup. Synchronization and carefully chosen filtering can help; asynchronous sampling can turn switching tones into low-frequency beats.
+
+<h3>Other amplifier types have different equations</h3>
+
+A voltage-feedback op amp senses differential voltage and is governed by $A$ and noise gain. A **current-feedback** amplifier typically has a low-impedance inverting port; its feedback resistor is part of the internal dynamic design, so use its transimpedance model and specified resistor range rather than blindly applying $f_t/NG$. An **OTA** delivers $i_o=g_mv_d$ and needs an output load to create voltage; controlled $g_m$ is useful for tunable filters. A **buffer** supplies current at near-unity gain but may need an external precision loop. **Power amplifiers**, **isolation amplifiers**, **programmable-gain amplifiers**, **instrumentation amplifiers** and **fully differential amplifiers** solve different current, grounding, range or interface problems. Choose the ports and feedback structure before comparing headline bandwidths.
+
+A precision/low-noise input amplifier followed by a fast output amplifier can combine strengths. The slow stage must correct DC error while the fast path carries the required bandwidth; two unconstrained nested high-gain loops can oscillate. Chapter 93 develops a composite-buffer model and its separate fast feedback path.
+
+<details>
+<summary>Worked self-check: why not choose the smallest offset in every circuit?</summary>
+<div>
+
+Candidate A has 1 µV offset but 100 pA bias; candidate B has 20 µV offset but 1 pA bias. At 1 MΩ, their worst-case offset-plus-bias bounds are 101 µV and 21 µV. At 100 Ω they are approximately 1.01 µV and 20.00 µV. Noise, temperature and signal range still need checking, but the DC ranking already reverses with source impedance.
+
+</div>
+</details>
+
+<p className="reference-note">Source connections: TAOE §§4.3.4, 4.6.7, 4.7, 5.10 and 5.11 (all selection and auto-zero subsections); Huijsing chapter 1 and §10.5. Original classes, tester values and error examples replace dated commercial selection tables.</p>
+
 
 </section>
 

@@ -51,3 +51,5 @@ Completed checkpoint: [79 — Bandwidth, slew and stability](https://hebert.phd/
 Completed checkpoint: [80 — Inside a bipolar op amp](https://hebert.phd/electronics/opamp-bjt-internals/#precision-depth). Added “Connect internal design choices to precision and overload behavior” with original analysis and worked examples.
 
 Completed checkpoint: [81 — Inside a CMOS op amp](https://hebert.phd/electronics/opamp-cmos-internals/#precision-depth). Added “Evaluate RRIO accuracy across common mode and load” with original analysis and worked examples.
+
+Completed checkpoint: [82 — Choose BJT, JFET, CMOS or chopper inputs](https://hebert.phd/electronics/opamp-input-tradeoffs/#precision-depth). Added “Select the amplifier by source, operating point and architecture” with original analysis and worked examples.

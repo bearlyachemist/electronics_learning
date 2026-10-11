@@ -1012,6 +1012,10 @@ export const advancedChapters = [
         "Choose against the actual measurement"
       ],
       [
+        "precision-depth",
+        "Select the amplifier by source, operating point and architecture"
+      ],
+      [
         "check",
         "Check your understanding"
       ]
