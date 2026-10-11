@@ -50,3 +50,11 @@ export function LadderCircuit(){return <Figure caption="Four-bit voltage-mode Râ
  {[100,250,400,550].map((x,i)=><g key={'b'+i}><S.Res a={[x,70]} b={[x,210]} label="2R"/><S.Terminal at={[x,210]} label={'b_'+(3-i)} side="below"/><S.Dot at={[x,70]}/><S.Text x={x} y={267} anchor="middle" kind="value">0 V / V_ref</S.Text></g>)}
  <S.Res a={[550,70]} b={[680,70]} label="2R"/><S.Ground at={[680,70]}/>
  </S.Schematic></Figure>;}
+
+export function ProtocolTiming({kind='uart'}:{kind?:'uart'|'spi'}){
+ const step=(values:number[],offset=0):[number,number][]=>values.flatMap((v,i)=>[[i,v+offset],[i+1,v+offset]] as [number,number][]);
+ if(kind==='uart')return <Figure plot caption="UART 8N1 frame for 0xA5, least significant bit first. One low start bit is followed by eight data bits and a high stop bit; an idle interval is shown on each side."><Plot curves={[{name:'TX logic level',color:green,points:step([1,0,1,0,1,0,0,1,0,1,1,1])}]} xRange={[0,12]} yRange={[-.2,1.4]} xLabel="Time / bit periods" yLabel="Logic level" description="UART idle high, start low, data bits 1 0 1 0 0 1 0 1, stop high." marks={[{at:[1.5,0],label:'Start',pos:'ne'},{at:[10.5,1],label:'Stop',pos:'nw'}]}/></Figure>;
+ const clk:[number,number][]=[[0,0]];for(let i=0;i<4;i++)clk.push([i+.5,0],[i+.5,1],[i+1,1],[i+1,0]);
+ const data:[number,number][]=[[0,3],[1.25,3],[1.25,2],[2.25,2],[2.25,3],[3.25,3],[3.25,2],[4,2]];
+ return <Figure plot caption="SPI mode 0 illustration: SCK idles low, data is captured on rising edges and changes after falling edges. Data is offset upward for clarity. The example sends bits 1, 0, 1, 0; chip select is assumed active."><Plot curves={[{name:'SCK',color:green,points:clk},{name:'MOSI (offset)',color:orange,points:data}]} xRange={[0,4]} yRange={[-.2,3.5]} xLabel="Time / clock periods" yLabel="Signals offset for clarity" description="Four rising-edge sample points with data stable around each; data changes 0.25 periods after falling edges." marks={[.5,1.5,2.5,3.5].map((x,i)=>({at:[x,[3,2,3,2][i]] as [number,number],label:i===0?'Capture':undefined,pos:'nw' as const}))}/></Figure>;
+}

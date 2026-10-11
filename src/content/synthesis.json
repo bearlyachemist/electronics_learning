@@ -4771,5 +4771,48 @@
       ]
     ],
     "sources": "The Art of Electronics, Chapters 10 and 12; original timing timeline"
+  },
+  "digital-board-protocols": {
+    "title": "Bus capacitance consumes the I²C pull-up window",
+    "setup": "3.3 V rail, 0.4 V low allowance, 3 mA sink guarantee and 300 ns rise limit. Minimum resistance is 966.7 Ω.",
+    "equation": "R_{max}=300\\,\\mathrm{ns}/(0.8473C)",
+    "columns": [
+      "Bus capacitance",
+      "Maximum pull-up",
+      "Passive interval exists?"
+    ],
+    "rows": [
+      [
+        "50 pF",
+        "7.081 kΩ",
+        "Yes"
+      ],
+      [
+        "150 pF",
+        "2.360 kΩ",
+        "Yes"
+      ],
+      [
+        "400 pF",
+        "0.8851 kΩ",
+        "No under these assumptions"
+      ]
+    ],
+    "analysis": [
+      "Higher capacitance requires a stronger pull-up to meet rise time, but low-state sink current imposes the opposing bound.",
+      "If the interval is empty, choosing a compromise resistor fails at least one modeled requirement. Change the bus or timing conditions."
+    ],
+    "limits": "Use all devices’ guaranteed limits and the selected mode’s timing; active buffers require their own analysis.",
+    "connections": [
+      [
+        "/digital-logic-timing/",
+        "Level and timing margins"
+      ],
+      [
+        "/transmission-lines/",
+        "Long routes and stubs"
+      ]
+    ],
+    "sources": "The Art of Electronics, §14.7; NXP UM10204; TI SLVA689; original RC budget"
   }
 }

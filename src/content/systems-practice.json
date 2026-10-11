@@ -593,5 +593,40 @@
         }
       ]
     }
+  ],
+  "digital-board-protocols": [
+    {
+      "tag": "UART",
+      "title": "Count useful bytes",
+      "prompt": "At 230400 bit/s, what is the continuous payload rate for 8N1 UART? What happens if parity adds one bit?",
+      "hint": "Count every line bit in a frame.",
+      "solution": [
+        {
+          "text": "8N1 gives 23040 bytes/s. With one parity bit and one stop bit, an 11-bit frame gives about 20945 bytes/s before packet overhead."
+        }
+      ]
+    },
+    {
+      "tag": "SPI",
+      "title": "Close the read timing budget",
+      "prompt": "Clock and return paths each take 1.5 ns; peripheral output-valid delay is 6 ns, setup is 2 ns and additional margin is 1 ns. Estimate maximum opposite-edge capture SCK.",
+      "hint": "The whole path must fit inside half a period.",
+      "solution": [
+        {
+          "text": "Half-period must be at least 12 ns, so SCK ≤ 41.67 MHz. Check hold and chip-select timing separately."
+        }
+      ]
+    },
+    {
+      "tag": "I2C",
+      "title": "Find a pull-up window",
+      "prompt": "Use 3.3 V, 0.4 V low allowance, 3 mA sink, 150 pF bus and 300 ns rise limit. Find min/max resistor.",
+      "hint": "Lower bound comes from current; upper from RC rise.",
+      "solution": [
+        {
+          "text": "Minimum is 966.7 Ω; maximum is 2360 Ω. A 1.8 kΩ first choice gives about 228.8 ns rise and 1.61 mA sink at 0.4 V, before tolerances."
+        }
+      ]
+    }
   ]
 }

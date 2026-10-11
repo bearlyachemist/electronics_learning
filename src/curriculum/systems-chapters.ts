@@ -652,5 +652,51 @@ export const systemsChapters = [
         "Check your understanding"
       ]
     ]
+  },
+  {
+    "id": "digital-board-protocols",
+    "number": "112",
+    "title": "UART, SPI and I²C in detail",
+    "href": "/digital-board-protocols/",
+    "practice": "/digital-board-protocols/practice/",
+    "group": "Digital systems",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "layers",
+        "Separate electrical signaling, framing and application meaning"
+      ],
+      [
+        "uart",
+        "Follow an asynchronous frame and its timing error"
+      ],
+      [
+        "spi",
+        "Choose clock phase from launch and capture edges"
+      ],
+      [
+        "i2c",
+        "Follow bus ownership, addressing and acknowledgments"
+      ],
+      [
+        "pullups",
+        "Derive a valid pull-up interval"
+      ],
+      [
+        "audio",
+        "Clock continuous audio and widen memory transfers"
+      ],
+      [
+        "choose",
+        "Compare useful work and failure behavior"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
   }
 ];
