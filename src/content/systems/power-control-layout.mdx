@@ -1,6 +1,6 @@
 import Equation from '../../components/Equation.astro';
 import {SystemsFlow,SystemsPlot,PowerCircuit} from '../../components/SystemsFigures';
-import {SystemsLab} from '../../components/SystemsLab';
+import {SnubberCircuit} from '../../components/SnubberCircuit';
 
 <div className="chapter-hero" id="overview">
 
@@ -87,10 +87,49 @@ Switch-node ringing often involves loop inductance and device capacitance. A fir
 
 <Equation tex={String.raw`f_r=\frac{1}{2\pi\sqrt{L_pC_p}},\qquad Z_r=\sqrt{L_p/C_p},\qquad P_{snub}\sim C_{snub}V_{step}^2f_s`}/>
 
-The resonance is where the reactances are equal, $\omega L_p = 1/(\omega C_p)$, and $Z_r$ is that common reactance, $\omega_rL_p = \sqrt{L_p/C_p}$. A resistor near $Z_r$ in series with the snubber capacitor damps the tank close to critically. The snubber power follows from charging a capacitor through a resistor: each charge dissipates $\tfrac12CV^2$ in the resistor regardless of its value (Chapter 114), and so does each discharge, giving $CV^2$ per cycle.
+The resonance is where the reactances are equal, $\omega L_p = 1/(\omega C_p)$, and $Z_r$ is that common reactance, $\omega_rL_p = \sqrt{L_p/C_p}$. A resistance on the scale of $Z_r$ is a useful starting point for damping, but the required value depends on where it is connected and on the snubber capacitance. The snubber power follows from charging a capacitor through a resistor: each charge dissipates $\tfrac12CV^2$ in the resistor regardless of its value ([Chapter 115, charging energy](/digital-logic-timing/#power)), and so does each discharge, giving $CV^2$ per cycle.
 The characteristic impedance here is about 7.07 Ω. It is a starting scale for damping resistance, not a universal optimal snubber. An RC snubber trades ringing reduction for charging loss. A 1 nF snubber across a 12 V switching excursion at 500 kHz has a 72 mW energy-per-cycle scale under full charge/discharge assumptions. Verify resistor pulse power, actual voltage excursion and temperature.
 
-A useful experiment adds a known capacitance and observes the new ringing frequency to estimate the original parasitic capacitance and inductance. Because devices have nonlinear capacitance, the result is an operating-point estimate. First improve the current loop; then tune damping under the intended voltages and load. A slower gate edge can reduce ringing and EMI while increasing overlap loss. Measure that trade rather than judging only the waveform's appearance.
+<SnubberCircuit/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / EXTRACT THE PARASITICS FROM TWO MEASUREMENTS</span>
+
+1. **Measure the original period** $T_1$ with a short, low-inductance probing connection. If one lightly damped mode dominates, $T_1^2\approx4\pi^2L_pC_p$.
+
+2. **Add a known test capacitor** $C_t$ directly across the ringing capacitance, then measure $T_2$. Keep its connection short so that it adds capacitance rather than another resonance. Assuming unchanged $L_p$, $T_2^2\approx4\pi^2L_p(C_p+C_t)$.
+
+3. **Subtract the squared periods** to eliminate the unknown original capacitance:
+<Equation tex={String.raw`L_p\approx\frac{T_2^2-T_1^2}{4\pi^2C_t},\qquad C_p\approx\frac{T_1^2}{4\pi^2L_p}=\frac{C_t}{(T_2/T_1)^2-1}`}/>
+
+4. **Check the special case.** Halving frequency doubles period, so total capacitance quadruples: $C_p+C_t=4C_p$ and $C_t=3C_p$. It does not mean the original capacitance equals the test capacitor.
+
+</div>
+
+For an original ring at **100 MHz**, a **600 pF** test capacitor reducing it to **50 MHz** implies $C_p=200$ pF and $L_p=12.7$ nH. The characteristic impedance is $\sqrt{12.7\text{ nH}/200\text{ pF}}$ ≈ **7.96 Ω**. These are local estimates at the measured voltage and load. MOSFET capacitance depends on voltage, a lossy ring's frequency differs from its undamped natural frequency, and more than one resonant mode may appear. Repeat with another test capacitor: disagreement is evidence that the simple LC model needs refinement.
+
+**Why resistance alone is not enough.** A series RC snubber connected across the switch node has impedance $R_s+1/(j\omega C_s)$. Its real admittance, which describes energy dissipation for a given sinusoidal node voltage, is
+
+<Equation tex={String.raw`\operatorname{Re}Y_{snub}(j\omega)=\frac{R_s}{R_s^2+[1/(\omega C_s)]^2}`}/>
+
+At low frequency the capacitor isolates the resistor. At high frequency the branch approaches a resistor, provided its mounting inductance remains small. Too little capacitance leaves the resistor largely disconnected at the ringing frequency; making $R_s$ very small also does not necessarily increase dissipation, because the branch can become almost purely capacitive. The entire network changes its resonant poles when the branch is added.
+
+For comparison, an **ideal resistor directly across** a parallel LC has characteristic equation $s^2+s/(RC_p)+1/(L_pC_p)=0$, giving damping ratio $\zeta=Z_r/(2R)$. In that particular second-order circuit, critical damping requires $R=Z_r/2$. A series RC branch adds another energy-storage element and has a different characteristic equation. Values around a fraction of $Z_r$ to $Z_r$ are useful trial scales; the actual RC circuit and measured waveform decide the choice. This explains why a universal “critical snubber resistor” is misleading.
+
+<div className="worked-example">
+
+<span className="tiny-label">OPERATING POINTS / PAY FOR DAMPING IN CHARGE</span><h3>12 V excursion, 500 kHz, and a 100 MHz ring</h3>
+
+<p>At the ringing frequency, 200 pF, 600 pF and 1 nF have capacitive reactances of <strong>7.96 Ω, 2.65 Ω and 1.59 Ω</strong>. With a trial 4 Ω series resistor, their conductances at that frequency are respectively <strong>0.0504 S, 0.174 S and 0.216 S</strong>, approaching the resistor-only limit of 0.25 S. These compare the damping branch at a fixed frequency; they do not solve the shifted resonance.</p>
+
+<p>If each capacitor fully charges through 12 V and discharges once per switching cycle, the corresponding charging-loss scales are <strong>14.4 mW, 43.2 mW and 72.0 mW</strong>. More capacitance can make the resistor effective over the ringing band while increasing loss on every edge. At 24 V, each of those power estimates quadruples.</p>
+
+<p>For 600 pF and 4 Ω, an ideal abrupt 12 V step starts a <strong>3 A</strong> branch current and a <strong>36 W</strong> instantaneous resistor pulse, even though average charging loss is only 43.2 mW. The time constant is 2.4 ns. Real edge time and parasitic inductance limit that ideal pulse, but its scale explains why resistor pulse capability and physical construction matter alongside nominal wattage.</p>
+
+</div>
+
+Measure both switching edges and sweep input voltage and load. First improve the commutation loop, then choose the least-loss damping that meets the required device-voltage and waveform margins. Slowing the gate edge changes excitation and overlap loss; it need not change the underlying LC resonance. The measurement method and charge-loss estimate are illustrated in [TI's switch-ringing report](https://www.ti.com/lit/an/slua831a/slua831a.pdf). The component values above are independent teaching examples.
 
 </section>
 
