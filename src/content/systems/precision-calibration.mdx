@@ -1,0 +1,103 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 97</span><span className="hairline"/>PRECISION SYSTEMS</div>
+
+<h1>Calibration and precision measurement<br/><em>Know what a correction can remove.</em></h1>
+
+<p className="dek">Design offset and gain calibration, resistance and temperature measurements, uncertainty budgets and validation experiments that distinguish resolution from accuracy.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="transfer">
+
+<div className="section-heading"><span>01</span><h2>Write a measurement equation before choosing parts</h2></div>
+
+A complete instrument has a sensor, excitation, interconnect, amplifier, reference, converter and software scale factor. Assign errors to that chain before selecting a nominal bit depth. A useful local model is $y=ax+b+r(x,T,t)+n$: gain $a$, offset $b$, residual nonlinearity and drift $r$, and random noise $n$. Calibration estimates repeatable parameters; it cannot remove an unknown disturbance that changes between calibration and use.
+
+Two known inputs $x_1,x_2$ give measured outputs $y_1,y_2$. Estimate the slope and intercept, then invert the fitted line:
+
+<Equation tex={String.raw`\hat a=\frac{y_2-y_1}{x_2-x_1},\quad \hat b=y_1-\hat a x_1,\quad \hat x=\frac{y-\hat b}{\hat a}`}/>
+Choose calibration points far enough apart to estimate slope without magnifying reading noise. They must remain inside the linear range, including amplifier headroom and ADC overrange margin. A correction computed using a saturated endpoint is not a valid gain calibration.
+
+For a teaching instrument, a 0 V input produces 120 counts and 2.000 V produces 32120 counts. The fitted slope is 16000 counts/V; a later 16120-count result becomes 1.000 V. If the actual transfer also contains a bowed nonlinearity that vanishes at the calibration endpoints, the two-point fit cannot detect it. Test one or more independent intermediate inputs. The validation standard must not simply be the same circuit that created the calibration points.
+
+<SystemsFlow labels={["Known input|with uncertainty", "Acquisition|settled reading", "Fit|gain + offset", "Validation|independent points"]} caption="Calibration fits a model. Validation checks the remaining error under different inputs and operating conditions."/>
+Store coefficients with units, date, temperature, range and hardware identity. An unsigned conversion code and a signed offset correction can overflow if software uses the wrong integer width. Preserve enough numerical precision that rounding in the correction is below the measurement budget.
+
+</section>
+
+<section id="uncertainty">
+
+<div className="section-heading"><span>02</span><h2>Keep bounds, statistics and resolution separate</h2></div>
+
+Resolution is the smallest displayed or encoded increment. Repeatability describes how successive readings spread under fixed conditions. Accuracy concerns closeness to the true measurand, which is assessed through traceable standards and an uncertainty budget. A display with six decimals can have poor accuracy; a coarse display may report a highly accurate rounded result.
+
+For $z=f(x_1,\ldots,x_m)$, small uncertainties propagate through sensitivities $c_i=\partial f/\partial x_i$. For independent standard uncertainties:
+
+<Equation tex={String.raw`u_z^2=\sum_i c_i^2u_i^2,\qquad u_z^2=\sum_i c_i^2u_i^2+2\sum_{i<j}c_ic_j\operatorname{cov}(x_i,x_j)`}/>
+Use the second form when quantities are correlated. A bridge and ADC sharing one reference are the important counterexample to blind root-sum-square addition: correlated excitation changes may cancel. Convert guaranteed rectangular bounds to standard uncertainty only when that probability model is justified; a tolerance divided by $\sqrt3$ assumes a uniform distribution. A worst-case design check can instead add magnitudes of bounded contributions directly.
+
+Suppose independent standard contributions referred to the input are 20 μV from the standard, 10 μV from reading noise and 15 μV from residual drift. Their combined standard uncertainty is 26.93 μV. An expanded value with coverage factor 2 is 53.85 μV, but its interpretation depends on distribution and degrees of freedom. It is not automatically a guaranteed maximum. Separately check a 100 μV possible overload-recovery error; averaging does not make that bound disappear.
+
+If samples are independent and zero-mean, averaging $M$ reduces standard deviation by $\sqrt M$. With serial correlation, the effective number of independent samples is smaller. Observe the noise versus averaging time: a plateau or rise reveals drift or correlated noise. An ADC digital filter may already correlate adjacent output samples, so treating every data-ready event as independent can overstate the benefit.
+
+</section>
+
+<section id="resistance">
+
+<div className="section-heading"><span>03</span><h2>Measure resistance without measuring the leads</h2></div>
+
+In a two-wire resistance measurement, the instrument sees sensor resistance plus both lead resistances. Exciting a 100 Ω sensor at 1 mA gives 100 mV; two 1 Ω leads add 2 mV, a 2% resistance error. A four-wire arrangement sends current through one pair and senses voltage through another. Negligible sense current makes the sense-lead voltage drops negligible, but input bias current, leakage and protection resistors still need a budget.
+
+<Equation tex={String.raw`R_x=\frac{V_{sense}}{I_{exc}},\qquad P_x=I_{exc}^2R_x`}/>
+A 100 Ω platinum sensor near 0 °C has a local slope approximately 0.385 Ω/K. At 1 mA, sensitivity is about 385 μV/K. A 10 μV voltage error becomes about 0.026 K. The sensor dissipates 0.1 mW. If a teaching thermal model gives 0.4 K/mW in its mounting, self-heating is 0.04 K: already larger than that voltage contribution. Reducing current to 0.25 mA lowers heat by sixteen times but lowers electrical sensitivity by four times. Sensor standards and calibration determine the actual resistance-temperature curve; the local linear approximation is limited.
+
+Current reversal separates an additive thermal EMF from the desired resistance voltage. If $V_+=IR+E$ and $V_-=-IR+E$, then $R=(V_+-V_-)/(2I)$ and $E=(V_++V_-)/2$. This assumes EMF, resistance and current magnitude remain sufficiently constant through both readings. Wait for electrical settling after reversal but do not wait so long that thermal drift changes the offset between the two phases.
+
+A ratiometric arrangement senses a precision reference resistor carrying the same current. Then $R_x=R_{ref}V_x/V_{ref,res}$. Excitation-current accuracy cancels to first order. Reference-resistor tolerance, ratio drift, sensor heating and sequential-conversion timing remain. Use low-thermal-EMF connections and check compliance at the largest sensor resistance.
+
+</section>
+
+<section id="temperature">
+
+<div className="section-heading"><span>04</span><h2>Treat sensor compensation as part of the circuit</h2></div>
+
+A thermocouple measures the temperature-dependent EMF difference between two junction regions. It does not directly produce an absolute temperature. The connector region needs cold-junction compensation: measure its temperature, convert that temperature to equivalent thermocouple EMF using the correct type's function, add it to the measured EMF, then invert the function for the hot junction.
+
+Adding the connector temperature directly to a temperature inferred using a constant μV/K slope is only a local approximation. For wide ranges use the appropriate polynomial or table and account for its validity interval. The compensation sensor must track the actual transition junctions, not an unrelated warm processor nearby. Connector alloys, thermal gradients and insulation leakage can all become input errors.
+
+A 40 μV/K local sensitivity means a 4 μV input error is about 0.1 K. A 0.3 K cold-junction error can dominate even an excellent amplifier. Common-mode voltage from a grounded probe may exceed amplifier range; a differential input does not provide isolation. Add input filtering and protection that preserve bias-current return paths and matched source impedances. Document which sensor failures produce plausible but wrong values and add open-circuit detection where needed.
+
+</section>
+
+<section id="validate">
+
+<div className="section-heading"><span>05</span><h2>Design a validation that can fail honestly</h2></div>
+
+Validate gain and offset at independent points, both sweep directions and several temperatures. Reversing the sweep can expose hysteresis or thermal settling. Repeat after a supply change and load change; a supply-correlated reading suggests reference or PSRR coupling. Record raw codes alongside corrected values so software scaling can be distinguished from analog failure.
+
+For a multiplexed system, test the largest positive-to-negative channel transition, not only repeated readings of one DC input. Settling error depends on previous channel voltage. For a guarded high-impedance input, test humidity and overload recovery. For a current source, confirm compliance and resistor temperature at every range. Calibration that ignores those states may be valid on the bench and fail in operation.
+
+Use uncertainty to decide whether an observed change is meaningful. If two measurements share the same standard, their errors may be correlated; the uncertainty of their difference can be less than the uncertainty of either absolute value. Conversely, a test using the instrument's own reference to create its input can conceal reference gain error. A closed loop that agrees with itself is useful for checking ratios, not for proving absolute volts.
+
+The design record should state what is calibrated, what is guaranteed by components, what is estimated statistically and what is verified experimentally. That distinction makes later improvements targeted: more averaging for random noise, better layout for coupling, temperature control for drift, or a better standard for absolute calibration.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/precision-calibration/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, Chapter 5 (precision budgets and instrument methods); original calibration, uncertainty and sensor derivations. Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>

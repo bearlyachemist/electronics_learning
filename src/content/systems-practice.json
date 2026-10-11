@@ -68,5 +68,40 @@
         }
       ]
     }
+  ],
+  "precision-calibration": [
+    {
+      "tag": "CALIBRATION",
+      "title": "Invert a measured line",
+      "prompt": "At 0.1 V a meter reads 2100 counts; at 2.1 V it reads 42100 counts. What corrected voltage corresponds to 17100 counts?",
+      "hint": "Fit slope and intercept, then invert.",
+      "solution": [
+        {
+          "text": "Slope is 20000 counts/V. Intercept is 100 counts. The corrected result is (17100 − 100)/20000 = 0.850 V."
+        }
+      ]
+    },
+    {
+      "tag": "SELF-HEATING",
+      "title": "Choose excitation current",
+      "prompt": "A 1000 Ω sensor must dissipate no more than 0.05 mW. What current limit follows?",
+      "hint": "Power depends on the square of current.",
+      "solution": [
+        {
+          "text": "I ≤ √(0.05 mW / 1000 Ω) = 223.6 μA. Check resistance at the hottest operating point and the sensor’s thermal mounting."
+        }
+      ]
+    },
+    {
+      "tag": "REVERSAL",
+      "title": "Separate sensor and thermal EMF",
+      "prompt": "A resistor measured at ±0.5 mA gives +50.007 mV and −49.993 mV. Find resistance and additive EMF.",
+      "hint": "Difference isolates the odd component; sum isolates the even component.",
+      "solution": [
+        {
+          "text": "Resistance is 100.000 Ω from 100.000 mV / 1 mA. Additive EMF is 7 μV. This assumes equal current magnitude and no drift between readings."
+        }
+      ]
+    }
   ]
 }

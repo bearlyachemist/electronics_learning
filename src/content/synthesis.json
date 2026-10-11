@@ -4126,5 +4126,48 @@
       ]
     ],
     "sources": "The Art of Electronics, Chapter 8, especially §§8.14–8.16"
+  },
+  "precision-calibration": {
+    "title": "Excitation current versus sensor self-heating",
+    "setup": "A 100 Ω sensor has local slope 0.385 Ω/K and thermal rise 0.4 K/mW. Compare constant-current excitation. Voltage noise is not included.",
+    "equation": "P=I^2R,\\quad S_V=I\\frac{dR}{dT},\\quad\\Delta T=\\theta P",
+    "columns": [
+      "Current",
+      "Electrical sensitivity",
+      "Self-heating"
+    ],
+    "rows": [
+      [
+        "0.25 mA",
+        "96.25 μV/K",
+        "0.0025 K"
+      ],
+      [
+        "0.5 mA",
+        "192.5 μV/K",
+        "0.01 K"
+      ],
+      [
+        "1 mA",
+        "385 μV/K",
+        "0.04 K"
+      ]
+    ],
+    "analysis": [
+      "Sensitivity grows linearly with excitation while heating grows quadratically. The best current depends on voltage noise and thermal mounting.",
+      "Pulsed excitation may reduce average heating, but electrical acquisition and thermal transients must be analyzed before relying on duty cycle."
+    ],
+    "limits": "The thermal coefficient is a teaching assumption and must be measured or specified for the installed sensor.",
+    "connections": [
+      [
+        "/precision-references/",
+        "Ratiometric cancellation"
+      ],
+      [
+        "/opamp-instrumentation/",
+        "Bridge and sensor gain"
+      ]
+    ],
+    "sources": "The Art of Electronics, Chapters 5 and 8; original sensor and calibration examples"
   }
 }

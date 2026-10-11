@@ -74,5 +74,43 @@ export const systemsChapters = [
         "Check your understanding"
       ]
     ]
+  },
+  {
+    "id": "precision-calibration",
+    "number": "97",
+    "title": "Calibration and precision measurement",
+    "href": "/precision-calibration/",
+    "practice": "/precision-calibration/practice/",
+    "group": "Precision systems",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "transfer",
+        "Write a measurement equation before choosing parts"
+      ],
+      [
+        "uncertainty",
+        "Keep bounds, statistics and resolution separate"
+      ],
+      [
+        "resistance",
+        "Measure resistance without measuring the leads"
+      ],
+      [
+        "temperature",
+        "Treat sensor compensation as part of the circuit"
+      ],
+      [
+        "validate",
+        "Design a validation that can fail honestly"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
   }
 ];
