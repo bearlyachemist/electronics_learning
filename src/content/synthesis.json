@@ -4427,5 +4427,48 @@
       ]
     ],
     "sources": "The Art of Electronics, Chapter 8 and §13.13; ADI RF application notes"
+  },
+  "transmission-lines": {
+    "title": "First arrival versus final divider",
+    "setup": "A 1 V source with 10 Ω source resistance drives a lossless 50 Ω line. Compare resistive loads.",
+    "equation": "V_{first}=\\frac{50}{60}\\frac{2R_L}{R_L+50},\\quad V_{DC}=\\frac{R_L}{R_L+10}",
+    "columns": [
+      "Load",
+      "First arrival",
+      "Final DC"
+    ],
+    "rows": [
+      [
+        "25 Ω",
+        "0.55556 V",
+        "0.71429 V"
+      ],
+      [
+        "50 Ω",
+        "0.83333 V",
+        "0.83333 V"
+      ],
+      [
+        "100 Ω",
+        "1.11111 V",
+        "0.90909 V"
+      ]
+    ],
+    "analysis": [
+      "A matched load makes first arrival equal final DC even when the source is mismatched, because no load reflection returns.",
+      "A high-resistance load can initially overshoot its final voltage, followed by corrections at odd multiples of flight time."
+    ],
+    "limits": "Real driver nonlinearity, clamps and line loss alter the bounce sequence.",
+    "connections": [
+      [
+        "/rf-impedance-matching/",
+        "Reflection coefficient"
+      ],
+      [
+        "/precision-noise-grounding/",
+        "Return impedance"
+      ]
+    ],
+    "sources": "The Art of Electronics, §§12.9–12.10 and Appendix H"
   }
 }

@@ -1,0 +1,104 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot,PowerCircuit,MatchCircuit} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 104</span><span className="hairline"/>INTERCONNECTS</div>
+
+<h1>Transmission lines and reflections<br/><em>A fast edge cannot see the far end immediately.</em></h1>
+
+<p className="dek">Derive characteristic impedance and traveling waves, calculate first arrivals and repeated reflections, and choose terminations and return paths for cables and PCB traces.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="distributed">
+
+<div className="section-heading"><span>01</span><h2>Replace one wire with distributed storage</h2></div>
+
+A connection stores magnetic energy along its current path and electric energy between conductors. Represent a short segment with series inductance $L'\Delta x$ and shunt capacitance $C'\Delta x$, then let its length shrink. The lossless telegrapher equations give:
+
+<Equation tex={String.raw`\frac{\partial v}{\partial x}=-L'\frac{\partial i}{\partial t},\quad\frac{\partial i}{\partial x}=-C'\frac{\partial v}{\partial t},\quad v_p=\frac{1}{\sqrt{L'C'}},\quad Z_0=\sqrt{L'/C'}`}/>
+$Z_0$ is the voltage-to-current ratio of a traveling wave, not conductor DC resistance. A 50 Ω cable can have very low DC resistance. Initially a source sees 50 Ω because it launches energy into distributed fields; a remote load cannot affect the source until a reflection returns.
+
+A teaching line with 300 nH/m and 120 pF/m has 50 Ω impedance and velocity $1.667\times10^8$ m/s. A 10 cm trace has 0.6 ns one-way delay. A 1 ns edge changes significantly during that flight, even if the clock repeats only at 1 MHz. Use the fastest rise/fall time, not only repetition frequency.
+
+A conservative screening heuristic treats a connection as distributed when one-way delay is an appreciable fraction of rise time, often around one sixth. This is not a sharp physical boundary. The tolerable waveform error and receiver margin determine the decision. Package interconnects, connectors and stubs belong in the channel model.
+
+</section>
+
+<section id="boundaries">
+
+<div className="section-heading"><span>02</span><h2>Calculate launch and load reflection</h2></div>
+
+Model the driver as step source $V_s$ with resistance $R_s$. Before any reflection returns, its launched wave is the divider into $Z_0$. At the load, voltage is the sum of incident and reflected waves; current is their difference divided by $Z_0$. Requiring $V_L/I_L=Z_L$ gives the load reflection coefficient:
+
+<Equation tex={String.raw`V^+=V_s\frac{Z_0}{R_s+Z_0},\quad\Gamma_L=\frac{Z_L-Z_0}{Z_L+Z_0},\quad V_L=V^+(1+\Gamma_L),\quad I_L=\frac{V^+}{Z_0}(1-\Gamma_L)`}/>
+An open load requires zero current, so $\Gamma_L=+1$ and first voltage doubles. A short requires zero voltage, so $\Gamma_L=-1$ and the reflection inverts. A matched load has $\Gamma_L=0$. Reactive loads have frequency-dependent reflection and change the edge shape.
+
+For a 1 V source with 50 Ω resistance on a 50 Ω line, launch is 0.5 V. After one flight time, a matched 50 Ω load sees 0.5 V, a 100 Ω load sees 0.6667 V and an open sees 1 V. Open-load doubling does not create power: current at the open end is zero, and energy is stored in fields or returned.
+
+<SystemsPlot kind="reflection"/>
+This plot uses a matched source, which absorbs the return. With another source resistance, first arrival need not equal final DC.
+
+</section>
+
+<section id="bounces">
+
+<div className="section-heading"><span>03</span><h2>Follow the wave back to the source</h2></div>
+
+For the returning incremental wave, set the independent voltage source to zero and use source impedance as its boundary. Then $\Gamma_S=(R_s-Z_0)/(R_s+Z_0)$. Each round trip multiplies the next incident load wave by $\Gamma_L\Gamma_S$.
+
+<Equation tex={String.raw`\Delta V_{L,n}=V^+(1+\Gamma_L)(\Gamma_L\Gamma_S)^n,\qquad t_n=(2n+1)t_d`}/>
+A 1 V step with 10 Ω source, 50 Ω line and 100 Ω load launches 0.8333 V. First load arrival is 1.1111 V. Here $\Gamma_S=-2/3$ and $\Gamma_L=1/3$: at three flight times the next increment is −0.2469 V, leaving 0.8642 V; at five flight times it rises another 0.05487 V. The geometric series converges to the ordinary DC divider, $100/(10+100)=0.9091$ V.
+
+A receiver threshold can be crossed several times during these bounces. An eventually correct DC level does not prove reliable clocking. Input clamps can conduct on overshoot and change the boundary nonlinearly, injecting current into rails. CMOS driver resistance also varies with voltage, polarity, temperature and process. Use a suitable driver/receiver model or measurement for a real channel.
+
+<SystemsLab kind="line" client:load/>
+The laboratory separates first arrival from eventual DC for resistive ends. It omits rise time, attenuation, reactive loads and nonlinear drivers; it is a boundary-condition model rather than an eye-diagram simulator.
+
+</section>
+
+<section id="termination">
+
+<div className="section-heading"><span>04</span><h2>Choose where the wave is absorbed</h2></div>
+
+A far-end resistor equal to $Z_0$ absorbs the incident wave but draws DC current. The driver must meet the load and signal-standard voltage requirements. A Thevenin termination uses two resistors to rails whose parallel value is $Z_0$, producing a chosen bias with continuing power consumption.
+
+Source-series termination makes driver resistance plus added series resistance approximately $Z_0$. With a high-impedance far end, the first arriving half-amplitude wave doubles to the desired full voltage; the returning wave is absorbed at the source. This usually has little static dissipation and suits point-to-point CMOS. An intermediate receiver can see the smaller initial wave until later reflections arrive, so this is not automatically a good multidrop solution.
+
+If driver resistance is about 18 Ω on a 50 Ω line, an added 32 Ω is an initial estimate. Verify both edge polarities and receiver timing rather than treating driver resistance as a fixed precision resistor. An AC termination can reduce static consumption but creates pattern-dependent response and potential baseline wander; derive its RC behavior for the pulse lengths that matter.
+
+Multidrop buses generally use a defined trunk, short stubs and terminations at the physical ends according to their standard. A stub returns an echo after twice its flight time. A star junction places several line impedances in parallel and generates multiple reflection paths. At slow edge rates it may be tolerable; a low nominal baud rate alone is insufficient evidence.
+
+</section>
+
+<section id="pcb">
+
+<div className="section-heading"><span>05</span><h2>Keep geometry, return and measurement continuous</h2></div>
+
+Trace width, dielectric thickness and permittivity, copper thickness and neighboring conductors set PCB impedance. Use the fabricator's stack-up and an appropriate solver. Microstrip fields occupy dielectric and air; stripline fields are enclosed. Solder mask, weave and manufacturing tolerance matter when margins are small. Copying a trace width from another board does not copy its impedance.
+
+Changing signal layers requires a nearby appropriate return transition. A plane split or distant return via enlarges the current loop and adds discontinuity. Signal vias have parasitic capacitance and inductance; an unused barrel can form a resonant stub. Backdrilling or blind vias may help when the channel bandwidth justifies them. A connector's signal and return pin assignments must preserve the field path.
+
+Conductor skin effect and dielectric loss attenuate and disperse a channel. Equalization can compensate some frequency-dependent attenuation, but it cannot restore an arbitrarily damaged channel or erase every reflection. Include packages, connectors and receiver loading in the model.
+
+Time-domain reflectometry infers impedance discontinuities from reflected voltage versus time. A reflection at delay $t$ is at approximately $v_pt/2$ from the calibrated plane: the delay is out and back. Fixture reflections and instrument rise time limit spatial resolution. A short ground spring or suitable differential probe prevents a long probe return from inventing ringing.
+
+Practical connection: [TI, High-Speed Layout Guidelines for Reducing EMI for LVDS SerDes Designs](https://www.ti.com/lit/an/snla302/snla302.pdf). The wave equations and numerical bounce sequence above are independent derivations tied to the textbook's cable examples.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/transmission-lines/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§12.9–12.10 and Appendix H; TI high-speed layout report (linked above); original traveling-wave derivations. Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>

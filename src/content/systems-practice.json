@@ -313,5 +313,40 @@
         }
       ]
     }
+  ],
+  "transmission-lines": [
+    {
+      "tag": "FLIGHT TIME",
+      "title": "A slow clock with fast edges",
+      "prompt": "A 15 cm line has velocity 1.5 × 10⁸ m/s and carries a 2 MHz clock with 0.8 ns edges. Find flight time and the relevant timescale.",
+      "hint": "Compare flight time with edge time.",
+      "solution": [
+        {
+          "text": "Flight is 1 ns, comparable to the 0.8 ns edge. Use a transmission-line model despite the 500 ns repetition period."
+        }
+      ]
+    },
+    {
+      "tag": "FIRST ARRIVAL",
+      "title": "A nonmatched load",
+      "prompt": "A 2 V source with 50 Ω resistance drives a 50 Ω line into 150 Ω. Find launch, reflection and first load voltage.",
+      "hint": "Use the source-to-line divider before the load arrives.",
+      "solution": [
+        {
+          "text": "Launch is 1 V, ΓL = 0.5 and first load voltage is 1.5 V. The matched source absorbs the return; final DC is also 1.5 V."
+        }
+      ]
+    },
+    {
+      "tag": "TDR",
+      "title": "Locate a discontinuity",
+      "prompt": "A TDR sees a reflection 4 ns after launch on a line with velocity 1.6 × 10⁸ m/s. Find distance.",
+      "hint": "The delay is round trip.",
+      "solution": [
+        {
+          "text": "Distance is 0.32 m from the calibrated reference plane."
+        }
+      ]
+    }
   ]
 }
