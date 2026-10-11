@@ -148,7 +148,8 @@ export function DipolePatternFigure(){
     <path d={`M${cx} ${cy-28} V${cy+28}`} stroke={ink} strokeWidth="4"/>
     <text x={cx+8} y={cy-R-14} className="tick">θ = 0 (axis)</text><text x={cx+R-4} y={cy+20} className="tick">θ = 90°</text>
     <text x={340} y={90} className="symbol-value">short dipole: sin²θ</text>
-    <text x={340} y={118} className="tick">{svgMath('R_rad = 80π²(ℓ/λ)² Ω')}</text>
+    <text x={340} y={118} className="tick">{svgMath('R_rad = 80π²(ℓ_eff/λ)² Ω')}</text>
+    <text x={340} y={140} className="tick">wire dipole: ℓ_eff = ℓ/2</text>
     <text x={340} y={158} className="symbol-value" fill={green}>half-wave dipole</text>
     <text x={340} y={186} className="tick">[cos(½π cos θ)/sin θ]²</text>
     <text x={340} y={208} className="tick">{svgMath('R_rad ≈ 73 Ω, D = 1.64')}</text>
@@ -161,7 +162,7 @@ export function FriisLinkPlot(){
 }
 
 export function BoardEmissionPlot(){
-  const loop=(f:number)=>20*Math.log10(1.316e-14*(f*1e6)**2*1e-4*0.02/3*1e6); // dBµV/m at 3 m, 1 cm² loop, 20 mA
-  const cm=(f:number)=>20*Math.log10(1.257e-6*(f*1e6)*1*20e-6/3*1e6); // 1 m cable, 20 µA common mode
-  return <Figure plot caption="Far-field estimates at 3 m for a 1 cm² differential loop carrying 20 mA (green, rising 40 dB per decade) and a 1 m cable carrying only 20 µA of common-mode current (orange, rising 20 dB per decade). A thousand times less current on the cable still radiates about 20 dB more at 100 MHz; the loop catches up only near 1 GHz because its field rises twice as fast. That is why common-mode current on cables dominates so many EMC failures below the gigahertz range."><Plot curves={[{name:'Differential loop, 20 mA',color:green,points:logpts(loop,10,1000)},{name:'Cable common mode, 20 µA',color:orange,points:logpts(cm,10,1000)}]} xScale="log" xRange={[10,1000]} yRange={[-30,90]} xLabel="Frequency / MHz" yLabel="E at 3 m / dBµV/m" description="Two emission estimates versus frequency, one rising forty decibels per decade and one twenty."/></Figure>;
+  const loop=(f:number)=>20*Math.log10(1.316e-14*(f*1e6)**2*1e-4*0.02/10*1e6);
+  const cm=(f:number)=>20*Math.log10(1.257e-6*(f*1e6)*.15*20e-6/10*1e6);
+  return <Figure plot caption="Peak far-field estimates at 10 m: a 1 cm² loop carrying 20 mA peak and a 15 cm uniform-current conductor carrying 20 µA peak. The conductor estimate assumes an in-phase image reflection. Over 30–100 MHz the conductor remains electrically short; the observer is at least one wavelength away. The loop rises 40 dB per decade, the conductor 20 dB per decade, crossing near 72 MHz. These geometry-dependent estimates do not predict compliance."><Plot curves={[{name:'Differential loop, 20 mA',color:green,points:logpts(loop,30,100)},{name:'Short conductor, 20 µA',color:orange,points:logpts(cm,30,100)}]} xScale="log" xRange={[30,100]} yRange={[0,35]} xLabel="Frequency / MHz" yLabel="Peak E at 10 m / dBµV/m" description="Two short-antenna estimates crossing near seventy-two megahertz within their stated model range."/></Figure>;
 }

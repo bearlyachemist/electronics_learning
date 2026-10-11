@@ -830,17 +830,17 @@
     {
       "tag": "EFFICIENCY",
       "title": "Judge a short antenna",
-      "prompt": "A 15 cm dipole is used at 27 MHz. Find its radiation resistance and its efficiency if conductor and matching losses total 3 Ω.",
-      "hint": "R_rad = 80π²(ℓ/λ)².",
+      "prompt": "A 15 cm centre-fed wire dipole with triangular current is used at 27 MHz. Find its feed-referred radiation resistance and efficiency if conductor and matching losses total 3 Ω. How much improvement could ideal matching alone provide if |Γ| = 0.5?",
+      "hint": "Use effective length ℓ/2, then R_rad = 20π²(ℓ/λ)². Mismatch accepts a fraction 1 − |Γ|².",
       "solution": [
         {
-          "text": "λ = 11.1 m, so ℓ/λ = 0.0135 and R_rad = 790 × 1.83×10⁻⁴ = 0.144 Ω."
+          "text": "λ = 11.11 m and ℓ/λ = 0.0135. With triangular current, R_rad = 20π² × 0.0135² = 0.0360 Ω."
         },
         {
-          "text": "Efficiency = 0.144/(0.144 + 3) = 4.6%, a loss of 13.4 dB."
+          "text": "Efficiency = 0.0360/(0.0360 + 3) = 1.18%, corresponding to −19.26 dB. The uniform-current element would have four times this radiation resistance."
         },
         {
-          "text": "The antenna is electrically short; a longer element or a lower-loss matching network matters more than any other change."
+          "text": "|Γ| = 0.5 accepts 75% of incident power. Perfect matching recovers only −10 log₁₀(0.75) = 1.25 dB; reducing series loss addresses the much larger efficiency loss."
         }
       ]
     },
@@ -863,18 +863,18 @@
     },
     {
       "tag": "EMC",
-      "title": "Find the allowable cable current",
-      "prompt": "An emission limit is 40 dBµV/m at 3 m. How much common-mode current may flow on a 1.5 m cable at 200 MHz under the E_cm ≈ 1.26×10⁻⁶ fℓI/r estimate?",
-      "hint": "Convert 40 dBµV/m to volts per metre first.",
+      "title": "Estimate current on an electrically short conductor",
+      "prompt": "A screening target is 40 dBµV/m peak at 3 m. What peak common-mode current corresponds to that field on a 15 cm conductor at 100 MHz under E_cm ≈ 1.26×10⁻⁶ fℓI/r? State two model assumptions that a measurement must check.",
+      "hint": "Convert 40 dBµV/m to 100 µV/m peak. Use SI units and check electrical length.",
       "solution": [
         {
-          "text": "40 dBµV/m = 100 µV/m."
+          "text": "40 dBµV/m = 100 µV/m peak. The assumed in-phase image reflection is included in the coefficient."
         },
         {
-          "text": "I = Er/(1.26×10⁻⁶ fℓ) = (10⁻⁴ × 3)/(1.26×10⁻⁶ × 2×10⁸ × 1.5) ≈ 0.80 µA."
+          "text": "I = Er/(1.26×10⁻⁶ fℓ) = (10⁻⁴ × 3)/(1.26×10⁻⁶ × 10⁸ × 0.15) = 15.9 µA peak."
         },
         {
-          "text": "Less than a microampere: common-mode chokes and connector filtering are sized for this, not for the signal current."
+          "text": "λ = 3 m, so the conductor is λ/20 long and the observation distance is one wavelength. Check approximately uniform current, far-field behavior, reflection geometry and detector convention. This screening target is not a regulatory limit or a compliance result."
         }
       ]
     }

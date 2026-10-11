@@ -1,5 +1,6 @@
 import Equation from '../../components/Equation.astro';
 import {DipolePatternFigure,FriisLinkPlot,BoardEmissionPlot} from '../../components/RfFigures';
+import {AntennaBudgetLab} from '../../components/AntennaBudgetLab';
 
 <div className="chapter-hero" id="overview">
 
@@ -38,8 +39,19 @@ Chapter 101 showed that changing fields can detach from a conductor. To a circui
 
 </div>
 
-The square of electrical length is decisive. A 1 m wire at 1 MHz ($\lambda$ = 300 m) has $R_{rad} = 790 \times (1/300)^2$ ≈ **8.8 mΩ**. If the wire and matching network have even 1 Ω of loss, 99% of the power heats them: efficiency is $R_{rad}/(R_{rad} + R_{loss})$. The same wire at 30 MHz has $R_{rad}$ ≈ 7.9 Ω and radiates readily. Antennas are efficient only when they are a significant fraction of a wavelength, which is also why an accidental antenna on a board becomes a problem only at high frequency.
+The derivation describes a **Hertzian current element**: current is uniform along its length. A short, centre-fed wire has open ends, so its current tapers approximately linearly from the feed current $I_0$ to zero. Radiation depends on the integral of that current, rather than physical length alone. Define the effective length by
 
+<Equation tex={String.raw`\ell_{eff}=\frac{1}{I_0}\int_{-\ell/2}^{\ell/2}I(z)\,dz,\qquad I(z)\approx I_0\left(1-\frac{2|z|}{\ell}\right)`}/>
+
+The area under this triangle is $I_0\ell/2$, so $\ell_{eff}=\ell/2$. Substitute this effective length for the uniform element's length in its far field. The field halves and radiated power quarters at the same feed current:
+
+<Equation tex={String.raw`R_{rad,wire}=80\pi^2\left(\frac{\ell_{eff}}{\lambda}\right)^2=20\pi^2\left(\frac{\ell}{\lambda}\right)^2\ \Omega`}/>
+
+A **1 m centre-fed wire dipole** at 1 MHz has $\lambda$ = 300 m and $R_{rad}$ ≈ **2.19 mΩ**. With 1 Ω of conductor and matching loss, radiation efficiency is only $R_{rad}/(R_{rad}+R_{loss})$ = **0.219%**. A uniform-current element with the same physical length would give 8.77 mΩ; use the current distribution that belongs to the actual structure. Top loading can change that distribution, but needs its own model.
+
+Frequency raises the resistance rapidly while the antenna remains electrically short. At 10 MHz the same wire model gives 0.219 Ω and 18.0% efficiency with the same assumed loss. The fixed-loss assumption is only a comparison: skin effect and matching losses also vary with frequency. Once length approaches a significant fraction of a wavelength, use the antenna's full current distribution. A small antenna can be efficient if its losses are exceptionally low; small radiation resistance makes that difficult, rather than impossible.
+
+The current-integral distinction is developed in [MIT's antenna notes, §3.2](https://ocw.mit.edu/courses/6-661-receivers-antennas-and-signals-spring-2003/10025a78ab17e1e0866126246b751d11_ch3new.pdf).
 </section>
 
 <section id="practical">
@@ -68,18 +80,39 @@ A receiving antenna is characterized by its **effective area**: the power delive
 
 <span className="tiny-label">DERIVATION / EFFECTIVE AREA OF A SHORT DIPOLE, AND THE GENERAL RESULT</span>
 
-1. **Open-circuit voltage.** A field $E$ parallel to a short dipole induces $V_{oc} = E\ell$ across its terminals.
+1. **Open-circuit voltage.** A broadside field $E$ polarized along a short dipole induces $V_{oc}=E\ell_{eff}$. Use $\ell_{eff}=\ell$ for the uniform element or $\ell/2$ for a centre-fed short wire, consistently with its radiation resistance.
 
 2. **Thévenin model.** The antenna is a source $V_{oc}$ behind its radiation resistance. A conjugate-matched load (Chapter 104) receives the available power $V_{oc}^2/(8R_{rad})$ (peak phasors, so the factor is 8 rather than 4).
 
 3. **Divide by the incident power density** $S = E^2/(2\eta)$ and substitute $R_{rad}$ from section 01:
-<Equation tex={String.raw`A_e=\frac{E^2\ell^2/8R_{rad}}{E^2/2\eta}=\frac{\eta\ell^2}{4R_{rad}}=\frac{3\lambda^2}{8\pi}`}/>
-   The length cancels: a short dipole collects as much power as a longer one, provided it can be matched.
+<Equation tex={String.raw`A_e=\frac{E^2\ell_{eff}^2/8R_{rad}}{E^2/2\eta}=\frac{\eta\ell_{eff}^2}{4R_{rad}}=\frac{3\lambda^2}{8\pi}`}/>
+   The effective length cancels for a lossless, conjugate-matched short dipole at its best direction and polarization. This is a single-frequency result: it does not remove matching loss or guarantee useful bandwidth.
 
 4. **General result.** $3/(8\pi) = 1.5/(4\pi)$ and 1.5 is this antenna's directivity, so $A_e = \lambda^2D/4\pi$. Reciprocity (an antenna's transmit and receive patterns are identical) extends this to every antenna, with gain in place of directivity once losses are included:
 <Equation tex={String.raw`A_e=\frac{\lambda^2}{4\pi}\,G`}/>
 
 </div>
+
+
+**Keep three power ratios separate.** Directivity describes the pattern for a given total radiated power. Radiation efficiency is radiated power divided by accepted power. Gain combines those two. With a real reference impedance, the feed also rejects $|\Gamma|^2$ of the incident power; **realized gain** includes that mismatch:
+
+<Equation tex={String.raw`G=e_{rad}D,\qquad G_{realized}=(1-|\Gamma|^2)e_{rad}D`}/>
+
+For an example with directivity 1.5, efficiency 10% and $|\Gamma|=0.5$, gain is 0.15 (−8.24 dBi), and realized gain is 0.1125 (−9.49 dBi). Perfect matching would recover **1.25 dB**, while eliminating the loss would recover **10 dB**. A low S₁₁ alone cannot establish an efficient antenna: a well-matched resistor can absorb almost everything and radiate almost nothing. If a measured realized-gain specification already includes mismatch, do not subtract it again in a link budget.
+
+<AntennaBudgetLab client:visible/>
+
+<div className="worked-example">
+
+<span className="tiny-label">OPERATING POINTS / A 15 cm CENTRE-FED DIPOLE AT 27 MHz</span><h3>Keep the antenna fixed and change the loss</h3>
+
+<p>The triangular-current model gives $R_{rad}=20\pi^2(0.15/11.11)^2$ = <strong>0.0360 Ω</strong>. With losses of 3 Ω, 0.3 Ω and 0.03 Ω, efficiencies are respectively <strong>1.18%, 10.7% and 54.5%</strong>. These are feed-referred series losses after reactive tuning; include conductor, coil and capacitor dissipation consistently.</p>
+
+<p>Reducing loss by a factor of ten gives nearly 10 dB of improvement while loss dominates radiation resistance. The improvement diminishes as efficiency approaches unity. In a tuned small antenna, lowering loss also raises loaded Q and narrows the match: near a single series resonance, $Q\approx\omega_0L/(R_{rad}+R_{loss})$ and the half-power bandwidth is approximately $f_0/Q$. Those are resonator bandwidth estimates, not universal antenna bandwidth limits.</p>
+
+</div>
+
+Small-antenna design must therefore track impedance match, component dissipation and pattern together; [ADI's small-loop matching example](https://www.analog.com/en/resources/technical-articles/matching-maxims-300mhz-to-450mhz-transmitters-to-small-loop-antennas.html) illustrates this distinction.
 
 </section>
 
@@ -100,6 +133,9 @@ A receiving antenna is characterized by its **effective area**: the power delive
 <Equation tex={String.raw`P_r[\mathrm{dBm}]=P_t+G_t+G_r-20\log_{10}\frac{4\pi d}{\lambda}`}/>
 
 </div>
+
+
+Use gain in the direction of the other antenna, rather than its maximum gain unless that direction is aligned. For linearly polarized antennas with a relative angle $\psi$, the received field projects onto the receiver's axis, so received power gains a factor $\cos^2\psi$. A 45° mismatch costs 3.01 dB; an ideal 90° mismatch produces a null. Reflections and cross-polarization make real nulls finite. Cable loss, connector loss, mismatch and fading consume additional budget. Free-space propagation also assumes the antennas are sufficiently separated and unobstructed; it does not predict an indoor coverage map.
 
 <FriisLinkPlot/>
 
@@ -139,14 +175,19 @@ Two small-antenna results cover most accidental radiators. A **current loop** of
 
 <Equation tex={String.raw`E_{loop}\approx1.32\times10^{-14}\,\frac{f^2AI}{r}\quad(\text{V/m, SI units})`}/>
 
-A **short conductor** carrying common-mode current is an electric dipole, field $\eta I\ell/(2\lambda r)$ from section 01. Doubling it for reflection from a ground plane, as in a typical test setup:
+A **short conductor** carrying approximately uniform common-mode current uses the current-element field $\eta I\ell/(2\lambda r)$. The current-integral form above applies if current varies along it. For an illustrative image-plane arrangement where the direct and reflected fields add in phase, doubling the field gives:
 
 <Equation tex={String.raw`E_{cm}\approx1.26\times10^{-6}\,\frac{f\ell I}{r}`}/>
 
 <BoardEmissionPlot/>
 
-The comparison explains standard EMC practice. A 1 cm² loop carrying 20 mA at 100 MHz produces about 39 dBµV/m at 3 m, just inside a typical 40 dBµV/m limit. A 1 m cable carrying only 20 µA of common-mode current, a thousandth as much, produces about 58 dBµV/m: 18 dB over the limit. The loop's $f^2$ dependence lets it catch up only near 1 GHz. Small loops (Chapter 101) keep differential emissions low, but the cable's common-mode current is usually what fails the test. Ferrite chokes, filtering at the connector, and a low-impedance bond between the cable shield and chassis all aim at that current.
+Both formulas here use **peak sinusoidal current and peak field**, inherited from section 01. For RMS current and RMS field the coefficient is the same, but a peak field expressed in dB is 3.01 dB above its RMS value. Instrument detectors and test limits need their specified conventions. The factor of two for the reflected field is a geometry assumption: polarization, antenna height, ground conductivity and phase can change the actual sum.
 
+At 100 MHz and 3 m, the model gives **38.9 dBµV/m peak** for a 1 cm² loop carrying 20 mA peak, and **42.0 dBµV/m peak** for a **15 cm conductor** carrying 20 µA peak. A thousand times less current produces a comparable field because electric and magnetic dipoles couple differently. This is why a small amount of current escaping onto a connector can matter even when the differential signal looks clean.
+
+The plotted comparison uses 10 m distance and 30–100 MHz. The conductor remains at most $\lambda/20$ long, and the observer is at least a wavelength away. Extending the short-conductor equation to a 1 m cable at 1 GHz would violate its assumptions. Long cables have standing-wave current, resonance and a frequency-dependent effective length; measure their current distribution or use a suitable antenna/channel model. A crossover inferred from invalid high-frequency extrapolation is not a design result.
+
+**A measurement sequence.** Measure cable common-mode current with a characterized current probe, distinguish it from differential current, and compare emissions while changing cable position and the connector's return path. Then test a choke or connector filter for common-mode attenuation while checking that its parasitics preserve the intended differential signal. Keep the board's hot loops small and bond shields according to the enclosure and interface design. An emission estimate helps identify a mechanism; compliance depends on the applicable standard, detector, bandwidth, geometry and test site.
 </section>
 
 <section id="check">
