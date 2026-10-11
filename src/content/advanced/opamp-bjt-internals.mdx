@@ -111,7 +111,7 @@ For an undegenerated bipolar pair, $g_{m1} = I_T/2U_T$, so $I_T/g_{m1} = 2U_T$ �
 
 <Equation tex={String.raw`SR\approx2U_T\cdot2\pi f_u\approx0.33\ \text{V/}\mu\text{s per MHz}`}/>
 
-That answers the opening question. For a given bandwidth, the bipolar pair's high transconductance per microamp means it needs only a little tail current, and that small current then charges $C_C$ slowly. The ratio of slew rate to bandwidth is fixed by $U_T$, a physical constant. A 1 MHz bipolar op amp slews at about a third of a volt per microsecond, whatever its designer does with currents and capacitors.
+That answers the opening question. For a given bandwidth, the bipolar pair's high transconductance per microamp means it needs only a little tail current, and that small current then charges $C_C$ slowly. In this simple undegenerated architecture the ratio is set by $U_T$, which depends on temperature. At 300 K, changing only the tail current and compensation capacitor retains the roughly one-third V/µs per MHz ratio; degeneration and slew-boosting change the model.
 
 <SlewGbwFigure/>
 
@@ -146,6 +146,44 @@ An op amp must also survive a short circuit to ground or a rail:
 **Input range.** An NPN input pair's common-mode range stops about a volt above the negative rail (tail compliance plus $V_{BE}$) and a volt or two below the positive rail. Some bipolar input stages exhibit phase reversal when driven beyond their range: the output jumps to the wrong rail. Check the datasheet's input range, not just the supply.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Bipolar inputs give the most $g_m$ per microamp, hence low voltage noise and high gain, but base current, current noise and <em>a slew rate tied to bandwidth by $2U_T$</em>: about 0.33 V/µs per MHz unless the input stage is degenerated.</p></div>
+
+</section>
+
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Connect internal design choices to precision and overload behavior</h2></div>
+
+<h3>Follow the error through the transistor stages</h3>
+
+A transistor-level sketch explains specifications only after its operating point is valid. Check tail-source compliance, input-pair collector voltages, mirror saturation, second-stage bias and output-driver headroom. If an input device saturates, its incremental $g_mr_o$ gain is no longer the gain used in the loop analysis. A folded input architecture moves the signal current to a different voltage level; it can extend common-mode range at the cost of extra current sources, noise and internal capacitance.
+
+The mirror-loaded pair combines changes in both branches, so its effective differential-to-single-ended transconductance can approach $I_T/(2U_T)$ in this teaching model. A plain one-collector output gives about half that value. These conventions explain many apparent factor-of-two disagreements between internal-design equations. State where the signal is taken and whether the current is one branch or the tail.
+
+<h3>Bias-current cancellation does not cancel shot noise</h3>
+
+Suppose each input transistor needs 100 nA base current and an independent cancellation source supplies 99 nA. The net DC bias is 1 nA, but the two uncorrelated noise powers add:
+
+<Equation tex={String.raw`i_n=\sqrt{2qI_{B}+2qI_{cancel}}\approx0.253\ \mathrm{pA}/\sqrt{\mathrm{Hz}}`}/>
+
+Through 1 MΩ that becomes 253 nV/√Hz, even though the DC bias error is only 1 mV. Through 100 Ω it is negligible compared with a few nV/√Hz voltage noise. Real cancellation sources may have correlations or additional excess noise; the example explains why selecting solely by net bias current can fail. Super-beta devices reduce the base-current requirement itself, but can impose different protection, breakdown and input-overload constraints.
+
+<h3>Separate small-signal speed from charging current</h3>
+
+For the simple undegenerated pair, the earlier $SR/f_u$ relation follows because the same tail current sets both small-signal transconductance and maximum compensation-capacitor current. Emitter degeneration lowers incremental transconductance while retaining charging current; slew boosting increases available current during a large error; other architectures steer charging current differently. Therefore the 0.33 V/µs per MHz result is a **model benchmark**, not a limit on every bipolar amplifier. Temperature changes $U_T$, and asymmetrical charging paths can give different positive and negative slew rates.
+
+Increasing current also changes noise, dissipation and self-heating. At 30 V total supply, another 1 mA consumes 30 mW. If package thermal resistance is 100 °C/W, that gives a 3 °C steady temperature rise. A 0.2 µV/°C offset drift then contributes 0.6 µV before any gradient-induced transient effects.
+
+<details>
+<summary>Worked self-check: is a high-gain input stage always better?</summary>
+<div>
+
+Doubling branch current approximately doubles $g_m$ but also halves $r_o\approx V_A/I_C$, so intrinsic $g_mr_o\approx V_A/U_T$ need not improve. With a fixed external load, gain can improve until that load or mirror dominates. More current improves some speed/noise terms while increasing input current and heat; evaluate the actual node resistance rather than assuming gain scales with current.
+
+</div>
+</details>
+
+<p className="reference-note">Source connections: TAOE §4.4.1 and precision input/output discussion; Huijsing §§4.1, 7.4.1 and chapter 6. The cancellation-noise and heat examples use original assumptions.</p>
+
 
 </section>
 

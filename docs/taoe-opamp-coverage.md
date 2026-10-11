@@ -47,3 +47,5 @@ Completed checkpoint: [77 — Ideal op amps and feedback](https://hebert.phd/ele
 Completed checkpoint: [78 — Real op amps: the DC error budget](https://hebert.phd/electronics/opamp-dc-errors/#precision-depth). Added “Design a precision instrument around a complete error budget” with original analysis and worked examples.
 
 Completed checkpoint: [79 — Bandwidth, slew and stability](https://hebert.phd/electronics/opamp-ac-limits/#precision-depth). Added “Compensate the complete loop and budget dynamic precision” with original analysis and worked examples.
+
+Completed checkpoint: [80 — Inside a bipolar op amp](https://hebert.phd/electronics/opamp-bjt-internals/#precision-depth). Added “Connect internal design choices to precision and overload behavior” with original analysis and worked examples.

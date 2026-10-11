@@ -926,6 +926,10 @@ export const advancedChapters = [
         "Add output drive and protection"
       ],
       [
+        "precision-depth",
+        "Connect internal design choices to precision and overload behavior"
+      ],
+      [
         "check",
         "Check your understanding"
       ]
