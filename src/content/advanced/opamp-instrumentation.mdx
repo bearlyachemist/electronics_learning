@@ -150,6 +150,60 @@ The final subtractor's ground end, the **reference** pin, sets the output's zero
 
 </section>
 
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Design the INA input, protection, range and programmable gain together</h2></div>
+
+<h3>Why two followers and a subtractor are only a first attempt</h3>
+
+Two unity followers prevent source loading, but leave the subtractor's resistor mismatch and output-stage noise unchanged. The classic three-amplifier INA instead puts differential gain in the first pair while their common-mode gain remains unity. That reduces the subtractor's input-referred noise and common-mode error. With unequal first-stage feedback resistors, the differential gain becomes $1+(R_{F1}+R_{F2})/R_G$; pure common mode still follows with unity gain, although a differential signal can shift the first-stage output common mode. Matching helps preserve internal range even where the gain law needs only their sum.
+
+A discrete INA lets the designer choose quiet inputs, access internal nodes and tailor protection. An integrated INA can provide trimmed resistor tracking, compact layout and specified CMRR. Neither eliminates the need to check the internal-output range. Other architectures use two amplifiers, current feedback, replicated differential voltage across a gain resistor, or switched-capacitor transfer. Their reference range, differential-input limits and gain laws can differ from the three-amplifier model.
+
+<h3>Current noise and source balance remain input problems</h3>
+
+For two independent input voltage-noise sources each at 10 nV/√Hz, their differential contribution is 14.14 nV/√Hz. A downstream 20 nV/√Hz noise source contributes only 0.2 nV/√Hz referred through preceding differential gain 100. But 1 pA/√Hz input current noise through each 100 kΩ source contributes 100 nV/√Hz per side, or 141.4 nV/√Hz differentially. Early gain cannot reduce noise already generated at the sensor inputs.
+
+Equal average bias currents flowing through unequal source resistances create a differential offset. With 2 nA bias and a 10 kΩ resistance imbalance, that error is 20 µV. Bias mismatch adds another term even with balanced sources. Match impedances where practical, select suitable input technology, and include capacitance when predicting AC CMRR. A common-mode guard can reduce leakage and loading to a surrounding shield; it does not remove capacitance **between** the two signal conductors. Individually driven guards address that differential loading but require stable drivers and correct guard voltages.
+
+<h3>Give isolated sources a defined bias path</h3>
+
+A transformer or capacitor-coupled sensor may supply no DC return. Add balanced resistors from the inputs to a valid bias reference. With 10 MΩ returns and 10 nA input current, the inputs can move by 100 mV. If the two currents differ by 1 nA, another 10 mV differential error appears before gain. A sensor can have a tiny signal and still drive the INA outside its input range through missing bias paths.
+
+The output relation $v_o=Gv_d+V_R$ is only an external constraint. For first-stage gain 100 and $v_d=10$ mV, its internal outputs are approximately $V_{CM}\pm0.5$ V. On a 3.3 V supply with internal output limits 0.2–3.1 V, that requires $V_{CM}$ between 0.7 and 2.6 V before final-stage constraints are applied. Setting the final reference to 1.65 V does not move those internal outputs. Use the device's gain-dependent common-mode/output range diagram when supplied.
+
+<h3>Protection and filtering must preserve balance</h3>
+
+An illustrative input filter uses 1 kΩ in each arm, matched 100 pF capacitors from each input to the local quiet reference, and 10 nF between inputs. Common-mode bandwidth is about 1.59 MHz; differential bandwidth is $1/[2\pi R(C_{CM}+2C_D)]\approx7.92$ kHz. The large differential capacitor makes small mismatches in common-mode capacitors less dominant for differential disturbances, but it does not excuse poor component matching or RF layout. The two resistors add roughly 5.76 nV/√Hz differential Johnson noise at 300 K.
+
+RF can rectify in input junctions and appear as a DC shift, so an output low-pass cannot undo it. Filter before the nonlinear input, shorten loops and manage shielding. Protection also needs a transient current and energy calculation: $i=C\,dv/dt$ means just 1 pF passes 100 mA during a 100 V/ns edge. Series impedance and clamping must handle both the initial capacitive pulse and sustained overdrive. Verify clamp leakage, capacitance, maximum input current, power-off behavior and where the clamped current goes. A bypassed protection node inside the permitted input range can be more effective than a clamp one diode drop beyond a rail.
+
+<h3>Trim, sense and program the quantity that matters</h3>
+
+Offset trim changes the zero; CMRR trim balances common-mode feedthrough. Adjusting one does not necessarily fix the other. A REF pin tied through a resistive potentiometer can spoil internal ratio matching; use a low-impedance driver if the architecture requires it. A separate SENSE pin, where available, can correct output lead resistance by returning feedback from the load. That adds cable impedance and capacitance to the loop and must be checked for stability.
+
+At gain 100 with $R_F=10$ kΩ per side, $R_G=202.02$ Ω. A 1 Ω switch resistance in series with $R_G$ gives gain about 99.51, a 0.49% error. Integrated programmable-gain INAs can avoid this error with carefully placed switches and trimmed ratios, but each gain still has its own noise, bandwidth, CMRR and settling. Allow time after channel or gain switching before conversion, and calibrate gain-dependent offset if necessary. Auto-zero INAs reduce drift but retain switching artifacts, input pulses and overload constraints from Chapter 82.
+
+<h3>An INA can measure current or close a current-control loop</h3>
+
+Amplifying a Kelvin shunt voltage gives $v_s=G I R_S$. Comparing it with a command and driving a transistor yields $I=V_{cmd}/(GR_S)$ while the actuator has compliance. For $G=20$, $R_S=0.1$ Ω and a 1 V command, the target is 0.5 A; a 20 µV INA input offset contributes 0.2 mA current error. The INA adds poles, so the current-loop bandwidth must account for its gain setting and the transistor/load dynamics. Chapter 92 develops those dynamics.
+
+To generate two outputs from a single-ended INA result, drive a follower and an inverter around a controlled reference: $v_{o+}=V_C+v_d/2$, $v_{o-}=V_C-v_d/2$. Independent errors and settling can unbalance them. A fully differential amplifier controls differential gain and output common mode together; Chapter 94 derives that interface and its ADC constraints.
+
+<details>
+<summary>Worked self-check: does a higher gain always improve the measurement?</summary>
+<div>
+
+Increasing first-stage gain from 10 to 100 reduces downstream input-referred noise tenfold. But a 20 mV differential input now requires 2 V separation between internal outputs, rather than 0.2 V. On a low supply that can invalidate the common-mode range. Increase gain only after checking the largest signal, baseline and transient at all internal nodes.
+
+</div>
+</details>
+
+<p className="reference-note">Source connections: TAOE §§5.15 and 5.16.1–5.16.13; Asadi §3.6; Huijsing's instrumentation-port and input-error discussions. Protection and filter values are teaching examples, not a certified transient rating.</p>
+
+
+</section>
+
 <section id="check">
 
 <div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>

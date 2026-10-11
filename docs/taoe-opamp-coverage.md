@@ -59,3 +59,5 @@ Completed checkpoint: [83 — Noninverting amplifiers and buffers](https://heber
 Completed checkpoint: [84 — Inverting and summing amplifiers](https://hebert.phd/electronics/opamp-inverting-summing/#precision-depth). Added “Budget reference currents, range switching and T-network feedback” with original analysis and worked examples.
 
 Completed checkpoint: [85 — Difference amplifiers and resistor CMRR](https://hebert.phd/electronics/opamp-difference/#precision-depth). Added “Preserve Kelvin accuracy and common-mode rejection in real wiring” with original analysis and worked examples.
+
+Completed checkpoint: [86 — Instrumentation amplifiers](https://hebert.phd/electronics/opamp-instrumentation/#precision-depth). Added “Design the INA input, protection, range and programmable gain together” with original analysis and worked examples.

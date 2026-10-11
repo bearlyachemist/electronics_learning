@@ -1188,6 +1188,10 @@ export const advancedChapters = [
         "Give the reference a real driver"
       ],
       [
+        "precision-depth",
+        "Design the INA input, protection, range and programmable gain together"
+      ],
+      [
         "check",
         "Check your understanding"
       ]
