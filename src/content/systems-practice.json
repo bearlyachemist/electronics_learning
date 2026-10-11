@@ -453,5 +453,40 @@
         }
       ]
     }
+  ],
+  "adc-flash-pipeline": [
+    {
+      "tag": "HARDWARE",
+      "title": "Comparator growth",
+      "prompt": "How many ideal full-flash comparators are required for 6 bits and 10 bits?",
+      "hint": "Every internal threshold needs a comparison.",
+      "solution": [
+        {
+          "text": "Counts are 63 and 1023. The ratio is about 16.24, illustrating exponential hardware growth."
+        }
+      ]
+    },
+    {
+      "tag": "RESIDUE",
+      "title": "A redundant stage stays reversible",
+      "prompt": "For normalized input x = −0.4, compute the ideal 1.5-bit decision and residue, then reconstruct x.",
+      "hint": "Use thresholds at ±0.25 and r = 2x − d.",
+      "solution": [
+        {
+          "text": "Decision is d = −1; residue is 0.2. Reconstruction (−1 + 0.2)/2 gives −0.4. The residue is within [−1,1]."
+        }
+      ]
+    },
+    {
+      "tag": "LATENCY",
+      "title": "Rate is not immediate response",
+      "prompt": "A 125 MS/s ADC has eight sample-clock cycles of latency. Find latency and sample spacing.",
+      "hint": "Both quantities use the same clock but different cycle counts.",
+      "solution": [
+        {
+          "text": "Spacing is 8 ns; pipeline latency is 64 ns before output-link and processing delays."
+        }
+      ]
+    }
   ]
 }

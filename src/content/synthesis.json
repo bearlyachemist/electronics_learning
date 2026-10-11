@@ -4599,5 +4599,48 @@
       ]
     ],
     "sources": "The Art of Electronics, §13.7; ADI MT-021; original RC example"
+  },
+  "adc-flash-pipeline": {
+    "title": "Interleaving timing error grows with input frequency",
+    "setup": "Two ADC paths have 10 ps relative timing skew. Use the small-skew image amplitude approximation; other mismatch terms are absent.",
+    "equation": "A_{image}/A_{signal}\\simeq\\pi f_{in}\\Delta t",
+    "columns": [
+      "Input frequency",
+      "Image amplitude ratio",
+      "Approximate spur"
+    ],
+    "rows": [
+      [
+        "1 MHz",
+        "0.000031416",
+        "−90.06 dBc"
+      ],
+      [
+        "10 MHz",
+        "0.00031416",
+        "−70.06 dBc"
+      ],
+      [
+        "100 MHz",
+        "0.0031416",
+        "−50.06 dBc"
+      ]
+    ],
+    "analysis": [
+      "One decade higher input frequency raises the timing-mismatch spur by 20 dB under the small-skew model.",
+      "DC offset calibration does not measure this derivative-dependent mismatch."
+    ],
+    "limits": "Large skew, non-sinusoidal signals and additional channel mismatches need a fuller model.",
+    "connections": [
+      [
+        "/sampling-converter-errors/",
+        "Jitter and dynamic tests"
+      ],
+      [
+        "/differential-pairs/",
+        "Timing symmetry"
+      ]
+    ],
+    "sources": "The Art of Electronics, §13.6; ADI MT-020 and MT-024; original interleaving model"
   }
 }

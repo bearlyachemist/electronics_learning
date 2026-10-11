@@ -1,0 +1,104 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot,PowerCircuit,MatchCircuit} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 108</span><span className="hairline"/>DATA CONVERTERS</div>
+
+<h1>Flash, pipeline and interleaved ADCs<br/><em>Parallel decisions trade hardware for speed.</em></h1>
+
+<p className="dek">Derive comparator count, coarse/fine residue conversion and redundant pipeline stages, then quantify latency and the offset, gain and timing errors of interleaving.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="flash">
+
+<div className="section-heading"><span>01</span><h2>Make every threshold decision in parallel</h2></div>
+
+An ideal N-bit flash ADC compares the input with all $2^N-1$ internal thresholds at once. A resistor ladder or other threshold generator supplies the levels. Comparator outputs ideally form a thermometer pattern: those below the input are asserted, those above are not. Encoding logic converts that boundary into a binary result.
+
+<Equation tex={String.raw`N_{comparators}=2^N-1,\qquad T_k=kV_S/2^N`}/>
+A 4-bit flash uses 15 comparators; 8 bits needs 255; 12 bits would need 4095. This exponential growth increases input loading, reference distribution, power and matching demands. The comparisons are parallel, but sample aperture, comparator regeneration and encoding still take finite time.
+
+A 3-bit example with 1 V span uses thresholds at 0.125, 0.25, …, 0.875 V. An input of 0.61 V exceeds four thresholds and maps to code 4 under a floor-bin convention. Near a threshold, comparator noise and offset can change the decision. If the thermometer word contains an isolated wrong bit, it has a **bubble**. Bubble-tolerant encoding can suppress some patterns, but an arbitrary bad word cannot be repaired without enough information.
+
+Different comparator aperture times create dynamic error even if their DC offsets are small. A rapidly moving input may cross thresholds while the bank is deciding. An input track-and-hold can give all comparators a more consistent sample, at the price of its own noise, bandwidth and linearity requirements. Metastability in a comparator or encoder can produce rare errors not apparent in an average FFT.
+
+<SystemsFlow labels={["Input hold|common sample", "Threshold bank|parallel tests", "Thermometer word|boundary + bubbles", "Encoder|binary result"]} caption="Flash spends parallel comparator hardware to reduce the sequence of analog decisions."/>
+Flash remains a useful low-bit sub-block in larger architectures. Folding and interpolation approaches can reduce hardware by reusing periodic or interpolated threshold structures, but introduce their own alignment and linearity problems. They should not be assumed to have the same mismatch behavior as a full ladder flash.
+
+</section>
+
+<section id="subranging">
+
+<div className="section-heading"><span>02</span><h2>Convert the residual instead of the full input again</h2></div>
+
+A two-step converter first makes a coarse decision, converts that decision back to analog with a DAC, subtracts it from the held input and amplifies the remainder. A fine ADC digitizes that smaller interval. Reusing a small flash bank can replace the enormous full-resolution bank, but the residue path now needs accurate DAC levels, gain and settling.
+
+<Equation tex={String.raw`v_r=G(v_{in}-V_{DAC,coarse}),\qquad v_{in}=V_{DAC,coarse}+v_r/G`}/>
+For a teaching 6-bit, 1 V-span converter, a 3-bit coarse stage identifies a 0.125 V interval and gain 8 maps that interval to the fine stage's 1 V range. At 0.68 V input, coarse lower boundary is 0.625 V and residue is 0.44 V. A 3-bit fine result of 3 contributes $3/64$ V; concatenated ideal code is $5\times8+3=43$, corresponding to lower boundary 0.671875 V.
+
+If the coarse threshold is wrong but its DAC subtracts the nominal coarse value, the residue can leave the fine ADC's range, creating missing or badly wrong codes. Redundant range lets the next stage absorb some coarse comparator error. It does not remove an arbitrary residue-DAC weight error: that error changes the analog quantity passed onward.
+
+</section>
+
+<section id="pipeline">
+
+<div className="section-heading"><span>03</span><h2>Derive a redundant 1.5-bit stage</h2></div>
+
+A pipeline overlaps different samples across stages. While stage one processes sample n, later stages process earlier samples. The steady output can contain one result each clock even though a particular sample takes several clocks to emerge. Throughput and latency are therefore different specifications.
+
+A useful normalized redundant stage accepts $x=v_{in}/V_R$ in [−1,1]. Two comparators at approximately ±0.25 choose $d=-1,0,+1$. Its residue is $r=2x-d$. This is often called a 1.5-bit stage because it uses three decisions represented by two bits with redundancy, rather than contributing two independent net bits.
+
+<Equation tex={String.raw`d=\begin{cases}-1&x<-1/4\\0&|x|\le1/4\\1&x>1/4\end{cases},\qquad r=2x-d,\qquad x=(d+r)/2`}/>
+At $x=0.6$, the first decision is +1 and residue 0.2. The next stage decides 0 and produces 0.4. A third decides +1 and produces −0.2. Reconstructing $1/2+0/4+1/8-0.2/8$ gives 0.6. Digital correction aligns and combines weighted decisions; it is not simple concatenation of the raw two-bit stage words.
+
+If the positive comparator threshold shifts from 0.25 to 0.30, an input 0.28 can choose d = 0 instead of +1. Its residue becomes 0.56, still within the next stage's range; the reconstruction can remain correct. Redundancy tolerates a bounded comparator decision error while the residue stays valid. Gain error, nonlinear settling and sub-DAC mismatch still create transfer errors unless separately calibrated.
+
+Residue amplifiers need to settle within a fraction of a clock. Early-stage errors have large input-referred weight and often set much of the converter's noise and linearity. Later errors are divided by preceding gain when referred to the input. Pipeline-SAR and other hybrid products mix these principles; architecture names are useful descriptions, not guaranteed speed/precision categories.
+
+</section>
+
+<section id="interleave">
+
+<div className="section-heading"><span>04</span><h2>Use multiple sample paths without assuming they match</h2></div>
+
+Time interleaving uses M ADC channels sampling in staggered phases, creating total rate $Mf_{channel}$. It is another way to reuse manageable sub-converters at a higher aggregate rate. Their offset, gain, bandwidth and aperture timing must match or be calibrated.
+
+For two channels, alternate offset values create a pattern at $f_s/2$. Gain mismatch modulates the input and creates images around $f_s/2\pm f_{in}$. Relative timing skew creates an error proportional to input derivative, so its spurs become worse at high input frequency. Under a small-skew two-channel model with relative delay $\Delta t$, the image-to-signal amplitude scale is approximately $\pi f_{in}\Delta t$.
+
+<Equation tex={String.raw`\frac{A_{image}}{A_{signal}}\simeq\pi f_{in}\Delta t,\qquad Spur_{dBc}\simeq20\log_{10}(\pi f_{in}\Delta t)`}/>
+At 10 MHz and 10 ps relative skew, this gives about −70.1 dBc. At 100 MHz it becomes about −50.1 dBc. A correction that aligns low-frequency DC readings cannot expose this timing mismatch. Background calibration may estimate and track it, but convergence, residuals and response to input spectrum must be assessed.
+
+Interleaved outputs may have internal correction and alignment already applied. Check whether the data sheet quotes aggregate or per-channel sample rate, output latency and channel synchronization. A multi-channel ADC is not necessarily an interleaved single channel; the distinction affects timing and use.
+
+</section>
+
+<section id="selection">
+
+<div className="section-heading"><span>05</span><h2>Match the architecture to the whole channel</h2></div>
+
+For a 100 MS/s pipeline with seven-cycle latency, a sample emerges about 70 ns after its pipeline input, before any serializer and software delay. The converter may still accept a new sample every 10 ns. A control loop cares about the total delay; an RF receiver may care more about sustained throughput and spectral purity.
+
+A 14-bit ADC at 100 MS/s creates 1.4 Gbit/s raw payload per channel. Parallel, LVDS or serialized output links add clocking, framing and physical-channel requirements. Decimation can reduce delivered rate while adding filtering delay. Bring the converter's sample clock, data clock and system synchronization into one timing plan.
+
+Check analog input bandwidth and SINAD at the desired input frequency, not just sample rate. A 100 MS/s part may sample a higher-frequency band if its analog front end and clock allow it, but anti-alias planning remains essential. Input kickback, differential common mode and reference loading still exist in fast architectures. Test realistic blockers and multi-tone crest factor to avoid hidden clipping.
+
+Primary architecture references: [ADI MT-020, The Flash Converter](https://www.analog.com/media/en/training-seminars/tutorials/MT-020.pdf) and [ADI MT-024, Pipelined Subranging ADCs](https://www.analog.com/media/en/training-seminars/tutorials/MT-024.pdf). The trial values, redundant-stage reconstruction and timing examples here are original.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/adc-flash-pipeline/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §13.6; ADI MT-020 and MT-024 (linked above); original pipeline and interleaving calculations. Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>

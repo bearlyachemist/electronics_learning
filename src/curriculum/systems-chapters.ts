@@ -492,5 +492,43 @@ export const systemsChapters = [
         "Check your understanding"
       ]
     ]
+  },
+  {
+    "id": "adc-flash-pipeline",
+    "number": "108",
+    "title": "Flash, pipeline and interleaved ADCs",
+    "href": "/adc-flash-pipeline/",
+    "practice": "/adc-flash-pipeline/practice/",
+    "group": "Data converters",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "flash",
+        "Make every threshold decision in parallel"
+      ],
+      [
+        "subranging",
+        "Convert the residual instead of the full input again"
+      ],
+      [
+        "pipeline",
+        "Derive a redundant 1.5-bit stage"
+      ],
+      [
+        "interleave",
+        "Use multiple sample paths without assuming they match"
+      ],
+      [
+        "selection",
+        "Match the architecture to the whole channel"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
   }
 ];
