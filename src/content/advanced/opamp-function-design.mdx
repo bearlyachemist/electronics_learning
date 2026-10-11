@@ -1,3 +1,4 @@
+import {PulseTimingFigure,DifferentialDriverFigure,SwitchedVcoFigure} from '../../components/TimingDifferentialFigures';
 import Equation from '../../components/Equation.astro';
 import {OpAmpFigure} from '../../components/OpAmpFigures';
 import {LogTransferFigure,SchmittCircuit,SchmittFigure,WienStartupFigure,SignalChainFigure} from '../../components/OpAmpStudyFigures';
@@ -186,6 +187,90 @@ That answers the opening question. A circuit that computes the right function is
 **Validate in stages:** DC operating points and internal ranges, resistor ratios, AC response with finite-gain op amps, transients and settling, noise integrated over the real bandwidth. The MOSFET and op-amp chapters provide the models, but every connection between stages creates a new loading, range or feedback question. State each one explicitly before calling the design complete.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A feedback element defines a function; <em>a budget defines an instrument</em>. Enumerate every error, refer it to one place, compare it with the specification, and check it at every extreme before connecting the last wire.</p></div>
+
+</section>
+
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Generate timed signals and drive differential converters</h2></div>
+
+<h3>A programmable pulse width is a charge-balance calculation</h3>
+
+<PulseTimingFigure/>
+
+After a trigger, release the timing capacitor from reset and charge it with current $I_T$. When its voltage reaches $V_T$, a comparator resets the latch and ends the output pulse. Starting from $V_0$,
+
+<Equation tex={String.raw`t_P=\frac{C_T(V_T-V_0)}{I_T}`}/>
+
+For $C_T=10$ nF, $I_T=10$ µA and a programmable threshold 0.2–2.0 V above reset, pulse width is 0.2–2.0 ms. A 1 mV comparator offset gives 1 µs timing error, or 0.5% at the shortest pulse. A 20 pC reset-charge uncertainty gives 2 µs error. Comparator and latch delay add another term that does not scale with programmed pulse width. Define whether a trigger during the pulse is ignored or retriggers; the state machine must enforce that choice.
+
+Ratiometric programming cancels reference drift when the same reference sets current and threshold: $I_T=V_R/R$ and $V_T-V_0=\alpha V_R$ give $t_P=\alpha RC_T$. If instead a control voltage sets charging current and the threshold is fixed, pulse width is inversely proportional to that control voltage. Name which quantity is programmed before claiming linear control. Reset must discharge the capacitor reproducibly and leave enough recovery time before the next trigger.
+
+<h3>A single-supply VCO alternates equal current between two thresholds</h3>
+
+Use an integrator, a comparator/latch and a polarity-selecting current path to alternate $+I$ and $-I$ through a timing capacitor. A single-supply implementation keeps the integrator's reference and capacitor voltage in valid ranges and uses threshold references rather than negative physical rails. The two transitions bound a triangle output; the latch gives the square output.
+
+<Equation tex={String.raw`T=\frac{C\Delta V}{I_{up}}+\frac{C\Delta V}{I_{down}},\qquad I_{up}=I_{down}=\frac{V_C}{R}\ \Rightarrow\ f=\frac{V_C}{2RC\Delta V}`}/>
+
+For $R=100$ kΩ, $C=10$ nF and $\Delta V=1$ V, the slope is 500 Hz/V. Control from 0.1 to 2 V gives 50–1000 Hz. If current generation and thresholds share a reference, frequency can depend on a voltage **ratio**, improving immunity to reference drift. But amplifier offset and bias current create a residual current: a 50 µV effective control offset is 0.05% at 100 mV, yet 5% at 1 mV. Near zero command the circuit can stall or drift rather than maintaining a perfect proportional frequency law.
+
+Unequal up/down currents change duty cycle. With 10.1 and 9.9 µA, the two slopes differ by about 2%; total frequency changes much less because the reciprocal-current sum partly cancels the first-order mismatch. Threshold error, capacitance voltage coefficient, switch feedthrough and comparator delay still affect period and triangle amplitude. Budget the shortest half-cycle and all control-dependent internal swings.
+
+<SwitchedVcoFigure/>
+
+The switched-integrator implementation makes those equal currents explicitly. With $V_+=V_C/2$ and a 50 kΩ input resistor, the off-state input current is $V_C/(100\text{ k}\Omega)$. Turning on the grounded switch adds a 25 kΩ path, drawing $V_C/(50\text{ k}\Omega)$: twice the original current, so the **net** capacitor current reverses. For a steady control voltage, the output slopes are therefore $\pm V_C/(100\text{ k}\Omega\,C_T)$. With $V_R=3$ V, thresholds 1 and 2 V, and $C_T=10$ nF, the previous 500 Hz/V result follows. This version requires the op amp's inputs to work from near ground through 1 V as control ranges 0–2 V; its output ramps between 1 and 2 V. Those are separate range checks.
+
+A 100 Ω on-resistance added to the 25 kΩ switch arm reduces its current by about 0.398%, changing the smaller difference current and hence ramp symmetry by roughly 0.8%. Control feedthrough and changing $V_C$ introduce additional transient terms; the frequency law assumes the control is approximately constant during a cycle. The Schmitt block must command Q on at the lower threshold and off at the upper threshold, with a defined initial latch state.
+
+<h3>Through-hole and surface-mount versions need the same electrical tests</h3>
+
+A through-hole prototype makes probing and replacement convenient; a compact surface-mount layout shortens high-frequency loops and reduces parasitic inductance. Neither package style guarantees good operation. Keep the timing capacitor and summing-node connection short, route comparator output edges away from the analog control input, decouple each IC locally, and keep return currents out of the reference path. Breadboard stray capacitance matters especially with small timing capacitors; an adapter changes pin pitch but retains its own capacitance and inductance. Keep probe pads on the ramp, thresholds, reference and square output so both implementations can be compared by frequency, duty cycle, amplitude, startup and supply sensitivity.
+
+<h3>Zero-crossing detection has a slope-dependent timing error</h3>
+
+A comparator observing a low-voltage sine can produce logic edges at each reference crossing. Its input common-mode range, overdrive recovery and output type must fit the circuit. An open-collector/open-drain output requires a pull-up; 10 kΩ with 20 pF gives a 200 ns RC time constant, which can dominate rising-edge timing even for a fast comparator. Push-pull logic-level outputs solve a different load problem.
+
+An input error $V_E$ shifts the crossing by approximately $\Delta t=V_E/(2\pi fV_{pk})$. A 1 mV offset on a 1 V peak, 1 kHz sine shifts the edge by 159 ns. Hysteresis prevents chatter in noise but deliberately moves the rising and falling thresholds; 10 mV thresholds give about 1.59 µs shift near zero in that example. Comparator propagation delay and timing jitter add separately. This analysis assumes a safely scaled low-voltage input; any high-voltage source needs an appropriate isolated/scaled interface rather than a direct connection to the amplifier inputs.
+
+<h3>Fully differential drive controls two independent output coordinates</h3>
+
+<DifferentialDriverFigure/>
+
+Define $v_{od}=v_{o+}-v_{o-}$ and $V_{OCM}=(v_{o+}+v_{o-})/2$. For the matched ideal voltage-feedback network shown, KCL at the two equal input-node voltages gives
+
+<Equation tex={String.raw`v_{od}=\frac{R_F}{R_G}(v_2-v_1),\qquad v_{o+}=V_{OCM}+\frac{v_{od}}2,\qquad v_{o-}=V_{OCM}-\frac{v_{od}}2`}/>
+
+With gain 2, differential input ±0.5 V and common-mode output 1.65 V, differential output is ±1 V and each output moves only between 1.15 and 2.15 V. Differential peak-to-peak swing is 2 V while each output's peak-to-peak swing is 1 V. The common-mode control loop sets their average; it has its own input range, output loading and dynamics. A two-op-amp follower/inverter can create a balanced pair but lacks the same integrated common-mode control and matching guarantees.
+
+The FDA's **input** common-mode voltage is the voltage at its feedback input nodes, not automatically the source's average or the output common mode. For matched differential drive with $k=R_F/R_G$, the ideal value is $(kV_{in,CM}+V_{OCM})/(k+1)$. At $k=2$, a ground-centered source and 1.65 V output common mode put the amplifier inputs near 0.55 V. That may be outside an FDA whose valid input range begins at 1 V, even though both outputs look comfortably inside the rails. Single-ended drive, finite source resistance and termination change the node equations.
+
+<h3>An ADC loads the driver dynamically</h3>
+
+Many converters switch capacitors at their inputs, creating charge kickback. Equal series isolation resistors and a differential reservoir capacitor reduce the immediate disturbance and isolate the amplifier, but also impose settling time. With 33 Ω per side and 1 nF between ADC inputs, differential time constant is $2RC=66$ ns and the pole is about 2.41 MHz. A full-span step settling to half an LSB at 16 bits requires about $66\text{ ns}\times17\ln2=778$ ns in this RC-only model. An acquisition interval of 250 ns therefore cannot be justified from the sampling rate alone.
+
+A 10 pC differential charge kick on 1 nF creates about 10 mV initial disturbance. Settling that to 15.3 µV, half an LSB for a 2 V span at 16 bits, takes about 428 ns in the same ideal RC model. The real driver adds its own recovery and stability constraints. A 5 nV/√Hz differential white-noise source integrated through this single pole has ENBW 3.79 MHz and roughly 9.73 µV RMS noise; resistor and amplifier noise must be added through their actual transfers. This charge-reservoir filter alone is not a sufficient anti-alias design for an arbitrary sampling rate.
+
+Sharing supply rails can reduce some overdrive risks, but output transients, power sequencing and clamp currents still require checking. Some ADC common-mode reference outputs need buffering before driving an FDA's $V_{OCM}$ pin; verify permitted loading and bandwidth in both interfaces.
+
+<h3>Balanced links and impedance matching need port-level gain definitions</h3>
+
+For a 100 Ω differential cable, two 50 Ω source resistors provide a 100 Ω differential source termination. A driver producing 4 V peak-to-peak differentially delivers 2 V peak-to-peak into a matched 100 Ω receiver termination; peak differential load current is 10 mA. Include that factor of two in the gain specification. An unterminated short link has different gain and reflection behavior.
+
+A single-ended source driving a feedback FDA does not necessarily see $R_G$ as its input resistance, because the input node is not fixed at ground. Choose termination so the **total** port impedance matches the source, include source/termination resistance in the two feedback-arm impedances, then rederive the gain. State whether gain refers to open-circuit source voltage, terminated input voltage or receiver voltage. Balanced amplitude alone also does not provide galvanic isolation: an ordinary FDA with low common-mode output impedance resists externally shifting both lines. Transformer coupling or a driver designed for high common-mode impedance can serve different grounding requirements, with their own bandwidth and overdrive limitations.
+
+Select an FDA by supply and input range, per-output swing/current, differential noise and distortion, resistor/gain requirements, common-mode control range, capacitive-load stability, settling to the ADC's accuracy and package/layout constraints. Its differential and common-mode loops both matter.
+
+<details>
+<summary>Worked self-check: why can an ADC driver clip even though differential voltage is small?</summary>
+<div>
+
+A 1 V differential output centered at 3 V requires outputs at 3.5 and 2.5 V. On a 3.3 V supply the first is impossible. Conversely, moving common mode to 1.65 V gives 2.15 and 1.15 V, which may fit output swing but still does not establish the FDA's input common-mode range. Check the two coordinates and both amplifier/converter limits separately.
+
+</div>
+</details>
+
+<p className="reference-note">Source connections: TAOE §§4.3.2, 4.3.5, 4.6.4–4.6.6 and 5.17.1–5.17.5; Asadi's comparator/oscillator applications and Selvam's voltage/time conversion principles. The timing core, FDA schematic and numerical designs are original.</p>
+
 
 </section>
 

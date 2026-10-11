@@ -1540,6 +1540,10 @@ export const advancedChapters = [
         "Close every budget"
       ],
       [
+        "precision-depth",
+        "Generate timed signals and drive differential converters"
+      ],
+      [
         "check",
         "Check your understanding"
       ]
