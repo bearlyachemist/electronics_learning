@@ -43,3 +43,5 @@ chapters' exercise/review role. Coverage means explaining the topic and its limi
 not copying each historic circuit, part table, exercise or instrument schematic.
 
 Completed checkpoint: [77 — Ideal op amps and feedback](https://hebert.phd/electronics/opamp-ideal/#precision-depth). Added “Use the golden rules within a working feedback loop” with original analysis and worked examples.
+
+Completed checkpoint: [78 — Real op amps: the DC error budget](https://hebert.phd/electronics/opamp-dc-errors/#precision-depth). Added “Design a precision instrument around a complete error budget” with original analysis and worked examples.

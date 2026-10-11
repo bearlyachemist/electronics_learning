@@ -1,3 +1,4 @@
+import {NullMemoryFigure} from '../../components/PrecisionTeachingFigures';
 import Equation from '../../components/Equation.astro';
 import {OpAmpLab} from '../../components/OpAmpLabs';
 import {ErrorModelCircuit,ErrorVsSourceFigure,ThermocoupleBudgetFigure,OffsetNullCircuit} from '../../components/OpAmpStudyFigures';
@@ -151,6 +152,71 @@ Simulation is useful only for the mechanisms included in its model. Asadi's offs
 **Range.** After adding the worst-case errors, check again that the output stays in its swing range and the inputs in their common-mode range. Calibration removes errors at the calibration point only; it does not remove drift, noise, hysteresis or nonlinearity.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>Put each error at its node, keep its sign, refer it to the input, and <em>multiply everything in the bracket by the noise gain</em>. A worst-case budget chooses the op amp and shows what to improve next.</p></div>
+
+</section>
+
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Design a precision instrument around a complete error budget</h2></div>
+
+<h3>Precision, resolution and dynamic range have different budgets</h3>
+
+A 10 mV full-scale meter accurate to 1% allows 100 µV absolute error. That is 1% of full scale but **10% of a 1 mV reading**. To promise 1% of reading at 1 mV, zero error must fall below 10 µV. ADC resolution only sets the step size; it does not remove analog offset, drift, gain error or thermal voltages. State separately the minimum signal, full scale, allowed zero error and allowed scale-factor error.
+
+For a gain-1000 millivoltmeter, 200 µV input offset becomes 200 mV output offset. A 10 MΩ input return converts 10 pA into another 100 µV input error. A precision, low-bias part is needed even if the output meter movement is forgiving. Chapter 92 develops a low-voltage alternative that controls meter **current** directly and avoids depending on coil resistance.
+
+<h3>An analog memory can subtract a large baseline</h3>
+
+<NullMemoryFigure/>
+
+Let a main amplifier produce $y=G(x-h)$, where $h$ is a stored baseline voltage. During NULL, a slow integrator adjusts $h$ according to $dh/dt=y/\tau$. For constant input,
+
+<Equation tex={String.raw`\frac{d(x-h)}{dt}=-\frac{G}{\tau}(x-h),\qquad t_{1\%}=\frac{\tau}{G}\ln100`}/>
+
+With $G=20$ and $\tau=2$ s, the error time constant is 100 ms and 1% nulling takes 461 ms. During HOLD the switch disconnects the correcting signal, and the output shows changes from the stored baseline. If $G$ changes to 200 while $\tau$ stays fixed, nulling becomes ten times faster and less tolerant of extra loop lag. Scale $\tau$ with gain to preserve the nulling bandwidth. The null loop must include the correct inversion; the integrator sign here is positive so a positive output increases the subtracted baseline.
+
+This is a **change measurement**. Initial main-amplifier offset is absorbed into the stored null, while subsequent drift remains. The nulling amplifier's own offset can leave a nonzero residual. A digitally stored baseline and a DAC can serve the same function, but introduce reference, DAC linearity and quantization errors.
+
+<h3>Follow every error to the final input</h3>
+
+For gain stages $G_1,G_2,G_3$, an error added at stage 2's input is referred to the original input by dividing by $G_1$; an error added at stage 3's output is divided by $G_1G_2G_3$. Early gain reduces later error contributions, provided the first stage can tolerate the baseline and common-mode voltage.
+
+| Contribution | Original design assumption | Input-referred bound |
+|---|---|---|
+| Front-end offset change | 0.15 µV/°C across 20 °C | 3 µV |
+| Bias current through source imbalance | 25 pA and 20 kΩ | 0.5 µV |
+| Common-mode change | 0.5 V, 110 dB CMRR | 1.58 µV |
+| Supply change | 0.2 V, 120 dB PSRR | 0.2 µV |
+| Resistor-ratio drift | 2 ppm/°C, 20 °C, 20 mV signal | 0.8 µV |
+| Hold-node droop | 2 pA, 1 µF, 60 s; baseline attenuation 1/100 | 1.2 µV |
+
+The deterministic bounds sum to **7.28 µV**. A separate 0.7 µV RMS noise estimate is not a guaranteed peak limit. Specify the required confidence or detection threshold before combining it with drift. Some terms may correlate; root-sum-square is appropriate only with justified statistical models, not merely because it yields a smaller answer.
+
+<h3>Resistors, capacitors and the nulling switch</h3>
+
+Gain accuracy depends on **ratio** tolerance and ratio tempco. Two individual resistors with 10 ppm/°C absolute coefficients can still differ by 20 ppm/°C in the worst case; a matched network may specify much better tracking. Initial calibration does not correct subsequent ratio drift, voltage coefficient, moisture or unequal self-heating. At 10 V across 10 kΩ, one resistor dissipates 10 mW; a neighboring lightly loaded resistor can be at a different temperature.
+
+A hold capacitor has three distinct errors: leakage causes continuous droop, dielectric absorption recalls earlier voltages after reset, and switch charge causes a step. For 1 µF, 2 pA gives 2 µV/s; 1 pC injected charge gives 1 µV instantly. A 100 GΩ leakage resistance at 2 V adds 20 pA, ten times the assumed amplifier current. Increasing capacitance reduces current-induced droop but increases acquisition time and may increase total leakage. A leakage-cancellation current proportional to held voltage can correct a simple leakage resistance at one temperature; it cannot erase dielectric absorption and must not overcompensate into a growing hold voltage.
+
+<h3>Input errors that a one-line specification hides</h3>
+
+Input impedance includes both a DC conductance and capacitance. Bias-current cancellation can make average current small without making its noise small; sign and common-mode dependence matter. Offset bounds may apply only at a particular supply and common-mode voltage. Use the actual CMRR and PSRR at the disturbance frequency: 80 dB rejects a 100 mV ripple to 10 µV input equivalent, whereas 120 dB at DC would predict only 0.1 µV. The positive and negative supply rejection can differ.
+
+Thermal EMFs at dissimilar-metal junctions can exceed the amplifier's offset. Minimize temperature gradients, use matched connections, keep power devices away from input junctions, and wait after handling a sensitive board. Protection devices, switches, connectors and board contamination belong in the current budget alongside the amplifier.
+
+If a required parameter is unspecified, record the gap and characterize candidate parts under the intended voltage, temperature and humidity. A favorable typical graph supports a prototype hypothesis; it is not a production guarantee. Distinguish guaranteed design, screened parts and measured one-off performance in the resource's worked examples.
+
+<details>
+<summary>Worked self-check: what remains after a perfect zero adjustment?</summary>
+<div>
+
+A 50 µV initial offset can be nulled at 25 °C, but a 0.2 µV/°C drift gives 4 µV after a 20 °C change. A hold node with 5 pA into 2 µF drifts by 150 µV in 60 s; if its effect at the sensor input is attenuated 100:1, that contributes 1.5 µV. The nulled instrument therefore still has at least a 5.5 µV worst-case drift budget from these two terms.
+
+</div>
+</details>
+
+<p className="reference-note">Source connections: TAOE §§4.4.1–4.4.3 and 5.1–5.7, especially the nulling-amplifier example and its component/input error budget; Huijsing, chapter 4, systematic and random input errors. The memory diagram and budget values are original.</p>
+
 
 </section>
 

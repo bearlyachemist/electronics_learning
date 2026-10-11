@@ -840,6 +840,10 @@ export const advancedChapters = [
         "Include the complete signal source"
       ],
       [
+        "precision-depth",
+        "Design a precision instrument around a complete error budget"
+      ],
+      [
         "check",
         "Check your understanding"
       ]
