@@ -1,4 +1,5 @@
 import {StateVariableExtensionFigure} from '../../components/PracticalBookFigures';
+import {SallenComparisonFigure,SallenStepFigure} from '../../components/SallenKeyTeachingFigures';
 import Equation from '../../components/Equation.astro';
 import {OpAmpFigure} from '../../components/OpAmpFigures';
 import {OpAmpLab} from '../../components/OpAmpLabs';
@@ -48,7 +49,15 @@ Write KCL at the two internal nodes:
 
 <Equation tex={String.raw`\frac{V_Y-V_X}{R_2}+sC_2V_Y=0,\qquad\frac{V_X-V_I}{R_1}+\frac{V_X-V_Y}{R_2}+sC_1(V_X-V_O)=0`}/>
 
-and eliminate $V_X$ and $V_Y$. Two RC sections do not simply multiply: $C_1$ returns a signal from the output, and that feedback is what moves the poles.
+The second node is the easy one. Its only current paths are $R_2$ and $C_2$ because the ideal plus input takes no current. Rearranging gives
+
+<Equation tex={String.raw`V_X=(1+sR_2C_2)V_Y,\qquad V_X-V_O=(1-K+sR_2C_2)V_Y`}/>
+
+Now solve the first-node equation for the input. This makes each current's contribution to the required input voltage visible:
+
+<Equation tex={String.raw`\begin{aligned}V_I&=V_X+R_1\left[\frac{V_X-V_Y}{R_2}+sC_1(V_X-V_O)\right]\\&=(1+sR_2C_2)V_Y+sR_1C_2V_Y+sR_1C_1(1-K+sR_2C_2)V_Y\\&=\left[1+s\{C_2(R_1+R_2)+C_1R_1(1-K)\}+s^2R_1R_2C_1C_2\right]V_Y.\end{aligned}`}/>
+
+Finally multiply $V_Y/V_I$ by $K$. The constant term is dimensionless, the coefficient of $s$ has units of seconds, and the coefficient of $s^2$ has units of seconds squared. Those checks catch missing resistors and capacitors. This derivation assumes a zero-impedance voltage source, an ideal amplifier with constant gain, and zero initial capacitor voltages for the transfer function; initial energy reappears in the transient solution.
 
 </section>
 
@@ -64,7 +73,31 @@ Now the opening question. The damping coefficient $b$ contains $C_1R_1(1 - K)$: 
 
 <Equation tex={String.raw`f_0=\frac{1}{2\pi RC},\qquad Q=\frac{1}{3-K}`}/>
 
-$K$ = 1 gives $Q$ = 0.5, no better than passive RC; $K$ = 1.586 gives the Butterworth $Q$ of 0.707; $K$ = 2 gives 1; at $K$ = 3 the damping vanishes and the circuit oscillates. More gain means more positive feedback through $C_1$ near $f_0$, a sharper resonance.
+At $K=1$, equal components give $Q=0.5$. At $K=3-\sqrt2\approx1.586$, they give the second-order Butterworth $Q=1/\sqrt2$. At $K=2$, $Q=1$; at $K=2.5$, $Q=2$. At exactly $K=3$, the ideal model is **undamped**, with poles on the imaginary axis. Initial energy persists and resonant forcing has no bounded steady state. It does not spontaneously create a sinusoid from zero energy. Above 3 the poles move into the right half-plane and disturbances grow; a real circuit then encounters clipping and other nonlinearities.
+
+<h3>Read damping directly from the differential equation</h3>
+
+<Equation tex={String.raw`a\frac{d^2V_O}{dt^2}+b\frac{dV_O}{dt}+V_O=KV_I,\qquad s_{1,2}=-\frac{\omega_0}{2Q}\pm\omega_0\sqrt{\frac{1}{4Q^2}-1}`}/>
+
+The coefficient $a$ sets the time scale; $b$ removes stored energy. For positive parts, stability requires $b>0$, or $K<1+C_2(R_1+R_2)/(C_1R_1)$. Below $Q=0.5$ there are two distinct real poles. At 0.5 they coincide. Above 0.5 they form a complex pair, but a frequency-response peak appears only above $Q=1/\sqrt2$. Complex poles, step overshoot and passband peaking are related but have different thresholds.
+
+<h3>Why the output-connected capacitor changes everything</h3>
+
+At low frequency with $K=1$, the output follows $V_Y$, which nearly follows $V_X$. Both ends of $C_1$ move together: **bootstrapping** reduces its voltage and its current. In fact $I_{C1}=sC_1(V_X-V_O)=s^2R_2C_1C_2V_Y$. Its leading contribution is second order in frequency. Grounding that capacitor instead would add an ordinary first-order loading current.
+
+<SallenComparisonFigure/>
+
+For equal parts, two unbuffered passive RC sections have denominator $1+3sRC+(sRC)^2$ and $Q=1/3$. Two separately buffered RC sections have $(1+sRC)^2$ and $Q=1/2$. The unity-gain equal-component Sallen–Key matches the **buffered** result with one amplifier. It already removes the extra interstage-loading term; gain above unity cancels further damping. The op amp supplies energy through $C_1$, allowing a sharp response without a physical inductor.
+
+At sufficiently high frequency the output tends toward zero, so $C_1$ behaves approximately like a capacitor to AC ground and the two-capacitor network gives a −40 dB/decade asymptote. This statement applies while the op amp still behaves as the low-impedance controlled source assumed in the derivation.
+
+<h3>A phasor check at the natural frequency</h3>
+
+For equal parts at $\omega_0RC=1$, choose $V_Y$ as the phasor reference. Then
+
+<Equation tex={String.raw`V_X=(1+j)V_Y,\quad I_{R2}=j\frac{V_Y}{R},\quad I_{C1}=[-1+j(1-K)]\frac{V_Y}{R},\quad V_I=j(3-K)V_Y`}/>
+
+Thus $V_O/V_I=-jKQ$: the output lags the input by 90° and its magnitude is $KQ$. The feedback capacitor's current contains both real and imaginary parts. Calling the path “positive feedback” describes its effect on damping; it does not mean every node voltage and current is in phase with the input. With $K=2.5$ and a 100 mV peak input, $V_Y$ is 200 mV peak, $V_X$ is 283 mV peak and the output is 500 mV peak. Check **all** of those excursions against common-mode and output limits.
 
 </section>
 
@@ -76,11 +109,17 @@ $K$ = 1 gives $Q$ = 0.5, no better than passive RC; $K$ = 1.586 gives the Butter
 
 <span className="tiny-label">WORKED EXAMPLE / ONE SECTION, THREE GAINS</span><h3>10 kΩ and 10 nF throughout, so $f_0$ = 1591.5 Hz</h3>
 
-<p>At $K$ = 1, 1.586 and 2.5, $Q$ = 0.5, 0.707 and 2.0. At $f_0$ the gain is $KQ$: 0.5, 1.12 and 5.0, which relative to each section's DC gain is −6.0, −3.0 and +6.0 dB. Only the Butterworth section has its −3 dB point at $f_0$; the $Q$ = 2 section peaks 6 dB above its passband.</p>
+<p>At $K$ = 1, 1.586 and 2.5, $Q$ = 0.5, 0.707 and 2.0. At $f_0$ the gain is $KQ$: 0.5, 1.12 and 5.0, which relative to each section's DC gain is −6.0, −3.0 and +6.0 dB. Only the Butterworth section has its −3 dB point at $f_0$; the $Q$ = 2 section is 6.02 dB above its passband at $f_0$ and peaks slightly earlier, at $0.935f_0$, by 6.30 dB.</p>
 
-<p><strong>Sensitivity.</strong> $dQ/dK = 1/(3 - K)^2$. At $K$ = 2.5 that is 4: a gain error of +0.01 raises $Q$ by 0.04, 2%. At $K$ = 2.9, where $Q$ = 10, the same error raises $Q$ by 1, 10%. The resistor ratio $R_F/R_G$ that sets $K$ must be held correspondingly tightly.</p>
+<p><strong>Sensitivity.</strong> $dQ/dK = 1/(3 - K)^2$. At $K$ = 2.5 that is 4: a gain error of +0.01 raises $Q$ by approximately 0.04, or 2%; the exact result is $1/0.49=2.0408$. At $K$ = 2.9, where $Q$ = 10, the differential estimate is +1, but the exact new value is $1/0.09=11.111$, an 11.1% increase. Small-error linearization becomes less reliable as the stability boundary approaches. The resistor ratio $R_F/R_G$ that sets $K$ must be held correspondingly tightly.</p>
 
 </div>
+
+<h3>Translate the frequency response into what a pulse does</h3>
+
+<SallenStepFigure/>
+
+For $Q>0.5$, a unit step produces a decaying sinusoid around its final value. Its envelope decays at $\alpha=\omega_0/(2Q)$, and its damped ringing frequency is $\omega_d=\omega_0\sqrt{1-1/(4Q^2)}$. The fractional first overshoot is $\exp[-\pi/\sqrt{4Q^2-1}]$. At 1591.5 Hz, the $Q=2$ section rings near 1541 Hz, overshoots by **44.4%**, and has a 400 µs envelope time constant. A 1 V input step eventually gives 2.5 V at $K=2.5$, but its first peak requests 3.61 V. Output range must include that transient. The second-order Butterworth overshoots by 4.32%; “flat amplitude response” does not mean “no overshoot.”
 
 <QSensitivityFigure/>
 
@@ -164,7 +203,27 @@ Start from the specification: passband ripple, stopband attenuation, the frequen
 
 **Source and load.** The source's resistance adds to $R_1$ unless the source is buffered; a heavy load on the output can disturb the op amp. **The op amp.** It needs loop gain at the filter's frequencies and enough slew rate for the largest internal signal. A Sallen–Key low-pass also has a known flaw: at very high frequency the op amp's output impedance rises and signal feeds through $C_1$ directly to the output, so the stopband attenuation stops improving at some tens of decibels; a small RC after the filter or a multiple-feedback topology avoids it.
 
-**Three different frequencies.** A section's natural frequency, its −3 dB frequency and its equivalent noise bandwidth are different numbers unless $Q$ = 0.707. Use the right one for each claim.
+<h3>Natural frequency, cutoff, peak and noise bandwidth</h3>
+
+Let $x=f/f_0$. Dividing the magnitude by its DC gain gives $1/\sqrt{(1-x^2)^2+x^2/Q^2}$. Set its squared denominator to 2 to find the −3 dB frequency relative to DC:
+
+<Equation tex={String.raw`\left(\frac{f_{-3}}{f_0}\right)^2=\frac{2-Q^{-2}+\sqrt{(Q^{-2}-2)^2+4}}{2},\qquad B_N=\int_0^\infty\frac{|H(j2\pi f)|^2}{K^2}\,df=\frac{\pi Q}{2}f_0`}/>
+
+| Q | $f_{-3}/f_0$ | $B_N/f_0$ | Meaning |
+|---|---|---|---|
+| 0.5 | 0.644 | 0.785 | Critical damping; corner below natural frequency |
+| $1/\sqrt2$ | 1.000 | 1.111 | Butterworth; noise bandwidth still exceeds cutoff |
+| 2 | 1.485 | 3.142 | Large resonance raises integrated noise power |
+
+The noise-bandwidth expression concerns white noise entering **before the whole filter**. Op-amp voltage noise, resistor noise and later-stage noise enter through different transfers and need separate integration. For $Q>1/\sqrt2$, the peak occurs at $f_0\sqrt{1-1/(2Q^2)}$ with normalized amplitude $Q/\sqrt{1-1/(4Q^2)}$.
+
+<h3>A source-resistance and amplifier check</h3>
+
+Adding 1 kΩ source resistance to an equal 10 kΩ, 10 nF Butterworth section changes $R_1$ to 11 kΩ. Keeping $K=3-\sqrt2$ gives $f_0\approx1517.5$ Hz and $Q\approx0.721$: both the time scale and damping change. Buffer the source or include its impedance in the design; adding it only to a cutoff estimate misses the Q error. An output load does not enter the ideal input-network equations, but it changes the real amplifier's available swing, current and output impedance.
+
+A finite amplifier has $K(s)=A(s)/[1+\beta A(s)]$, where $\beta=1/K(0)$ is the intended divider fraction when open-loop gain is large. Substitute this complex $K(s)$ into the node derivation. The result is generally **higher order**; a falling magnitude and extra phase alter Q and pole positions. For a first-order feasibility estimate use $|A\beta|\approx f_t/(Kf_0)$, then allow for the increased sensitivity of a high-Q section. At $K=1.586$, $f_0=1.59$ kHz and $f_t=1$ MHz, that estimate is about 396, not infinite. Validate the complete circuit model and measure its peak and step response rather than relying on a universal GBW multiplier.
+
+Slew rate must exceed $2\pi fV_{O,pk}$ at the **largest output amplitude**, including resonant gain. A 1 V peak input at $f_0$ with $K=2.5$, $Q=2$ requests 5 V peak and 0.050 V/µs. A ±4 V output limit clips before a 0.1 V/µs slew limit is reached. Clipping invalidates the linear transfer function even though the small-signal poles remain mathematically well placed.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A Sallen–Key section places a complex pole pair at $f_0 = 1/2\pi\sqrt{R_1R_2C_1C_2}$ with a $Q$ set by gain or by $C_1/C_2$. <em>Cascade sections with different $f_0$ and $Q$</em>, taken from the family's table, to build any classical filter.</p></div>
 
@@ -230,6 +289,6 @@ High-Q sections have internal gain peaks near their natural frequency. Placing t
 
 </section>
 
-<p className="reference">Further reading: Van Valkenburg, <em>Analog Filter Design</em>, chapters 4–6 (Butterworth, Bessel and Chebyshev approximations; Sallen–Key realization and sensitivity); Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §§6.2–6.3 (VCVS filter design table); Asadi, <em>Applied Op Amp Circuits</em>, chapter 8. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
+<p className="reference">Further reading: Van Valkenburg, <em>Analog Filter Design</em>, chapters 4–6 (Butterworth, Bessel and Chebyshev approximations; Sallen–Key realization and sensitivity); Horowitz and Hill, <em>The Art of Electronics</em>, 3rd ed., §4.3.6 and §§6.2–6.3 (active low-pass intuition and VCVS design); Asadi, <em>Applied Op Amp Circuits</em>, chapter 8. Explanations, examples and drawings here are original; the stated teaching models determine the calculations.</p>
 
 <div className="chapter-end"><div><span className="tiny-label">A SEPARATE WORKSPACE</span><h3>Test the design yourself</h3><p>Three problems with hints and worked solutions.</p></div><a className="primary-link" href="/opamp-active-filters/practice/">Open practice →</a></div>

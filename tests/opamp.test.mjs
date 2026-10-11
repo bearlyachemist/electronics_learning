@@ -27,3 +27,24 @@ test('TIA noise gain and feedback reconstruct summing-node KCL',()=>{
 test('uncorrelated noise sums power and scales with square-root bandwidth',()=>{
  const p=noise(),q=noise({bw:40000});close(q.rms,2*p.rms);close(p.density*p.density,25e-18+p.resistor*p.resistor+p.current*p.current);
 });
+test('unequal Sallen-Key parts obey both node equations, including gain feedback',()=>{
+ const r1=12000,r2=18000,c1=22e-9,c2=10e-9,gain=1.4;
+ for(const hz of [0,37,1000,17000]){
+  const p=sallenKey({hz,r1,r2,c1,c2,gain}),s=C(0,2*Math.PI*hz),y=div(p.h,C(gain)),x=mul(y,C(1,2*Math.PI*hz*r2*c2));
+  close(mag(sub(div(sub(x,y),C(r2)),mul(s,mul(C(c2),y)))),0,1e-12);
+  close(mag(sub(div(sub(C(1),x),C(r1)),sub(div(sub(x,y),C(r2)),mul(s,mul(C(c1),sub(p.h,x)))))),0,1e-12);
+ }
+});
+test('Sallen-Key cutoff, peak and integrated white-noise bandwidth are distinct',()=>{
+ for(const q of [.5,Math.SQRT1_2,2]){
+  const gain=3-1/q,f0=sallenKey({gain}).f0;
+  const x=Math.sqrt((2-1/q**2+Math.sqrt((1/q**2-2)**2+4))/2);
+  close(sallenKey({gain,hz:x*f0}).magnitude/gain,Math.SQRT1_2);
+  // Numerical integral is independent of the closed-form bandwidth derivation.
+  const dx=.0005,n=200000;let sum=0;
+  for(let i=0;i<n;i++){const z=(i+.5)*dx;sum+=dx/((1-z*z)**2+(z/q)**2);}
+  close(sum,Math.PI*q/2,4e-7);
+ }
+ const p=sallenKey({gain:2.5}),peak=sallenKey({gain:2.5,hz:p.f0*Math.sqrt(1-1/(2*p.q**2))});
+ close(peak.magnitude/2.5,2/Math.sqrt(1-1/16));
+});
