@@ -1,3 +1,4 @@
+import {StuckNodeFigure} from '../../components/PrecisionTeachingFigures';
 import Equation from '../../components/Equation.astro';
 import {OpAmpFigure} from '../../components/OpAmpFigures';
 import {OpAmpLab} from '../../components/OpAmpLabs';
@@ -156,6 +157,52 @@ Strong illumination can also overload the receiver, leaving a recovery problem w
 **Overload.** A bright flash drives the output to a rail. Recovery from saturation can take far longer than the small-signal settling time; some receivers clamp the output or the summing node with diodes. Specify the dynamic range including recovery from the largest expected pulse.
 
 <div className="takeaway"><span className="tiny-label">THE IDEA TO KEEP</span><p>A TIA's noise gain rises from 1 to $1 + C_{IN}/C_F$; <em>$C_F$ must level it off before it meets the open-loop gain</em>. Start from $C_F \approx \sqrt{C_{IN}/2\pi R_Ff_t}$, and judge the result by its settling and its noise, not its −3 dB point.</p></div>
+
+</section>
+
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Apply sensitive feedback to troubleshooting and precision DMMs</h2></div>
+
+<h3>A stuck-node tracer turns trace resistance into a diagnostic signal</h3>
+
+A copper trace 20 mm long, 0.5 mm wide and 35 µm thick has approximately $R=\rho L/(wt)=19.7$ mΩ using $\rho=1.72\times10^{-8}$ Ω·m. Injecting a controlled 10 mA diagnostic current produces about 197 µV along that length. Probe the voltage difference along successive trace segments: a drop indicates current flow toward the short, whereas a branch carrying no diagnostic current has little drop. The injection source needs current and voltage limits appropriate to the circuit under test; unpowered-board and powered-logic tests have different constraints.
+
+<StuckNodeFigure/>
+
+A floating, zero-centered sensitive amplifier can show the sign of the drop. An inverting gain −100 using 2 kΩ input and 200 kΩ feedback turns 197 µV into about −19.7 mV. Anti-parallel diodes across the feedback resistor progressively reduce transresistance at larger inputs, preserving sensitivity near zero without sending the indicator immediately off scale. This is the same idea as nonlinear feedback in a TIA, here driven by a voltage through a resistor.
+
+With a symmetric diode model of saturation current $I_S$ and ideality factor $n$, KCL gives
+
+<Equation tex={String.raw`\frac{v_i}{R_{in}}=-\frac{v_o}{R_F}-2I_S\sinh\left(\frac{v_o}{nU_T}\right)`}/>
+
+The relation is odd and monotonic, with compression set by diode temperature and current. With $I_S=5$ nA, $n=1.1$ and $U_T=25.85$ mV, the diodes' small-signal conductance is $2I_S/(nU_T)$; in parallel with 200 kΩ it gives an effective resistance near 186.9 kΩ and initial voltage gain −93.4. A nominal passive gain −100 is therefore only an approximation even close to zero. Calibrate the indicator if its scale matters.
+
+Offset must be smaller than the smallest sought trace drop. A 20 µV input offset is already 10% of the example's 197 µV. Battery operation provides a floating supply but not unlimited input common-mode isolation or fault withstand. Null before probing, use short paired leads, and distinguish a true trace drop from thermal EMF at the contacts.
+
+<h3>Precision DMM front ends solve several problems at once</h3>
+
+TAOE's two historic instrument case studies illustrate an architectural progression. A matched JFET follower pair gives very low input current and shields a precision downstream amplifier from a high-resistance source. Holding both JFET drain current and drain-source voltage nearly constant reduces input-dependent leakage, capacitance effects and gain nonlinearity. A differential common-source JFET stage adds gain ahead of the precision amplifier, reducing downstream input-referred noise and increasing total loop gain; larger devices improve voltage noise but add substantial input capacitance and require offset control.
+
+These are **design lessons**, not reconstructed proprietary schematics. The quiet input pair, stable bias/compliance circuitry, precision gain network, guard, input protection, calibration and integrating ADC work as one system. The gain switch must preserve leakage and ratio accuracy, not merely select a resistor. A high-gain stage can tolerate a device's large initial offset only if the complete circuit has enough correction range and headroom.
+
+For an original instrument model, a 10 V ADC span with two million uniform codes gives 5 µV per code at the ADC. Preceding gain 100 refers that to 50 nV at the input. That resolution does not imply 50 nV absolute accuracy. A 1 ppm gain error at 10 mV is 10 nV; a 1 µV residual zero error is twenty input codes; connector thermal gradients can dominate both. Averaging reduces independent white noise roughly as $1/\sqrt{N}$, but coherent mains pickup, drift and flicker require other measures. Integration over an integer number of line periods can reject the corresponding steady line-frequency component while slowing measurement.
+
+<h3>Do not turn an input-current requirement into an untested assumption</h3>
+
+A protection diode's leakage specified at high reverse voltage may poorly describe its conductance around a few millivolts. A JFET specified in normal saturation may have no guaranteed leakage at a deliberately tiny drain-source voltage. Characterize the intended operating point, cleanliness and temperature, record whether parts were screened, and include startup/overload recovery. An instrument with spectacular averaged noise can still have slow settling after a large preceding input or dielectric absorption in its range-switching network.
+
+<details>
+<summary>Worked self-check: what can the tracer infer from a zero drop?</summary>
+<div>
+
+It can infer that little diagnostic current flows through that segment at the measurement's sensitivity. A short can still lie beyond a parallel current path, an open connection or a segment with too little resistance. Verify injected current and compare successive branches; a zero reading alone does not prove a trace has no fault.
+
+</div>
+</details>
+
+<p className="reference-note">Source connections: TAOE §4.8.2 and §§5.12.1–5.12.5; Huijsing chapter 10, low-noise/low-offset amplifier construction. Trace dimensions, compression model and DMM conversion numbers are original.</p>
+
 
 </section>
 

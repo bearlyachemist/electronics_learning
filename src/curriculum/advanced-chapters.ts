@@ -1233,6 +1233,10 @@ export const advancedChapters = [
         "Protect the summing node's capacitance budget"
       ],
       [
+        "precision-depth",
+        "Apply sensitive feedback to troubleshooting and precision DMMs"
+      ],
+      [
         "check",
         "Check your understanding"
       ]

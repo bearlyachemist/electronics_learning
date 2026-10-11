@@ -16,3 +16,9 @@ export function PinchOffTesterFigure(){
  <S.Wire pts={[[350,240],[350,70],[390,70]]}/><S.Cap a={[390,70]} b={[480,70]} label="C_FAST"/><S.Wire pts={[[480,70],[480,225]]}/><S.Dot at={[480,225]}/><S.Text x={618} y={230}>V_S ≈ 0</S.Text>
  </S.Schematic></S.Figure>;
 }
+export function StuckNodeFigure(){
+ const a:[number,number]=[420,230],p=S.opAmpPins({at:a});
+ return <S.Figure caption="Original stuck-node indicator front end: inverting voltage gain about −100 before diode compression. The anti-parallel feedback diodes compress larger readings; the output may drive a suitable zero-center indicator through a limiting resistor or be measured by a floating instrument. Supply, null adjustment and fault protection must be designed for the actual board."><S.Schematic width={750} height={420} description="Inverting amplifier with two kilohm input, two hundred kilohm feedback and two anti-parallel diodes across feedback. Plus input grounded; output through limiting resistor to an indicator terminal.">
+ <S.Terminal at={[60,215]} label="trace drop"/><S.Res a={[60,215]} b={[270,215]} label="2 kΩ"/><S.Wire pts={[[270,215],p.minus]}/><S.Dot at={[320,215]}/><S.Wire pts={[[320,215],[320,80],[390,80]]}/><S.Res a={[390,80]} b={[570,80]} label="200 kΩ"/><S.Wire pts={[[570,80],[600,80],[600,230]]}/><S.Wire pts={[[320,130],[410,130]]}/><S.Dot at={[320,130]}/><S.Diode a={[410,130]} b={[510,130]}/><S.Wire pts={[[510,130],[600,130]]}/><S.Dot at={[600,130]}/><S.Wire pts={[[320,170],[410,170]]}/><S.Dot at={[320,170]}/><S.Diode a={[510,170]} b={[410,170]}/><S.Wire pts={[[510,170],[600,170]]}/><S.Dot at={[600,170]}/><S.OpAmp at={a}/><S.Wire pts={[p.plus,[360,245],[360,350]]}/><S.Ground at={[360,350]}/><S.Wire pts={[p.out,[600,230]]}/><S.Dot at={[600,230]}/><S.Res a={[600,230]} b={[690,230]} label="R_LIMIT"/><S.Terminal at={[690,230]} label="indicator" side="below"/>
+ </S.Schematic></S.Figure>;
+}
