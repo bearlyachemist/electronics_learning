@@ -21,6 +21,8 @@ An amplifier with positive feedback has closed-loop gain $A/(1 - A\beta)$. Its p
 
 <NegativeResistanceTank/>
 
+In the drawing, $v$ is the tank's top-node voltage relative to the grounded return. The source arrow points **into** that node with current $G_mv$. Under the passive convention, current from the node to return is therefore $-G_mv$, representing negative shunt conductance. For a sinusoid with peak voltage magnitude $|v|$, the source delivers average power $\tfrac12G_m|v|^2$ while the resistor absorbs $\tfrac12G|v|^2$. If $G_m>G$, stored tank energy grows until nonlinear limiting reduces the effective gain. Reversing either the arrow or the algebraic sign alone would turn this model into positive damping.
+
 <div className="derivation">
 
 <span className="tiny-label">DERIVATION / GROWTH AND DECAY OF A TANK WITH NEGATIVE CONDUCTANCE</span>

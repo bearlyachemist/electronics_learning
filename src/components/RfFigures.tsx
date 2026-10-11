@@ -89,7 +89,7 @@ export function NegativeResistanceTank(){
     <S.Ind a={[100,60]} b={[100,190]} label="L"/>
     <S.Cap a={[240,60]} b={[240,190]} label="C"/>
     <S.Res a={[380,60]} b={[380,190]} label="R_p"/>
-    <S.DepSource a={[520,190]} b={[520,60]} label="−G_m v" kind="current"/>
+    <S.DepSource a={[520,190]} b={[520,60]} label="G_m v" kind="current"/>
     {([[240,60],[380,60],[240,190],[380,190]] as S.Pt[]).map((p,i)=><S.Dot key={i} at={p}/>)}
     <S.Ground at={[310,190]}/><S.Dot at={[310,190]}/>
     <S.Text x={240} y={36} kind="value" anchor="middle">tank</S.Text>
