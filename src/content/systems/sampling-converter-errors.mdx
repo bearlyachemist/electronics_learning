@@ -1,0 +1,111 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot,PowerCircuit,MatchCircuit} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 106</span><span className="hairline"/>DATA CONVERTERS</div>
+
+<h1>Sampling and converter error budgets<br/><em>Bits describe a representation, not accuracy.</em></h1>
+
+<p className="dek">Derive quantization noise, aliasing, jitter and acquisition requirements, and interpret ADC linearity and spectral specifications before choosing an architecture.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="codes">
+
+<div className="section-heading"><span>01</span><h2>Define the transfer function and code convention</h2></div>
+
+An ADC performs two operations: it observes an analog signal at particular times and assigns a finite code to each observation. Sampling discretizes time; quantization discretizes amplitude. These operations create different limitations. Increasing resolution does not prevent aliasing, and increasing sample rate does not remove offset or reference drift.
+
+Let full input span be $V_S$ and resolution $N$. A useful ideal code width is $q=V_S/2^N$. In this chapter's teaching convention, a unipolar code is $D=\lfloor V_{in}/q\rfloor$, limited to 0 through $2^N-1$. Reconstructing the center of each bin gives $\hat V=(D+1/2)q$ and quantization error between approximately $-q/2$ and $+q/2$ away from clipping. Real devices may center their first transition differently; use their transfer diagram.
+
+<Equation tex={String.raw`q=\frac{V_S}{2^N},\quad D=\operatorname{clip}\left(\left\lfloor V_{in}/q\right\rfloor,0,2^N-1\right),\quad\hat V=(D+\tfrac12)q`}/><SystemsPlot kind="quantization"/>
+Unsigned binary, offset binary and two's complement are encodings, not ADC architectures. A bipolar two's-complement code needs sign extension when unpacked into a wider integer. A unipolar input cannot be made bipolar just by interpreting its output as signed. Differential input means the converter measures a voltage difference; it may still require both pins within a narrow common-mode range.
+
+At a 3.3 V span, 12 bits gives 805.7 μV per bin and 16 bits gives 50.35 μV. This states spacing, not the number of stable or accurate bits. A 100 μV offset is two 16-bit bins; 100 μV rms noise produces fluctuating codes. Reference accuracy, source settling and drift can exceed the bin size even when nominal resolution is large.
+
+<SystemsLab kind="adc" client:load/>
+The lab displays floor-coded bins and endpoint clipping explicitly. It does not add physical noise; a stable numerical code is not a simulated precision measurement.
+
+</section>
+
+<section id="noise">
+
+<div className="section-heading"><span>02</span><h2>Derive the familiar ideal SNR formula</h2></div>
+
+If quantization error is sufficiently uncorrelated with the input and approximately uniformly distributed across $[-q/2,q/2]$, integrate its mean square:
+
+<Equation tex={String.raw`\sigma_q^2=\frac1q\int_{-q/2}^{q/2}e^2\,de=\frac{q^2}{12},\qquad\sigma_q=q/\sqrt{12}`}/>
+A full-span sine has rms amplitude $V_S/(2\sqrt2)$. Dividing by the rms error gives:
+
+<Equation tex={String.raw`SNR_{ideal}=20\log_{10}\frac{V_S/(2\sqrt2)}{q/\sqrt{12}}\simeq6.02N+1.76\ \mathrm{dB}`}/>
+This is an ideal full-scale-sine result over the relevant full Nyquist band. Small periodic inputs can produce correlated quantization spurs rather than white noise. Dither can decorrelate error and permit finer estimates through averaging, but it adds noise and cannot remove analog nonlinearity or create information from a static input stuck inside one noiseless bin.
+
+SNR usually excludes harmonic distortion according to a stated measurement definition. SINAD includes noise and distortion; SFDR compares the wanted signal with the largest unwanted spectral spur over a stated band. Effective number of bits derived from a full-scale sine is $(SINAD-1.76)/6.02$. A device with 74 dB SINAD has about 12 effective bits in that test, even if its output word is 16 bits. A backed-off test signal needs appropriate normalization before using this formula.
+
+Noise-free resolution is a DC histogram or peak-to-peak concept and is not identical to sine-derived ENOB. FFT bin width, window and excluded bins change apparent noise density. Integrate noise over the actual measurement band. Source purity and clock quality must exceed the ADC performance being measured.
+
+</section>
+
+<section id="alias">
+
+<div className="section-heading"><span>03</span><h2>Explain why the analog filter comes first</h2></div>
+
+Sampling a sine at $f$ produces values $\sin(2\pi fn/f_s+\phi)$. Frequencies separated by integer multiples of $f_s$ produce the same sequence, with possible frequency-sign reversal. In the first Nyquist zone, a convenient folded frequency is the smallest distance from $f$ to an integer multiple of $f_s$.
+
+<Equation tex={String.raw`f_{alias}=\min_{k\in\mathbb Z}|f-kf_s|,\qquad0\le f_{alias}\le f_s/2`}/>
+At 10 kS/s, a 7 kHz tone folds to 3 kHz. A digital filter that passes 3 kHz cannot determine whether the sequence came from a genuine 3 kHz input or an aliased 7 kHz input. Reject unwanted energy **before sampling**. The filter must attenuate blockers and broadband noise, not merely meet a nominal signal-band cutoff.
+
+If a wanted band ends at 2 kHz and sampling is 10 kS/s, a blocker at 8 kHz aliases to 2 kHz. A 0 dBV blocker must be attenuated by at least 80 dB to lie below a −80 dBV allowance at that alias frequency, plus any margin. Raising sample rate widens the analog filter transition region and permits digital decimation after the alias-sensitive acquisition. It does not eliminate out-of-band overload of the input buffer or sample switch.
+
+Bandpass sampling deliberately aliases a **selected band** to a lower frequency. Its sample-rate choice must avoid overlap between the wanted band's aliases and other bands; the ADC's analog input bandwidth and jitter requirements still depend on the high RF input frequency. “Sample above twice bandwidth” is incomplete unless the band position and alias zones are specified.
+
+</section>
+
+<section id="timing">
+
+<div className="section-heading"><span>04</span><h2>Translate jitter and acquisition into voltage error</h2></div>
+
+An aperture-time error $\delta t$ gives $\delta v\approx(dv/dt)\delta t$. For a sine, the rms ratio leads to the jitter-limited SNR:
+
+<Equation tex={String.raw`SNR_{jitter}\simeq-20\log_{10}(2\pi f_{in}\sigma_t)`}/>
+At 1 MHz and 1 ps rms jitter, the limit is about 104 dB. At 100 MHz with the same jitter it is about 64 dB. Use the analog input frequency, not the output sample rate. ADC aperture jitter and clock jitter may combine in root-sum-square if independent and evaluated over appropriate integration bands; correlated sources and deterministic jitter require different treatment.
+
+The input often samples through a switch onto a capacitor. For a first-order source resistance $R$ and sampling capacitance $C$, a full-span step leaves fractional error $e^{-t/(RC)}$. Settling below half a bin requires:
+
+<Equation tex={String.raw`t_{acq}\ge (N+1)\ln2\,RC`}/>
+For 16 bits, 1 kΩ and 20 pF, this is 235.7 ns. Acquisition time is the time the sample switch is actually connected, not the entire sample period. A buffer's small-signal bandwidth, slew rate, nonlinear settling, kickback and output impedance modify this RC model. Multiplexing a high channel next to a low channel creates the largest initial error; repeated samples of one input can conceal it.
+
+A local capacitor can supply kickback charge while a small series resistor isolates the driver, but it also creates another settling time constant. The driver, filter and ADC capacitance must be designed together. Reference-pin settling needs a separate charge budget. Differential input buffers also need the correct output common mode, usually controlled by a dedicated reference or common-mode loop.
+
+</section>
+
+<section id="linearity">
+
+<div className="section-heading"><span>05</span><h2>Separate static errors from dynamic performance</h2></div>
+
+Offset translates the transfer; gain error changes its slope. Two-point calibration can correct those terms under fixed conditions. Integral nonlinearity is the remaining deviation from a specified ideal line, which may be an endpoint or best-fit line. Differential nonlinearity describes individual code-width error:
+
+<Equation tex={String.raw`DNL_k=\frac{T_{k+1}-T_k}{q}-1`}/>
+Here $T_k$ are sorted code thresholds. A zero-width code has DNL = −1 and is missing; reported guarantees about missing codes must be read with the converter's definitions. INL and DNL are not interchangeable. A converter can have well-behaved adjacent widths while its accumulated curve bows significantly. Monotonicity and missing-code specifications are architecture- and definition-sensitive; check the datasheet rather than inferring them from nominal bits.
+
+For a signal-chain budget, carry amplifier offset, gain-ratio error, reference drift, ADC INL, acquisition residual and integrated noise to input-referred units. Add bounded worst-case contributions according to the design requirement; combine independent random noise powers separately. Then check latency, sample timing, multiplexing and digital-output bandwidth. A converter that meets DC accuracy may still fail a control loop because its filtered output arrives too late.
+
+Primary explanation connection: [ADI MT-001, Taking the Mystery out of the SNR Formula](https://www.analog.com/media/en/training-seminars/tutorials/MT-001.pdf). The transfer, aliasing, integration and timing examples here are original derivations supported by the data-converter textbook material.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/sampling-converter-errors/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§13.1 and 13.4–13.5; ADI MT-001 (linked above); original sampling and error-budget derivations. Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>

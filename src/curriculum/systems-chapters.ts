@@ -416,5 +416,43 @@ export const systemsChapters = [
         "Check your understanding"
       ]
     ]
+  },
+  {
+    "id": "sampling-converter-errors",
+    "number": "106",
+    "title": "Sampling and converter error budgets",
+    "href": "/sampling-converter-errors/",
+    "practice": "/sampling-converter-errors/practice/",
+    "group": "Data converters",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "codes",
+        "Define the transfer function and code convention"
+      ],
+      [
+        "noise",
+        "Derive the familiar ideal SNR formula"
+      ],
+      [
+        "alias",
+        "Explain why the analog filter comes first"
+      ],
+      [
+        "timing",
+        "Translate jitter and acquisition into voltage error"
+      ],
+      [
+        "linearity",
+        "Separate static errors from dynamic performance"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
   }
 ];

@@ -4513,5 +4513,48 @@
       ]
     ],
     "sources": "The Art of Electronics, §12.10; TI SNLA302; original coupled-line and skew derivations"
+  },
+  "sampling-converter-errors": {
+    "title": "Resolution increases the acquisition requirement",
+    "setup": "Full-span first-order acquisition with 1 kΩ source and 20 pF capacitance. Require residual below half a code.",
+    "equation": "t=(N+1)\\ln2\\,RC",
+    "columns": [
+      "Resolution",
+      "3.3 V bin width",
+      "Minimum modeled acquisition"
+    ],
+    "rows": [
+      [
+        "8 bits",
+        "12.8906 mV",
+        "124.77 ns"
+      ],
+      [
+        "12 bits",
+        "805.66 μV",
+        "180.22 ns"
+      ],
+      [
+        "16 bits",
+        "50.354 μV",
+        "235.67 ns"
+      ]
+    ],
+    "analysis": [
+      "The exponential needs more time for smaller residual, but each additional bit adds only ln2 times RC in this first-order model.",
+      "A real driver can have a long nonlinear settling tail that invalidates this simple scaling."
+    ],
+    "limits": "Sample-switch resistance, parasitics, kickback and reference recovery are excluded.",
+    "connections": [
+      [
+        "/precision-references/",
+        "Reference loading"
+      ],
+      [
+        "/opamp-load-stability/",
+        "Drive a capacitive input"
+      ]
+    ],
+    "sources": "The Art of Electronics, Chapter 13; ADI MT-001; original acquisition example"
   }
 }

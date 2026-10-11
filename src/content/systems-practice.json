@@ -383,5 +383,40 @@
         }
       ]
     }
+  ],
+  "sampling-converter-errors": [
+    {
+      "tag": "QUANTIZATION",
+      "title": "Bins and ideal noise",
+      "prompt": "A 14-bit converter has a 4 V span. Find bin width and ideal rms quantization noise.",
+      "hint": "Integrate uniform midpoint reconstruction error.",
+      "solution": [
+        {
+          "text": "q = 244.14 μV; q/√12 = 70.477 μV rms under the uncorrelated uniform-error model."
+        }
+      ]
+    },
+    {
+      "tag": "ALIAS",
+      "title": "A blocker survives software filtering",
+      "prompt": "A 13 kHz input is sampled at 12 kS/s. Find its first-zone alias and explain whether a 2 kHz digital low-pass removes it.",
+      "hint": "Find the distance to a multiple of the sample rate.",
+      "solution": [
+        {
+          "text": "It aliases to 1 kHz and passes the 2 kHz low-pass. Attenuate the original 13 kHz input before sampling."
+        }
+      ]
+    },
+    {
+      "tag": "ACQUISITION",
+      "title": "Budget a source resistance",
+      "prompt": "A 16-bit ADC uses 30 pF sampling capacitance and 300 ns acquisition. Find the maximum R in the ideal full-span first-order model.",
+      "hint": "Use the half-bin exponential residual.",
+      "solution": [
+        {
+          "text": "R ≤ 300 ns / [17 ln2 × 30 pF] = 848.65 Ω. Real driver settling and switch resistance consume part of this budget."
+        }
+      ]
+    }
   ]
 }
