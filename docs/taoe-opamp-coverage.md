@@ -65,3 +65,5 @@ Completed checkpoint: [86 — Instrumentation amplifiers](https://hebert.phd/ele
 Completed checkpoint: [87 — Transimpedance amplifiers](https://hebert.phd/electronics/opamp-transimpedance/#precision-depth). Added “Apply sensitive feedback to troubleshooting and precision DMMs” with original analysis and worked examples.
 
 Completed checkpoint: [88 — Practical op-amp integrators](https://hebert.phd/electronics/opamp-integrator/#precision-depth). Added “Compare integration errors and design a calibrated charge measurement” with original analysis and worked examples.
+
+Completed checkpoint: [89 — Band-limited differentiators](https://hebert.phd/electronics/opamp-differentiator/#precision-depth). Added “Specify derivative accuracy, pulse range and noise explicitly” with original analysis and worked examples.

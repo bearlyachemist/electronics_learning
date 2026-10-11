@@ -116,6 +116,46 @@ Noise contains energy at all frequencies, and a differentiator's gain is proport
 
 </section>
 
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Specify derivative accuracy, pulse range and noise explicitly</h2></div>
+
+<h3>State how accurately the circuit should differentiate</h3>
+
+For the practical transfer already derived, divide by the ideal derivative transfer $-sR_FC_{in}$. The remaining factor is $1/[(1+s\tau_1)(1+s\tau_2)]$, where $\tau_1=R_{in}C_{in}$ and $\tau_2=R_FC_F$. At equal corners $f_c$, the magnitude relative to an ideal differentiator is $1/[1+(f/f_c)^2]$ and the added phase lag is $-2\arctan(f/f_c)$.
+
+At $f=0.1f_c$, magnitude is 0.9901 of ideal, a 0.99% error, but phase error is already 11.42°. For less than 1° extra phase, the frequency must be below about $0.00873f_c$. A derivative used for damping in a control loop may therefore require far more corner-frequency separation than an amplitude-only specification suggests.
+
+<h3>A finite edge produces a finite pulse</h3>
+
+An input ramp of 1 V in 100 µs has slope 10000 V/s. With $R_FC_{in}=100$ µs, the ideal derivative output is −1 V during that ramp. The practical circuit rounds the beginning and end over its two time constants. A 1 V edge in 1 µs would request −100 V under the same ideal derivative model, far beyond ordinary output range. The band-limiting resistors and capacitors bound the linear high-frequency response, but a sufficiently large fast edge can still overload the amplifier.
+
+For equal time constants $\tau$, a unit input **step** has the exact ideal-amplifier response
+
+<Equation tex={String.raw`v_o(t)=-\frac{R_FC_{in}}{\tau^2}\,t\,e^{-t/\tau},\qquad |v_{o,peak}|=\frac{R_FC_{in}}{e\tau}\quad(t=\tau)`}/>
+
+With $R_FC_{in}=100$ µs and $\tau=10$ µs, that peak is 3.68 V. The pulse width is controlled by the bandwidth, not by an infinite mathematical derivative. Choose an output limit and input-edge specification before trusting this waveform.
+
+<h3>Compare with a finite-difference derivative</h3>
+
+A sampled estimate $[x(t)-x(t-\Delta t)]/\Delta t$ also has a defined bandwidth and a half-sample delay. If successive input noise samples are independent with RMS $\sigma$, derivative noise is $\sqrt2\sigma/\Delta t$. Reducing the interval improves time resolution but increases noise. The analog circuit makes the same trade through its corner frequencies and noise gain. In either case, define the input-noise spectrum and useful signal band, then filter before estimating a slope that has physical meaning.
+
+Capacitor microphonics, cable pickup and source resistance can dominate a quiet amplifier. In a control system, differentiating the measured variable rather than a discontinuous command can avoid a large setpoint kick; retain a finite high-frequency rolloff and include its phase in the loop design.
+
+<details>
+<summary>Worked self-check: where must equal corners lie for 1% derivative magnitude error at 1 kHz?</summary>
+<div>
+
+Require $1/[1+(1000/f_c)^2]\ge0.99$, giving $f_c\ge9.95$ kHz. At that minimum corner, added phase lag is about 11.5°, so a 1° phase requirement instead needs approximately 114.6 kHz corners. The amplifier must still maintain adequate loop margin at that higher bandwidth.
+
+</div>
+</details>
+
+<p className="reference-note">Source connections: TAOE §4.5.7 and §4.9.3; Asadi's practical differentiator analysis. Pulse and finite-difference examples are original.</p>
+
+
+</section>
+
 <section id="check">
 
 <div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>

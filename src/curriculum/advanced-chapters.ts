@@ -1319,6 +1319,10 @@ export const advancedChapters = [
         "Noise and a defined bandwidth"
       ],
       [
+        "precision-depth",
+        "Specify derivative accuracy, pulse range and noise explicitly"
+      ],
+      [
         "check",
         "Check your understanding"
       ]
