@@ -57,3 +57,5 @@ Completed checkpoint: [82 — Choose BJT, JFET, CMOS or chopper inputs](https://
 Completed checkpoint: [83 — Noninverting amplifiers and buffers](https://hebert.phd/electronics/opamp-noninverting/#precision-depth). Added “Bias a single-supply amplifier and build a practical lab chain” with original analysis and worked examples.
 
 Completed checkpoint: [84 — Inverting and summing amplifiers](https://hebert.phd/electronics/opamp-inverting-summing/#precision-depth). Added “Budget reference currents, range switching and T-network feedback” with original analysis and worked examples.
+
+Completed checkpoint: [85 — Difference amplifiers and resistor CMRR](https://hebert.phd/electronics/opamp-difference/#precision-depth). Added “Preserve Kelvin accuracy and common-mode rejection in real wiring” with original analysis and worked examples.

@@ -136,6 +136,50 @@ Both are useful, for different questions. "Will every unit meet 54 dB?" needs th
 
 </section>
 
+<section id="precision-depth">
+
+<div className="section-heading"><span>+</span><h2>Preserve Kelvin accuracy and common-mode rejection in real wiring</h2></div>
+
+<h3>Difference, differential input and differential output describe different things</h3>
+
+A four-resistor **difference amplifier** computes a scaled difference but presents finite and generally unequal input impedances. An **instrumentation amplifier** adds high-impedance input stages so the source does not set the resistor ratios. A **fully differential amplifier** supplies two output voltages and a controlled output common mode. One device may combine several of these properties; the name alone does not establish input loading or common-mode range.
+
+With matched ratios $R_2/R_1=R_4/R_3=k$ and the lower noninverting resistor returned to $V_R$, nodal analysis gives
+
+<Equation tex={String.raw`v_o=k(v_2-v_1)+V_R`}/>
+
+This supports ground-offset cancellation, low-side current sensing, balanced-line reception and translating a bipolar difference to a single-supply output. $V_R$ must be driven at sufficiently low impedance: its source resistance adds to $R_4$ and alters both gain and CMRR. An integrated subtractor can include a precise network, but still needs valid input voltages, supply headroom and a suitable reference driver.
+
+<h3>Sense the shunt, not its current-carrying connections</h3>
+
+A 20 mΩ shunt at 2 A develops 40 mV and dissipates 80 mW. Gain 50 produces 2 V. Including an extra 5 mΩ solder/trace resistance in a two-wire voltage measurement raises the measured voltage to 50 mV, a **25% error**. Route separate Kelvin sense traces from the shunt element's terminals. The sense traces carry negligible signal current, and must not share the large load-current return path.
+
+Low-side sensing shifts the load's local ground and can miss a current path that bypasses the shunt. High-side sensing preserves the ground connection but places a small difference on a much larger common-mode voltage. A ground-referenced op amp is not automatically suitable just because a resistor divider lowers its pin voltages; check divider currents, power, transient voltage, common-mode rejection and protection. Dedicated high-side current-sense architectures can solve that port problem.
+
+At 10% of the 2 A full scale, the shunt voltage is only 4 mV. A 40 µV offset is already 1% of that reading, even though it is only 0.1% of full scale. A 1% shunt and 0.1% amplifier gain accuracy cannot establish 1% of reading after zero errors and temperature drift are added.
+
+<h3>Source and RC imbalance limit AC rejection</h3>
+
+Equal DC resistor ratios do not ensure equal AC ratios. A 100 kΩ source feeding 10 pF extra input capacitance has a pole near 159 kHz; the same capacitance behind 1 kΩ has a pole near 15.9 MHz. A 10 kHz common-mode disturbance is therefore delayed differently in the two arms and becomes a differential signal. Match the complete impedance ratios, including source resistance and protection capacitance, or buffer the sources first.
+
+For a simplified pair of otherwise unity transfers, a time-constant mismatch $\Delta\tau$ creates $|H_1-H_2|\approx\omega|\Delta\tau|$ well below the poles. A 100 ns mismatch at 10 kHz leaves 0.00628 of common mode, only about **44 dB** rejection. The amplifier's intrinsic 120 dB DC CMRR cannot repair an imbalance outside its input terminals.
+
+Balanced cable receivers also need equal input impedances to preserve balance. Termination, common-mode interference, source grounding and cable capacitance must be considered together. Equalization can compensate known differential cable loss, but raises high-frequency noise and does not solve common-mode overrange.
+
+<details>
+<summary>Worked self-check: what does a ground error do?</summary>
+<div>
+
+A shunt gives 10 mV difference while both sense points sit 200 mV above the receiver's ground. The ideal gain-50 subtractor produces 0.5 V relative to its reference. A common-mode gain of 0.002 adds 0.4 mV output error. If one input is mistakenly taken from receiver ground instead of the shunt's lower Kelvin terminal, the circuit measures approximately 210 mV and requests 10.5 V, likely clipping completely.
+
+</div>
+</details>
+
+<p className="reference-note">Source connections: TAOE §§4.2.4, 4.8.3 and 5.13–5.14, including applications, performance and variations; Asadi §§3.2–3.6. All shunt and AC-imbalance values are original.</p>
+
+
+</section>
+
 <section id="check">
 
 <div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>

@@ -1143,6 +1143,10 @@ export const advancedChapters = [
         "Check source and input range together"
       ],
       [
+        "precision-depth",
+        "Preserve Kelvin accuracy and common-mode rejection in real wiring"
+      ],
+      [
         "check",
         "Check your understanding"
       ]
