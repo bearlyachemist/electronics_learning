@@ -302,5 +302,43 @@ export const systemsChapters = [
         "Check your understanding"
       ]
     ]
+  },
+  {
+    "id": "rf-signal-chains",
+    "number": "103",
+    "title": "RF amplifiers, mixers and receiver design",
+    "href": "/rf-signal-chains/",
+    "practice": "/rf-signal-chains/practice/",
+    "group": "RF circuits",
+    "sections": [
+      [
+        "overview",
+        "Start here"
+      ],
+      [
+        "noise",
+        "Derive a cascaded noise budget"
+      ],
+      [
+        "linearity",
+        "Budget compression and third-order products separately"
+      ],
+      [
+        "mixers",
+        "Derive frequency translation and the image"
+      ],
+      [
+        "oscillators",
+        "Connect oscillator noise to system performance"
+      ],
+      [
+        "bench",
+        "Measure without confusing the instrument and the circuit"
+      ],
+      [
+        "check",
+        "Check your understanding"
+      ]
+    ]
   }
 ];

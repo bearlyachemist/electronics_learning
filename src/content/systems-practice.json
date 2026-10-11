@@ -278,5 +278,40 @@
         }
       ]
     }
+  ],
+  "rf-signal-chains": [
+    {
+      "tag": "SENSITIVITY",
+      "title": "Estimate a receiver floor",
+      "prompt": "At 290 K, a receiver has 3 dB NF, 20 kHz noise bandwidth and needs 12 dB SNR. Estimate sensitivity without processing gain.",
+      "hint": "Start with −174 dBm/Hz and add bandwidth, NF and required SNR.",
+      "solution": [
+        {
+          "text": "−174 + 10 log₁₀(20000) + 3 + 12 = −115.99 dBm. Filter noise bandwidth and modulation/detection assumptions must be specified."
+        }
+      ]
+    },
+    {
+      "tag": "IMAGE",
+      "title": "Find the unwanted input",
+      "prompt": "Desired RF is 125 MHz, LO is 110 MHz and a real mixer selects 15 MHz IF. Find the image.",
+      "hint": "Both signs of RF minus LO give the same real IF.",
+      "solution": [
+        {
+          "text": "95 MHz also converts to 15 MHz. Reject it before mixing or use a calibrated quadrature/image-reject architecture."
+        }
+      ]
+    },
+    {
+      "tag": "INTERMODULATION",
+      "title": "Two tones meet an intercept",
+      "prompt": "An amplifier has 15 dB gain and +5 dBm IIP3. Each input tone is −25 dBm. Estimate fundamental and IM3 output.",
+      "hint": "Use linear and cubic dB slopes separately.",
+      "solution": [
+        {
+          "text": "Fundamental is −10 dBm; IM3 is 3(−25)+15−2(5) = −70 dBm, or 60 dBc below each tone. This is a small-signal intercept estimate."
+        }
+      ]
+    }
   ]
 }

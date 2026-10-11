@@ -4384,5 +4384,48 @@
       ]
     ],
     "sources": "Fiore, AC Electrical Circuit Analysis; ADI matching tutorial; original wave-boundary example"
+  },
+  "rf-signal-chains": {
+    "title": "LNA gain versus receiver noise figure",
+    "setup": "An LNA has 1.5 dB NF and adjustable teaching gain. It precedes a mixer of −6 dB gain / 6 dB NF and IF amplifier of 30 dB gain / 5 dB NF. All ports use consistent noise definitions.",
+    "equation": "F=F_{LNA}+(F_M-1)/G_{LNA}+(F_{IF}-1)/(G_{LNA}G_M)",
+    "columns": [
+      "LNA gain",
+      "Total gain",
+      "Total noise figure"
+    ],
+    "rows": [
+      [
+        "10 dB",
+        "34 dB",
+        "4.1018 dB"
+      ],
+      [
+        "20 dB",
+        "44 dB",
+        "1.8425 dB"
+      ],
+      [
+        "30 dB",
+        "54 dB",
+        "1.5355 dB"
+      ]
+    ],
+    "analysis": [
+      "More initial gain suppresses the input-referred contribution of later stages; returns diminish as total NF approaches the LNA’s own factor.",
+      "Each additional 10 dB of LNA gain also raises blocker power into the mixer by 10 dB, potentially making compression the limiting condition."
+    ],
+    "limits": "Real gain changes can also change LNA NF and intercept; this teaching comparison holds them fixed.",
+    "connections": [
+      [
+        "/rf-impedance-matching/",
+        "Matching and available power"
+      ],
+      [
+        "/precision-noise-grounding/",
+        "Noise and coupling"
+      ]
+    ],
+    "sources": "The Art of Electronics, Chapter 8 and §13.13; ADI RF application notes"
   }
 }

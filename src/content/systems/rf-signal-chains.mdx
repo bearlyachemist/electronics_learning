@@ -1,0 +1,108 @@
+import Equation from '../../components/Equation.astro';
+import {SystemsFlow,SystemsPlot,PowerCircuit,MatchCircuit} from '../../components/SystemsFigures';
+import {SystemsLab} from '../../components/SystemsLab';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 103</span><span className="hairline"/>RF CIRCUITS</div>
+
+<h1>RF amplifiers, mixers and receiver design<br/><em>Gain helps sensitivity and hurts blocker headroom.</em></h1>
+
+<p className="dek">Build noise-figure and intermodulation budgets, explain frequency conversion and image rejection, and connect oscillators, PLLs and RF measurement to a complete receiver.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Operating points · Practical design</span></div>
+
+</div>
+
+<section id="noise">
+
+<div className="section-heading"><span>01</span><h2>Derive a cascaded noise budget</h2></div>
+
+A receiver must detect a wanted signal while larger unwanted signals may occupy the same input bandwidth. Gain before a noisy stage can preserve sensitivity, but it also magnifies blockers that compress or intermodulate in later stages. Start with two separate budgets: minimum detectable signal and maximum tolerable signal.
+
+Thermal available noise power from a matched source is $kTB$. At 290 K, density is approximately −174 dBm/Hz. In a 100 kHz noise bandwidth, source noise is roughly −124 dBm. A receiver with 4 dB noise figure has an input-referred noise floor about −120 dBm. If a required demodulated SNR is 10 dB and no processing gain is included, a first sensitivity estimate is −110 dBm.
+
+Noise factor is $F=SNR_{in}/SNR_{out}$, and noise figure is $NF=10\log_{10}F$. Use **linear power gains** and linear factors in the cascade equation:
+
+<Equation tex={String.raw`F_{tot}=F_1+\frac{F_2-1}{G_1}+\frac{F_3-1}{G_1G_2}+\cdots`}/>
+Derive it by referring each stage's added output noise back through preceding power gain. The first stage's noise remains undivided; later contributions shrink as earlier gain increases. A passive matched attenuator at the reference temperature has noise factor equal to its power loss. A 2 dB filter before an otherwise 2 dB-NF receiver therefore raises total NF to about 4 dB, although the filter may prevent blockers from overloading the receiver.
+
+<SystemsFlow labels={["Preselector|reject blockers", "LNA|noise + gain", "Mixer + LO|translate band", "IF + ADC|select and measure"]} caption="Preselector loss hurts sensitivity, while its rejection can preserve large-signal headroom. Both budgets are needed."/>
+For a 20 dB-gain, 1.5 dB-NF LNA, a −6 dB-gain, 6 dB-NF mixer and a 30 dB-gain, 5 dB-NF IF stage, the model gives 1.842 dB total NF and 44 dB gain. Adding 2 dB front-end loss gives 3.842 dB NF and 42 dB gain. Frequency-converting stages require consistent definitions of signal and image-sideband noise; a blindly applied single-sideband/double-sideband mix can produce a several-dB mistake.
+
+</section>
+
+<section id="linearity">
+
+<div className="section-heading"><span>02</span><h2>Budget compression and third-order products separately</h2></div>
+
+A weakly nonlinear amplifier can be modeled locally as $v_o=a_1v+a_2v^2+a_3v^3+\cdots$. Two input tones at $f_1,f_2$ produce third-order products at $2f_1-f_2$ and $2f_2-f_1$, often close enough to the wanted channel to pass the output filter. Their small-signal amplitudes scale as the cube of input amplitude, while the wanted response scales linearly.
+
+The third-order intercept is the extrapolated point where these slopes intersect; it is not an operating point that the amplifier can necessarily reach. For equal tones of input power $P_{in}$ in dBm, small-signal gain $G$ in dB and input intercept $IIP3$ in dBm:
+
+<Equation tex={String.raw`P_{fund,out}=P_{in}+G,\qquad P_{IM3,out}\simeq3P_{in}+G-2IIP3`}/>
+With $IIP3=+10$ dBm and each input tone at −20 dBm, IM3 is approximately 60 dB below each fundamental. Raise each tone to −5 dBm and the separation falls to 30 dB. This cubic extrapolation fails near compression, but it demonstrates why a modest blocker increase can create a much larger in-band error.
+
+The 1 dB compression point measures departure from linear gain under a specified stimulus; it is different from intercept and usually occurs at a much lower power than the extrapolated intercept. Include all tones and crest factor in a headroom check. An ADC can clip before the RF amplifier compresses, and a filter after the mixer cannot remove intermodulation products that already fall in the wanted band.
+
+Automatic gain control moves gain away from overloaded stages, but gain reduction before the LNA can degrade sensitivity. Choose where to attenuate by locating the stage that runs out of headroom. RF power amplifiers face the complementary problem: efficiency, output matching, thermal limits and spectral regrowth trade against linearity. Class A, AB and switching amplifier concepts from the transistor chapters extend here, with frequency-dependent matching and modulation envelope added.
+
+</section>
+
+<section id="mixers">
+
+<div className="section-heading"><span>03</span><h2>Derive frequency translation and the image</h2></div>
+
+Multiplication by a local oscillator moves an input band. For a sine at $\omega_{RF}$ multiplied by a sine or cosine at $\omega_{LO}$, product identities create sum and difference frequencies:
+
+<Equation tex={String.raw`\cos\omega_{RF}t\cos\omega_{LO}t=\tfrac12\cos[(\omega_{RF}-\omega_{LO})t]+\tfrac12\cos[(\omega_{RF}+\omega_{LO})t]`}/>
+A filter selects the wanted product. Practical diode-ring and commutating mixers approximate switching multiplication and produce additional harmonics and spurs. Their LO drive is specified for conversion loss, isolation and linearity; an under-driven mixer does not obey its nominal performance table. Check LO-to-RF, LO-to-IF and RF-to-IF leakage separately.
+
+If LO is 100 MHz and the desired RF is 110 MHz, the IF is 10 MHz. A 90 MHz input also produces 10 MHz: it is the image. A real one-channel mixer and IF filter cannot distinguish them after conversion. Suppress the image with RF preselection, use a suitable frequency plan, or form quadrature I/Q channels to separate frequency signs. I/Q amplitude and phase mismatch limit image rejection.
+
+Direct conversion places the wanted RF band around the LO and creates baseband I/Q. It avoids an analog IF filter but must handle DC offsets, LO leakage self-mixing and low-frequency noise. Superheterodyne conversion places the wanted channel at a nonzero IF, simplifying some filtering while adding image and spur planning. Low IF lies between these choices. Map integer combinations $mf_{RF}\pm nf_{LO}$ that can land in the selected band; high-level blockers can activate products absent in a small-signal test.
+
+Conversion gain is a power ratio between specified ports, not the same as a transistor's voltage gain. A passive mixer can be highly linear while having conversion loss; an active mixer can provide gain but consume bias power and have different blocker limits. Matching at RF, IF and LO is a separate job for each port.
+
+</section>
+
+<section id="oscillators">
+
+<div className="section-heading"><span>04</span><h2>Connect oscillator noise to system performance</h2></div>
+
+An oscillator needs a loop whose phase permits reinforcement and whose small-signal gain exceeds one at startup. Nonlinearity then controls amplitude. Resonator Q, active-device noise, bias and amplitude regulation influence phase noise. A nominal frequency alone does not specify the LO quality relevant to a receiver.
+
+Phase noise describes random phase modulation versus offset frequency, often as dBc/Hz. A strong blocker can mix with LO sideband noise and raise the noise floor in a nearby wanted channel: reciprocal mixing. Narrowing the IF filter cannot remove LO noise that already translated the blocker into that channel. Integrated phase noise over a stated band can be converted to rms phase and timing jitter, but spurs and integration limits must be handled explicitly.
+
+A PLL compares a divided VCO phase to a reference and adjusts control voltage. The loop passes reference-related phase fluctuations mainly inside its bandwidth and suppresses free-running VCO fluctuations there; outside, VCO noise increasingly dominates. In the ideal integer-N limit, reference phase fluctuations multiplied into the output produce a $20\log_{10}N$ phase-noise increase relative to their input level.
+
+<Equation tex={String.raw`f_o=Nf_{ref},\qquad \phi_o\simeq N\phi_{ref}\quad\text{inside the tracking band}`}/>
+Fractional-N synthesis permits finer steps without a very low comparison frequency, but divider modulation and spurs need management. Loop bandwidth trades settling against reference, detector and VCO noise. A crystal reference can set long-term frequency accuracy while still having poor short-term noise in the application band. Analyze the whole loop and supply coupling.
+
+</section>
+
+<section id="bench">
+
+<div className="section-heading"><span>05</span><h2>Measure without confusing the instrument and the circuit</h2></div>
+
+Use a calibrated power path and known impedances for gain and compression measurements. A spectrum analyzer has its own noise floor, input attenuator, compression and intermodulation limits. Increasing analyzer input attenuation is a useful diagnostic: analyzer-generated distortion changes differently from a spur already present at its input. Protect the front end from excessive power and DC according to its rating.
+
+For a two-tone test, use sufficiently clean, isolated sources; source intermodulation can be mistaken for DUT distortion. For noise figure, determine bandwidth, source temperature and calibration method. For mixer noise, state which sidebands are included. For S parameters, set bias and terminate unused ports. For oscillators, check supply ripple sidebands and load pulling as well as center frequency.
+
+Compare low signal, strong blocker and changed-temperature operating points. A quiet receiver on an empty bench may fail beside its own DC–DC converter or digital clock. Shielding, local returns and spur-frequency planning complement component selection.
+
+Primary connections: [ADI AN-502, Designing a Superheterodyne Receiver Using an IF Sampling Diversity Chipset](https://www.analog.com/media/en/technical-documentation/application-notes/490279804AN502.pdf), and [ADI, System Noise-Figure Analysis for Modern Radio Receivers](https://www.analog.com/en/resources/technical-articles/system-noisefigure-analysis-for-modern-radio-receivers.html). The worked gain, intercept and frequency-plan calculations above are original examples.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, explain the physical cause of each error, identify the model assumptions and reproduce the numerical design example. Then change one operating condition and predict which constraint fails first.
+
+[Work through three independent problems](/rf-signal-chains/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, Chapter 8 and §13.13; ADI receiver application notes (linked above); original cascade and intermodulation examples. Explanations, examples and figures are original; component values are teaching choices, not a qualified product design.</p>
+
+</section>
