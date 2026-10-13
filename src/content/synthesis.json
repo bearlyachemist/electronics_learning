@@ -4772,92 +4772,6 @@
     ],
     "sources": "The Art of Electronics, Chapters 10 and 12; original timing timeline"
   },
-  "digital-board-protocols": {
-    "title": "Bus capacitance consumes the I²C pull-up window",
-    "setup": "3.3 V rail, 0.4 V low allowance, 3 mA sink guarantee and 300 ns rise limit. Minimum resistance is 966.7 Ω.",
-    "equation": "R_{max}=300\\,\\mathrm{ns}/(0.8473C)",
-    "columns": [
-      "Bus capacitance",
-      "Maximum pull-up",
-      "Passive interval exists?"
-    ],
-    "rows": [
-      [
-        "50 pF",
-        "7.081 kΩ",
-        "Yes"
-      ],
-      [
-        "150 pF",
-        "2.360 kΩ",
-        "Yes"
-      ],
-      [
-        "400 pF",
-        "0.8851 kΩ",
-        "No under these assumptions"
-      ]
-    ],
-    "analysis": [
-      "Higher capacitance requires a stronger pull-up to meet rise time, but low-state sink current imposes the opposing bound.",
-      "If the interval is empty, choosing a compromise resistor fails at least one modeled requirement. Change the bus or timing conditions."
-    ],
-    "limits": "Use all devices’ guaranteed limits and the selected mode’s timing; active buffers require their own analysis.",
-    "connections": [
-      [
-        "/digital-logic-timing/",
-        "Level and timing margins"
-      ],
-      [
-        "/transmission-lines/",
-        "Long routes and stubs"
-      ]
-    ],
-    "sources": "The Art of Electronics, §14.7; NXP UM10204; TI SLVA689; original RC budget"
-  },
-  "digital-cable-interfaces": {
-    "title": "End termination changes driver load",
-    "setup": "Use a 2 V differential output into ideal 120 Ω bus termination resistors; ignore cable loss and receiver loading. Compare counts.",
-    "equation": "R_{eq}=120/N,\\quad I_d=2/R_{eq},\\quad P=4/R_{eq}",
-    "columns": [
-      "Termination count",
-      "Equivalent load",
-      "Differential current"
-    ],
-    "rows": [
-      [
-        "1",
-        "120 Ω",
-        "16.667 mA"
-      ],
-      [
-        "2",
-        "60 Ω",
-        "33.333 mA"
-      ],
-      [
-        "4",
-        "30 Ω",
-        "66.667 mA"
-      ]
-    ],
-    "analysis": [
-      "Adding a resistor at every node can overload a driver even though each individual resistor matches the cable impedance.",
-      "Physical placement still matters: the two bus ends absorb traveling waves; an arbitrary pair of resistors elsewhere is not an equivalent distributed termination."
-    ],
-    "limits": "This is a static load comparison, not a complete physical-channel or signal-standard qualification.",
-    "connections": [
-      [
-        "/digital-board-protocols/",
-        "Frames and overhead"
-      ],
-      [
-        "/differential-pairs/",
-        "Common mode and channel"
-      ]
-    ],
-    "sources": "The Art of Electronics, §12.10 and §14.7; TI RS-485/CAN guides; original load example"
-  },
   "em-fields": {
     "title": "Coax geometry and impedance",
     "setup": "Polyethylene coax (εr = 2.25) with three radius ratios. Compare capacitance per metre and characteristic impedance.",
@@ -5029,5 +4943,779 @@
       ]
     ],
     "sources": "Friis transmission equation; original link example"
+  },
+  "digital-signal-integrity": {
+    "title": "Termination choices on a 50 Ω, 3.3 V line",
+    "setup": "A 10 Ω CMOS driver drives a 50 Ω trace to one receiver. Compare three terminations.",
+    "equation": "\\Gamma=\\frac{R-Z_0}{R+Z_0},\\quad P_{static}=\\frac{V^2}{R_T}",
+    "columns": [
+      "Termination",
+      "Static power (line high)",
+      "Receiver waveform"
+    ],
+    "rows": [
+      [
+        "None",
+        "0",
+        "1.67 V overshoot, ringing below 0.7 V"
+      ],
+      [
+        "Series 40 Ω (50 Ω total)",
+        "0",
+        "single clean step to 3.3 V scale"
+      ],
+      [
+        "Parallel 50 Ω to ground",
+        "218 mW",
+        "clean first arrival, reduced high level"
+      ]
+    ],
+    "analysis": [
+      "Series termination is free in power but delivers half amplitude along the line until the reflection returns.",
+      "Parallel termination is clean everywhere but costs static power and drive current."
+    ],
+    "limits": "Ideal lossless line; CMOS output resistance varies with voltage and temperature.",
+    "connections": [
+      [
+        "/transmission-lines/",
+        "Transmission lines"
+      ],
+      [
+        "/differential-pairs/",
+        "Differential pairs"
+      ]
+    ],
+    "sources": "Original reflection analysis"
+  },
+  "uart-rs232": {
+    "title": "Baud error from a 16 MHz clock",
+    "setup": "16× oversampling with an integer divisor. Compare three standard rates.",
+    "equation": "B_{actual}=\\frac{f_{clk}}{16\\,\\mathrm{round}(f_{clk}/16B)}",
+    "columns": [
+      "Requested",
+      "Divisor",
+      "Actual (error)"
+    ],
+    "rows": [
+      [
+        "9600",
+        "104",
+        "9615 (+0.16%)"
+      ],
+      [
+        "57 600",
+        "17",
+        "58 824 (+2.1%)"
+      ],
+      [
+        "115 200",
+        "9",
+        "111 111 (−3.5%)"
+      ]
+    ],
+    "analysis": [
+      "Integer division error grows as the divisor shrinks, so high rates from low clocks are the risk.",
+      "A −3.5% error alone nearly exhausts the frame budget."
+    ],
+    "limits": "Ignores oscillator tolerance, which adds to the divisor error.",
+    "connections": [
+      [
+        "/digital-logic-timing/",
+        "Logic timing"
+      ],
+      [
+        "/rs485-can/",
+        "RS-485 transport"
+      ]
+    ],
+    "sources": "Original divisor calculation"
+  },
+  "spi-interfaces": {
+    "title": "Read clock against route length",
+    "setup": "Opposite-edge capture, 8 ns clock-to-output, 3 ns setup, signals at 15 cm/ns. Compare three routes.",
+    "equation": "\\frac{T}{2}\\ge2t_{flight}+t_{CO}+t_{su}",
+    "columns": [
+      "Route",
+      "Round-trip flight",
+      "Maximum SCLK"
+    ],
+    "rows": [
+      [
+        "5 cm",
+        "0.67 ns",
+        "42.9 MHz"
+      ],
+      [
+        "20 cm",
+        "2.67 ns",
+        "36.6 MHz"
+      ],
+      [
+        "50 cm",
+        "6.67 ns",
+        "28.3 MHz"
+      ]
+    ],
+    "analysis": [
+      "The peripheral's own delay dominates on short routes; long routes or cables make flight time significant.",
+      "Delayed capture or a returned clock recovers some of the loss."
+    ],
+    "limits": "No margin included; edge rate and loading add delay.",
+    "connections": [
+      [
+        "/digital-signal-integrity/",
+        "Signal integrity"
+      ],
+      [
+        "/digital-logic-timing/",
+        "Setup and hold"
+      ]
+    ],
+    "sources": "Original timing budget"
+  },
+  "i2c-bus": {
+    "title": "Fast-mode pull-up range against bus capacitance",
+    "setup": "3.3 V supply, 300 ns rise-time limit, 3 mA sink at 0.4 V (R_min = 967 Ω). Compare three bus capacitances.",
+    "equation": "R_{max}=\\frac{t_r}{0.847C_b}",
+    "columns": [
+      "Bus capacitance",
+      "R_max",
+      "Valid range"
+    ],
+    "rows": [
+      [
+        "50 pF",
+        "7.08 kΩ",
+        "0.97–7.08 kΩ"
+      ],
+      [
+        "100 pF",
+        "3.54 kΩ",
+        "0.97–3.54 kΩ"
+      ],
+      [
+        "400 pF",
+        "885 Ω",
+        "none"
+      ]
+    ],
+    "analysis": [
+      "Capacitance shrinks the allowed range until it vanishes at the specification limit.",
+      "Beyond that, a buffer, an active pull-up or a slower mode is needed."
+    ],
+    "limits": "Single-pole RC rise; device leakage and input capacitance included in C_b.",
+    "connections": [
+      [
+        "/digital-signal-integrity/",
+        "Edges and thresholds"
+      ],
+      [
+        "/rc-circuits/",
+        "RC charging"
+      ]
+    ],
+    "sources": "NXP UM10204 limits; original example"
+  },
+  "rs485-can": {
+    "title": "Worst-case CAN frame time",
+    "setup": "A standard data frame with 8 bytes and maximum stuffing occupies 135 bits including interframe space. Compare three bit rates.",
+    "equation": "t=\\frac{135}{R}",
+    "columns": [
+      "Bit rate",
+      "Frame time",
+      "Frames per second"
+    ],
+    "rows": [
+      [
+        "125 kbit/s",
+        "1.08 ms",
+        "926"
+      ],
+      [
+        "500 kbit/s",
+        "270 µs",
+        "3700"
+      ],
+      [
+        "1 Mbit/s",
+        "135 µs",
+        "7400"
+      ]
+    ],
+    "analysis": [
+      "Payload is 64 of 135 bits, under 50% efficiency at best.",
+      "Higher rates shorten frames but cut the allowed bus length."
+    ],
+    "limits": "Assumes worst-case stuffing and back-to-back frames.",
+    "connections": [
+      [
+        "/uart-rs232/",
+        "UART frames"
+      ],
+      [
+        "/i2c-bus/",
+        "Wired-AND arbitration"
+      ]
+    ],
+    "sources": "ISO 11898 frame format; original calculation"
+  },
+  "usb-ethernet": {
+    "title": "Ethernet efficiency against payload size",
+    "setup": "100 Mbit/s link, 38 bytes of per-frame overhead (preamble, header, FCS, gap).",
+    "equation": "\\eta=\\frac{L}{L+38}",
+    "columns": [
+      "Payload",
+      "Efficiency",
+      "Frames per second"
+    ],
+    "rows": [
+      [
+        "46 bytes",
+        "54.8%",
+        "148 800"
+      ],
+      [
+        "512 bytes",
+        "93.1%",
+        "22 700"
+      ],
+      [
+        "1500 bytes",
+        "97.5%",
+        "8130"
+      ]
+    ],
+    "analysis": [
+      "Small frames waste nearly half the link on overhead.",
+      "Large frames approach the raw rate but add latency per frame."
+    ],
+    "limits": "Excludes VLAN tags and higher-layer headers.",
+    "connections": [
+      [
+        "/digital-signal-integrity/",
+        "Standard impedances"
+      ],
+      [
+        "/differential-pairs/",
+        "PCB pairs"
+      ]
+    ],
+    "sources": "IEEE 802.3 frame format; original calculation"
+  },
+  "rf-amplifiers": {
+    "title": "Degenerated LNA inductors against frequency",
+    "setup": "C_gs = 0.5 pF and g_m = 40 mS, so L_s = 0.63 nH for a 50 Ω input at every frequency. Compare the gate inductor needed for resonance.",
+    "equation": "L_g+L_s=\\frac{1}{\\omega_0^2C_{gs}},\\quad L_s=\\frac{50\\ \\Omega}{\\omega_T}",
+    "columns": [
+      "Frequency",
+      "L_g",
+      "L_s"
+    ],
+    "rows": [
+      [
+        "0.9 GHz",
+        "61.9 nH",
+        "0.63 nH"
+      ],
+      [
+        "2.4 GHz",
+        "8.2 nH",
+        "0.63 nH"
+      ],
+      [
+        "5.8 GHz",
+        "0.88 nH",
+        "0.63 nH"
+      ]
+    ],
+    "analysis": [
+      "At low frequency the large gate inductor's series loss adds noise directly at the input.",
+      "At high frequency the gate inductor approaches parasitic values, so pads, bond wires and vias become the design."
+    ],
+    "limits": "Ignores C_gd, which adds feedback, and the inductor's own Q.",
+    "connections": [
+      [
+        "/rf-signal-chains/",
+        "Cascade noise and IP3"
+      ],
+      [
+        "/rf-impedance-matching/",
+        "Matching networks"
+      ]
+    ],
+    "sources": "Original LNA design example"
+  },
+  "rf-filters": {
+    "title": "Order needed for 40 dB against stopband ratio",
+    "setup": "Low-pass filters must reach 40 dB of attenuation at a multiple of the cutoff frequency.",
+    "equation": "N_{BW}\\ge\\frac{\\log_{10}(10^{A/10}-1)}{2\\log_{10}(\\omega_s/\\omega_c)}",
+    "columns": [
+      "ω_s/ω_c",
+      "Butterworth order",
+      "0.5 dB Chebyshev order"
+    ],
+    "rows": [
+      [
+        "1.5",
+        "12",
+        "7"
+      ],
+      [
+        "2.5",
+        "6",
+        "5"
+      ],
+      [
+        "4",
+        "4",
+        "4"
+      ]
+    ],
+    "analysis": [
+      "A close stopband is where ripple pays off: the Chebyshev filter saves five sections at 1.5×.",
+      "Far stopbands need few sections either way."
+    ],
+    "limits": "Ideal lossless elements; real insertion loss grows with order.",
+    "connections": [
+      [
+        "/opamp-active-filters/",
+        "Active filters"
+      ],
+      [
+        "/resonance/",
+        "Resonance and Q"
+      ]
+    ],
+    "sources": "Original order calculation"
+  },
+  "modulation": {
+    "title": "Spectral efficiency against required E_b/N₀",
+    "setup": "Gray-coded modulations with raised-cosine roll-off 0.25, for a bit error rate of 10⁻⁵ without coding.",
+    "equation": "\\frac{R_b}{B}=\\frac{\\log_2M}{1+\\alpha}",
+    "columns": [
+      "Modulation",
+      "Efficiency",
+      "E_b/N₀ for 10⁻⁵"
+    ],
+    "rows": [
+      [
+        "QPSK",
+        "1.6 bit/s/Hz",
+        "9.6 dB"
+      ],
+      [
+        "16-QAM",
+        "3.2 bit/s/Hz",
+        "13.4 dB"
+      ],
+      [
+        "64-QAM",
+        "4.8 bit/s/Hz",
+        "≈ 17.8 dB"
+      ]
+    ],
+    "analysis": [
+      "Each doubling of bits per symbol costs about 4 dB of E_b/N₀.",
+      "Adaptive links switch constellation as the SNR changes."
+    ],
+    "limits": "Additive white Gaussian noise only; fading and phase noise add penalties.",
+    "connections": [
+      [
+        "/rf-signal-chains/",
+        "Receiver noise floor"
+      ],
+      [
+        "/oscillators-pll/",
+        "Phase noise"
+      ]
+    ],
+    "sources": "Standard error-rate formulas; original comparison"
+  },
+  "line-supplies": {
+    "title": "Reservoir capacitance against ripple and pulse current",
+    "setup": "15.6 V peak, 1 A load, 60 Hz full-wave rectification.",
+    "equation": "\\Delta V=\\frac{I}{2fC},\\quad\\cos\\theta_c=1-\\frac{\\Delta V}{V_p}",
+    "columns": [
+      "C",
+      "Ripple",
+      "Average pulse current"
+    ],
+    "rows": [
+      [
+        "1000 µF",
+        "8.3 V",
+        "2.9 A"
+      ],
+      [
+        "2200 µF",
+        "3.8 V",
+        "4.4 A"
+      ],
+      [
+        "4700 µF",
+        "1.8 V",
+        "6.5 A"
+      ]
+    ],
+    "analysis": [
+      "Larger capacitors reduce ripple but force the same charge through shorter pulses.",
+      "Transformer heating and diode stress grow with capacitance."
+    ],
+    "limits": "Ignores transformer resistance, which lengthens and flattens the pulses.",
+    "connections": [
+      [
+        "/rectifiers/",
+        "Rectification"
+      ],
+      [
+        "/power-linear-regulators/",
+        "Linear regulators"
+      ]
+    ],
+    "sources": "Original rectifier example"
+  },
+  "regulator-ics": {
+    "title": "Dropout and minimum input for a 3.3 V, 500 mA regulator",
+    "setup": "Compare pass elements.",
+    "equation": "V_{in,min}=V_{out}+V_{drop}",
+    "columns": [
+      "Pass element",
+      "Dropout",
+      "Minimum input"
+    ],
+    "rows": [
+      [
+        "NPN Darlington",
+        "≈ 2 V",
+        "5.3 V"
+      ],
+      [
+        "PNP",
+        "≈ 0.4 V",
+        "3.7 V"
+      ],
+      [
+        "PMOS, 0.2 Ω",
+        "0.1 V",
+        "3.4 V"
+      ]
+    ],
+    "analysis": [
+      "Only the PMOS type runs a 3.3 V rail from a nearly discharged lithium cell.",
+      "Low dropout costs stability margin and sometimes capacitor restrictions."
+    ],
+    "limits": "Typical values at room temperature.",
+    "connections": [
+      [
+        "/power-linear-regulators/",
+        "Regulator loop"
+      ],
+      [
+        "/thermal-soa/",
+        "Heat sinking"
+      ]
+    ],
+    "sources": "Original comparison"
+  },
+  "thermal-soa": {
+    "title": "Heat sink required against dissipation",
+    "setup": "TO-220, θ_JC = 2 °C/W, θ_CS = 0.5 °C/W, 50 °C ambient, 125 °C junction target.",
+    "equation": "\\theta_{SA}\\le\\frac{T_J-T_A}{P}-\\theta_{JC}-\\theta_{CS}",
+    "columns": [
+      "Dissipation",
+      "Required θ_SA",
+      "Practicality"
+    ],
+    "rows": [
+      [
+        "5 W",
+        "12.5 °C/W",
+        "small clip-on sink"
+      ],
+      [
+        "15 W",
+        "2.5 °C/W",
+        "large finned sink"
+      ],
+      [
+        "25 W",
+        "0.5 °C/W",
+        "forced air or a better package"
+      ]
+    ],
+    "analysis": [
+      "The package resistance alone uses up most of the budget at high power.",
+      "Beyond about 20 W in a TO-220, split the dissipation or change package."
+    ],
+    "limits": "Steady state; airflow and mounting change θ_SA.",
+    "connections": [
+      [
+        "/current-sharing/",
+        "Electrothermal loops"
+      ],
+      [
+        "/parallel-mosfets/",
+        "Thermal stability"
+      ]
+    ],
+    "sources": "Original example"
+  },
+  "isolated-offline": {
+    "title": "Hold-up capacitance against line voltage",
+    "setup": "60 W input, 20 ms hold-up, bulk falling to 70% of its trough.",
+    "equation": "C\\ge\\frac{2P_{in}t_h}{V_1^2-V_2^2}",
+    "columns": [
+      "Line",
+      "Bulk trough → minimum",
+      "C"
+    ],
+    "rows": [
+      [
+        "230 V",
+        "280 → 200 V",
+        "63 µF"
+      ],
+      [
+        "120 V",
+        "150 → 100 V",
+        "192 µF"
+      ],
+      [
+        "85 V",
+        "110 → 80 V",
+        "421 µF"
+      ]
+    ],
+    "analysis": [
+      "Low-line operation sets the bulk capacitor size.",
+      "Active PFC holds the bulk near 400 V at every line voltage, shrinking it."
+    ],
+    "limits": "Ignores ripple on the bulk at the moment of dropout.",
+    "connections": [
+      [
+        "/line-supplies/",
+        "Line input"
+      ],
+      [
+        "/power-boost-isolated/",
+        "Flyback ratio"
+      ]
+    ],
+    "sources": "Original example"
+  },
+  "batteries-protection": {
+    "title": "Short-circuit dissipation with foldback",
+    "setup": "15 V input, 1.5 A current limit, output shorted.",
+    "equation": "P=V_{in}I_{sc}",
+    "columns": [
+      "Limit type",
+      "Short-circuit current",
+      "Pass dissipation"
+    ],
+    "rows": [
+      [
+        "Constant current",
+        "1.5 A",
+        "22.5 W"
+      ],
+      [
+        "Foldback",
+        "0.4 A",
+        "6 W"
+      ],
+      [
+        "Strong foldback",
+        "0.2 A",
+        "3 W"
+      ]
+    ],
+    "analysis": [
+      "Foldback cuts fault dissipation in proportion to the short-circuit current.",
+      "Strong foldback raises the risk of latching with non-resistive loads."
+    ],
+    "limits": "Ignores the regulator's own SOA-based limit reduction.",
+    "connections": [
+      [
+        "/power-linear-regulators/",
+        "Current limiting"
+      ],
+      [
+        "/thermal-soa/",
+        "Safe operating area"
+      ]
+    ],
+    "sources": "Original example"
+  },
+  "noise-fundamentals": {
+    "title": "Johnson noise of three resistors over 20 kHz",
+    "setup": "Room temperature, 20 kHz rectangular bandwidth.",
+    "equation": "e_n=\\sqrt{4kTR},\\quad v_n=e_n\\sqrt B",
+    "columns": [
+      "Resistance",
+      "Density",
+      "Rms in 20 kHz"
+    ],
+    "rows": [
+      [
+        "100 Ω",
+        "1.29 nV/√Hz",
+        "0.18 µV"
+      ],
+      [
+        "10 kΩ",
+        "12.9 nV/√Hz",
+        "1.82 µV"
+      ],
+      [
+        "1 MΩ",
+        "129 nV/√Hz",
+        "18.2 µV"
+      ]
+    ],
+    "analysis": [
+      "Noise grows as √R: a hundred times the resistance gives ten times the noise.",
+      "High-impedance circuits start with a high noise floor before any amplifier is added."
+    ],
+    "limits": "Excludes excess (current) noise in real resistors.",
+    "connections": [
+      [
+        "/precision-noise-grounding/",
+        "Noise bandwidth"
+      ],
+      [
+        "/transistor-noise/",
+        "Amplifier noise"
+      ]
+    ],
+    "sources": "Original calculation"
+  },
+  "transistor-noise": {
+    "title": "Optimum collector current against source resistance",
+    "setup": "β = 200, r_bb′ neglected.",
+    "equation": "I_{C,opt}=\\frac{V_T\\sqrt\\beta}{R_s},\\quad F_{min}\\approx1+\\frac1{\\sqrt\\beta}",
+    "columns": [
+      "Source resistance",
+      "Optimum I_C",
+      "Minimum NF"
+    ],
+    "rows": [
+      [
+        "1 kΩ",
+        "366 µA",
+        "0.3 dB"
+      ],
+      [
+        "10 kΩ",
+        "37 µA",
+        "0.3 dB"
+      ],
+      [
+        "100 kΩ",
+        "3.7 µA",
+        "0.3 dB"
+      ]
+    ],
+    "analysis": [
+      "The achievable noise figure is the same at every source resistance if the current is free.",
+      "At very low currents β and 1/f noise degrade, favouring a JFET for high source resistance."
+    ],
+    "limits": "Ignores base resistance and flicker noise.",
+    "connections": [
+      [
+        "/noise-fundamentals/",
+        "Shot noise"
+      ],
+      [
+        "/differential-amplifiers/",
+        "Input pairs"
+      ]
+    ],
+    "sources": "Original calculation"
+  },
+  "opamp-noise": {
+    "title": "Bipolar versus JFET op amp against source resistance",
+    "setup": "Bipolar: 1 nV/√Hz, 2 pA/√Hz. JFET: 5 nV/√Hz, 5 fA/√Hz. Total input noise including the source's Johnson noise.",
+    "equation": "e_{tot}=\\sqrt{e_n^2+(i_nR_s)^2+4kTR_s}",
+    "columns": [
+      "Source",
+      "Bipolar total",
+      "JFET total"
+    ],
+    "rows": [
+      [
+        "100 Ω",
+        "1.6 nV/√Hz",
+        "5.2 nV/√Hz"
+      ],
+      [
+        "10 kΩ",
+        "23.8 nV/√Hz",
+        "13.8 nV/√Hz"
+      ],
+      [
+        "1 MΩ",
+        "2000 nV/√Hz",
+        "129 nV/√Hz"
+      ]
+    ],
+    "analysis": [
+      "The crossover lies near a few kilohms, between the two parts' noise resistances.",
+      "At high source resistance the bipolar current noise is catastrophic."
+    ],
+    "limits": "White noise only; check 1/f corners for low-frequency work.",
+    "connections": [
+      [
+        "/transistor-noise/",
+        "Device noise"
+      ],
+      [
+        "/opamp-transimpedance/",
+        "Transimpedance amplifiers"
+      ]
+    ],
+    "sources": "Original comparison"
+  },
+  "noise-measurement": {
+    "title": "Lock-in time constant against bandwidth and settling",
+    "setup": "Single-pole output filter.",
+    "equation": "B_N=\\frac{1}{4\\tau},\\quad t_{settle}\\approx5\\tau",
+    "columns": [
+      "Time constant",
+      "Noise bandwidth",
+      "Settling"
+    ],
+    "rows": [
+      [
+        "10 ms",
+        "25 Hz",
+        "50 ms"
+      ],
+      [
+        "100 ms",
+        "2.5 Hz",
+        "0.5 s"
+      ],
+      [
+        "1 s",
+        "0.25 Hz",
+        "5 s"
+      ]
+    ],
+    "analysis": [
+      "Each tenfold increase in τ improves SNR by 10 dB and slows the reading tenfold.",
+      "Steeper output filters settle faster for the same noise bandwidth."
+    ],
+    "limits": "White noise near the reference; 1/f noise near DC does not matter after demodulation.",
+    "connections": [
+      [
+        "/precision-noise-grounding/",
+        "Synchronous detection"
+      ],
+      [
+        "/precision-calibration/",
+        "Averaging"
+      ]
+    ],
+    "sources": "Original calculation"
   }
 }

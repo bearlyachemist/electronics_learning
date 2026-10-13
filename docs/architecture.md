@@ -190,11 +190,11 @@ derived from it, and the previous/next pager announces part boundaries.
 | --- | --- | --- |
 | I | Foundations & passive circuits | 1–18 |
 | II | Semiconductors & transistors | 19–71 |
-| III | Op amps & precision analog | 72–92 |
-| IV | Power electronics | 93–100 |
-| V | Electromagnetics & RF | 101–108 |
-| VI | The analog–digital boundary | 109–113 |
-| VII | Digital electronics | 114–117 |
+| III | Op amps, noise & precision | 72–96 |
+| IV | Power electronics | 97–109 |
+| V | Electromagnetics & RF | 110–120 |
+| VI | The analog–digital boundary | 121–125 |
+| VII | Digital electronics & interfaces | 126–133 |
 
 Chapter numbers are display labels only; URLs use chapter ids, so renumbering never breaks links. The old-to-new map used
 for the reorganization (all internal "Chapter N" references were rewritten with it; textbook chapter citations were left
@@ -203,3 +203,19 @@ MOS 57–76 → 52–71; op amps 77–94 → 72–89; precision 95–97 → 90�
 RF 104 → 102, 102 → 104, 103 → 106, 105 → 108 (new chapters 101, 103, 105, 107); converters 106–110 → 109–113;
 digital 46 → 114, 111–113 → 115–117. New chapters take the next number inside their unit and require extending that
 unit's range in `parts.ts`.
+
+### Second expansion (October 2026)
+
+Eighteen chapters were added and the protocol chapters split. Existing chapters were renumbered with this map:
+1–89 unchanged; precision references 90 → 95, noise/grounding 91 → 94, calibration 92 → 96; regulated supplies
+93 → 98, linear regulators 94 → 99; power MOSFET chapters 95–97 → 102–104; buck 98 → 105, boost/isolated 99 → 106,
+control/layout 100 → 108; EM fields 101 → 110, transmission lines 102 → 111, RF components 103 → 112, matching
+104 → 113, oscillators/PLL 105 → 116, signal chains 106 → 118, antennas 107 → 119, differential pairs 108 → 120;
+converters 109–113 → 121–125; BJT logic 114 → 126, logic timing 115 → 127. The former 116 (board protocols) and
+117 (cable interfaces) were replaced by 129–133.
+
+New chapters: 90 noise-fundamentals, 91 transistor-noise, 92 opamp-noise, 93 noise-measurement, 97 line-supplies,
+100 regulator-ics, 101 thermal-soa, 107 isolated-offline, 109 batteries-protection, 114 rf-amplifiers, 115
+rf-filters, 117 modulation, 128 digital-signal-integrity, 129 uart-rs232, 130 spi-interfaces, 131 i2c-bus,
+132 rs485-can, 133 usb-ethernet. Figures live in NoiseFigures.tsx, PowerFigures.tsx, RfFigures.tsx and
+DigitalFigures.tsx (which provides a reusable `Timing` diagram component).

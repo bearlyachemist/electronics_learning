@@ -1,0 +1,160 @@
+import Equation from '../../components/Equation.astro';
+import {NrziStuffingFigure,UsbPacketFigure,EthernetLineCodeFigure,EthernetFrameFigure} from '../../components/DigitalFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 133</span><span className="hairline"/>PART VII / CABLE INTERFACES</div>
+
+<h1>USB and Ethernet<br/><em>Coding the clock into the data.</em></h1>
+
+<p className="dek">Follow USB from differential J and K states through NRZI, bit stuffing and packets to host scheduling, then Ethernet from Manchester and MLT-3 line codes through magnetics and 100 Ω pairs to frames and their overhead.</p>
+
+<div className="chapter-meta"><span>55–80 min + practice</span><span>Specification · Line coding · Channel design</span></div>
+
+</div>
+
+<section id="clock">
+
+<div className="section-heading"><span>01</span><h2>Recover a clock from the data</h2></div>
+
+UART carries no clock and tolerates only a few percent of mismatch over ten bits (Chapter 129). SPI and I²C send the clock on its own wire, which works on a board but not over metres of cable at hundreds of megabits per second, where clock and data would skew apart. High-speed serial links instead **embed timing in the data**: the receiver runs a phase-locked loop (Chapter 116) that locks to the edges in the received stream and samples in the middle of each bit.
+
+That needs two properties from the line code:
+
+- **Enough transitions**, so the receiver's PLL never coasts long enough to drift by a meaningful fraction of a bit.
+- **No DC content** (or bounded running disparity), so the signal can pass through capacitors and transformers that isolate the two ends.
+
+USB and Ethernet meet these requirements in different ways.
+
+</section>
+
+<section id="usb-signal">
+
+<div className="section-heading"><span>02</span><h2>Specify USB 2.0 signalling</h2></div>
+
+USB 2.0 uses one twisted pair, D+ and D−, carrying data in both directions in turn (half duplex), plus power and ground.
+
+| Speed | Rate | Driver | Termination | Signalling |
+|---|---|---|---|---|
+| Low speed | 1.5 Mbit/s | 3.3 V, slow edges | 1.5 kΩ pull-up on D− at device | single-ended thresholds |
+| Full speed | 12 Mbit/s | 3.3 V | 1.5 kΩ pull-up on D+ at device; 15 kΩ pull-downs at host | J = D+ high, K = D− high |
+| High speed | 480 Mbit/s | 17.78 mA current into 45 Ω at each end | 45 Ω to ground on each line, both ends | 400 mV differential |
+
+The **pull-up identifies the speed**: when a device is plugged in, its 1.5 kΩ pull-up overcomes the host's 15 kΩ pull-down on one line, and the host sees which line went high. High-speed devices first attach as full speed and then negotiate with a "chirp" sequence. A line state with both wires low, **SE0**, cannot occur in differential data and is used for end-of-packet and reset.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / HIGH-SPEED LEVELS AND THE 90 Ω PAIR</span>
+
+1. **Current-mode driver.** A high-speed transmitter steers 17.78 mA into one line or the other. Each line has 45 Ω to ground at each end, so a driven line sees $45\parallel45 = 22.5$ Ω.
+
+2. **Line voltage.** $17.78\text{ mA}\times22.5\ \Omega = 400$ mV on the driven line and 0 V on the other: a 400 mV differential swing.
+
+3. **Matching.** Each line is terminated with 45 Ω to ground at both ends; for the odd (differential) mode, two 45 Ω resistors in series give 90 Ω between the lines. The cable and PCB pair are therefore specified at 90 Ω differential, so the termination absorbs the wave at whichever end receives it (Chapter 128).
+
+4. **Consequence for layout.** A PCB trace pair designed for 100 Ω, or a stub to a test point, becomes a discontinuity; at 480 Mbit/s a 2 cm stub has a round-trip delay of about 0.27 ns, a significant fraction of the 2.08 ns bit.
+
+</div>
+
+</section>
+
+<section id="usb-coding">
+
+<div className="section-heading"><span>03</span><h2>Code bits with NRZI and stuffing</h2></div>
+
+USB uses **NRZI**: a 0 is a change of line state, a 1 is no change. A long run of 0s therefore toggles every bit and is easy to clock; a long run of 1s would produce no transitions at all. **Bit stuffing** prevents that: after six consecutive 1s the transmitter inserts a 0, forcing a transition, and the receiver removes it.
+
+<NrziStuffingFigure/>
+
+The worst case is a run of 1s: the line can go at most seven bit times without an edge (six 1s, then the stuffed 0 toggles). The receiver's PLL must hold phase over that interval, which bounds the frequency tolerance: full-speed devices need ±0.25% and high-speed ±0.05%, which is why USB devices use crystals or recover their clock from the host's start-of-frame packets. Stuffing costs at most one bit in seven, about 14% in the worst case and almost nothing for typical data.
+
+<UsbPacketFigure/>
+
+**Packets and transfers.** Every USB transaction is started by the host. A token packet (SETUP, IN or OUT) names a device address and endpoint; a data packet carries up to 64 bytes (full speed) or 512 bytes (high-speed bulk) with a 16-bit CRC; a handshake packet (ACK, NAK, STALL) reports the result. Four transfer types use these: **control** for configuration and enumeration; **bulk** for large data with guaranteed delivery but no guaranteed timing; **interrupt** for small data polled at a scheduled interval; **isochronous** for streams (audio, video) with guaranteed bandwidth and no retransmission. A 480 Mbit/s link delivers roughly 40–50 MB/s of bulk payload after packet overhead, scheduling and bit stuffing.
+
+**Type-C and power.** The Type-C connector is reversible and uses its CC pins to detect attachment, orientation and the advertised current (default, 1.5 A or 3 A at 5 V) through pull-up and pull-down resistors. USB Power Delivery is a separate negotiated protocol on CC that can raise the voltage up to 20 V or more. A Type-C receptacle on a USB 2.0 device still needs correct CC resistors, or many chargers will not supply power.
+
+</section>
+
+<section id="eth-phy">
+
+<div className="section-heading"><span>04</span><h2>Separate the Ethernet MAC from the PHY</h2></div>
+
+Ethernet splits the work between a **MAC** (media access controller) that builds and checks frames, and a **PHY** that turns bits into analog signals on a particular medium. They talk over a board-level interface (MII, RMII, RGMII) with its own clocks and timing. On twisted pair the PHY handles line coding, equalization, auto-negotiation and link detection.
+
+<EthernetLineCodeFigure/>
+
+| Standard | Rate | Pairs | Line code | Symbol rate | Main spectrum |
+|---|---|---|---|---|---|
+| 10BASE-T | 10 Mbit/s | 2 (one each way) | Manchester | 20 Mbaud (two half-bits) | 5–10 MHz |
+| 100BASE-TX | 100 Mbit/s | 2 | 4B5B + scrambling + MLT-3 | 125 Mbaud | ≤ 31.25 MHz |
+| 1000BASE-T | 1 Gbit/s | 4, all bidirectional | PAM-5 with trellis coding | 125 Mbaud per pair | ≤ 62.5 MHz |
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / WHY 100BASE-TX USES MLT-3</span>
+
+1. **Coding overhead.** 4B5B maps each 4 data bits to a 5-bit code with enough 1s to guarantee transitions, so 100 Mbit/s becomes 125 Mbaud. Scrambling spreads the spectrum so no single tone dominates emissions.
+
+2. **Binary NRZ would need** a fundamental of up to half the symbol rate, 62.5 MHz, for an alternating 1010 pattern.
+
+3. **MLT-3** steps through the cycle 0, +, 0, − on each 1 and holds on each 0. The fastest pattern, all 1s, takes four symbols to complete one full cycle of the waveform, so its fundamental is $125/4 = 31.25$ MHz.
+
+4. **Result.** Halving the bandwidth lets 125 Mbaud travel 100 m of Category 5 cable, whose attenuation and crosstalk rise steeply with frequency, and reduces radiated emissions. The cost is three levels and therefore less noise margin per decision than two.
+
+</div>
+
+**Magnetics.** Each pair passes through a transformer at both ends. It blocks DC and common-mode voltage between the two pieces of equipment (isolation is typically rated at 1500 V), and its centre taps provide bias for some PHY designs or carry power in Power over Ethernet. This is why Ethernet line codes must be DC-free: a transformer cannot pass a long run of one level.
+
+**Why 100 Ω.** Category 5 cable is a family of 24 AWG twisted pairs whose geometry yields about 100 Ω differential impedance. The PHY's termination and the magnetics are designed to that value, and the PCB traces from PHY to transformer to connector should also be 100 Ω differential (Chapter 120), short and symmetric. Each mismatch reflects part of the signal back toward the transmitter, where 1000BASE-T's echo canceller must subtract it from the incoming signal on the same pair.
+
+</section>
+
+<section id="eth-frame">
+
+<div className="section-heading"><span>05</span><h2>Count frame overhead and payload</h2></div>
+
+<EthernetFrameFigure/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / MAXIMUM PAYLOAD RATE</span>
+
+1. **Per-frame overhead** on the wire: 7-byte preamble and 1-byte start delimiter, 14-byte header (two 6-byte MAC addresses and a 2-byte EtherType), 4-byte frame check sequence, and a 12-byte interframe gap: 38 bytes.
+
+2. **Large frames.** A 1500-byte payload occupies $1500 + 38 = 1538$ byte-times:
+<Equation tex={String.raw`\eta=\frac{1500}{1538}=97.5\%,\qquad100\ \text{Mbit/s}\times0.975=97.5\ \text{Mbit/s}`}/>
+
+3. **Small frames.** The minimum payload is 46 bytes (shorter data is padded), so a 46-byte frame uses 84 byte-times and is only 55% efficient. A 100 Mbit/s link can carry at most $10^8/(84\times8)$ ≈ 148 800 such frames per second.
+
+4. **Above Ethernet.** IPv4 and UDP headers take another 28 bytes from the payload; TCP takes 40 and adds acknowledgments and retransmission. Neither guarantees latency.
+
+</div>
+
+A data-acquisition system streaming 16-bit samples at 1 MS/s needs 2 MB/s of payload, easily within 100 Mbit/s; the hard part is the host. If the receiving computer can stall for 20 ms, the instrument needs at least 40 kB of buffering to avoid losing samples, and samples should be timestamped when acquired rather than when packets arrive.
+
+</section>
+
+<section id="layout">
+
+<div className="section-heading"><span>06</span><h2>Lay out the high-speed path</h2></div>
+
+- **Route each pair as a coupled, impedance-controlled pair** (90 Ω for USB 2.0, 100 Ω for Ethernet) over an unbroken reference plane, with matched lengths inside the pair and no stubs.
+- **Place ESD protection** at the connector with a short path to the protection ground, choosing low-capacitance parts so they do not become a discontinuity.
+- **Keep the magnetics' isolation barrier clear.** No copper planes cross under an Ethernet transformer between the PHY side and the cable side; the cable-side centre taps return through a high-voltage capacitor (Bob Smith termination) to chassis.
+- **Treat the board interface separately.** RMII and RGMII have their own setup and hold budgets; RGMII clocks often need a 1.5–2 ns delay inserted by the PHY or the MAC.
+- **Follow the PHY reference design** for termination, centre-tap biasing and magnetics; voltage-mode and current-mode PHYs differ, and copying another part's network can break the link.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, encode a byte in NRZI with stuffing, derive USB's 400 mV high-speed level from its driver current and terminations, explain MLT-3's bandwidth advantage, and compute Ethernet payload efficiency for a given frame size.
+
+[Work through three independent problems](/usb-ethernet/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§12.10 and 14.7; USB 2.0 Specification (USB-IF); IEEE 802.3; TI SNLA387 Ethernet PHY layout checklist. Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

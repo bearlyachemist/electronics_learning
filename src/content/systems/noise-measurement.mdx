@@ -1,0 +1,119 @@
+import Equation from '../../components/Equation.astro';
+import {LockInFigure,AveragingPlot} from '../../components/NoiseFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 93</span><span className="hairline"/>PART III / LOW-NOISE DESIGN</div>
+
+<h1>Measuring noise and recovering signals<br/><em>Know your bandwidth, then shrink it.</em></h1>
+
+<p className="dek">Measure an amplifier's voltage and current noise, determine noise figure with a calibrated noise source, account for averaging time and 1/f noise, and recover a signal buried far below the noise with lock-in detection.</p>
+
+<div className="chapter-meta"><span>50–70 min + practice</span><span>Measurement methods · Derivations · Instrumentation</span></div>
+
+</div>
+
+<section id="rms">
+
+<div className="section-heading"><span>01</span><h2>Measure rms noise in a known bandwidth</h2></div>
+
+A noise reading means nothing without its bandwidth. A practical setup is: a low-noise preamplifier with enough gain that the measuring instrument's own noise is negligible, a band-limiting filter whose noise bandwidth is known, and a true-rms voltmeter (or an FFT analyzer reporting density directly).
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / FROM AN RMS READING TO A DENSITY</span>
+
+1. **Noise bandwidth.** A filter with power response $|H(f)|^2$ and passband gain $H_0$ passes the same white-noise power as a brick-wall filter of width $B_N = \int_0^\infty|H(f)|^2df/H_0^2$. For a single pole at $f_c$, $B_N = \pi f_c/2$ (Chapter 94); for a second-order Butterworth, $1.11f_c$; for steep filters it approaches $f_c$.
+
+2. **Density.** If the rms reading at the output is $V_{rms}$ and the total gain is $G$, the input-referred white density is
+<Equation tex={String.raw`e_n=\frac{V_{rms}}{G\sqrt{B_N}}`}/>
+
+3. **Subtract the setup's own noise.** Measure with the device removed (input shorted or replaced by the equivalent resistance) and subtract in power: $e_{DUT}^2 = e_{total}^2 - e_{setup}^2$. The result is trustworthy only if the device's noise is at least comparable to the setup's.
+
+</div>
+
+**Measuring $e_n$ and $i_n$.** Short the amplifier's input (with the bias network in place): the output noise divided by gain is $e_n$. Then drive it from a large resistor $R$: the extra noise is $i_nR$ plus the resistor's $\sqrt{4kTR}$. Since $i_nR$ grows as $R$ and the Johnson noise only as $\sqrt R$, choose $R$ large enough that $i_nR$ dominates, and subtract the calculated Johnson term. For femtoampere current noise this needs gigohm resistors and careful shielding (Chapter 94), because the resistor's own capacitance and leakage limit the bandwidth.
+
+</section>
+
+<section id="nf">
+
+<div className="section-heading"><span>02</span><h2>Measure noise figure with a noise source</h2></div>
+
+At RF, noise figure is measured with a calibrated **noise source**: a diode in avalanche that, when switched on, presents a source as noisy as a resistor at a known hot temperature, specified as its excess noise ratio $\text{ENR} = (T_{hot} - T_0)/T_0$.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE Y-FACTOR METHOD</span>
+
+1. **Two readings.** Measure the output noise power with the source off ($N_{cold}$, source at $T_0$) and on ($N_{hot}$, source at $T_{hot}$). Their ratio is $Y = N_{hot}/N_{cold}$.
+
+2. **Output noise is proportional to source plus amplifier temperature:** $N = kGB(T_s + T_e)$. So
+<Equation tex={String.raw`Y=\frac{T_{hot}+T_e}{T_0+T_e}\quad\Longrightarrow\quad T_e=\frac{T_{hot}-YT_0}{Y-1}`}/>
+
+3. **In terms of ENR,** using $F = 1 + T_e/T_0$ (Chapter 90):
+<Equation tex={String.raw`F=\frac{\text{ENR}}{Y-1}`}/>
+
+4. **Example.** A 15 dB ENR source (31.6) and a measured $Y$ of 10.5 dB (11.2) give $F = 31.6/10.2$ = 3.1, a noise figure of 4.9 dB. The gain and bandwidth cancel, which is why the method is accurate.
+
+</div>
+
+</section>
+
+<section id="averaging">
+
+<div className="section-heading"><span>03</span><h2>Average, and know when averaging stops helping</h2></div>
+
+Averaging $N$ independent readings reduces random noise by $\sqrt N$ (Chapter 96). Averaging over time $T$ is a low-pass filter of noise bandwidth $1/(2T)$, so white noise falls as $1/\sqrt T$. Flicker noise behaves differently: since it has equal power per decade, a longer average includes ever-lower frequencies, and the rms value of an average stops falling.
+
+<AveragingPlot/>
+
+That floor is why the datasheet quantity "0.1–10 Hz noise" exists: it is the noise of a measurement lasting about ten seconds, the regime of precision DC instruments. To go below it, the signal must be moved to a frequency above the 1/f corner and measured there, either by chopping or auto-zeroing the amplifier (Chapter 77) or by modulating the signal itself and detecting it synchronously.
+
+</section>
+
+<section id="lockin">
+
+<div className="section-heading"><span>04</span><h2>Recover a buried signal with a lock-in</h2></div>
+
+If the quantity being measured can be modulated at a known frequency (by chopping a light beam, exciting a bridge with AC, or modulating a heater), a **lock-in amplifier** measures only the part of the signal at that frequency and phase.
+
+<LockInFigure/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / SYNCHRONOUS DETECTION AND ITS NOISE BANDWIDTH</span>
+
+1. **Multiply.** For a signal $A\cos(\omega_rt + \phi)$ and reference $\cos\omega_rt$, the product is $\tfrac A2\cos\phi + \tfrac A2\cos(2\omega_rt + \phi)$ (Chapter 94). A low-pass filter keeps $X = \tfrac A2\cos\phi$; the quadrature channel gives $Y = \tfrac A2\sin\phi$.
+
+2. **What noise gets through.** Noise at frequency $\omega_r + \Delta\omega$ is translated to $\Delta\omega$ after multiplication; only noise within the output filter's bandwidth of the reference survives. The lock-in is therefore a band-pass filter centred on $f_r$ whose width is set by the low-pass filter, not by any tuned circuit, and which tracks the reference exactly.
+
+3. **Equivalent noise bandwidth.** A single-pole output filter of time constant $\tau$ has noise bandwidth $1/(4\tau)$ (Chapter 94's $\pi f_c/2$ with $f_c = 1/2\pi\tau$). With $\tau$ = 1 s, the lock-in accepts noise from only 0.25 Hz.
+
+4. **SNR improvement.** If the input noise density is $e_n$ around $f_r$, the output noise is $e_n\sqrt{1/(4\tau)}$, compared with $e_n\sqrt{B_{in}}$ for the input bandwidth. The bandwidth ratio is $10^5/0.25$, an improvement of $10\log_{10}(4\times10^5)$ = 56 dB: a signal buried 50 dB below the noise in a 100 kHz input bandwidth emerges 6 dB *above* it after a 1 s time constant, paid for in response time (a few $\tau$ to settle).
+
+</div>
+
+Choose the reference frequency above the 1/f corner and away from the mains and its harmonics; a lock-in rejects interference at other frequencies, but anything at the reference frequency (electrical pickup of the modulation signal itself, mechanical vibration from a chopper) looks exactly like signal. Measuring with the source blocked, and using the phase output to separate genuine signal from feedthrough, guards against this.
+
+</section>
+
+<section id="thermometry">
+
+<div className="section-heading"><span>05</span><h2>Use noise as the measurement</h2></div>
+
+Because Johnson noise depends only on $R$ and $T$, it can measure temperature with no calibration of the sensor: $T = e_n^2/(4kR)$. A 10 kΩ resistor at 300 K gives 12.9 nV/√Hz. Temperature is proportional to the noise *power*, and a power estimated from bandwidth $B$ over time $T$ has relative uncertainty about $1/\sqrt{BT}$. Measuring to 0.1% (0.3 K) therefore needs $BT \approx 10^6$: about 10 s in a 100 kHz bandwidth. Cross-correlating two independent amplifiers removes their own noise, since it is uncorrelated between channels while the resistor's is common. The same statistics apply to every noise measurement: the uncertainty of a measured noise level falls only as the square root of bandwidth times time.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, convert an rms reading to a density using a filter's noise bandwidth, compute noise figure from a Y-factor measurement, decide how long to average before 1/f noise dominates, and calculate a lock-in's SNR improvement.
+
+[Work through three independent problems](/noise-measurement/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§8.12–8.15 (noise measurements, bandwidth limiting, lock-in detection and power-supply noise). Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

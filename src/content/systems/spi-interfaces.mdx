@@ -1,0 +1,140 @@
+import Equation from '../../components/Equation.astro';
+import {SpiModesFigure,SpiReadFigure} from '../../components/DigitalFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 130</span><span className="hairline"/>PART VII / BOARD-LEVEL BUSES</div>
+
+<h1>SPI and its relatives<br/><em>The controller owns the clock.</em></h1>
+
+<p className="dek">Specify the four SPI modes from launch and capture edges, structure transactions, derive the round-trip timing budget that limits clock rate, see how a ringing clock edge corrupts data, and extend the idea to daisy chains, quad SPI and I²S.</p>
+
+<div className="chapter-meta"><span>50–70 min + practice</span><span>Specification · Timing budgets · Signal integrity</span></div>
+
+</div>
+
+<section id="signals">
+
+<div className="section-heading"><span>01</span><h2>Name the signals and the topology</h2></div>
+
+The Serial Peripheral Interface is a synchronous, full-duplex shift-register link. Unlike a UART it carries its own clock, so the two ends need no matching oscillators; unlike I²C it uses push-pull drivers and a separate select line per device, so it can run at tens of megahertz.
+
+| Signal | Older name | Driven by | Function |
+|---|---|---|---|
+| SCLK | SCK | controller | Shift clock; idles at a defined level |
+| COPI | MOSI | controller | Data to the peripheral |
+| CIPO | MISO | selected peripheral | Data to the controller; high-impedance when not selected |
+| CS̄ | SS̄ | controller | Active-low select; frames each transaction |
+
+Each byte clocked out on COPI is matched by one clocked in on CIPO: the controller's and peripheral's shift registers form a ring that exchanges contents. SPI defines no addresses, acknowledgments or error checks; each peripheral's datasheet defines what the bytes mean.
+
+**Several peripherals** usually share SCLK, COPI and CIPO, each with its own CS̄. Only the selected device may drive CIPO; a device that keeps driving it after deselection, or two selects asserted at once, causes bus contention. The alternative, a **daisy chain**, is covered in section 05.
+
+</section>
+
+<section id="modes">
+
+<div className="section-heading"><span>02</span><h2>Derive the four modes from launch and capture edges</h2></div>
+
+A synchronous link needs one clock edge to *launch* (change) data and the opposite edge to *capture* (sample) it, so the data are stable for half a period around each capture. Two bits of configuration choose which edges those are.
+
+- **CPOL** is the idle level of SCLK: 0 idles low, 1 idles high.
+- **CPHA** is which edge captures: 0 captures on the first (leading) edge after CS̄ falls, 1 on the second (trailing) edge.
+
+| Mode | CPOL | CPHA | Idle clock | Capture edge | Launch edge |
+|---|---|---|---|---|---|
+| 0 | 0 | 0 | low | rising | falling |
+| 1 | 0 | 1 | low | falling | rising |
+| 2 | 1 | 0 | high | falling | rising |
+| 3 | 1 | 1 | high | rising | falling |
+
+<SpiModesFigure/>
+
+The subtle case is **CPHA = 0**: the first capture happens on the very first clock edge, so there is no earlier edge to launch the first bit. The peripheral must therefore place its first bit on CIPO as soon as CS̄ falls, and the controller must allow the peripheral's CS̄-to-data delay before that first edge. Modes 0 and 3 are the most common, and many peripherals accept both because they capture on the rising edge in either case.
+
+</section>
+
+<section id="transactions">
+
+<div className="section-heading"><span>03</span><h2>Structure a transaction and count its cost</h2></div>
+
+A typical register access holds CS̄ low for a command byte, an address, and then data. During a read the controller must keep clocking (sending dummy bytes) for the peripheral to shift its data out.
+
+<SpiReadFigure/>
+
+Throughput depends on how many clocks carry payload. A 16-bit ADC result with an 8-bit command needs 24 clocks per sample, so a 1 MS/s stream needs at least 24 Mbit/s of clock, plus any CS̄ setup, hold and inter-transaction gap the datasheet requires. Many peripherals auto-increment the address so a burst read amortizes the command over many data bytes. Direct memory access lets a microcontroller sustain such bursts without servicing every byte in software.
+
+</section>
+
+<section id="timing">
+
+<div className="section-heading"><span>04</span><h2>Derive the round-trip timing budget</h2></div>
+
+Writing to a peripheral is easy: the controller launches COPI and SCLK together, and both travel the same route. Reading is harder, because the data must make a round trip.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / MAXIMUM SCLK FOR A READ</span>
+
+1. **Launch at the peripheral.** The controller's launch edge travels to the peripheral (flight time $t_{fc}$). The peripheral then needs its clock-to-output delay $t_{CO}$ before new data appear on CIPO.
+
+2. **Return.** The data travel back to the controller ($t_{fd}$), and must be stable for the controller's setup time $t_{su}$ before its capture edge.
+
+3. **Available time.** Launch and capture are opposite edges, half a period apart at the controller. Adding the delays and a margin $t_m$:
+<Equation tex={String.raw`\frac{T_{SCLK}}{2}\ge t_{fc}+t_{CO}+t_{fd}+t_{su}+t_m`}/>
+
+4. **Hold.** The data must also not change too soon after capture. The minimum round-trip delay must exceed the controller's hold time, which is easily met when the route has any length at all.
+
+</div>
+
+With 2 ns flight each way, 8 ns $t_{CO}$ and 3 ns setup, the half period must be at least 15 ns, a maximum SCLK of **33 MHz** before margin, even if the peripheral's datasheet advertises 50 MHz. Two remedies: many controllers can *delay the capture* (sample on the following edge or a programmable fraction later), trading hold margin for setup margin; and at high rates, the clock can be looped back from the peripheral end so the controller captures with a clock that has made the same trip as the data.
+
+</section>
+
+<section id="integrity">
+
+<div className="section-heading"><span>05</span><h2>Protect the clock edge and chain devices</h2></div>
+
+SPI's data lines tolerate some ringing because they are sampled in the middle of their stable window. **The clock has no such protection**: every threshold crossing is an edge.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / WHEN A REFLECTION BECOMES AN EXTRA CLOCK</span>
+
+1. **Unterminated route.** A CMOS controller with output resistance $R_o < Z_0$ drives an SCLK trace into a high-impedance input. From Chapter 128, the far end first jumps to $V_s(1 + \Gamma_L)Z_0/(R_o + Z_0)$ and the next reflection, a round trip $2t_d$ later, adds a step of sign $\Gamma_S\Gamma_L < 0$.
+
+2. **Non-monotonic edge.** If the line is long enough that $2t_d$ exceeds the rise time, the dip is a separate excursion rather than being absorbed into the edge. With a 10 Ω driver on 50 Ω the first dip falls to about 0.56 of the supply.
+
+3. **Double clocking.** A receiver whose threshold lies above that dip sees the clock cross upward, downward and upward again: two rising edges where one was intended. Every later bit in the transaction is shifted by one position, a failure that looks like random data corruption.
+
+4. **Remedy.** A series resistor at the controller that makes $R_o + R_{ser} \approx Z_0$ sets $\Gamma_S = 0$; the far end then sees one clean step. Typical values are 22–33 Ω. Route SCLK point-to-point when possible; a clock that branches to several peripherals needs each branch treated as a line, or a buffer per branch.
+
+</div>
+
+**Daisy chains.** Some peripherals (shift-register outputs, LED drivers, some ADCs) connect CIPO of one device to COPI of the next, with SCLK and a single CS̄ shared. The chain is one long shift register: $N$ devices of $n$ bits each need $Nn$ clocks per update, and the first bits sent end up in the farthest device. The chain saves select lines at the cost of latency, and one failed device breaks everything after it.
+
+</section>
+
+<section id="relatives">
+
+<div className="section-heading"><span>06</span><h2>Widen the bus and stream audio</h2></div>
+
+**Quad and octal SPI** memories transfer four or eight bits per clock on bidirectional data lines; DDR variants use both edges with a data strobe. A command phase on one line selects the mode, and dummy cycles give the memory time to fetch. A four-lane bus at 50 MHz has a raw data phase of 200 Mbit/s, not 200 Mbit/s of guaranteed payload, and lane-to-lane skew joins the timing budget of section 04.
+
+**I²S** carries a continuous digital-audio stream on a bit clock (BCLK), a word-select or frame clock (WS or LRCLK) and serial data. WS selects the left or right channel and changes one BCLK period before the most significant bit of the next word, an alignment that differs from left-justified audio and from SPI framing. The bit clock is
+<Equation tex={String.raw`f_{BCLK}=2\,W_{slot}\,f_s`}/>
+so 48 kS/s stereo in 32-bit slots needs 3.072 MHz even when samples carry only 24 bits. Many converters also want a master clock at 256 $f_s$ (12.288 MHz at 48 kS/s). Because the converter samples on a clock derived from these, clock phase noise becomes sampling jitter (Chapter 121), and two independently clocked audio devices drift apart unless one is the timing master or an asynchronous sample-rate converter sits between them.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, draw modes 1 and 2 from the table, compute the payload efficiency of a read transaction, find the maximum read clock for a given route, and choose a series resistor for a given driver and trace.
+
+[Work through three independent problems](/spi-interfaces/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §14.7; NXP UM11732 (I²S); device timing diagrams for SPI peripherals. Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

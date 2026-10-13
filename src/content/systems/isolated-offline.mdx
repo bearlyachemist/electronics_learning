@@ -1,0 +1,137 @@
+import Equation from '../../components/Equation.astro';
+import {FlybackCircuit,FlybackWaveformsPlot,PfcCurrentPlot} from '../../components/PowerFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 107</span><span className="hairline"/>PART IV / SWITCHING CONVERTERS</div>
+
+<h1>Transformer-isolated and offline converters<br/><em>Isolation, energy storage and the mains.</em></h1>
+
+<p className="dek">Rectify the mains directly and size the bulk capacitor for hold-up, derive the flyback's turns-ratio and drain-stress trade-off and its leakage loss, see why a forward converter needs core reset, and define and correct power factor.</p>
+
+<div className="chapter-meta"><span>55–80 min + practice</span><span>Derivations · Waveforms · Safety</span></div>
+
+</div>
+
+<section id="offline">
+
+<div className="section-heading"><span>01</span><h2>Rectify the mains directly</h2></div>
+
+An offline supply skips the line-frequency transformer of Chapter 97. It rectifies the mains straight onto a high-voltage **bulk capacitor** (about 325 V DC from 230 V AC, 170 V from 120 V) and then uses a high-frequency transformer, tens to hundreds of kilohertz, for isolation and voltage conversion. Because a transformer's size scales inversely with frequency, a 50 W offline supply fits in a phone charger.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / HOLD-UP TIME AND BULK CAPACITANCE</span>
+
+1. **Requirement.** If the mains drops out, the output should stay in regulation for a hold-up time $t_h$ (often one cycle, 10–20 ms) while the converter draws power $P_{in}$ from the bulk capacitor.
+
+2. **Energy balance.** The capacitor can fall from its normal trough $V_1$ to the converter's minimum operating input $V_2$, releasing $\tfrac12C(V_1^2 - V_2^2)$:
+<Equation tex={String.raw`\tfrac12C\left(V_1^2-V_2^2\right)\ge P_{in}t_h\quad\Longrightarrow\quad C\ge\frac{2P_{in}t_h}{V_1^2-V_2^2}`}/>
+
+3. **Example.** A 60 W input, 20 ms hold-up, bulk falling from 280 V to 200 V: $C \ge 2(60)(0.02)/(78\,400 - 40\,000)$ = 62.5 µF. Universal-input designs must meet this at 85 V AC, where $V_1$ is only about 110 V, which is why they need several times more capacitance per watt.
+
+</div>
+
+The input stage also needs everything in Chapter 97's line-input section: fuse, EMI filter, inrush limiting (the bulk capacitor looks like a short at switch-on) and safety-rated spacing between the primary and secondary circuits.
+
+</section>
+
+<section id="flyback">
+
+<div className="section-heading"><span>02</span><h2>Design the flyback</h2></div>
+
+<FlybackCircuit/>
+
+Chapter 106 derived the flyback's conversion ratio, $V_o/V_{in} = nD/(1-D)$ in continuous mode with $n = N_s/N_p$, and its discontinuous-mode energy transfer $\tfrac12L_mI_{pk}^2f_s$. The design questions are the turns ratio and what happens at turn-off.
+
+<FlybackWaveformsPlot/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / TURNS RATIO, DRAIN STRESS AND LEAKAGE LOSS</span>
+
+1. **Reflected voltage.** While the secondary conducts, the output (plus diode drop) appears across the secondary and, scaled by $N_p/N_s$, across the primary: $V_R = (V_o + V_F)N_p/N_s$.
+
+2. **Drain stress.** The switch then sees the input plus the reflected voltage:
+<Equation tex={String.raw`V_{DS}=V_{in,max}+V_R+V_{spike}`}/>
+   A larger $N_p/N_s$ raises $V_R$, which lowers the duty cycle needed and the secondary diode's reverse voltage, but raises the drain stress. With 375 V maximum bulk and a 650 V MOSFET, keeping 20% margin leaves about 145 V for $V_R$ plus the spike.
+
+3. **Leakage inductance.** Not all of the primary's flux links the secondary; the unlinked part acts as a series inductance $L_{lk}$ that cannot transfer its energy. At turn-off its current $I_{pk}$ has nowhere to go and drives the drain voltage up until a clamp catches it. Every cycle the clamp absorbs
+<Equation tex={String.raw`P_{clamp}\approx\tfrac12L_{lk}I_{pk}^2f_s\cdot\frac{V_{cl}}{V_{cl}-V_R}`}/>
+   where the last factor accounts for the reflected voltage also driving current into the clamp while the leakage current falls.
+
+4. **Example.** $L_{lk}$ = 10 µH, $I_{pk}$ = 0.6 A, 100 kHz, clamp at 150 V above the input with $V_R$ = 100 V: $0.5(10\ \mu)(0.36)(100\text{ k})(3)$ = **0.54 W**. Interleaved windings reduce $L_{lk}$, and active-clamp or quasi-resonant designs recycle the energy.
+
+</div>
+
+**Regulation across isolation.** The feedback must cross the safety barrier too. The usual solution is a shunt regulator (a TL431 adjustable reference) on the secondary driving an optocoupler, whose transistor adjusts the primary controller. The optocoupler's current-transfer ratio varies with age and temperature, which must be accounted for in the loop gain.
+
+</section>
+
+<section id="forward">
+
+<div className="section-heading"><span>03</span><h2>Reset the core in a forward converter</h2></div>
+
+A forward converter transfers energy *while* the switch is on, through transformer action into a buck-style output inductor. It suits higher powers than a flyback because the transformer does not have to store the whole energy per cycle. But the transformer's magnetizing current still rises during each on-time, and the core must be returned to zero flux before the next cycle or it walks into saturation.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / RESET WINDING AND THE 50% DUTY LIMIT</span>
+
+1. **Flux balance.** The core flux changes in proportion to the volt-seconds applied: $\Delta\Phi = \int v\,dt/N$. During the on-time the primary sees $+V_{in}$ for $DT$.
+
+2. **Reset.** A reset winding with the same number of turns, connected through a diode back to the input, applies $-V_{in}$ once the switch opens. Equal volt-seconds require a reset time equal to $DT$.
+
+3. **Limit.** On-time plus reset time must fit in one period: $2DT \le T$, so $D \le 50\%$. A reset winding with fewer turns resets faster and allows larger $D$, at the cost of a higher drain voltage $V_{in}(1 + N_p/N_r)$.
+
+</div>
+
+Two-switch forward, push-pull, half-bridge and full-bridge converters drive the transformer with alternating polarity so the core resets naturally every cycle, and they scale to kilowatts. The full bridge applies the whole input to the primary and keeps each switch's voltage stress at the input voltage.
+
+</section>
+
+<section id="pfc">
+
+<div className="section-heading"><span>04</span><h2>Define and correct power factor</h2></div>
+
+<PfcCurrentPlot/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / POWER FACTOR WITH A DISTORTED CURRENT</span>
+
+1. **Definition.** Power factor is real power divided by apparent power: $PF = P/(V_{rms}I_{rms})$.
+
+2. **Only the fundamental carries power.** With a sinusoidal line voltage, the product of voltage and a current harmonic at a different frequency averages to zero. So $P = V_{rms}I_1\cos\phi_1$, where $I_1$ is the rms fundamental current and $\phi_1$ its phase.
+
+3. **Result.**
+<Equation tex={String.raw`PF=\frac{I_1}{I_{rms}}\cos\phi_1`}/>
+   The first factor is the distortion factor. A rectifier with a reservoir capacitor draws current pulses whose fundamental is in phase ($\cos\phi_1 \approx 1$) but whose rms value is much larger than their fundamental, giving PF of 0.5–0.7.
+
+4. **Why it matters.** The harmonic currents heat wiring and distribution transformers without delivering power, and add up in neutral conductors. Regulations limit harmonic current for equipment above about 75 W.
+
+</div>
+
+**Active PFC.** A boost converter (Chapter 106) placed between the rectifier and the bulk capacitor is controlled so that its average input current follows the rectified line voltage. Its output, the bulk capacitor, then sits at about 400 V regardless of line voltage, which also helps hold-up time and lets the downstream converter be designed for a narrow input range.
+
+</section>
+
+<section id="safety">
+
+<div className="section-heading"><span>05</span><h2>Respect the isolation barrier</h2></div>
+
+Everything connected to the mains side is hazardous. Safety standards specify **creepage** (distance along a surface) and **clearance** (distance through air) between primary and secondary, typically 6–8 mm for reinforced insulation at 230 V; transformers use triple-insulated wire or margin tape; and a Y capacitor between primary and secondary ground, used to return common-mode switching noise, is limited in value because it also passes line-frequency leakage current to anything the user touches. Do not build or probe an offline supply without an isolation transformer and the training to work on live circuits; use a certified module when the design is not the point.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, size a bulk capacitor for hold-up, choose a flyback turns ratio for a given MOSFET rating and estimate its clamp loss, and compute the power factor from a current's fundamental and rms values.
+
+[Work through three independent problems](/isolated-offline/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§9.6.10–9.6.13 and 9.7–9.8 (transformer converters, offline switchers and a real-world example). Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

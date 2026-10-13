@@ -1,0 +1,123 @@
+import Equation from '../../components/Equation.astro';
+import {OpampNoiseModelCircuit,TiaNoisePlot} from '../../components/NoiseFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 92</span><span className="hairline"/>PART III / LOW-NOISE DESIGN</div>
+
+<h1>Noise in op-amp and transimpedance circuits<br/><em>Every resistor and every input pin is a noise source.</em></h1>
+
+<p className="dek">Refer every noise source in an op-amp circuit to its input, show that the feedback network contributes the Johnson noise of its parallel resistance, choose an op amp by source resistance, and analyze the e<sub>n</sub>C noise that dominates photodiode amplifiers.</p>
+
+<div className="chapter-meta"><span>55–75 min + practice</span><span>Derivations · Noise budgets · Op-amp selection</span></div>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Build the noise model</h2></div>
+
+An op amp's data sheet gives its voltage noise density $e_n$ and current noise density $i_n$, both with a 1/f corner. In the noise model the amplifier itself is noiseless; $e_n$ appears in series with one input and $i_n$ flows from each input to ground (Chapter 91's two-source model, applied to the op amp as a whole).
+
+<OpampNoiseModelCircuit/>
+
+</section>
+
+<section id="noninverting">
+
+<div className="section-heading"><span>02</span><h2>Refer every source to the input</h2></div>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / INPUT-REFERRED NOISE OF A NONINVERTING AMPLIFIER</span>
+
+1. **Gain.** Signals at the non-inverting input reach the output multiplied by the noise gain $G = 1 + R_f/R_g$ (Chapter 72). Every source that appears in series with that input, $e_n$, the source's Johnson noise $\sqrt{4kTR_s}$ and $i_{n+}R_s$, is amplified by $G$.
+
+2. **Feedback resistors.** $R_g$'s Johnson noise $v_g$ appears at the output multiplied by $-R_f/R_g$ (an inverting amplifier); $R_f$'s noise $v_f$ appears at the output directly. Their total output power is
+<Equation tex={String.raw`4kT\left[R_g\left(\frac{R_f}{R_g}\right)^2+R_f\right]=4kTR_f\left(\frac{R_f}{R_g}+1\right)=4kTR_fG`}/>
+   Dividing by $G^2$ to refer it to the input gives $4kTR_f/G = 4kT(R_f\parallel R_g)$: the feedback network contributes the Johnson noise of its two resistors **in parallel**.
+
+3. **Inverting-input current noise.** $i_{n-}$ flows through $R_f$ and $R_g$; by the same argument it is equivalent to $i_{n-}(R_f\parallel R_g)$ at the input.
+
+4. **Total,** with $R_p = R_f\parallel R_g$:
+<Equation tex={String.raw`e_{ni}^2=e_n^2+4kTR_s+(i_{n+}R_s)^2+4kTR_p+(i_{n-}R_p)^2,\qquad e_{no}=G\,e_{ni}`}/>
+
+</div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A GAIN-OF-10 PREAMP</span><h3>Source 1 kΩ, R<sub>f</sub> = 9 kΩ, R<sub>g</sub> = 1 kΩ, e<sub>n</sub> = 4 nV/√Hz, i<sub>n</sub> = 0.5 pA/√Hz</h3>
+
+<p>Term by term (nV/√Hz): $e_n$ = 4.0; source Johnson 4.07; $i_nR_s$ = 0.5; $R_p$ = 900 Ω gives 3.86; $i_nR_p$ = 0.45. Total $\sqrt{16 + 16.6 + 0.25 + 14.9 + 0.2}$ = <strong>6.9 nV/√Hz</strong> at the input, 69 nV/√Hz at the output. Over a 20 kHz band that is $69\times\sqrt{20\,000}$ = 9.8 µV rms at the output.</p>
+
+<p>The source cannot be changed, but the feedback network can: scaling $R_f$ and $R_g$ down by ten (900 Ω and 100 Ω) cuts their contribution to 1.2 nV/√Hz and the total to 5.8 nV/√Hz, at the cost of loading the output with 1 kΩ.</p>
+
+</div>
+
+</section>
+
+<section id="choose">
+
+<div className="section-heading"><span>03</span><h2>Choose an op amp by source resistance</h2></div>
+
+Section 02's terms show the trade: $e_n$ matters for low source resistance, $i_nR_s$ for high. Each op amp has a noise resistance $R_n = e_n/i_n$ where the two are equal; it adds least noise for sources near that value.
+
+| Input type | Typical $e_n$ | Typical $i_n$ | $R_n$ | Best for |
+|---|---|---|---|---|
+| Low-noise bipolar | 1–3 nV/√Hz | 1–3 pA/√Hz | ~1 kΩ | Sources below a few kilohms |
+| General bipolar | 10 nV/√Hz | 0.5 pA/√Hz | ~20 kΩ | Kilohm sources |
+| JFET input | 3–10 nV/√Hz | 1–10 fA/√Hz | ~1 MΩ | High-impedance sources |
+| CMOS input | 5–30 nV/√Hz (high 1/f) | ~1 fA/√Hz | ~10 MΩ | Very high impedance, low power |
+| Chopper / auto-zero | 10–60 nV/√Hz, no 1/f | varies (switching spikes) | — | DC and sub-hertz precision |
+
+A useful check: compare the op amp's $e_{tot}$ at the actual source resistance with the source's own $\sqrt{4kTR_s}$. If the amplifier adds less than a third of the source noise, it adds less than 5% to the total and a quieter part is pointless. Also check the 1/f corner against the signal band, and the power-supply rejection at the frequencies where the supply is noisy: 60 dB of PSRR turns 1 mV of supply ripple into 1 µV at the input.
+
+</section>
+
+<section id="tia">
+
+<div className="section-heading"><span>04</span><h2>Analyze transimpedance-amplifier noise</h2></div>
+
+A photodiode amplifier (Chapter 82) converts a current to a voltage with feedback resistor $R_f$, across which a small capacitor $C_f$ keeps it stable. The photodiode and op-amp input add capacitance $C_{in}$ at the inverting node, and that capacitance changes the noise picture.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE e<sub>n</sub>C NOISE PEAK</span>
+
+1. **Signal and resistor noise.** A signal current $i_s$ produces $i_sR_f$ at low frequency. $R_f$'s Johnson noise current $\sqrt{4kT/R_f}$ sits in parallel with the signal and produces $\sqrt{4kTR_f}$ at the output; the op amp's $i_n$ produces $i_nR_f$. Both roll off with the feedback pole $1/(2\pi R_fC_f)$.
+
+2. **Voltage noise sees the noise gain.** $e_n$ is amplified by $1 + Z_f/Z_{in}$, where $Z_{in} = 1/(j\omega C_{in})$ and $Z_f = R_f\parallel C_f$ (Chapter 82):
+<Equation tex={String.raw`G_n(\omega)=1+\frac{j\omega C_{in}R_f}{1+j\omega R_fC_f}`}/>
+   At low frequency $G_n$ = 1. Above $1/(2\pi R_fC_{in})$ it rises, and above $1/(2\pi R_fC_f)$ it levels off at $1 + C_{in}/C_f$.
+
+3. **The peak.** In that high-frequency region the output noise from $e_n$ is $e_n(1 + C_{in}/C_f)$ while the signal and $R_f$ noise are falling. With 20 pF of input capacitance and 1 pF of feedback capacitance, $e_n$ is multiplied by 21. The op amp's bandwidth finally rolls it off at about $GBW/(1 + C_{in}/C_f)$.
+
+4. **Signal-to-noise ratio and $R_f$.** The signal grows as $R_f$ but $R_f$'s noise only as $\sqrt{R_f}$, so a larger $R_f$ improves the SNR in the band where Johnson noise dominates, which is why photodiode amplifiers use the largest $R_f$ their bandwidth allows.
+
+</div>
+
+<TiaNoisePlot/>
+
+The $e_nC_{in}$ product is the figure of merit: the op amp's voltage noise times the total capacitance at its input. Reducing $C_{in}$ (a smaller photodiode, reverse bias to reduce its capacitance, bootstrapping or cascoding the input) or choosing an op amp with low $e_n$ *and* low input capacitance shrinks the high-frequency noise. A JFET-input op amp is usual here because the photodiode's high impedance makes $i_n$ critical as well.
+
+</section>
+
+<section id="integrate">
+
+<div className="section-heading"><span>05</span><h2>Integrate to an rms number</h2></div>
+
+A noise budget ends with an rms value over the measurement bandwidth. Integrate each component's power density over frequency, using the noise bandwidth of the actual filtering (Chapter 94: $\pi f_c/2$ for a single pole), include the 1/f region down to the lowest frequency of interest (Chapter 90), and add components in power. The total is the number to compare with the smallest signal: an ADC with a 1 µV LSB behind an amplifier with 10 µV rms of noise is resolving its own noise.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, write the input-referred noise of a noninverting amplifier term by term, show why feedback resistors contribute $4kT(R_f\parallel R_g)$, choose an op-amp input type for a given source, and estimate the e<sub>n</sub>C noise of a photodiode amplifier.
+
+[Work through three independent problems](/opamp-noise/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§8.8–8.11 (noise in differential, feedback, op-amp and transimpedance amplifiers). Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

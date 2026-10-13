@@ -5,7 +5,7 @@ import {SarArchitectureFigure,SarSearchPlot} from '../../components/ConverterFig
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 110</span><span className="hairline"/>PART VI / ANALOG-TO-DIGITAL CONVERTERS</div>
+<div className="eyebrow"><span>CHAPTER 122</span><span className="hairline"/>PART VI / ANALOG-TO-DIGITAL CONVERTERS</div>
 
 <h1>Successive-approximation ADCs<br/><em>A binary search becomes a charge experiment.</em></h1>
 
@@ -78,7 +78,7 @@ For 300 K, 3.3 V span and 16 bits, this one-term requirement gives roughly 19.6 
 
 A buffer should settle the ADC's switched load without instability. A small series resistor can isolate the amplifier and damp kickback; a local capacitor can provide transient charge. But the network must recharge within acquisition time. Slew-rate recovery and amplifier distortion need to be measured at the intended input frequency and common mode, not inferred solely from nominal GBW.
 
-For 16 bits with 1 kΩ effective source and 30 pF sampling capacitance, the first-order full-span acquisition requirement is about 353.5 ns. (From Chapter 109, $t \ge (N+1)\ln2\cdot RC = 17 \times 0.693 \times 30$ ns.) If acquisition is only 200 ns, that model predicts residual $e^{-200/30}=0.00127$ of the step, roughly 83 codes for a full-span transition. Repeated sampling of one slowly changing input can conceal a problem that appears when the multiplexer changes channels.
+For 16 bits with 1 kΩ effective source and 30 pF sampling capacitance, the first-order full-span acquisition requirement is about 353.5 ns. (From Chapter 121, $t \ge (N+1)\ln2\cdot RC = 17 \times 0.693 \times 30$ ns.) If acquisition is only 200 ns, that model predicts residual $e^{-200/30}=0.00127$ of the step, roughly 83 codes for a full-span transition. Repeated sampling of one slowly changing input can conceal a problem that appears when the multiplexer changes channels.
 
 </section>
 

@@ -21,7 +21,7 @@ function ResV({x,y1,y2,label}:{x:number;y1:number;y2:number;label?:string}){cons
 // Capacitor drawn vertically: plates at y, y+8.
 function CapV({x,y,label}:{x:number;y:number;label?:string}){return <g><path d={`M${x-12} ${y} H${x+12} M${x-12} ${y+8} H${x+12}`} stroke={ink} strokeWidth="2.2"/>{label&&<text x={x} y={y-8} textAnchor="middle" className="tick">{label}</text>}</g>;}
 
-/* ---------- Chapter 109: sampling and quantization errors ---------- */
+/* ---------- Chapter 121: sampling and quantization errors ---------- */
 export function QuantizationErrorPlot(){
   const q=1/8,err=(x:number)=>{if(x<0||x>=1)return NaN;return x-(Math.floor(x/q)+0.5)*q;};
   return <Figure plot caption="Quantization error of an ideal 3-bit converter with midpoint reconstruction, e = V_in − (D + ½)q. Inside the range it is a sawtooth between −q/2 and +q/2; if the input sweeps uniformly, its mean square is q²/12, the result behind the 6.02N + 1.76 dB formula."><Plot curves={[{name:'Error / q',color:green,points:lin(x=>err(x)/q,0,0.999,1200)},{name:'±½ q bounds',color:orange,dashed:true,points:[[0,0.5],[1,0.5],[NaN,NaN],[0,-0.5],[1,-0.5]]}]} xRange={[0,1]} yRange={[-0.7,0.7]} xLabel="Input / full span" yLabel="Error / q" description="Sawtooth quantization error between minus one half and plus one half of a code."/></Figure>;
@@ -45,7 +45,7 @@ export function InlDnlPlot(){
   return <Figure plot caption="A 3-bit transfer with threshold errors. Code 2 is 1.5 LSB wide (DNL = +0.5), code 4 has zero width (DNL = −1, a missing code, so the output jumps from 3 to 5) and code 5 is 1.5 LSB wide. INL is the running sum of the width errors, the distance of each actual threshold from the ideal: +0.5 LSB at thresholds 3 and 4, −0.5 at threshold 5, then zero. Large DNL errors can partly cancel in INL."><Plot curves={[{name:'Actual codes',color:green,points:lin(code,0,8,1601)},{name:'Ideal codes',color:muted,dashed:true,points:lin(ideal,0,8,1601)}]} xRange={[0,8]} yRange={[-0.3,7.6]} xLabel="Input / LSB" yLabel="Output code" marks={[{at:[3.5,3],label:'wide code 2',pos:'se'},{at:[4.5,5],label:'code 4 missing',pos:'nw'}]} description="Staircase transfer with one wide and one missing code compared with the ideal staircase."/></Figure>;
 }
 
-/* ---------- Chapter 110: SAR ---------- */
+/* ---------- Chapter 122: SAR ---------- */
 export function SarArchitectureFigure(){
   const caps=[{x:300,l:'8C'},{x:370,l:'4C'},{x:440,l:'2C'},{x:510,l:'C'},{x:580,l:'C'}];
   return <Figure caption="Charge-redistribution SAR ADC (4 bits plus a dummy unit capacitor). During sampling every bottom-plate switch selects V_in while the top plate is held at ground. Then the top plate floats and the SAR logic switches each bottom plate to V_ref or 0 V, one bit at a time from the largest capacitor. The comparator reads the sign of V_x = V_trial − V_in and the logic keeps or clears that bit."><svg viewBox="0 0 700 320" role="img" aria-label="SAR ADC with binary capacitor array, three-way bottom-plate switches, comparator and SAR logic.">
@@ -68,7 +68,7 @@ export function SarSearchPlot(){
   return <Figure plot caption="Binary search for a 0.68 V input with a 1 V reference and 4 bits. Each trial sits at the midpoint of the interval still possible: 0.5 V (input above: keep), 0.75 V (below: clear), 0.625 V (keep), 0.6875 V (clear). The result 1010 places the input in [0.625, 0.6875) V, one code wide."><Plot curves={[{name:'Trial DAC voltage',color:green,points:steps(trials,0,1)},{name:'Held input 0.68 V',color:orange,dashed:true,points:[[0,0.68],[4,0.68]]}]} xRange={[0,4]} yRange={[0.4,0.85]} xLabel="Decision number" yLabel="Voltage / V" marks={[{at:[0.5,0.5],label:'keep',pos:'ne'},{at:[1.5,0.75],label:'clear',pos:'ne'},{at:[2.5,0.625],label:'keep',pos:'se'},{at:[3.5,0.6875],label:'clear',pos:'ne'}]} description="Stepped trial voltage converging on the held input over four decisions."/></Figure>;
 }
 
-/* ---------- Chapter 111: flash, pipeline, interleaving ---------- */
+/* ---------- Chapter 123: flash, pipeline, interleaving ---------- */
 export function FlashArchitectureFigure(){
   const top=30,bot=270,n=8,dy=(bot-top)/n;const taps=Array.from({length:7},(_,i)=>bot-(i+1)*dy);
   return <Figure caption="3-bit flash ADC. Eight equal resistors divide V_ref into seven thresholds; seven comparators each compare the input with one threshold at the same instant. Their outputs form a thermometer code (all ones below the input, zeros above) that the encoder turns into binary."><svg viewBox="0 0 640 300" role="img" aria-label="Resistor ladder feeding seven comparators whose outputs go to a thermometer-to-binary encoder.">
@@ -113,7 +113,7 @@ export function InterleaveSpurPlot(){
   return <Figure plot caption="Image spur of a two-channel interleaved ADC caused by timing skew alone, 20 log₁₀(πf_in Δt). Every factor of ten in input frequency or in skew costs 20 dB. At 100 MHz input, 1 ps of skew already limits spurious-free range to about 70 dB."><Plot curves={[{name:'Δt = 1 ps',color:green,points:lin(f=>sp(f,1e-12),1,1000,500)},{name:'Δt = 10 ps',color:orange,points:lin(f=>sp(f,10e-12),1,1000,500)}]} xScale="log" xRange={[1,1000]} yRange={[-120,-20]} xLabel="Input frequency / MHz" yLabel="Image spur / dBc" marks={[{at:[100,sp(100,1e-12)],label:'−70 dBc',pos:'se'}]} description="Spur level rising twenty decibels per decade of input frequency for two skew values."/></Figure>;
 }
 
-/* ---------- Chapter 112: integrating and delta-sigma ---------- */
+/* ---------- Chapter 124: integrating and delta-sigma ---------- */
 export function DualSlopePlot(){
   const Tint=1,ramp=(vin:number)=>(t:number)=>t<=Tint?vin*t:Math.max(0,vin*Tint-(t-Tint));
   return <Figure plot caption="Dual-slope integrator output for inputs of 0.4 and 0.8 V_ref. During the fixed run-up time T_int the slope is proportional to V_in; during run-down the reference gives the same slope for both. The run-down time, 0.4 or 0.8 T_int, is proportional to V_in, and R and C cancel from the ratio."><Plot curves={[{name:'V_in = 0.8 V_ref',color:green,points:lin(ramp(0.8),0,2.1,800)},{name:'V_in = 0.4 V_ref',color:orange,points:lin(ramp(0.4),0,2.1,800)}]} xRange={[0,2.1]} yRange={[0,1]} xLabel="Time / T_int" yLabel="Integrator output / (V_ref T_int/RC)" marks={[{at:[1.4,0],label:'0.4 T_int',pos:'nw'},{at:[1.8,0],label:'0.8 T_int',pos:'ne'}]} description="Two triangular integrator waveforms with fixed run-up and proportional run-down times."/></Figure>;

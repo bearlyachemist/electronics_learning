@@ -1,0 +1,133 @@
+import Equation from '../../components/Equation.astro';
+import {Lm317Circuit,DropoutPlot} from '../../components/PowerFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 100</span><span className="hairline"/>PART IV / LINE &amp; LINEAR SUPPLIES</div>
+
+<h1>Three-terminal and low-dropout regulators<br/><em>Small packages with large idiosyncrasies.</em></h1>
+
+<p className="dek">Set an adjustable regulator's output including its adjust-pin current, understand why some regulators need minimum load and specific capacitors, compare dropout architectures, improve ripple rejection and noise, and use a regulator as a current source.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Application circuits · Pitfalls</span></div>
+
+</div>
+
+<section id="taxonomy">
+
+<div className="section-heading"><span>01</span><h2>Sort the regulator families</h2></div>
+
+Chapters 98 and 99 built a regulator from a reference, an error amplifier and a pass transistor. Integrated regulators put all three in one package.
+
+| Family | Example | Output | Pass element | Typical dropout |
+|---|---|---|---|---|
+| Fixed positive | 7805 | 5 V (fixed) | NPN Darlington | 2 V |
+| Fixed negative | 7905 | −5 V | NPN | 1.5–2 V |
+| Adjustable positive | 317 | 1.25–37 V | NPN Darlington | 1.5–2.5 V |
+| Adjustable negative | 337 | −1.25 to −37 V | NPN | 2 V |
+| Low dropout (LDO) | many | fixed or adjustable | PNP or PMOS | 0.05–0.5 V |
+
+The fixed types connect input, output and ground; the adjustable 317 has no ground pin at all. Its internal circuitry runs from the input-to-output voltage and returns its operating current through the output, which explains its minimum-load requirement below.
+
+</section>
+
+<section id="adjustable">
+
+<div className="section-heading"><span>02</span><h2>Set the output of an adjustable regulator</h2></div>
+
+<Lm317Circuit/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE 317 OUTPUT EQUATION</span>
+
+1. **The regulator's job.** The internal loop holds $V_{ref}$ = 1.25 V between OUT and ADJ, so $R_1$ carries $I_1 = V_{ref}/R_1$.
+
+2. **KCL at the ADJ node.** $R_2$ carries $I_1$ plus the adjust-pin current $I_{ADJ}$ (about 50 µA) flowing out of the IC:
+<Equation tex={String.raw`V_{out}=V_{ref}+(I_1+I_{ADJ})R_2=V_{ref}\left(1+\frac{R_2}{R_1}\right)+I_{ADJ}R_2`}/>
+
+3. **Keep the error term small.** With $R_1$ = 240 Ω, $I_1$ = 5.2 mA, a hundred times $I_{ADJ}$. For 5 V, $R_2$ = 720 Ω and $I_{ADJ}R_2$ adds 36 mV (0.7%). Using $R_1$ = 2.4 kΩ instead would make the error ten times larger and its temperature drift visible.
+
+4. **Minimum load.** The 317 returns its internal bias current (up to a few milliamperes) through OUT. If nothing draws at least that current, the output rises out of regulation. The $R_1$–$R_2$ divider's 5.2 mA serves as that minimum load, which is the real reason $R_1$ is 240 Ω.
+
+</div>
+
+**Protection diodes.** If the input is shorted while the output capacitor is charged, the capacitor discharges backward through the regulator. A diode from OUT to IN conducts that current instead. A second diode from ADJ to OUT protects the adjust pin when $C_{ADJ}$ is large and the output is shorted.
+
+</section>
+
+<section id="ripple">
+
+<div className="section-heading"><span>03</span><h2>Improve ripple rejection and noise</h2></div>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / WHY THE ADJUST CAPACITOR HELPS</span>
+
+1. **The reference is amplified.** The output is $V_{ref}(1 + R_2/R_1)$, so any ripple or noise that appears as a variation of the reference voltage, or is injected at ADJ, is multiplied by the same factor: 4 for a 5 V output, 20 for 25 V.
+
+2. **Bypass the gain at AC.** A capacitor $C_{ADJ}$ from ADJ to ground shorts $R_2$ for signals. At AC the gain from reference to output drops to 1, while DC regulation is unchanged.
+
+3. **Corner.** The bypass is effective above $f = 1/(2\pi R_2C_{ADJ})$. With $R_2$ = 720 Ω and 10 µF, $f$ = 22 Hz, so the 120 Hz ripple is fully bypassed. Data sheets show ripple rejection rising from about 65 dB to about 80 dB with this capacitor.
+
+</div>
+
+Low-noise LDOs carry the same idea further: they bring the reference out to a pin where an external capacitor forms a low-pass filter with an internal resistor, reducing output noise to a few microvolts rms. When an op amp or ADC needs a quiet rail, follow a cheap regulator with an LDO of this kind, and give it enough headroom that its PSRR is not degraded by operating near dropout.
+
+</section>
+
+<section id="ldo">
+
+<div className="section-heading"><span>04</span><h2>Compare dropout architectures</h2></div>
+
+<DropoutPlot/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / WHERE DROPOUT COMES FROM</span>
+
+1. **NPN Darlington pass element** (7805, 317). The output is an emitter follower, so the base must sit two $V_{BE}$ above the output, and the driver that feeds the base needs headroom of its own above that: $V_{drop} \approx 2V_{BE} + V_{CE(sat),driver}$ ≈ 1.5–2.5 V.
+
+2. **PNP pass element.** The pass transistor's emitter connects to the input and its collector to the output. It can saturate, so $V_{drop} \approx V_{CE(sat)}$, a few hundred millivolts. Its base current flows to ground and is wasted, so quiescent current rises with load.
+
+3. **PMOS pass element.** The channel acts as a resistance $R_{DS(on)}$ when fully enhanced: $V_{drop} = I_{load}R_{DS(on)}$, as low as tens of millivolts at light load, with no base-current penalty.
+
+4. **The price.** A PNP or PMOS pass element is a common-emitter or common-source stage, with high output impedance. The output pole then depends on the load capacitor, and the loop may need a capacitor with ESR in a specified window for stability (Chapter 99). Modern "any-cap" LDOs are internally compensated for low-ESR ceramics; older ones oscillate with them.
+
+</div>
+
+</section>
+
+<section id="current">
+
+<div className="section-heading"><span>05</span><h2>Use a regulator as a current source</h2></div>
+
+Put a resistor $R$ from OUT to ADJ and take the load from ADJ to ground. The regulator holds 1.25 V across $R$, so the current through it, and through the load, is
+<Equation tex={String.raw`I=\frac{V_{ref}}{R}+I_{ADJ}`}/>
+A 12.5 Ω resistor gives 100 mA, accurate to about 2% including the 50 µA adjust current. The compliance is the input voltage minus the dropout minus 1.25 V. This is a quick LED driver or battery charger; precision current sources use the op-amp servo of Chapter 87.
+
+</section>
+
+<section id="pitfalls">
+
+<div className="section-heading"><span>06</span><h2>Avoid the common pitfalls</h2></div>
+
+- **Input capacitor near the regulator.** Long leads to a distant reservoir capacitor add inductance; with the regulator's input impedance this can oscillate. A 0.1–1 µF ceramic at the input pins prevents it.
+- **Heat.** A regulator dropping 12 V to 5 V at 1 A dissipates 7 W; Chapter 101 shows the heat sink it needs. The internal thermal shutdown is protection, not a design margin.
+- **Current limit is not constant.** Many regulators reduce their current limit at high input-to-output voltage to stay within their safe operating area (Chapter 101), so a regulator that delivers 1.5 A at 3 V headroom may deliver 0.3 A at 30 V.
+- **Reverse voltage.** Most LDOs conduct from output to input through the pass element's body diode if the output is held above the input.
+- **Start-up into capacitance.** Current limit plus a large load capacitance gives a slow, linear ramp; loads that misbehave below their minimum supply voltage need a supervisor or enable sequencing.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, design a 317 divider for a given output including the adjust-current error, compute the adjust-capacitor corner, and compare the dropout of NPN and PMOS regulators at a given load.
+
+[Work through three independent problems](/regulator-ics/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§9.3.1–9.3.14 (integrated linear regulators). Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

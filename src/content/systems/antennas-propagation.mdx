@@ -4,7 +4,7 @@ import {AntennaBudgetLab} from '../../components/AntennaBudgetLab';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 107</span><span className="hairline"/>PART V / RADIATION &amp; SIGNAL INTEGRITY</div>
+<div className="eyebrow"><span>CHAPTER 119</span><span className="hairline"/>PART V / RADIATION &amp; SIGNAL INTEGRITY</div>
 
 <h1>Antennas, links and emissions<br/><em>Radiation is a circuit element you can calculate.</em></h1>
 
@@ -18,7 +18,7 @@ import {AntennaBudgetLab} from '../../components/AntennaBudgetLab';
 
 <div className="section-heading"><span>01</span><h2>Derive the radiation resistance of a short dipole</h2></div>
 
-Chapter 101 showed that changing fields can detach from a conductor. To a circuit, the energy that leaves looks like power dissipated in a resistor. Calculating that **radiation resistance** turns an antenna into an ordinary circuit element.
+Chapter 110 showed that changing fields can detach from a conductor. To a circuit, the energy that leaves looks like power dissipated in a resistor. Calculating that **radiation resistance** turns an antenna into an ordinary circuit element.
 
 <div className="derivation">
 
@@ -60,11 +60,11 @@ The current-integral distinction is developed in [MIT's antenna notes, §3.2](ht
 
 A real dipole is not short, and its current is not uniform: it falls to zero at the open ends. For a centre-fed half-wave dipole the current is approximately $I\cos(2\pi z/\lambda)$, and repeating the integration of section 01 with that distribution (which needs a numerical integral of the cosine-integral function) gives $R_{rad}$ ≈ **73 Ω** with a small inductive reactance that vanishes when the dipole is trimmed a few percent shorter than $\lambda/2$. That resistance is close to common coax impedances, which is one reason the half-wave dipole is the reference antenna.
 
-**The monopole and image theory.** A quarter-wave vertical conductor over a large conducting plane behaves, above the plane, exactly like a half-wave dipole: the plane's currents produce the same field as a mirror-image conductor below it (the image argument of Chapter 101, section 04). But all of the power now goes into the upper half-space, so the same field is produced with half the power: $R_{rad}$ ≈ 36.5 Ω. A monopole needs its ground plane; a short whip on a small board uses the board itself, and the board's currents become part of the antenna.
+**The monopole and image theory.** A quarter-wave vertical conductor over a large conducting plane behaves, above the plane, exactly like a half-wave dipole: the plane's currents produce the same field as a mirror-image conductor below it (the image argument of Chapter 110, section 04). But all of the power now goes into the upper half-space, so the same field is produced with half the power: $R_{rad}$ ≈ 36.5 Ω. A monopole needs its ground plane; a short whip on a small board uses the board itself, and the board's currents become part of the antenna.
 
 <DipolePatternFigure/>
 
-At 2.44 GHz, $\lambda$ = 123 mm in air. A quarter-wave monopole is about 31 mm before end-effect shortening. On a PCB the effective permittivity shortens printed antennas further, and nearby components, plastic and a hand all detune them; matching networks (Chapter 104) on the feed recover the match after the product is assembled.
+At 2.44 GHz, $\lambda$ = 123 mm in air. A quarter-wave monopole is about 31 mm before end-effect shortening. On a PCB the effective permittivity shortens printed antennas further, and nearby components, plastic and a hand all detune them; matching networks (Chapter 113) on the feed recover the match after the product is assembled.
 
 </section>
 
@@ -82,7 +82,7 @@ A receiving antenna is characterized by its **effective area**: the power delive
 
 1. **Open-circuit voltage.** A broadside field $E$ polarized along a short dipole induces $V_{oc}=E\ell_{eff}$. Use $\ell_{eff}=\ell$ for the uniform element or $\ell/2$ for a centre-fed short wire, consistently with its radiation resistance.
 
-2. **Thévenin model.** The antenna is a source $V_{oc}$ behind its radiation resistance. A conjugate-matched load (Chapter 104) receives the available power $V_{oc}^2/(8R_{rad})$ (peak phasors, so the factor is 8 rather than 4).
+2. **Thévenin model.** The antenna is a source $V_{oc}$ behind its radiation resistance. A conjugate-matched load (Chapter 113) receives the available power $V_{oc}^2/(8R_{rad})$ (peak phasors, so the factor is 8 rather than 4).
 
 3. **Divide by the incident power density** $S = E^2/(2\eta)$ and substitute $R_{rad}$ from section 01:
 <Equation tex={String.raw`A_e=\frac{E^2\ell_{eff}^2/8R_{rad}}{E^2/2\eta}=\frac{\eta\ell_{eff}^2}{4R_{rad}}=\frac{3\lambda^2}{8\pi}`}/>
@@ -143,7 +143,7 @@ Use gain in the direction of the other antenna, rather than its maximum gain unl
 
 <span className="tiny-label">WORKED EXAMPLE / A 2.4 GHz LINK BUDGET</span><h3>0 dBm transmitter, two 2 dBi antennas, 1 MHz channel</h3>
 
-<p><strong>Receiver floor.</strong> Chapter 106's thermal floor is −174 dBm/Hz; over 1 MHz it is −114 dBm. A 6 dB noise figure raises it to −108 dBm, and a demodulator needing 13 dB SNR sets the sensitivity at <strong>−95 dBm</strong>.</p>
+<p><strong>Receiver floor.</strong> Chapter 118's thermal floor is −174 dBm/Hz; over 1 MHz it is −114 dBm. A 6 dB noise figure raises it to −108 dBm, and a demodulator needing 13 dB SNR sets the sensitivity at <strong>−95 dBm</strong>.</p>
 
 <p><strong>Path.</strong> At 2.44 GHz, $\lambda$ = 0.123 m, and the loss at 1 m is $20\log_{10}(4\pi/0.123)$ = 40.2 dB. The budget allows $0 + 2 + 2 - (-95) = 99$ dB of path loss, which is 58.8 dB beyond the 1 m value, a factor of $10^{58.8/20}$ ≈ 870 in distance. Free-space range is about <strong>870 m</strong>.</p>
 

@@ -4,7 +4,7 @@ import {SystemsLab} from '../../components/SystemsLab';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 106</span><span className="hairline"/>PART V / RF CIRCUITS</div>
+<div className="eyebrow"><span>CHAPTER 118</span><span className="hairline"/>PART V / OSCILLATORS, MODULATION &amp; RECEIVERS</div>
 
 <h1>RF amplifiers, mixers and receiver design<br/><em>Gain helps sensitivity and hurts blocker headroom.</em></h1>
 
@@ -20,7 +20,7 @@ import {SystemsLab} from '../../components/SystemsLab';
 
 A receiver must detect a wanted signal while larger unwanted signals may occupy the same input bandwidth. Gain before a noisy stage can preserve sensitivity, but it also magnifies blockers that compress or intermodulate in later stages. Start with two separate budgets: minimum detectable signal and maximum tolerable signal.
 
-Thermal available noise power from a matched source is $kTB$: the resistor's open-circuit noise $4kTRB$ (mean square) delivered into a matched load, which takes a quarter of it, as for any source (Chapter 104). At 290 K, $kT$ = 4.0 × 10⁻²¹ W/Hz, and $10\log_{10}(4.0\times10^{-21}/10^{-3})$ ≈ −174 dBm/Hz. In a 100 kHz noise bandwidth, source noise is roughly −124 dBm. A receiver with 4 dB noise figure has an input-referred noise floor about −120 dBm. If a required demodulated SNR is 10 dB and no processing gain is included, a first sensitivity estimate is −110 dBm.
+Thermal available noise power from a matched source is $kTB$: the resistor's open-circuit noise $4kTRB$ (mean square) delivered into a matched load, which takes a quarter of it, as for any source (Chapter 113). At 290 K, $kT$ = 4.0 × 10⁻²¹ W/Hz, and $10\log_{10}(4.0\times10^{-21}/10^{-3})$ ≈ −174 dBm/Hz. In a 100 kHz noise bandwidth, source noise is roughly −124 dBm. A receiver with 4 dB noise figure has an input-referred noise floor about −120 dBm. If a required demodulated SNR is 10 dB and no processing gain is included, a first sensitivity estimate is −110 dBm.
 
 Noise factor is $F=SNR_{in}/SNR_{out}$, and noise figure is $NF=10\log_{10}F$. Use **linear power gains** and linear factors in the cascade equation:
 

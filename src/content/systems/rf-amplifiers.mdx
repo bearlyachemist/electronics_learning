@@ -1,0 +1,194 @@
+import Equation from '../../components/Equation.astro';
+import {LnaCircuit,CompressionPlot,NoiseMatchPlot} from '../../components/RfFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 114</span><span className="hairline"/>PART V / RF COMPONENTS &amp; STAGES</div>
+
+<h1>RF amplifier design<br/><em>Gain, stability and noise pull in different directions.</em></h1>
+
+<p className="dek">Define power gain from S-parameters, test whether an amplifier can oscillate, derive the input impedance of an inductively degenerated LNA, choose between gain and noise matching, relate compression to intercept, and size a power amplifier's load.</p>
+
+<div className="chapter-meta"><span>55–80 min + practice</span><span>Derivations · Two-port design · Worked examples</span></div>
+
+</div>
+
+<section id="gain">
+
+<div className="section-heading"><span>01</span><h2>Define gain as a power ratio</h2></div>
+
+At RF the input and output of an amplifier are matched transmission-line ports (Chapter 113), so "gain" means power delivered to the load divided by power available from the source. A two-port is described by its S-parameters measured in a 50 Ω system: $S_{11}$ and $S_{22}$ are the input and output reflection coefficients with the other port matched, $S_{21}$ is forward transmission and $S_{12}$ reverse transmission.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / MAXIMUM GAIN OF A UNILATERAL AMPLIFIER</span>
+
+1. **Unilateral approximation.** Set $S_{12} = 0$, so the output does not affect the input. The transducer gain with source and load reflection coefficients $\Gamma_S$ and $\Gamma_L$ separates into three factors:
+<Equation tex={String.raw`G_{TU}=\underbrace{\frac{1-|\Gamma_S|^2}{|1-S_{11}\Gamma_S|^2}}_{\text{input match}}\;|S_{21}|^2\;\underbrace{\frac{1-|\Gamma_L|^2}{|1-S_{22}\Gamma_L|^2}}_{\text{output match}}`}/>
+   The middle term is the gain in a 50 Ω system; each outer term is the extra power gained (or lost) by the matching network on that side.
+
+2. **Conjugate matching.** Choosing $\Gamma_S = S_{11}^*$ makes the input factor $(1 - |S_{11}|^2)/(1 - |S_{11}|^2)^2 = 1/(1 - |S_{11}|^2)$; likewise at the output. The maximum is
+<Equation tex={String.raw`G_{TU,max}=\frac{|S_{21}|^2}{\left(1-|S_{11}|^2\right)\left(1-|S_{22}|^2\right)}`}/>
+
+3. **Interpretation.** A transistor with $|S_{11}|$ = 0.6 reflects 36% of the incident power in a 50 Ω system; matching recovers it. With $|S_{21}|^2$ = 10 dB and $|S_{22}|$ = 0.5, $G_{max} = 10/(0.64\times0.75)$ = 20.8, or **13.2 dB**: 3.2 dB more than the unmatched device.
+
+</div>
+
+</section>
+
+<section id="stability">
+
+<div className="section-heading"><span>02</span><h2>Test whether the amplifier can oscillate</h2></div>
+
+Any amplifier with reverse transmission feeds part of its output back to its input. With the wrong source or load impedance, the input or output can present a **negative resistance**, and the amplifier becomes an oscillator (Chapter 116).
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / INPUT REFLECTION AND THE ROLLETT STABILITY FACTOR</span>
+
+1. **Input reflection with a load.** A wave entering port 1 is partly reflected ($S_{11}$) and partly transmitted ($S_{21}$); at the load, $\Gamma_L$ returns it; port 2 re-reflects ($S_{22}$) or sends it back ($S_{12}$). Summing the resulting geometric series:
+<Equation tex={String.raw`\Gamma_{in}=S_{11}+\frac{S_{12}S_{21}\Gamma_L}{1-S_{22}\Gamma_L}`}/>
+
+2. **Negative resistance.** $|\Gamma_{in}| > 1$ means more power returns than arrives: the input has a negative real part. If a passive source impedance then completes a loop with net negative resistance, the circuit oscillates.
+
+3. **Unconditional stability.** The two-port is stable for *every* passive source and load if
+<Equation tex={String.raw`K=\frac{1-|S_{11}|^2-|S_{22}|^2+|\Delta|^2}{2|S_{12}S_{21}|}>1\quad\text{and}\quad|\Delta|<1,\qquad\Delta=S_{11}S_{22}-S_{12}S_{21}`}/>
+   K measures how much the device's own losses exceed the feedback path; it equals infinity for a unilateral device.
+
+</div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / IS THIS TRANSISTOR SAFE?</span><h3>S₁₁ = 0.6, S₂₂ = 0.5, S₂₁ = 3.16, S₁₂ = 0.05 (phases taken as zero for illustration)</h3>
+
+<p>$\Delta = 0.30 - 0.158 = 0.142$. Then $K = (1 - 0.36 - 0.25 + 0.020)/(2\times0.158)$ = <strong>1.30</strong>, and $|\Delta| < 1$: unconditionally stable at this frequency. Real S-parameters are complex and change with frequency; the test must pass at every frequency where the device has gain, including far below and above the band, where stray inductances make oscillation most likely.</p>
+
+<p>If K fails, the cures add loss where the instability occurs: a small series resistor at the gate, a shunt resistor at the drain, or resistive feedback. Each costs some gain or noise figure in band, which is why designers stabilize first and then match.</p>
+
+</div>
+
+</section>
+
+<section id="lna">
+
+<div className="section-heading"><span>03</span><h2>Derive the inductively degenerated LNA input</h2></div>
+
+A low-noise amplifier must present 50 Ω to the antenna, but a 50 Ω resistor at its input would add its own thermal noise and set the noise figure to at least 3 dB. The standard solution makes a *noiseless* input resistance from reactances and the transistor's transconductance.
+
+<LnaCircuit/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / INPUT IMPEDANCE WITH SOURCE INDUCTANCE</span>
+
+1. **Test current.** Inject $i$ into the gate through $L_g$. It charges the gate-source capacitance, so $v_{gs} = i/(sC_{gs})$.
+
+2. **Source current.** The source inductor carries the test current plus the drain current $g_mv_{gs}$:
+<Equation tex={String.raw`v_s=sL_s\left(i+\frac{g_m\,i}{sC_{gs}}\right)=sL_s\,i+\frac{g_mL_s}{C_{gs}}\,i`}/>
+
+3. **Sum the drops** from input to ground: $v_{in} = sL_gi + v_{gs} + v_s$:
+<Equation tex={String.raw`Z_{in}=s(L_g+L_s)+\frac{1}{sC_{gs}}+\frac{g_mL_s}{C_{gs}}`}/>
+
+4. **Read it.** The last term is a pure resistance, $g_mL_s/C_{gs} = \omega_TL_s$, produced by feedback through $L_s$ rather than by a resistor, so it adds no thermal noise. The reactive terms cancel at $\omega_0 = 1/\sqrt{(L_g + L_s)C_{gs}}$.
+
+5. **Design equations.** Choose $L_s = 50\ \Omega/\omega_T$ for the real part, then $L_g$ to resonate at the operating frequency.
+
+</div>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A 2.4 GHz LNA</span><h3>C<sub>gs</sub> = 0.5 pF, g<sub>m</sub> = 40 mS</h3>
+
+<p>$\omega_T = g_m/C_{gs} = 8\times10^{10}$ rad/s ($f_T$ = 12.7 GHz). For 50 Ω, $L_s = 50/8\times10^{10}$ = <strong>0.63 nH</strong>, a short bond wire or a trace. Resonance at 2.4 GHz needs $L_g + L_s = 1/(\omega_0^2C_{gs})$ = 8.8 nH, so $L_g$ = <strong>8.2 nH</strong>. The Q of that external inductor sets part of the noise figure: its series loss resistance appears directly in series with the 50 Ω source.</p>
+
+</div>
+
+</section>
+
+<section id="noise">
+
+<div className="section-heading"><span>04</span><h2>Choose between gain match and noise match</h2></div>
+
+Chapter 90 models an amplifier's noise as a voltage source $e_n$ and a current source $i_n$ at its input. Their effect depends on the source resistance $R_s$ that drives it.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE OPTIMUM SOURCE RESISTANCE</span>
+
+1. **Noise factor.** The source contributes $4kTR_s$ (V²/Hz). The amplifier adds $e_n^2$ directly and $i_n^2R_s^2$ by flowing through the source, so
+<Equation tex={String.raw`F=1+\frac{e_n^2+i_n^2R_s^2}{4kTR_s}`}/>
+
+2. **Minimize.** Write the excess as $(e_n^2/R_s + i_n^2R_s)/4kT$ and set its derivative to zero: $-e_n^2/R_s^2 + i_n^2 = 0$, so
+<Equation tex={String.raw`R_{opt}=\frac{e_n}{i_n},\qquad F_{min}=1+\frac{2e_ni_n}{4kT}`}/>
+   (with uncorrelated $e_n$ and $i_n$; correlation shifts the optimum and adds a reactive part).
+
+</div>
+
+<NoiseMatchPlot/>
+
+The impedance that minimizes noise generally differs from the conjugate match that maximizes gain. An LNA designer usually transforms the antenna's 50 Ω to the device's optimum noise impedance, accepts some input mismatch, and recovers gain in later stages, because Chapter 118's cascade formula makes the first stage's noise dominant. Balanced amplifiers (two identical stages between 90° hybrid couplers) resolve the conflict: each device sees its noise-optimum impedance, while the reflections from the two devices cancel at the input port.
+
+</section>
+
+<section id="linearity">
+
+<div className="section-heading"><span>05</span><h2>Relate compression to intercept</h2></div>
+
+<CompressionPlot/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / P1dB IS ABOUT 9.6 dB BELOW IIP3</span>
+
+1. **Cubic model.** $v_o = a_1v + a_3v^3$ with $a_3$ of opposite sign to $a_1$ (compressive). For a single tone of amplitude $A$, $\cos^3$ produces $\tfrac34a_3A^3$ at the fundamental, so the fundamental gain becomes $a_1 + \tfrac34a_3A^2$.
+
+2. **1 dB compression** occurs when that gain has fallen to $10^{-1/20} = 0.891$ of $a_1$: $\tfrac34|a_3|A_{1dB}^2 = 0.109|a_1|$, so $A_{1dB}^2 = 0.145|a_1/a_3|$.
+
+3. **Intercept.** Chapter 118 found $A_{IP3}^2 = \tfrac43|a_1/a_3|$ for two equal tones.
+
+4. **Ratio:** $A_{1dB}^2/A_{IP3}^2 = 0.145/1.333 = 0.109$, which is −9.6 dB. For a device dominated by third-order distortion, P1dB ≈ IIP3 − 9.6 dB; real devices differ by a few dB, which is why both are specified.
+
+5. **Cascades.** Referred to the input, intercepts add like parallel resistors with each later stage's IIP3 divided by the gain ahead of it: $1/IIP3_{tot} = 1/IIP3_1 + G_1/IIP3_2 + G_1G_2/IIP3_3 + \cdots$ (linear powers). Gain early in a chain helps noise and hurts linearity.
+
+</div>
+
+</section>
+
+<section id="pa">
+
+<div className="section-heading"><span>06</span><h2>Size a power amplifier's load</h2></div>
+
+A power amplifier's job is efficiency at a required output power, not noise or small-signal gain.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / CLASS A EFFICIENCY AND THE OPTIMUM LOAD</span>
+
+1. **RF choke feed.** The drain connects to $V_{DD}$ through an inductor that passes DC but blocks RF, and to the load through a coupling capacitor. The drain voltage can then swing symmetrically about $V_{DD}$, from near 0 to near $2V_{DD}$.
+
+2. **Output power.** A full sine of amplitude $V_{DD}$ across load $R$ delivers $P_{out} = V_{DD}^2/(2R)$.
+
+3. **DC power.** Class A bias must supply the full peak current $V_{DD}/R$ as its quiescent current, so $P_{DC} = V_{DD}^2/R$. The maximum efficiency is $P_{out}/P_{DC} = 50\%$.
+
+4. **Optimum load.** The load that delivers $P_{out}$ at full swing, allowing a knee voltage $V_k$ below which the transistor saturates, is
+<Equation tex={String.raw`R_{opt}=\frac{(V_{DD}-V_k)^2}{2P_{out}}`}/>
+
+5. **Other classes.** Conducting for half a cycle (class B) raises the maximum to $\pi/4$ = 78.5% (Chapter 37's derivation); switching classes (D, E, F) shape the voltage and current so they do not overlap and approach 100% in principle, at the cost of linearity.
+
+</div>
+
+A 3.3 V amplifier delivering 1 W (ignoring the knee) needs $R_{opt} = 3.3^2/2$ = **5.4 Ω**, not 50 Ω. Connecting it straight to a 50 Ω antenna would deliver only $3.3^2/100$ = 0.11 W. An L network (Chapter 113) with $Q = \sqrt{50/5.4 - 1}$ = 2.9 transforms 50 Ω down to 5.4 Ω. This load-line match is deliberately not a conjugate match to the transistor's output impedance: a PA is matched for maximum *power* within voltage and current limits, not maximum small-signal gain.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, compute the maximum gain and stability factor of a given device, design the inductors of a degenerated LNA, find the noise-optimum source resistance from $e_n$ and $i_n$, and size a PA load for a given supply and power.
+
+[Work through three independent problems](/rf-amplifiers/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§8.2 and 13.13; standard two-port amplifier design (Rollett stability, Cripps load-line). Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

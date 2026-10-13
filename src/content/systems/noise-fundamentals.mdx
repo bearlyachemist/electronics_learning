@@ -1,0 +1,132 @@
+import Equation from '../../components/Equation.astro';
+import {NoiseDensityPlot,NoiseTracePlot} from '../../components/NoiseFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 90</span><span className="hairline"/>PART III / LOW-NOISE DESIGN</div>
+
+<h1>Noise sources, SNR and noise figure<br/><em>The floor every measurement stands on.</em></h1>
+
+<p className="dek">Describe random signals by rms value and spectral density, derive Johnson noise from thermal equilibrium and shot noise from random arrivals, recognize flicker and burst noise, and define signal-to-noise ratio, noise figure and noise temperature.</p>
+
+<div className="chapter-meta"><span>50–70 min + practice</span><span>Derivations · Statistics · Specifications</span></div>
+
+</div>
+
+<section id="random">
+
+<div className="section-heading"><span>01</span><h2>Describe a random signal</h2></div>
+
+Noise has no predictable waveform, but it has stable statistics. Three descriptions are used.
+
+- **Rms value** $v_n = \sqrt{\overline{v^2}}$, the quantity that determines power and the usual measure of noise amplitude.
+- **Amplitude distribution.** Most electronic noise is Gaussian: about 68% of the time within ±1 rms value, 99.9% within ±3.3. Peak-to-peak readings are often converted to rms by dividing by about 6.6, but the true peak grows slowly with observation time.
+- **Spectral density** $e_n(f)$ in V/√Hz (or $i_n$ in A/√Hz): the rms noise in a 1 Hz band at frequency $f$. Its square, in V²/Hz, is a power density that integrates to the mean-square noise: $\overline{v^2} = \int e_n^2(f)\,df$.
+
+<NoiseTracePlot/>
+
+**Independent sources add in power.** For $v = v_1 + v_2$, $\overline{v^2} = \overline{v_1^2} + \overline{v_2^2} + 2\overline{v_1v_2}$, and the cross term averages to zero when the two are uncorrelated. Two 10 nV/√Hz sources give $\sqrt{200}$ = 14.1 nV/√Hz, not 20. A consequence worth remembering: a source one-third the size of another adds only 5% to the total, so effort spent on a minor contributor is wasted.
+
+</section>
+
+<section id="johnson">
+
+<div className="section-heading"><span>02</span><h2>Derive Johnson noise from thermal equilibrium</h2></div>
+
+Every resistor at a nonzero temperature generates a noise voltage, from the thermal motion of its charge carriers. Its size follows from thermodynamics alone.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / JOHNSON–NYQUIST NOISE FROM kT/C</span>
+
+1. **Equipartition.** A capacitor connected to a resistor at temperature $T$ is in thermal equilibrium. The capacitor's stored energy is a single quadratic degree of freedom, so its average is $\tfrac12kT$: $\tfrac12C\overline{v^2} = \tfrac12kT$, giving $\overline{v^2} = kT/C$ regardless of $R$.
+
+2. **Model the resistor** as a noiseless resistance in series with a white noise source of density $S$ (V²/Hz). The RC network passes it with $|H|^2 = 1/[1 + (2\pi fRC)^2]$.
+
+3. **Integrate** (the same integral as Chapter 94's noise bandwidth): $\overline{v^2} = S\int_0^\infty df/[1 + (2\pi fRC)^2] = S/(4RC)$.
+
+4. **Equate.** $S/(4RC) = kT/C$, so
+<Equation tex={String.raw`e_n^2=4kTR\qquad\Longrightarrow\qquad e_n=\sqrt{4kTR}\ \ \text{V}/\sqrt{\text{Hz}}`}/>
+   Equivalently, a noise current $i_n = \sqrt{4kT/R}$ in parallel.
+
+</div>
+
+At room temperature $\sqrt{4kT}$ = 0.13 nV/√(Hz·Ω), so a 1 kΩ resistor generates **4.07 nV/√Hz** and 10 kΩ about 12.9 nV/√Hz. In a 20 kHz audio band, 10 kΩ gives $12.9 \times \sqrt{20\,000}$ = 1.8 µV rms. Johnson noise depends only on resistance and temperature, not on current or the resistor's construction. (Real resistors add *excess* noise proportional to the DC current through them, worst in thick-film and carbon-composition types.) It cannot be filtered out of the signal band; it can only be reduced by lower resistance or lower temperature.
+
+</section>
+
+<section id="shot">
+
+<div className="section-heading"><span>03</span><h2>Derive shot noise from random arrivals</h2></div>
+
+A current made of discrete charges that cross a barrier independently (diode junctions, transistor base and collector currents, photodiodes) fluctuates because the number arriving in any interval is random.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / SHOT NOISE</span>
+
+1. **Poisson counting.** If charges arrive independently at average rate $\lambda$, the number $N$ in an interval $\tau$ has mean $\lambda\tau$ and variance equal to its mean, $\lambda\tau$.
+
+2. **Current over the interval.** The averaged current is $qN/\tau$, with mean $I = q\lambda$ and variance $q^2\lambda\tau/\tau^2 = qI/\tau$.
+
+3. **Bandwidth of an average.** Averaging over $\tau$ is a low-pass filter whose noise bandwidth is $1/(2\tau)$. Writing the variance as density times bandwidth, $qI/\tau = i_n^2/(2\tau)$, so
+<Equation tex={String.raw`i_n^2=2qI\qquad\Longrightarrow\qquad i_n=\sqrt{2qI}\ \ \text{A}/\sqrt{\text{Hz}}`}/>
+
+4. **Relative noise falls with current.** The signal-to-noise ratio of a current $I$ measured in bandwidth $B$ is $I/\sqrt{2qIB} = \sqrt{I/2qB}$: more current, better ratio.
+
+</div>
+
+1 mA carries 18 pA/√Hz of shot noise; 1 nA, 18 fA/√Hz. A current through a resistor (a *metallic conductor*) does not show full shot noise, because the charges' arrivals are correlated; that is why Johnson noise depends on $R$ and not on $I$. Chapter 91 shows how shot noise in a transistor's collector and base currents produces its voltage and current noise.
+
+</section>
+
+<section id="flicker">
+
+<div className="section-heading"><span>04</span><h2>Recognize flicker, burst and interference</h2></div>
+
+**Flicker (1/f) noise** has a power density proportional to $1/f$: equal noise power in every decade. It arises from slow trapping and release of carriers, at oxide interfaces in MOSFETs, in resistor materials, and at semiconductor surfaces. A device's **1/f corner** is the frequency where flicker equals the white floor; bipolar op amps have corners of a few hertz, CMOS amplifiers often kilohertz. Integrated from $f_1$ to $f_2$, flicker contributes $e_w^2f_c\ln(f_2/f_1)$, so every decade adds the same amount and the total never converges at low frequency: measurement time sets the effective lower limit (Chapter 93).
+
+<NoiseDensityPlot/>
+
+**Burst (popcorn) noise** is a random switching between two or more levels, caused by individual defects; it shows up as a telegraph-like waveform and is a sign of a poor device. **Interference** (mains hum, switching-supply spikes, radio pickup) is not random noise and does not follow these laws; it is reduced by shielding, layout and grounding (Chapter 94), not by choosing a quieter amplifier.
+
+</section>
+
+<section id="snr">
+
+<div className="section-heading"><span>05</span><h2>Define SNR, noise figure and noise temperature</h2></div>
+
+**Signal-to-noise ratio** compares signal and noise powers in the same bandwidth: $\mathrm{SNR} = 20\log_{10}(v_s/v_n)$ for rms voltages. It depends on bandwidth, so a meaningful noise specification always states it.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / NOISE FIGURE AND NOISE TEMPERATURE</span>
+
+1. **Reference.** Any source with resistance $R_s$ delivers Johnson noise $4kT_0R_s$ (V²/Hz) with $T_0$ = 290 K by convention. A perfect amplifier would only amplify it.
+
+2. **Noise factor** is the ratio of total output noise to the part due to the source:
+<Equation tex={String.raw`F=\frac{4kT_0R_s+e_{added}^2}{4kT_0R_s}=1+\frac{e_{added}^2}{4kT_0R_s},\qquad NF=10\log_{10}F`}/>
+   where $e_{added}$ is the amplifier's noise referred to its input. Equivalently, $F = \mathrm{SNR_{in}}/\mathrm{SNR_{out}}$.
+
+3. **Noise temperature.** Express the added noise as the extra temperature the source would need to produce it: $e_{added}^2 = 4kT_eR_s$, so
+<Equation tex={String.raw`F=1+\frac{T_e}{T_0}\qquad\Longleftrightarrow\qquad T_e=(F-1)\,T_0`}/>
+
+4. **Use the right measure.** Noise figure is convenient when the source resistance is fixed (an RF system at 50 Ω, Chapter 118). It is misleading otherwise: an amplifier looks better with a noisier, higher-resistance source. For low-frequency design, compare $e_n$ and $i_n$ directly against the source's own noise (Chapter 91).
+
+</div>
+
+A 1 dB noise figure is $F$ = 1.26, $T_e$ = 75 K; a 0.5 dB LNA has $T_e$ = 35 K. Radio-astronomy receivers, where the sky behind the antenna may be only a few kelvin, are specified in noise temperature for that reason.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, add three noise sources correctly, compute a resistor's Johnson noise in a given bandwidth, find the shot noise of a photodiode current, and convert between noise figure and noise temperature.
+
+[Work through three independent problems](/noise-fundamentals/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§8.1–8.2 (noise sources, signal-to-noise ratio and noise figure). Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

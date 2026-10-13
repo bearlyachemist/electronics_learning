@@ -7,13 +7,28 @@
       "hint": "Solve y = A(x − by), then check A times the error.",
       "solution": [
         {
-          "tex": "T=100,\\quad G=2000/101=19.802,\\quad y=0.99010\\ \\mathrm V"
+          "step": "Loop gain",
+          "tex": "T=Ab=2000\\times0.05=100"
         },
         {
-          "tex": "e=x/(1+T)=0.49505\\ \\mathrm{mV}"
+          "step": "Solve the loop equation",
+          "text": "From $y=A(x-by)$:",
+          "tex": "G=\\frac{y}{x}=\\frac{A}{1+Ab}=\\frac{2000}{101}=19.802"
         },
         {
-          "text": "A × e = 0.99010 V confirms the result. Output is slightly below the ideal 1 V because finite forward gain requires a nonzero error."
+          "step": "Output",
+          "tex": "y=19.802\\times50\\ \\text{mV}=0.9901\\ \\text{V}"
+        },
+        {
+          "step": "Error signal",
+          "tex": "e=x-by=\\frac{x}{1+T}=\\frac{50\\ \\text{mV}}{101}=0.495\\ \\text{mV}"
+        },
+        {
+          "step": "Check",
+          "text": "$A\\times e$ = 2000 × 0.495 mV = 0.990 V, matching the output."
+        },
+        {
+          "answer": "T = <strong>100</strong>, G = <strong>19.80</strong>, output <strong>0.990 V</strong>, error <strong>0.495 mV</strong>."
         }
       ]
     },
@@ -24,10 +39,24 @@
       "hint": "Use differential sensitivity for the small change; recalculate G for the large change.",
       "solution": [
         {
-          "tex": "\\frac{\\delta G}{G}\\approx\\frac{2\\%}{101}=0.0198\\%"
+          "step": "Sensitivity",
+          "text": "Differentiating $G=A/(1+Ab)$ gives $dG/G=(dA/A)/(1+Ab)$.",
+          "tex": "\\frac{\\delta G}{G}\\approx\\frac{2\\%}{1+100}=0.0198\\%"
         },
         {
-          "text": "Doubling A changes G from 1000/101 = 9.90099 to 2000/201 = 9.95025, an increase of about 0.4975%. The original derivative times 100% is not the correct finite-change calculation."
+          "step": "Doubling A: gain before",
+          "tex": "G_1=\\frac{1000}{101}=9.90099"
+        },
+        {
+          "step": "Doubling A: gain after",
+          "tex": "G_2=\\frac{2000}{201}=9.95025"
+        },
+        {
+          "step": "Exact change",
+          "tex": "\\frac{9.95025}{9.90099}-1=0.4975\\%"
+        },
+        {
+          "answer": "<strong>0.0198%</strong> for a 2% change; <strong>+0.50%</strong> if A doubles (not 100%/101 = 0.99%)."
         }
       ]
     },
@@ -38,10 +67,23 @@
       "hint": "Write y = A(x − by − n) + d.",
       "solution": [
         {
-          "tex": "\\Delta y_d=0.2/101=1.980\\ \\mathrm{mV},\\qquad\\Delta y_n=-1000(0.001)/101=-9.901\\ \\mathrm{mV}"
+          "step": "Write the loop with both disturbances",
+          "tex": "y=A(x-by-n)+d\\ \\Rightarrow\\ y=\\frac{Ax-An+d}{1+Ab}"
         },
         {
-          "text": "Output disturbance is suppressed. Measurement error is interpreted as a true output change and produces a correction of nearly −n/b."
+          "step": "Output disturbance",
+          "tex": "\\Delta y_d=\\frac{0.2\\ \\text{V}}{101}=1.98\\ \\text{mV}"
+        },
+        {
+          "step": "Measurement error",
+          "tex": "\\Delta y_n=-\\frac{1000\\times1\\ \\text{mV}}{101}=-9.90\\ \\text{mV}\\approx-\\frac{n}{b}"
+        },
+        {
+          "step": "Interpret",
+          "text": "Feedback suppresses disturbances it can see at the output, but it faithfully follows errors in its own measurement."
+        },
+        {
+          "answer": "Output disturbance → <strong>+1.98 mV</strong> (suppressed 101×). Sensor error → <strong>−9.90 mV</strong> (amplified to ≈ −n/b)."
         }
       ]
     },
@@ -52,10 +94,20 @@
       "hint": "The denominator factor is 1 + A₀b.",
       "solution": [
         {
-          "tex": "G_0=5000/101=49.505,\\qquad f_{p,cl}=20(101)=2020\\ \\mathrm{Hz}"
+          "step": "Closed-loop DC gain",
+          "tex": "G_0=\\frac{A_0}{1+A_0b}=\\frac{5000}{101}=49.5"
         },
         {
-          "text": "The product is 100 kHz, the same as A₀fp. Extra poles, large-signal slew limits and loading can invalidate this one-pole tradeoff."
+          "step": "Closed-loop pole",
+          "text": "With $A(s)=A_0/(1+s/\\omega_p)$, the closed-loop denominator becomes $1+A_0b+s/\\omega_p$, so the pole moves up by $1+A_0b$.",
+          "tex": "f_{p,cl}=20\\ \\text{Hz}\\times101=2020\\ \\text{Hz}"
+        },
+        {
+          "step": "Gain-bandwidth check",
+          "tex": "49.5\\times2020=100\\ \\text{kHz}=A_0f_p"
+        },
+        {
+          "answer": "DC gain <strong>49.5</strong>, pole at <strong>2.02 kHz</strong>; gain × bandwidth is conserved at 100 kHz."
         }
       ]
     },
@@ -66,10 +118,19 @@
       "hint": "The critical phase condition is −180° at unity loop magnitude.",
       "solution": [
         {
+          "step": "Phase margin definition",
+          "text": "Phase margin is the distance from −180° at the frequency where $|Ab|$ = 1."
+        },
+        {
+          "step": "Evaluate",
           "tex": "PM=180^\\circ-135^\\circ=45^\\circ"
         },
         {
-          "text": "No. The relevant crossover is |A b| = 1, not the closed-loop signal response’s −3 dB point. General multi-crossover or open-loop-unstable systems require additional stability analysis."
+          "step": "Wrong substitute",
+          "text": "The closed-loop −3 dB frequency is not where $|Ab|$ = 1, so its phase is not the relevant one."
+        },
+        {
+          "answer": "Phase margin = <strong>45°</strong>. <strong>No</strong>: read the phase at the loop-gain crossover."
         }
       ]
     }
@@ -82,13 +143,24 @@
       "hint": "Use gm = IC/VT and keep the finite denominator.",
       "solution": [
         {
-          "tex": "g_m=38.685\\ \\mathrm{mS},\\quad A_v=-\\frac{g_m(2200)}{1+g_m(1.01)(100)}=-17.343"
+          "step": "Transconductance",
+          "tex": "g_m=\\frac{1\\ \\text{mA}}{25.85\\ \\text{mV}}=38.685\\ \\text{mS}"
         },
         {
-          "tex": "R_{in}=\\beta/g_m+(\\beta+1)R_E=12.685\\ \\mathrm{k\\Omega}"
+          "step": "Degenerated gain",
+          "text": "The emitter current is $(1+1/\\beta)$ times the collector current, so $R_E$ is effectively multiplied by 1.01.",
+          "tex": "A_v=-\\frac{g_mR_C}{1+g_m(1+1/\\beta)R_E}=-\\frac{85.11}{1+3.907}=-17.34"
         },
         {
-          "text": "The limiting resistor ratio would give −22 and is not yet accurate at this loop gain."
+          "step": "Input resistance",
+          "tex": "R_{in}=r_\\pi+(\\beta+1)R_E=2585+10\\,100=12.69\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Compare with the limit",
+          "text": "The resistor ratio −2200/100 = −22 would need much larger loop gain $g_mR_E$."
+        },
+        {
+          "answer": "$A_v$ ≈ <strong>−17.3</strong>, $R_{in}$ ≈ <strong>12.7 kΩ</strong>."
         }
       ]
     },
@@ -99,10 +171,19 @@
       "hint": "Rearrange the exact degeneration gain expression.",
       "solution": [
         {
-          "tex": "R_E=\\frac{R_C/10-1/g_m}{1+1/\\beta}=\\frac{220-25.85}{1.01}=192.23\\ \\Omega"
+          "step": "Start from the gain expression",
+          "tex": "\\frac{R_C}{|A_v|}=\\frac{1}{g_m}+\\left(1+\\frac1\\beta\\right)R_E"
         },
         {
-          "text": "This sets the small-signal gain under the stated assumptions. Bias, load, source attenuation and usable output swing still need separate checks."
+          "step": "Substitute",
+          "tex": "220\\ \\Omega=25.85\\ \\Omega+1.01R_E"
+        },
+        {
+          "step": "Solve",
+          "tex": "R_E=\\frac{220-25.85}{1.01}=192.2\\ \\Omega"
+        },
+        {
+          "answer": "$R_E$ ≈ <strong>192 Ω</strong>."
         }
       ]
     },
@@ -113,13 +194,24 @@
       "hint": "Use ge = gm(1 + 1/$\\beta$), then reflect the source/base resistance into the emitter.",
       "solution": [
         {
-          "tex": "A_v=39.0716/(1+39.0716)=0.97504"
+          "step": "Emitter transconductance",
+          "tex": "g_e=g_m(1+1/\\beta)=39.07\\ \\text{mS},\\qquad g_eR_L=39.07"
         },
         {
-          "tex": "R_{out}\\approx[(2585+1000)/101]\\parallel1000=34.28\\ \\Omega"
+          "step": "Follower gain",
+          "tex": "A_v=\\frac{g_eR_L}{1+g_eR_L}=\\frac{39.07}{40.07}=0.975"
         },
         {
-          "text": "The AC voltage gain is near one, but DC emitter voltage still differs from base by VBE. Output resistance worsens as the base source becomes less stiff."
+          "step": "Resistance looking into the emitter",
+          "text": "The base-side resistance $r_\\pi+R_s$ is divided by β + 1.",
+          "tex": "\\frac{2585+1000}{101}=35.5\\ \\Omega"
+        },
+        {
+          "step": "Include the emitter resistor",
+          "tex": "R_{out}=35.5\\parallel1000=34.3\\ \\Omega"
+        },
+        {
+          "answer": "Gain <strong>0.975</strong>; output resistance ≈ <strong>34 Ω</strong>."
         }
       ]
     },
@@ -130,13 +222,24 @@
       "hint": "The collector resistor supplies IC + IB.",
       "solution": [
         {
-          "tex": "I_B=\\frac{11.3}{220000+101(2200)}=25.554\\ \\mu\\mathrm A"
+          "step": "Collector node",
+          "text": "$R_C$ carries both $I_C$ and $I_B$, and the collector voltage is $V_{BE}+I_BR_F$.",
+          "tex": "V_{CC}-(\\beta+1)I_BR_C=V_{BE}+I_BR_F"
         },
         {
-          "tex": "I_C=2.5554\\ \\mathrm{mA},\\qquad V_C=0.7+I_B(220000)=6.3219\\ \\mathrm V"
+          "step": "Solve for I_B",
+          "tex": "I_B=\\frac{12-0.7}{220\\ \\text{k}\\Omega+101\\times2.2\\ \\text{k}\\Omega}=25.55\\ \\mu\\text{A}"
         },
         {
-          "text": "The transistor remains forward-active in this first model because the collector is well above the base. A directly connected signal source could change the DC equation."
+          "step": "Collector current and voltage",
+          "tex": "I_C=2.555\\ \\text{mA},\\qquad V_C=0.7+25.55\\ \\mu\\text{A}\\times220\\ \\text{k}\\Omega=6.32\\ \\text{V}"
+        },
+        {
+          "step": "Check",
+          "tex": "12-(2.581\\ \\text{mA})(2.2\\ \\text{k}\\Omega)=6.32\\ \\text{V}\\ \\checkmark"
+        },
+        {
+          "answer": "$I_B$ = <strong>25.6 µA</strong>, $I_C$ = <strong>2.56 mA</strong>, $V_C$ = <strong>6.32 V</strong>."
         }
       ]
     },
@@ -147,10 +250,20 @@
       "hint": "Two inversions make the forward gain positive; raising the first emitter subtracts input.",
       "solution": [
         {
-          "tex": "A=600,\\quad T=60,\\quad G=600/61=9.8361,\\quad\\Delta y=0.3/61=4.918\\ \\mathrm{mV}"
+          "step": "Forward gain",
+          "text": "Two inversions give a positive product.",
+          "tex": "A=(-15)(-40)=600"
         },
         {
-          "text": "These are static loaded-block results. The real feedback network and both stage poles must be included before making a stability claim."
+          "step": "Loop gain and closed-loop gain",
+          "tex": "T=600\\times0.1=60,\\qquad G=\\frac{600}{61}=9.836"
+        },
+        {
+          "step": "Output disturbance",
+          "tex": "\\Delta y=\\frac{0.3\\ \\text{V}}{1+T}=\\frac{0.3}{61}=4.92\\ \\text{mV}"
+        },
+        {
+          "answer": "G = <strong>9.84</strong>; the 0.3 V disturbance appears as <strong>4.9 mV</strong>."
         }
       ]
     }
@@ -163,10 +276,19 @@
       "hint": "b = Rbottom/(Rtop + Rbottom).",
       "solution": [
         {
-          "tex": "b=0.25,\\quad V_{ideal}=4.8\\ \\mathrm V,\\quad V_o=\\frac{800(1.2)}{201}=4.7761\\ \\mathrm V"
+          "step": "Feedback fraction",
+          "tex": "b=\\frac{10}{30+10}=0.25"
         },
         {
-          "text": "The finite-gain shortfall is 1/201 = 0.4975%. Reference and resistor-ratio errors would be additional."
+          "step": "Ideal output",
+          "tex": "V_{ideal}=\\frac{V_{ref}}{b}=\\frac{1.2}{0.25}=4.8\\ \\text{V}"
+        },
+        {
+          "step": "Finite gain",
+          "tex": "V_o=\\frac{A}{1+Ab}V_{ref}=\\frac{800\\times1.2}{201}=4.776\\ \\text{V}"
+        },
+        {
+          "answer": "Ideal <strong>4.80 V</strong>; with A = 800, <strong>4.776 V</strong> (0.5% low)."
         }
       ]
     },
@@ -177,10 +299,19 @@
       "hint": "The sense resistor is part of the voltage and power budget.",
       "solution": [
         {
-          "tex": "R_s=0.6/0.25=2.4\\ \\Omega,\\quad P_s=0.25^2(2.4)=0.15\\ \\mathrm W,\\quad I_B\\approx0.25/40=6.25\\ \\mathrm{mA}"
+          "step": "Sense resistor",
+          "tex": "R_s=\\frac{0.6\\ \\text{V}}{0.25\\ \\text{A}}=2.4\\ \\Omega"
         },
         {
-          "text": "VBE variation changes the current threshold. The 0.6 V sensing drop also consumes headroom, and the driver needs its own current margin."
+          "step": "Dissipation",
+          "tex": "P=0.25^2\\times2.4=0.15\\ \\text{W}"
+        },
+        {
+          "step": "Pass-transistor base current",
+          "tex": "I_B=\\frac{0.25}{40}=6.25\\ \\text{mA}"
+        },
+        {
+          "answer": "<strong>2.4 Ω</strong>, <strong>0.15 W</strong>, about <strong>6.25 mA</strong> of base drive."
         }
       ]
     },
@@ -191,10 +322,19 @@
       "hint": "Current limiting controls current, not necessarily temperature.",
       "solution": [
         {
-          "tex": "P_{normal}=2\\ \\mathrm W,\\quad P_{short}=3\\ \\mathrm W,\\quad\\theta_{total}\\leq70/3=23.33\\ ^\\circ\\mathrm C/\\mathrm W"
+          "step": "Normal dissipation",
+          "tex": "P=(15-5)(0.2)=2\\ \\text{W}"
         },
         {
-          "text": "Check transistor DC safe operating area as well as this heat-flow estimate. A power rating alone does not establish safety at simultaneous high VCE and IC."
+          "step": "Shorted dissipation",
+          "tex": "P=(15-0)(0.2)=3\\ \\text{W}"
+        },
+        {
+          "step": "Thermal resistance",
+          "tex": "\\theta\\le\\frac{110-40}{3}=23.3\\ ^\\circ\\text{C/W}"
+        },
+        {
+          "answer": "<strong>2 W</strong> normally, <strong>3 W</strong> shorted; total θ ≤ <strong>23.3 °C/W</strong>. Check SOA too."
         }
       ]
     },
@@ -205,10 +345,19 @@
       "hint": "Treat current as constant during the short interval.",
       "solution": [
         {
-          "tex": "\\Delta V_C=\\frac{0.15(30\\ \\mu\\mathrm s)}{220\\ \\mu\\mathrm F}=20.45\\ \\mathrm{mV},\\quad\\Delta V_{ESR}=0.15(0.08)=12\\ \\mathrm{mV}"
+          "step": "Capacitive droop",
+          "tex": "\\Delta V_C=\\frac{I\\Delta t}{C}=\\frac{0.15\\times30\\ \\mu\\text{s}}{220\\ \\mu\\text{F}}=20.5\\ \\text{mV}"
         },
         {
-          "text": "A rough combined early drop is 32.45 mV, before wiring inductance and the detailed loop response. The capacitor also affects loop stability."
+          "step": "ESR step",
+          "tex": "\\Delta V_{ESR}=0.15\\times0.08=12\\ \\text{mV}"
+        },
+        {
+          "step": "Combined",
+          "tex": "\\approx20.5+12=32.5\\ \\text{mV}"
+        },
+        {
+          "answer": "<strong>20.5 mV</strong> capacitive droop plus <strong>12 mV</strong> ESR step ≈ <strong>32 mV</strong>."
         }
       ]
     },
@@ -219,10 +368,19 @@
       "hint": "Compare the trough with the required input, not the mean.",
       "solution": [
         {
-          "tex": "V_{trough}=7-1.2=5.8\\ \\mathrm V<6\\ \\mathrm V"
+          "step": "Required input",
+          "tex": "V_{in,min}=5+1=6\\ \\text{V}"
         },
         {
-          "text": "No. It enters dropout near the trough despite a 7 V mean. Reduce ripple, lower the required headroom or increase minimum raw voltage, then recheck maximum-voltage heating."
+          "step": "Trough",
+          "tex": "V_{trough}=7-\\frac{2.4}{2}=5.8\\ \\text{V}"
+        },
+        {
+          "step": "Compare",
+          "text": "5.8 V < 6 V, so the regulator drops out near each trough."
+        },
+        {
+          "answer": "<strong>No</strong>: the trough (5.8 V) is below the 6 V needed."
         }
       ]
     }
@@ -235,10 +393,20 @@
       "hint": "Use equilibrium heat loss and thermal energy storage separately.",
       "solution": [
         {
-          "tex": "P_{hold}=(60-20)/8=5\\ \\mathrm W,\\quad\\tau=8(25)=200\\ \\mathrm s"
+          "step": "Holding power",
+          "text": "At equilibrium all heater power flows out through θ.",
+          "tex": "P=\\frac{60-20}{8}=5\\ \\text{W}"
         },
         {
-          "text": "A 4 W heater is insufficient: its ideal equilibrium is only 52 °C. No feedback gain can overcome that actuator limit."
+          "step": "Time constant",
+          "tex": "\\tau=\\theta C_{th}=8\\times25=200\\ \\text{s}"
+        },
+        {
+          "step": "Check 4 W",
+          "tex": "T_\\infty=20+4\\times8=52\\ ^\\circ\\text{C}<60\\ ^\\circ\\text{C}"
+        },
+        {
+          "answer": "<strong>5 W</strong> and <strong>200 s</strong>. A 4 W heater is <strong>insufficient</strong> (it can reach only 52 °C)."
         }
       ]
     },
@@ -249,10 +417,19 @@
       "hint": "Equate commanded power to heat loss.",
       "solution": [
         {
-          "tex": "e=30/(1+10(0.5))=5\\ ^\\circ\\mathrm C,\\quad T=45\\ ^\\circ\\mathrm C,\\quad P=2.5\\ \\mathrm W"
+          "step": "Controller and plant equations",
+          "tex": "P=K_pe,\\qquad T=T_a+\\theta P,\\qquad e=T_{set}-T"
         },
         {
-          "text": "If error were zero, a pure proportional controller would command zero power. An integral or feedforward term can retain a nonzero holding command at zero error."
+          "step": "Solve for the error",
+          "tex": "e=\\frac{T_{set}-T_a}{1+\\theta K_p}=\\frac{30}{1+5}=5\\ ^\\circ\\text{C}"
+        },
+        {
+          "step": "Temperature and power",
+          "tex": "T=50-5=45\\ ^\\circ\\text{C},\\qquad P=0.5\\times5=2.5\\ \\text{W}"
+        },
+        {
+          "answer": "Settles at <strong>45 °C</strong> with <strong>5 °C</strong> error and <strong>2.5 W</strong>."
         }
       ]
     },
@@ -263,13 +440,20 @@
       "hint": "Use kelvin in the exponential. The lower resistor decreases as temperature rises.",
       "solution": [
         {
-          "tex": "R(50)=10000e^{3950(1/323.15-1/298.15)}\\approx3.588\\ \\mathrm{k\\Omega}"
+          "step": "Resistance at 50 °C",
+          "text": "Use kelvin: 323.15 K and 298.15 K.",
+          "tex": "R=10\\ \\text{k}\\Omega\\,e^{3950(1/323.15-1/298.15)}=10\\ \\text{k}\\Omega\\,e^{-1.025}=3.59\\ \\text{k}\\Omega"
         },
         {
-          "tex": "V_s\\approx5\\frac{3.588}{10+3.588}=1.320\\ \\mathrm V"
+          "step": "Sensor voltage",
+          "tex": "V_s=5\\cdot\\frac{3.59}{10+3.59}=1.32\\ \\text{V}"
         },
         {
-          "text": "Cold means larger resistance and larger sensor voltage. A controller using sensor voltage minus target-sensor voltage should increase heating when that error is positive."
+          "step": "Sign",
+          "text": "Cold means higher NTC resistance and higher $V_s$. More heat is needed when $V_s$ is above its setpoint value."
+        },
+        {
+          "answer": "<strong>3.59 kΩ</strong>, <strong>1.32 V</strong>. A cold sensor (higher voltage) should produce <strong>more</strong> heater drive."
         }
       ]
     },
@@ -280,10 +464,20 @@
       "hint": "Compare ($\\tau$ + τs)(1 + θKp) with ττsθKi.",
       "solution": [
         {
-          "tex": "K_i<\\frac{(200+50)(1+10(0.5))}{200(50)(10)}=0.015\\ \\mathrm{W/(^\\circ C\\,s)}"
+          "step": "Routh condition",
+          "text": "For the cubic characteristic equation of this loop, stability requires",
+          "tex": "(\\tau+\\tau_s)(1+\\theta K_p)>\\tau\\tau_s\\theta K_i"
         },
         {
-          "text": "Equality is the marginal boundary for this restricted model; a practical design needs margin. Saturation and sensor nonlinearities are not included in the criterion."
+          "step": "Left side",
+          "tex": "(200+50)(1+5)=1500"
+        },
+        {
+          "step": "Solve for K_i",
+          "tex": "K_i<\\frac{1500}{200\\times50\\times10}=0.015\\ \\text{W/(}^\\circ\\text{C·s)}"
+        },
+        {
+          "answer": "$K_i$ < <strong>0.015 W/(°C·s)</strong>; design well below this."
         }
       ]
     },
@@ -294,10 +488,19 @@
       "hint": "Separate the series voltage drops.",
       "solution": [
         {
-          "tex": "V_H=0.25(24)=6\\ \\mathrm V,\\quad P_H=0.25^2(24)=1.5\\ \\mathrm W,\\quad P_Q=(12-6)(0.25)=1.5\\ \\mathrm W"
+          "step": "Heater voltage and power",
+          "tex": "V_H=0.25\\times24=6\\ \\text{V},\\qquad P_H=0.25^2\\times24=1.5\\ \\text{W}"
         },
         {
-          "text": "Only the heater’s 1.5 W is deposited there in this model. The source supplies 3 W; the transistor dissipates the other half elsewhere. Include its SOA and cooling separately."
+          "step": "Transistor dissipation",
+          "tex": "P_Q=(12-6)(0.25)=1.5\\ \\text{W}"
+        },
+        {
+          "step": "Where the power goes",
+          "text": "The source supplies 12 × 0.25 = 3 W. Only the heater's 1.5 W enters the body; the transistor's 1.5 W heats wherever it is mounted."
+        },
+        {
+          "answer": "Heater <strong>6 V, 1.5 W</strong>; transistor <strong>1.5 W</strong>. Only <strong>half</strong> of the 3 W reaches the body."
         }
       ]
     }
@@ -310,10 +513,20 @@
       "hint": "The LOW input clamps output one diode drop above itself.",
       "solution": [
         {
-          "tex": "V_o\\approx0.9\\ \\mathrm V,\\quad I\\approx(5-0.9)/10000=0.41\\ \\mathrm{mA}"
+          "step": "Output voltage",
+          "text": "The LOW input clamps the output one diode drop above itself.",
+          "tex": "V_o=0.2+0.7=0.9\\ \\text{V}"
         },
         {
-          "text": "No: 0.9 V exceeds the specified 0.8 V LOW limit. A correct Boolean function is insufficient without compatible electrical levels."
+          "step": "Current sunk by the input",
+          "tex": "I=\\frac{5-0.9}{10\\ \\text{k}\\Omega}=0.41\\ \\text{mA}"
+        },
+        {
+          "step": "Compare with the receiver",
+          "text": "0.9 V > 0.8 V, so the LOW level is not guaranteed."
+        },
+        {
+          "answer": "<strong>0.9 V</strong>, <strong>0.41 mA</strong>. <strong>No</strong>: it fails the 0.8 V LOW limit."
         }
       ]
     },
@@ -324,10 +537,23 @@
       "hint": "Calculate required collector current before base drive.",
       "solution": [
         {
-          "tex": "I_C=4.8/2200=2.182\\ \\mathrm{mA},\\quad I_B\\geq0.2182\\ \\mathrm{mA},\\quad R_B\\leq4.3/0.2182\\ \\mathrm{mA}=19.71\\ \\mathrm{k\\Omega}"
+          "step": "Collector current",
+          "tex": "I_C=\\frac{5-0.2}{2.2\\ \\text{k}\\Omega}=2.182\\ \\text{mA}"
         },
         {
-          "text": "An 18 kΩ nominal choice supplies about 0.239 mA and gives forced $\\beta$ ≈ 9.13 without additional collector loading. Add tolerances and actual device saturation specifications."
+          "step": "Minimum base current",
+          "tex": "I_B\\ge\\frac{I_C}{10}=0.218\\ \\text{mA}"
+        },
+        {
+          "step": "Maximum base resistor",
+          "tex": "R_B\\le\\frac{5-0.7}{0.218\\ \\text{mA}}=19.7\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Standard value",
+          "text": "18 kΩ supplies 0.239 mA: forced β ≈ 9.1."
+        },
+        {
+          "answer": "$R_B$ ≤ <strong>19.7 kΩ</strong> (use 18 kΩ)."
         }
       ]
     },
@@ -338,10 +564,19 @@
       "hint": "Subtract the gate’s own pull-up current from the allowed collector current.",
       "solution": [
         {
-          "tex": "I_{C,budget}=2.57\\ \\mathrm{mA},\\quad I_{own}=2.182\\ \\mathrm{mA},\\quad I_{remaining}=0.388\\ \\mathrm{mA}"
+          "step": "Collector-current budget",
+          "tex": "I_{C,max}=\\beta_{forced}I_B=10\\times0.257=2.57\\ \\text{mA}"
         },
         {
-          "text": "No: 0.388 mA is less than 0.41 mA. This does not prove a particular transistor cannot work; it means the chosen conservative design calculation does not guarantee the assumed LOW level."
+          "step": "Gate's own pull-up current",
+          "tex": "I_{own}=\\frac{4.8}{2.2\\ \\text{k}\\Omega}=2.182\\ \\text{mA}"
+        },
+        {
+          "step": "Remaining for loads",
+          "tex": "2.57-2.182=0.388\\ \\text{mA}<0.41\\ \\text{mA}"
+        },
+        {
+          "answer": "<strong>No</strong>: only 0.388 mA remains, less than one input's 0.41 mA."
         }
       ]
     },
@@ -352,10 +587,19 @@
       "hint": "Subtract the guaranteed output boundary from the relevant input boundary in the proper direction.",
       "solution": [
         {
-          "tex": "NM_H=4.0-2.8=1.2\\ \\mathrm V,\\quad NM_L=1.0-0.3=0.7\\ \\mathrm V"
+          "step": "HIGH margin",
+          "tex": "NM_H=V_{OH}-V_{IH}=4.0-2.8=1.2\\ \\text{V}"
         },
         {
-          "text": "These margins require the driver specifications to hold under the actual load and supply conditions. Undefined intermediate input voltages are not a third guaranteed logic state."
+          "step": "LOW margin",
+          "tex": "NM_L=V_{IL}-V_{OL}=1.0-0.3=0.7\\ \\text{V}"
+        },
+        {
+          "step": "Caveat",
+          "text": "Valid only while the driver meets its specifications under the actual load and supply."
+        },
+        {
+          "answer": "$NM_H$ = <strong>1.2 V</strong>, $NM_L$ = <strong>0.7 V</strong>."
         }
       ]
     },
@@ -366,10 +610,19 @@
       "hint": "Solve the exponential charging equation for the threshold time.",
       "solution": [
         {
-          "tex": "\\tau=470\\ \\mathrm{ns},\\quad t=-470\\ln[(5-2.8)/(5-0.2)]\\approx366.7\\ \\mathrm{ns}"
+          "step": "Time constant",
+          "tex": "\\tau=4.7\\ \\text{k}\\Omega\\times100\\ \\text{pF}=470\\ \\text{ns}"
         },
         {
-          "text": "Storage time and other parasitics can add delay. The resistor change that improves LOW-state fan-out can simultaneously worsen HIGH-state speed."
+          "step": "Charging equation",
+          "tex": "v(t)=5-(5-0.2)e^{-t/\\tau}"
+        },
+        {
+          "step": "Solve for 2.8 V",
+          "tex": "t=-\\tau\\ln\\frac{5-2.8}{5-0.2}=-470\\ln0.458=367\\ \\text{ns}"
+        },
+        {
+          "answer": "About <strong>367 ns</strong>."
         }
       ]
     }

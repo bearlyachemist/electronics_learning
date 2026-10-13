@@ -7,7 +7,24 @@
       "hint": "Use minimum supply for the current guarantee; maximum supply with no load for stress.",
       "solution": [
         {
-          "text": "The upper resistance is (2.7 − 2.048)/230 μA = 2.835 kΩ. At 3.3 V a 2.7 kΩ feed supplies 463.7 μA. Check resistor tolerance, reference voltage tolerance and maximum permitted current."
+          "step": "Worst case for the current guarantee",
+          "text": "At minimum supply and full load, the resistor must still deliver the shunt's 150 µA plus the load's 80 µA."
+        },
+        {
+          "step": "Maximum resistance",
+          "tex": "R\\le\\frac{2.7-2.048}{230\\ \\mu\\text{A}}=2.835\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Stress case with 2.7 kΩ",
+          "text": "Maximum supply, no load: everything flows into the shunt.",
+          "tex": "I=\\frac{3.3-2.048}{2.7\\ \\text{k}\\Omega}=463.7\\ \\mu\\text{A}"
+        },
+        {
+          "step": "Check",
+          "text": "Confirm 464 µA is within the shunt's maximum current, and include resistor and reference tolerance."
+        },
+        {
+          "answer": "$R$ ≤ <strong>2.835 kΩ</strong>; with 2.7 kΩ the shunt carries up to <strong>464 µA</strong>."
         }
       ]
     },
@@ -18,7 +35,20 @@
       "hint": "Reference error scales the code with the opposite sign.",
       "solution": [
         {
-          "text": "Nominal code is approximately 3072; its change is −3072 × 60 ppm = −0.1843 code. The input-referred voltage error is −112.5 μV. The digital output may or may not change by one code depending on its distance to a transition."
+          "step": "Nominal code",
+          "tex": "N=0.75\\times4096=3072"
+        },
+        {
+          "step": "Effect of a larger reference",
+          "text": "The code is proportional to $V_{in}/V_{ref}$, so a +60 ppm reference lowers the code by 60 ppm.",
+          "tex": "\\Delta N=-3072\\times60\\times10^{-6}=-0.184\\ \\text{code}"
+        },
+        {
+          "step": "Input-referred error",
+          "tex": "0.75\\times2.5\\ \\text{V}\\times60\\ \\text{ppm}=112.5\\ \\mu\\text{V}"
+        },
+        {
+          "answer": "About <strong>−0.18 code</strong> (112.5 µV); whether the output code flips depends on where the input sits within its bin."
         }
       ]
     },
@@ -29,7 +59,19 @@
       "hint": "Use charge conservation before adding the drive impedance.",
       "solution": [
         {
-          "text": "C ≥ 80 pC / 20 μV = 4 μF. Check effective capacitance under bias, ESR/ESL, recovery before the next conversion and reference-buffer stability. An ideal capacitor-only calculation omits those constraints."
+          "step": "Charge conservation",
+          "tex": "\\Delta V=\\frac{Q}{C}"
+        },
+        {
+          "step": "Solve for C",
+          "tex": "C\\ge\\frac{80\\ \\text{pC}}{20\\ \\mu\\text{V}}=4\\ \\mu\\text{F}"
+        },
+        {
+          "step": "What is missing",
+          "text": "Effective capacitance under DC bias, ESR and ESL, recovery before the next conversion, and buffer stability with that load."
+        },
+        {
+          "answer": "At least <strong>4 µF</strong> of effective capacitance, which is only a first pass."
         }
       ]
     }
@@ -42,7 +84,19 @@
       "hint": "Its noise bandwidth is larger than its −3 dB bandwidth.",
       "solution": [
         {
-          "text": "The equivalent bandwidth is π × 200 / 2 = 314.16 Hz. Noise is 8 × √314.16 = 141.8 nV rms."
+          "step": "Noise bandwidth of one pole",
+          "tex": "B_n=\\frac{\\pi}{2}f_c=\\frac{\\pi}{2}\\times200=314.2\\ \\text{Hz}"
+        },
+        {
+          "step": "Integrate the flat density",
+          "tex": "v_n=8\\ \\text{nV}/\\sqrt{\\text{Hz}}\\times\\sqrt{314.2}"
+        },
+        {
+          "step": "Result",
+          "tex": "v_n=141.8\\ \\text{nV}_{rms}"
+        },
+        {
+          "answer": "About <strong>142 nV rms</strong>."
         }
       ]
     },
@@ -53,7 +107,19 @@
       "hint": "Use di/dt, not switching repetition frequency.",
       "solution": [
         {
-          "text": "20 nH × 0.25 A / 25 ns = 0.2 V. Its effect depends on which sensitive terminals share this path; reduce loop/shared inductance."
+          "step": "Inductive voltage",
+          "tex": "v=L\\frac{di}{dt}"
+        },
+        {
+          "step": "Substitute",
+          "tex": "v=20\\ \\text{nH}\\times\\frac{0.25\\ \\text{A}}{25\\ \\text{ns}}"
+        },
+        {
+          "step": "Result",
+          "tex": "v=0.2\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>0.2 V</strong> during the edge, wherever that return is shared."
         }
       ]
     },
@@ -64,7 +130,21 @@
       "hint": "The guard changes voltage across the unwanted insulation.",
       "solution": [
         {
-          "text": "Ungarded leakage is 3 pA, giving 30 mV magnitude. With 3 mV across the same insulation, leakage is 3 fA and output error 30 μV. Guard-driver leakage and noise must also be budgeted."
+          "step": "Unguarded leakage",
+          "tex": "I=\\frac{3\\ \\text{V}}{1\\ \\text{T}\\Omega}=3\\ \\text{pA}"
+        },
+        {
+          "step": "Output error",
+          "text": "The leakage flows into the virtual ground and through the feedback resistor.",
+          "tex": "V=3\\ \\text{pA}\\times10\\ \\text{G}\\Omega=30\\ \\text{mV}"
+        },
+        {
+          "step": "With the guard",
+          "text": "Now only 3 mV appears across the insulation.",
+          "tex": "I=\\frac{3\\ \\text{mV}}{1\\ \\text{T}\\Omega}=3\\ \\text{fA},\\qquad V=30\\ \\mu\\text{V}"
+        },
+        {
+          "answer": "<strong>30 mV</strong> unguarded; <strong>30 µV</strong> with the guard."
         }
       ]
     }
@@ -77,7 +157,19 @@
       "hint": "Fit slope and intercept, then invert.",
       "solution": [
         {
-          "text": "Slope is 20000 counts/V. Intercept is 100 counts. The corrected result is (17100 − 100)/20000 = 0.850 V."
+          "step": "Slope",
+          "tex": "m=\\frac{42\\,100-2100}{2.1-0.1}=20\\,000\\ \\text{counts/V}"
+        },
+        {
+          "step": "Intercept",
+          "tex": "b=2100-20\\,000\\times0.1=100\\ \\text{counts}"
+        },
+        {
+          "step": "Invert",
+          "tex": "V=\\frac{17\\,100-100}{20\\,000}=0.850\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>0.850 V</strong>."
         }
       ]
     },
@@ -88,7 +180,19 @@
       "hint": "Power depends on the square of current.",
       "solution": [
         {
-          "text": "I ≤ √(0.05 mW / 1000 Ω) = 223.6 μA. Check resistance at the hottest operating point and the sensor’s thermal mounting."
+          "step": "Power limit",
+          "tex": "P=I^2R\\le0.05\\ \\text{mW}"
+        },
+        {
+          "step": "Solve",
+          "tex": "I\\le\\sqrt{\\frac{0.05\\times10^{-3}}{1000}}"
+        },
+        {
+          "step": "Result",
+          "tex": "I\\le223.6\\ \\mu\\text{A}"
+        },
+        {
+          "answer": "About <strong>224 µA</strong>."
         }
       ]
     },
@@ -99,7 +203,19 @@
       "hint": "Difference isolates the odd component; sum isolates the even component.",
       "solution": [
         {
-          "text": "Resistance is 100.000 Ω from 100.000 mV / 1 mA. Additive EMF is 7 μV. This assumes equal current magnitude and no drift between readings."
+          "step": "Model the readings",
+          "tex": "V_\\pm=\\pm IR+E"
+        },
+        {
+          "step": "Difference gives R",
+          "tex": "R=\\frac{50.007-(-49.993)\\ \\text{mV}}{1\\ \\text{mA}}=\\frac{100.000\\ \\text{mV}}{1\\ \\text{mA}}=100.000\\ \\Omega"
+        },
+        {
+          "step": "Sum gives E",
+          "tex": "E=\\frac{50.007+(-49.993)}{2}\\ \\text{mV}=7\\ \\mu\\text{V}"
+        },
+        {
+          "answer": "<strong>100.000 Ω</strong> and <strong>7 µV</strong> of thermal EMF."
         }
       ]
     }
@@ -112,7 +228,19 @@
       "hint": "Use the voltage difference, not output power, for pass loss.",
       "solution": [
         {
-          "text": "Loss is 5.7 × 0.3 = 1.71 W. Estimated junction is 45 + 50 × 1.71 = 130.5 °C. Compare to the guaranteed operating limit and actual board thermal performance; a current rating alone does not qualify this case."
+          "step": "Pass-device loss",
+          "tex": "P=(9-3.3)\\times0.3=1.71\\ \\text{W}"
+        },
+        {
+          "step": "Temperature rise",
+          "tex": "\\Delta T=50\\times1.71=85.5\\ ^\\circ\\text{C}"
+        },
+        {
+          "step": "Junction temperature",
+          "tex": "T_J=45+85.5=130.5\\ ^\\circ\\text{C}"
+        },
+        {
+          "answer": "About <strong>130 °C</strong>, which is likely beyond the guaranteed range even though 0.3 A is within the current rating."
         }
       ]
     },
@@ -123,7 +251,19 @@
       "hint": "The capacitor supplies missing charge.",
       "solution": [
         {
-          "text": "C ≥ 0.2 × 5 μs / 0.04 = 25 μF. Add ESR/ESL error, tolerance and DC-bias derating; nominal 25 μF may be insufficient."
+          "step": "Charge the capacitor must supply",
+          "tex": "Q=0.2\\ \\text{A}\\times5\\ \\mu\\text{s}=1\\ \\mu\\text{C}"
+        },
+        {
+          "step": "Capacitance",
+          "tex": "C\\ge\\frac{1\\ \\mu\\text{C}}{40\\ \\text{mV}}"
+        },
+        {
+          "step": "Result",
+          "tex": "C\\ge25\\ \\mu\\text{F}\\ \\text{(effective)}"
+        },
+        {
+          "answer": "At least <strong>25 µF effective</strong>; add margin for ESR, tolerance and DC-bias derating."
         }
       ]
     },
@@ -134,7 +274,20 @@
       "hint": "Attenuate the ripple, then sum independent powers.",
       "solution": [
         {
-          "text": "Ripple becomes 500 μV rms. Combined magnitude is √(500² + 300²) = 583.1 μV rms. The uncorrelated assumption and actual PSRR conditions must hold."
+          "step": "Attenuate the ripple",
+          "text": "40 dB is a factor of 100.",
+          "tex": "\\frac{50\\ \\text{mV}}{100}=500\\ \\mu\\text{V}_{rms}"
+        },
+        {
+          "step": "Add independent noise in power",
+          "tex": "\\sqrt{500^2+300^2}"
+        },
+        {
+          "step": "Result",
+          "tex": "583\\ \\mu\\text{V}_{rms}"
+        },
+        {
+          "answer": "About <strong>583 µV rms</strong>."
         }
       ]
     }
@@ -147,7 +300,20 @@
       "hint": "First derive duty, then use the rising ramp.",
       "solution": [
         {
-          "text": "D = 0.25; L = (24 − 6) × 0.25 / (400 kHz × 0.4 A) = 28.125 μH. The boundary load is 0.2 A. Verify peak current and controller minimum on-time."
+          "step": "Duty cycle",
+          "tex": "D=\\frac{6}{24}=0.25"
+        },
+        {
+          "step": "Inductance from the rising ramp",
+          "tex": "L=\\frac{(V_{in}-V_{out})D}{f\\,\\Delta I}=\\frac{18\\times0.25}{400\\ \\text{kHz}\\times0.4\\ \\text{A}}=28.1\\ \\mu\\text{H}"
+        },
+        {
+          "step": "CCM boundary",
+          "text": "The valley reaches zero when the average current equals half the ripple.",
+          "tex": "I_{boundary}=\\frac{0.4}{2}=0.2\\ \\text{A}"
+        },
+        {
+          "answer": "$L$ ≈ <strong>28 µH</strong>; CCM above <strong>0.2 A</strong>."
         }
       ]
     },
@@ -158,7 +324,19 @@
       "hint": "Average source current and pulsed capacitor current are different.",
       "solution": [
         {
-          "text": "Average input is 0.6 A. Capacitor rms is 2√(0.3 × 0.7) = 0.9165 A. Check ripple-current rating, ESR heating and local loop inductance."
+          "step": "Average input current",
+          "tex": "I_{in}=DI_{out}=0.3\\times2=0.6\\ \\text{A}"
+        },
+        {
+          "step": "Capacitor current waveform",
+          "text": "The capacitor supplies $I_{out}-I_{in}$ during the on-time and absorbs $I_{in}$ during the off-time."
+        },
+        {
+          "step": "RMS",
+          "tex": "I_{C,rms}=I_{out}\\sqrt{D(1-D)}=2\\sqrt{0.21}=0.917\\ \\text{A}"
+        },
+        {
+          "answer": "<strong>0.6 A</strong> average; <strong>0.92 A rms</strong> in the input capacitor."
         }
       ]
     },
@@ -169,7 +347,19 @@
       "hint": "Check what can conduct reverse current.",
       "solution": [
         {
-          "text": "No: the CCM expression gives a negative valley but the diode stage enters DCM when current reaches zero. A forced-continuous synchronous converter can support reversal, but it is a different operating mode."
+          "step": "CCM valley",
+          "tex": "I_{valley}=I_{out}-\\frac{\\Delta I}{2}=0.1-0.3=-0.2\\ \\text{A}"
+        },
+        {
+          "step": "What can carry reverse current",
+          "text": "A diode cannot conduct backwards."
+        },
+        {
+          "step": "Consequence",
+          "text": "The inductor current stops at zero, giving discontinuous conduction. A forced-continuous synchronous converter could go negative, but that is a different mode."
+        },
+        {
+          "answer": "<strong>No</strong>: a diode buck enters DCM instead."
         }
       ]
     }
@@ -182,7 +372,20 @@
       "hint": "Only the off interval supplies the output.",
       "solution": [
         {
-          "text": "D = 2/3, average current = 0.3/(1/3) = 0.9 A, peak = 1.1 A. Real efficiency and current-limit tolerances increase the required margin."
+          "step": "Duty cycle",
+          "tex": "\\frac{V_{out}}{V_{in}}=\\frac{1}{1-D}=3\\ \\Rightarrow\\ D=\\frac23"
+        },
+        {
+          "step": "Average inductor current",
+          "text": "The inductor feeds the output only during the off-time.",
+          "tex": "I_L=\\frac{I_{out}}{1-D}=\\frac{0.3}{1/3}=0.9\\ \\text{A}"
+        },
+        {
+          "step": "Peak",
+          "tex": "I_{pk}=0.9+\\frac{0.4}{2}=1.1\\ \\text{A}"
+        },
+        {
+          "answer": "D = <strong>2/3</strong>, average <strong>0.9 A</strong>, peak <strong>1.1 A</strong>."
         }
       ]
     },
@@ -193,7 +396,20 @@
       "hint": "The inductor transfers to the output in a separate interval.",
       "solution": [
         {
-          "text": "D = 12/17 = 0.7059. Ideal blocking voltage is 17 V. Add switching overshoot and derating; check controller pin reference voltages."
+          "step": "Duty cycle",
+          "tex": "\\frac{|V_{out}|}{V_{in}}=\\frac{D}{1-D}=\\frac{12}{5}\\ \\Rightarrow\\ D=\\frac{12}{17}=0.706"
+        },
+        {
+          "step": "Switch blocking voltage",
+          "text": "When off, the switch sees the input plus the magnitude of the output.",
+          "tex": "V_{sw}=5+12=17\\ \\text{V}"
+        },
+        {
+          "step": "Margin",
+          "text": "Add overshoot and derating, and check the controller's pin references."
+        },
+        {
+          "answer": "D ≈ <strong>0.71</strong>; switch blocks about <strong>17 V</strong>."
         }
       ]
     },
@@ -204,7 +420,19 @@
       "hint": "Each fully demagnetized cycle transfers one stored-energy packet.",
       "solution": [
         {
-          "text": "Energy per cycle is 25.6 μJ, giving 2.56 W ideal and 2.176 W at the assumed efficiency. Verify complete demagnetization, core flux and peak current."
+          "step": "Energy per cycle",
+          "tex": "E=\\tfrac12L_mI_{pk}^2=\\tfrac12(80\\ \\mu\\text{H})(0.8)^2=25.6\\ \\mu\\text{J}"
+        },
+        {
+          "step": "Ideal power",
+          "tex": "P=Ef=25.6\\ \\mu\\text{J}\\times100\\ \\text{kHz}=2.56\\ \\text{W}"
+        },
+        {
+          "step": "At 85%",
+          "tex": "0.85\\times2.56=2.18\\ \\text{W}"
+        },
+        {
+          "answer": "<strong>2.56 W</strong> ideal, about <strong>2.18 W</strong> delivered."
         }
       ]
     }
@@ -217,7 +445,19 @@
       "hint": "Use the cycle-to-cycle multiplier.",
       "solution": [
         {
-          "text": "The strict stability condition is mₐ > 0.1 A/μs. At 0.2 A/μs, λ = (0.2 − 0.3)/(0.1 + 0.2) = −1/3. Perturbations alternate and shrink in this ideal model."
+          "step": "Cycle-to-cycle multiplier",
+          "tex": "\\lambda=\\frac{m_a-m_2}{m_1+m_a}"
+        },
+        {
+          "step": "Stability condition",
+          "tex": "|\\lambda|<1\\ \\Rightarrow\\ m_a>\\frac{m_2-m_1}{2}=0.1\\ \\text{A}/\\mu\\text{s}"
+        },
+        {
+          "step": "At m_a = 0.2",
+          "tex": "\\lambda=\\frac{0.2-0.3}{0.1+0.2}=-\\frac13"
+        },
+        {
+          "answer": "Need $m_a$ > <strong>0.1 A/µs</strong>; at 0.2 A/µs, λ = <strong>−1/3</strong> (errors alternate and shrink)."
         }
       ]
     },
@@ -228,7 +468,19 @@
       "hint": "Add capacitor current and load current.",
       "solution": [
         {
-          "text": "Capacitor current is 0.517 A; total is 0.717 A. Include load dependence on voltage, tolerance and converter current-limit behavior."
+          "step": "Capacitor charging current",
+          "tex": "I_C=C\\frac{\\Delta V}{\\Delta t}=470\\ \\mu\\text{F}\\times\\frac{3.3}{3\\ \\text{ms}}=0.517\\ \\text{A}"
+        },
+        {
+          "step": "Add the load",
+          "tex": "I=0.517+0.2"
+        },
+        {
+          "step": "Result",
+          "tex": "I\\approx0.72\\ \\text{A}"
+        },
+        {
+          "answer": "About <strong>0.72 A</strong> during the ramp."
         }
       ]
     },
@@ -239,7 +491,19 @@
       "hint": "Use the LC resonance and √(L/C).",
       "solution": [
         {
-          "text": "Frequency is 50.33 MHz; impedance is 6.325 Ω. These are model scales, not a complete RC-snubber prescription."
+          "step": "Resonance",
+          "tex": "f=\\frac{1}{2\\pi\\sqrt{20\\ \\text{nH}\\times500\\ \\text{pF}}}=50.3\\ \\text{MHz}"
+        },
+        {
+          "step": "Characteristic impedance",
+          "tex": "Z_0=\\sqrt{\\frac{20\\ \\text{nH}}{500\\ \\text{pF}}}=6.32\\ \\Omega"
+        },
+        {
+          "step": "Use",
+          "text": "$Z_0$ sets the scale of a damping resistor; the snubber capacitor must be several times the 500 pF."
+        },
+        {
+          "answer": "About <strong>50 MHz</strong>, $Z_0$ ≈ <strong>6.3 Ω</strong>."
         }
       ]
     }
@@ -252,7 +516,19 @@
       "hint": "Convert peak to rms first.",
       "solution": [
         {
-          "text": "Power is (0.4/√2)²/50 = 1.6 mW, or +2.041 dBm."
+          "step": "RMS voltage",
+          "tex": "V_{rms}=\\frac{0.4}{\\sqrt2}=0.283\\ \\text{V}"
+        },
+        {
+          "step": "Power",
+          "tex": "P=\\frac{0.283^2}{50}=1.6\\ \\text{mW}"
+        },
+        {
+          "step": "dBm",
+          "tex": "10\\log_{10}1.6=+2.04\\ \\text{dBm}"
+        },
+        {
+          "answer": "<strong>1.6 mW = +2.04 dBm</strong>."
         }
       ]
     },
@@ -263,7 +539,24 @@
       "hint": "Derive Q, then series and shunt reactances.",
       "solution": [
         {
-          "text": "Q = √3; Xs = 43.30 Ω, |Xp| = 57.735 Ω. L = 6.892 μH and C = 2.757 nF. Verify the parallel branch is 25 − j43.30 Ω."
+          "step": "Q of the transformation",
+          "tex": "Q=\\sqrt{\\frac{100}{25}-1}=\\sqrt3"
+        },
+        {
+          "step": "Reactances",
+          "text": "The shunt C goes across the larger (100 Ω) resistance; the series L goes on the 25 Ω side.",
+          "tex": "|X_p|=\\frac{100}{Q}=57.7\\ \\Omega,\\qquad X_s=Q\\times25=43.3\\ \\Omega"
+        },
+        {
+          "step": "Component values at 1 MHz",
+          "tex": "L=\\frac{43.3}{2\\pi(10^6)}=6.89\\ \\mu\\text{H},\\qquad C=\\frac{1}{2\\pi(10^6)(57.7)}=2.76\\ \\text{nF}"
+        },
+        {
+          "step": "Check",
+          "text": "100 Ω in parallel with −j57.7 Ω equals 25 − j43.3 Ω; the series +j43.3 Ω cancels the reactance, leaving 25 Ω."
+        },
+        {
+          "answer": "<strong>L = 6.89 µH</strong> in series, <strong>C = 2.76 nF</strong> across the 100 Ω load."
         }
       ]
     },
@@ -274,7 +567,19 @@
       "hint": "Use amplitude dB for Γ, then square it.",
       "solution": [
         {
-          "text": "|Γ| = 0.1; reflected power is 1%. This specifies a match at that condition, not insertion loss or broadband performance."
+          "step": "Reflection magnitude",
+          "tex": "RL=-20\\log|\\Gamma|=20\\ \\text{dB}\\ \\Rightarrow\\ |\\Gamma|=0.1"
+        },
+        {
+          "step": "Reflected power",
+          "tex": "|\\Gamma|^2=0.01=1\\%"
+        },
+        {
+          "step": "Scope",
+          "text": "This describes the match at one frequency, not loss or bandwidth."
+        },
+        {
+          "answer": "|Γ| = <strong>0.1</strong>; <strong>1%</strong> of power reflected."
         }
       ]
     }
@@ -287,7 +592,19 @@
       "hint": "Start with −174 dBm/Hz and add bandwidth, NF and required SNR.",
       "solution": [
         {
-          "text": "−174 + 10 log₁₀(20000) + 3 + 12 = −115.99 dBm. Filter noise bandwidth and modulation/detection assumptions must be specified."
+          "step": "Thermal floor in the bandwidth",
+          "tex": "-174+10\\log_{10}20\\,000=-174+43.0=-131.0\\ \\text{dBm}"
+        },
+        {
+          "step": "Add noise figure",
+          "tex": "-131.0+3=-128.0\\ \\text{dBm}"
+        },
+        {
+          "step": "Add required SNR",
+          "tex": "-128.0+12=-116.0\\ \\text{dBm}"
+        },
+        {
+          "answer": "Sensitivity ≈ <strong>−116 dBm</strong>."
         }
       ]
     },
@@ -298,7 +615,20 @@
       "hint": "Both signs of RF minus LO give the same real IF.",
       "solution": [
         {
-          "text": "95 MHz also converts to 15 MHz. Reject it before mixing or use a calibrated quadrature/image-reject architecture."
+          "step": "IF relation",
+          "tex": "f_{IF}=|f_{RF}-f_{LO}|"
+        },
+        {
+          "step": "Desired",
+          "tex": "125-110=15\\ \\text{MHz}"
+        },
+        {
+          "step": "Image",
+          "text": "The other side of the LO gives the same IF.",
+          "tex": "f_{image}=110-15=95\\ \\text{MHz}"
+        },
+        {
+          "answer": "The image is at <strong>95 MHz</strong>; filter it before the mixer."
         }
       ]
     },
@@ -309,7 +639,20 @@
       "hint": "Use linear and cubic dB slopes separately.",
       "solution": [
         {
-          "text": "Fundamental is −10 dBm; IM3 is 3(−25)+15−2(5) = −70 dBm, or 60 dBc below each tone. This is a small-signal intercept estimate."
+          "step": "Fundamental output",
+          "tex": "-25+15=-10\\ \\text{dBm}"
+        },
+        {
+          "step": "Input-referred IM3",
+          "text": "IM3 rises 3 dB per dB of input and meets the fundamental at IIP3.",
+          "tex": "P_{IM3,in}=3P_{in}-2\\,IIP3=3(-25)-2(5)=-85\\ \\text{dBm}"
+        },
+        {
+          "step": "Output IM3",
+          "tex": "-85+15=-70\\ \\text{dBm}\\ \\Rightarrow\\ 60\\ \\text{dBc}"
+        },
+        {
+          "answer": "Fundamental <strong>−10 dBm</strong>; IM3 <strong>−70 dBm</strong> (60 dBc)."
         }
       ]
     }
@@ -322,7 +665,19 @@
       "hint": "Compare flight time with edge time.",
       "solution": [
         {
-          "text": "Flight is 1 ns, comparable to the 0.8 ns edge. Use a transmission-line model despite the 500 ns repetition period."
+          "step": "Flight time",
+          "tex": "t_d=\\frac{0.15\\ \\text{m}}{1.5\\times10^8\\ \\text{m/s}}=1\\ \\text{ns}"
+        },
+        {
+          "step": "Compare with the edge",
+          "text": "Flight time (1 ns) exceeds the 0.8 ns edge."
+        },
+        {
+          "step": "Conclusion",
+          "text": "The edge, not the 2 MHz clock period, decides. Treat the trace as a transmission line."
+        },
+        {
+          "answer": "<strong>1 ns</strong> flight; the <strong>0.8 ns edge</strong> is the relevant timescale."
         }
       ]
     },
@@ -333,7 +688,23 @@
       "hint": "Use the source-to-line divider before the load arrives.",
       "solution": [
         {
-          "text": "Launch is 1 V, ΓL = 0.5 and first load voltage is 1.5 V. The matched source absorbs the return; final DC is also 1.5 V."
+          "step": "Launched voltage",
+          "tex": "V_{launch}=2\\cdot\\frac{50}{50+50}=1\\ \\text{V}"
+        },
+        {
+          "step": "Load reflection coefficient",
+          "tex": "\\Gamma_L=\\frac{150-50}{150+50}=0.5"
+        },
+        {
+          "step": "First load voltage",
+          "tex": "V_L=V_{launch}(1+\\Gamma_L)=1.5\\ \\text{V}"
+        },
+        {
+          "step": "Final value",
+          "text": "The matched source absorbs the return, and DC agrees: 2 × 150/200 = 1.5 V."
+        },
+        {
+          "answer": "Launch <strong>1 V</strong>, Γ = <strong>0.5</strong>, load <strong>1.5 V</strong>."
         }
       ]
     },
@@ -344,7 +715,19 @@
       "hint": "The delay is round trip.",
       "solution": [
         {
-          "text": "Distance is 0.32 m from the calibrated reference plane."
+          "step": "Round trip",
+          "text": "4 ns covers the distance twice."
+        },
+        {
+          "step": "Distance",
+          "tex": "d=\\frac{vt}{2}=\\frac{1.6\\times10^8\\times4\\times10^{-9}}{2}"
+        },
+        {
+          "step": "Result",
+          "tex": "d=0.32\\ \\text{m}"
+        },
+        {
+          "answer": "<strong>32 cm</strong> from the reference plane."
         }
       ]
     }
@@ -357,7 +740,19 @@
       "hint": "Split differential voltage equally around the common value.",
       "solution": [
         {
-          "text": "The plus conductor is 1.5 V and minus conductor is 0.9 V. Check each pin’s allowed common-mode and absolute voltage range."
+          "step": "Definitions",
+          "tex": "V_{CM}=\\frac{V_++V_-}{2},\\qquad V_D=V_+-V_-"
+        },
+        {
+          "step": "Solve",
+          "tex": "V_\\pm=V_{CM}\\pm\\frac{V_D}{2}=1.2\\pm0.3"
+        },
+        {
+          "step": "Result",
+          "tex": "V_+=1.5\\ \\text{V},\\qquad V_-=0.9\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>1.5 V</strong> and <strong>0.9 V</strong>."
         }
       ]
     },
@@ -368,7 +763,19 @@
       "hint": "Use half the single-ended transition times the fractional skew.",
       "solution": [
         {
-          "text": "Excursion is 0.5/2 × 0.08/0.8 = 25 mV. This assumes equal shapes and skew smaller than rise time."
+          "step": "Common-mode during the skew",
+          "text": "While one line has moved and the other has not, the average shifts by half the partial movement."
+        },
+        {
+          "step": "Partial movement in 80 ps",
+          "tex": "0.5\\ \\text{V}\\times\\frac{80}{800}=50\\ \\text{mV}"
+        },
+        {
+          "step": "Common-mode excursion",
+          "tex": "\\frac{50\\ \\text{mV}}{2}=25\\ \\text{mV}"
+        },
+        {
+          "answer": "About <strong>25 mV</strong>."
         }
       ]
     },
@@ -379,7 +786,19 @@
       "hint": "Convert time to distance, then budget packages and connectors too.",
       "solution": [
         {
-          "text": "Length difference is 4 mm if all skew is assigned to PCB traces. Package, connector, via and material asymmetry consume part of the same timing budget."
+          "step": "Convert time to length",
+          "tex": "\\Delta L=25\\ \\text{ps}\\times160\\ \\text{mm/ns}"
+        },
+        {
+          "step": "Result",
+          "tex": "\\Delta L=4\\ \\text{mm}"
+        },
+        {
+          "step": "Other contributors",
+          "text": "Package, connector, via and dielectric asymmetry share the same 25 ps."
+        },
+        {
+          "answer": "<strong>4 mm</strong> if all skew went to traces; less in practice."
         }
       ]
     }
@@ -392,7 +811,19 @@
       "hint": "Integrate uniform midpoint reconstruction error.",
       "solution": [
         {
-          "text": "q = 244.14 μV; q/√12 = 70.477 μV rms under the uncorrelated uniform-error model."
+          "step": "Bin width",
+          "tex": "q=\\frac{4\\ \\text{V}}{2^{14}}=244.1\\ \\mu\\text{V}"
+        },
+        {
+          "step": "Uniform error",
+          "text": "Error is spread evenly over ±q/2, with variance $q^2/12$."
+        },
+        {
+          "step": "RMS noise",
+          "tex": "\\frac{q}{\\sqrt{12}}=70.5\\ \\mu\\text{V}_{rms}"
+        },
+        {
+          "answer": "<strong>244 µV</strong> bins, <strong>70.5 µV rms</strong>."
         }
       ]
     },
@@ -403,7 +834,19 @@
       "hint": "Find the distance to a multiple of the sample rate.",
       "solution": [
         {
-          "text": "It aliases to 1 kHz and passes the 2 kHz low-pass. Attenuate the original 13 kHz input before sampling."
+          "step": "Nearest multiple of f_s",
+          "tex": "|13-12|=1\\ \\text{kHz}"
+        },
+        {
+          "step": "Alias",
+          "text": "After sampling, the 13 kHz tone is indistinguishable from 1 kHz."
+        },
+        {
+          "step": "Digital filter",
+          "text": "1 kHz lies inside the 2 kHz passband, so the filter keeps it. Only an analog filter before the ADC can remove it."
+        },
+        {
+          "answer": "Aliases to <strong>1 kHz</strong>; the digital filter does <strong>not</strong> remove it."
         }
       ]
     },
@@ -414,7 +857,19 @@
       "hint": "Use the half-bin exponential residual.",
       "solution": [
         {
-          "text": "R ≤ 300 ns / [17 ln2 × 30 pF] = 848.65 Ω. Real driver settling and switch resistance consume part of this budget."
+          "step": "Required residual",
+          "text": "Settle a full-span step to half an LSB: $e^{-t/\\tau}\\le2^{-17}$."
+        },
+        {
+          "step": "Time constants needed",
+          "tex": "t\\ge17\\ln2\\,\\tau=11.78\\,\\tau"
+        },
+        {
+          "step": "Maximum R",
+          "tex": "R\\le\\frac{300\\ \\text{ns}}{11.78\\times30\\ \\text{pF}}=849\\ \\Omega"
+        },
+        {
+          "answer": "About <strong>849 Ω</strong> total, including switch resistance."
         }
       ]
     }
@@ -427,7 +882,23 @@
       "hint": "Start at half scale and keep a bit only if its trial does not exceed input.",
       "solution": [
         {
-          "text": "Trials are 0.5 reject, 0.25 keep, 0.375 keep, 0.4375 reject, 0.40625 keep. Code is 01101 = 13, bin [0.40625, 0.4375) V."
+          "step": "Bit 4 (MSB)",
+          "tex": "0.5>0.43\\ \\Rightarrow\\ \\text{reject, bit}=0"
+        },
+        {
+          "step": "Bits 3 and 2",
+          "tex": "0.25\\le0.43\\ \\Rightarrow\\ 1;\\qquad0.375\\le0.43\\ \\Rightarrow\\ 1"
+        },
+        {
+          "step": "Bits 1 and 0",
+          "tex": "0.4375>0.43\\ \\Rightarrow\\ 0;\\qquad0.40625\\le0.43\\ \\Rightarrow\\ 1"
+        },
+        {
+          "step": "Result",
+          "tex": "01101_2=13,\\qquad\\text{bin }[0.40625,\\ 0.4375)\\ \\text{V}"
+        },
+        {
+          "answer": "Code <strong>01101 = 13</strong>."
         }
       ]
     },
@@ -438,7 +909,19 @@
       "hint": "Average demand and impulse response are different.",
       "solution": [
         {
-          "text": "Average current is 40 μA; droop is 36.36 μV. Recovery, ESR/ESL and code dependence still need verification."
+          "step": "Average current",
+          "tex": "I=Qf=80\\ \\text{pC}\\times500\\ \\text{kHz}=40\\ \\mu\\text{A}"
+        },
+        {
+          "step": "Immediate droop",
+          "tex": "\\Delta V=\\frac{80\\ \\text{pC}}{2.2\\ \\mu\\text{F}}"
+        },
+        {
+          "step": "Result",
+          "tex": "\\Delta V=36.4\\ \\mu\\text{V}"
+        },
+        {
+          "answer": "<strong>40 µA</strong> average, <strong>36 µV</strong> droop per conversion."
         }
       ]
     },
@@ -449,7 +932,19 @@
       "hint": "Include the bits and the gap.",
       "solution": [
         {
-          "text": "Clocking takes 24/12 MHz = 2 μs. Total is 2.5 μs, allowing 400 ktransactions/s before conversion/acquisition constraints."
+          "step": "Clocking time",
+          "tex": "\\frac{24\\ \\text{bits}}{12\\ \\text{MHz}}=2\\ \\mu\\text{s}"
+        },
+        {
+          "step": "Add overhead",
+          "tex": "2+0.5=2.5\\ \\mu\\text{s}"
+        },
+        {
+          "step": "Rate",
+          "tex": "\\frac{1}{2.5\\ \\mu\\text{s}}=400\\ \\text{k/s}"
+        },
+        {
+          "answer": "At most <strong>400 k transactions/s</strong>."
         }
       ]
     }
@@ -462,7 +957,19 @@
       "hint": "Every internal threshold needs a comparison.",
       "solution": [
         {
-          "text": "Counts are 63 and 1023. The ratio is about 16.24, illustrating exponential hardware growth."
+          "step": "Thresholds",
+          "text": "$N$ bits need a comparator for each of $2^N-1$ internal thresholds."
+        },
+        {
+          "step": "6 and 10 bits",
+          "tex": "2^6-1=63,\\qquad2^{10}-1=1023"
+        },
+        {
+          "step": "Ratio",
+          "tex": "\\frac{1023}{63}=16.2"
+        },
+        {
+          "answer": "<strong>63</strong> and <strong>1023</strong> comparators."
         }
       ]
     },
@@ -473,7 +980,19 @@
       "hint": "Use thresholds at ±0.25 and r = 2x − d.",
       "solution": [
         {
-          "text": "Decision is d = −1; residue is 0.2. Reconstruction (−1 + 0.2)/2 gives −0.4. The residue is within [−1,1]."
+          "step": "Decision",
+          "tex": "x=-0.4<-0.25\\ \\Rightarrow\\ d=-1"
+        },
+        {
+          "step": "Residue",
+          "tex": "r=2x-d=-0.8+1=0.2"
+        },
+        {
+          "step": "Reconstruct",
+          "tex": "x=\\frac{d+r}{2}=\\frac{-1+0.2}{2}=-0.4"
+        },
+        {
+          "answer": "$d$ = <strong>−1</strong>, residue <strong>0.2</strong>; reconstruction gives −0.4."
         }
       ]
     },
@@ -484,7 +1003,19 @@
       "hint": "Both quantities use the same clock but different cycle counts.",
       "solution": [
         {
-          "text": "Spacing is 8 ns; pipeline latency is 64 ns before output-link and processing delays."
+          "step": "Sample spacing",
+          "tex": "\\frac{1}{125\\ \\text{MHz}}=8\\ \\text{ns}"
+        },
+        {
+          "step": "Latency",
+          "tex": "8\\times8\\ \\text{ns}=64\\ \\text{ns}"
+        },
+        {
+          "step": "Interpret",
+          "text": "A new sample appears every 8 ns, but each result arrives 64 ns after its sampling instant."
+        },
+        {
+          "answer": "<strong>8 ns</strong> spacing, <strong>64 ns</strong> latency."
         }
       ]
     }
@@ -497,7 +1028,20 @@
       "hint": "Use the time ratio.",
       "solution": [
         {
-          "text": "Input is 2.5 × 24/80 = 0.75 V. Ideal R, C and common clock frequency cancel; unequal phase errors do not."
+          "step": "Charge balance",
+          "text": "The integrator returns to its start, so input charge equals reference charge.",
+          "tex": "V_{in}T_1=V_{ref}T_2"
+        },
+        {
+          "step": "Solve",
+          "tex": "V_{in}=2.5\\times\\frac{24}{80}"
+        },
+        {
+          "step": "Result",
+          "tex": "V_{in}=0.75\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>0.75 V</strong>."
         }
       ]
     },
@@ -508,7 +1052,19 @@
       "hint": "Average the actual feedback levels, not the unsigned bits alone.",
       "solution": [
         {
-          "text": "Mean is (700 − 300)/1000 = 0.4. Finite residual state gives a bounded correction; the 0.7 ones fraction is not the signed input."
+          "step": "Signed levels",
+          "text": "Each decision feeds back +1 or −1."
+        },
+        {
+          "step": "Average",
+          "tex": "\\bar x=\\frac{700(+1)+300(-1)}{1000}"
+        },
+        {
+          "step": "Result",
+          "tex": "\\bar x=0.4"
+        },
+        {
+          "answer": "Input ≈ <strong>0.4</strong> of full scale (not 0.7)."
         }
       ]
     },
@@ -519,7 +1075,20 @@
       "hint": "Use three boxcar delays at modulator rate.",
       "solution": [
         {
-          "text": "Output is 1 kS/s; delay is 3 × 127/(2 × 128000) = 1.4883 ms. Step settling is longer than group delay and additional internal stages may add latency."
+          "step": "Output rate",
+          "tex": "\\frac{128\\ \\text{kHz}}{128}=1\\ \\text{kS/s}"
+        },
+        {
+          "step": "Group delay",
+          "text": "Each boxcar of length M has delay $(M-1)/2$ modulator clocks.",
+          "tex": "\\tau=3\\times\\frac{127}{2\\times128\\ \\text{kHz}}"
+        },
+        {
+          "step": "Result",
+          "tex": "\\tau=1.49\\ \\text{ms}"
+        },
+        {
+          "answer": "<strong>1 kS/s</strong>, <strong>1.49 ms</strong> group delay."
         }
       ]
     }
@@ -532,7 +1101,19 @@
       "hint": "There are 1024 code weights but maximum unsigned code is 1023.",
       "solution": [
         {
-          "text": "Step is 2 mV; code 700 gives 1.400 V; code 1023 gives 2.046 V."
+          "step": "Step",
+          "tex": "\\frac{2.048\\ \\text{V}}{1024}=2\\ \\text{mV}"
+        },
+        {
+          "step": "Code 700",
+          "tex": "700\\times2\\ \\text{mV}=1.400\\ \\text{V}"
+        },
+        {
+          "step": "Maximum code",
+          "tex": "1023\\times2\\ \\text{mV}=2.046\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>2 mV</strong>, <strong>1.400 V</strong>, <strong>2.046 V</strong>."
         }
       ]
     },
@@ -543,7 +1124,19 @@
       "hint": "Compare sums before and after the carry.",
       "solution": [
         {
-          "text": "Output falls by 0.2 unit. DNL at that transition is −1.2 under the ideal one-unit step definition, so it is nonmonotonic."
+          "step": "Code 127",
+          "text": "All lower bits on: 127 units."
+        },
+        {
+          "step": "Code 128",
+          "text": "Only the MSB on: 126.8 units."
+        },
+        {
+          "step": "Step and DNL",
+          "tex": "\\Delta=126.8-127=-0.2\\ \\text{unit},\\qquad DNL=-0.2-1=-1.2"
+        },
+        {
+          "answer": "Output <strong>falls by 0.2 unit</strong>: DNL = −1.2, nonmonotonic."
         }
       ]
     },
@@ -554,7 +1147,19 @@
       "hint": "The period has 1024 counts; use the small-ripple RC expression.",
       "solution": [
         {
-          "text": "Carrier is 97.656 kHz. Ripple is about 3.3 × 0.25/(97656 × 0.001) = 8.448 mV. Effective output precision also depends on supply/reference and settling."
+          "step": "Carrier",
+          "tex": "f=\\frac{100\\ \\text{MHz}}{1024}=97.66\\ \\text{kHz}"
+        },
+        {
+          "step": "Small-ripple RC estimate",
+          "tex": "\\Delta V\\approx\\frac{V\\,D(1-D)}{fRC}"
+        },
+        {
+          "step": "Evaluate",
+          "tex": "\\Delta V=\\frac{3.3\\times0.25}{97\\,656\\times0.001}=8.45\\ \\text{mV}"
+        },
+        {
+          "answer": "<strong>97.7 kHz</strong> carrier; about <strong>8.4 mV p-p</strong> ripple."
         }
       ]
     }
@@ -567,7 +1172,19 @@
       "hint": "Use guaranteed extrema.",
       "solution": [
         {
-          "text": "Low margin is 0.45 V; high margin is 0.7 V. Check load current, temperature, supply and ground shift as well."
+          "step": "LOW margin",
+          "tex": "0.7-0.25=0.45\\ \\text{V}"
+        },
+        {
+          "step": "HIGH margin",
+          "tex": "2.9-2.2=0.7\\ \\text{V}"
+        },
+        {
+          "step": "Caveat",
+          "text": "Valid only if the driver meets these levels at the actual load, temperature and supply."
+        },
+        {
+          "answer": "<strong>0.45 V</strong> LOW, <strong>0.7 V</strong> HIGH."
         }
       ]
     },
@@ -578,7 +1195,19 @@
       "hint": "Later capture helps the next-edge setup check.",
       "solution": [
         {
-          "text": "Minimum period is 1 + 6 + 0.5 + 0.3 − 0.2 = 7.6 ns, about 131.6 MHz. Hold is a separate minimum-path check."
+          "step": "Setup inequality",
+          "tex": "T\\ge t_{CQ}+t_{path}+t_{su}+t_{unc}-t_{skew}"
+        },
+        {
+          "step": "Substitute",
+          "tex": "T\\ge1+6+0.5+0.3-0.2=7.6\\ \\text{ns}"
+        },
+        {
+          "step": "Frequency",
+          "tex": "f\\le\\frac{1}{7.6\\ \\text{ns}}=131.6\\ \\text{MHz}"
+        },
+        {
+          "answer": "<strong>7.6 ns</strong> (≈ 132 MHz). Check hold separately."
         }
       ]
     },
@@ -589,77 +1218,19 @@
       "hint": "Synchronization probability and pulse visibility are different questions.",
       "solution": [
         {
-          "text": "No. The pulse can fit entirely between receiving edges. Use a suitable handshake, toggle or pulse-stretching scheme with proven event-rate and timing assumptions."
-        }
-      ]
-    }
-  ],
-  "digital-board-protocols": [
-    {
-      "tag": "UART",
-      "title": "Count useful bytes",
-      "prompt": "At 230400 bit/s, what is the continuous payload rate for 8N1 UART? What happens if parity adds one bit?",
-      "hint": "Count every line bit in a frame.",
-      "solution": [
+          "step": "Compare durations",
+          "text": "The pulse (5 ns) is shorter than the clock period (20 ns)."
+        },
         {
-          "text": "8N1 gives 23040 bytes/s. With one parity bit and one stop bit, an 11-bit frame gives about 20945 bytes/s before packet overhead."
-        }
-      ]
-    },
-    {
-      "tag": "SPI",
-      "title": "Close the read timing budget",
-      "prompt": "Clock and return paths each take 1.5 ns; peripheral output-valid delay is 6 ns, setup is 2 ns and additional margin is 1 ns. Estimate maximum opposite-edge capture SCK.",
-      "hint": "The whole path must fit inside half a period.",
-      "solution": [
+          "step": "Failure case",
+          "text": "The pulse can begin and end between two receiving edges, so no flip-flop ever samples it high."
+        },
         {
-          "text": "Half-period must be at least 12 ns, so SCK ≤ 41.67 MHz. Check hold and chip-select timing separately."
-        }
-      ]
-    },
-    {
-      "tag": "I2C",
-      "title": "Find a pull-up window",
-      "prompt": "Use 3.3 V, 0.4 V low allowance, 3 mA sink, 150 pF bus and 300 ns rise limit. Find min/max resistor.",
-      "hint": "Lower bound comes from current; upper from RC rise.",
-      "solution": [
+          "step": "Fix",
+          "text": "Stretch the pulse, convert it to a toggle, or use a request/acknowledge handshake."
+        },
         {
-          "text": "Minimum is 966.7 Ω; maximum is 2360 Ω. A 1.8 kΩ first choice gives about 228.8 ns rise and 1.61 mA sink at 0.4 V, before tolerances."
-        }
-      ]
-    }
-  ],
-  "digital-cable-interfaces": [
-    {
-      "tag": "RS485",
-      "title": "Bias against two terminations",
-      "prompt": "A 3.3 V bus uses two 120 Ω end terminations and symmetric 470 Ω bias resistors. Estimate idle differential voltage in the simple divider model.",
-      "hint": "The terminations are a 60 Ω equivalent load.",
-      "solution": [
-        {
-          "text": "Voltage is 3.3 × 60/(940 + 60) = 0.198 V. This nominal value needs a full tolerance/leakage and receiver-threshold check; it is not an automatically valid fail-safe design."
-        }
-      ]
-    },
-    {
-      "tag": "ETHERNET",
-      "title": "Small packets have larger overhead",
-      "prompt": "Use a teaching 100-byte Ethernet payload plus 14-byte header, 4-byte FCS, 8-byte preamble and 12-byte gap. Find payload efficiency and ideal 100 Mbit/s payload rate.",
-      "hint": "Count all channel byte-times.",
-      "solution": [
-        {
-          "text": "Efficiency is 100/138 = 72.464%; ideal frame-payload rate is 72.464 Mbit/s before higher-layer overhead."
-        }
-      ]
-    },
-    {
-      "tag": "BUFFERING",
-      "title": "A host pauses the stream",
-      "prompt": "An ADC produces two channels, each 16 bits at 500 kS/s. Host service can pause 30 ms. Find minimum raw payload buffering.",
-      "hint": "Compute combined bytes per second first.",
-      "solution": [
-        {
-          "text": "Combined payload is 2 MB/s. A 30 ms pause accumulates 60 kB. Add metadata, alignment, scheduling margin and a defined overflow policy."
+          "answer": "<strong>No</strong>: the pulse can fall between clock edges."
         }
       ]
     }
@@ -672,16 +1243,28 @@
       "hint": "Every result depends on ln(b/a); compute it once.",
       "solution": [
         {
-          "text": "ln(1.75/0.5) = ln 3.5 = 1.253."
+          "step": "Geometry factor",
+          "text": "Every coax formula depends on $\\ln(b/a)$.",
+          "tex": "\\ln\\frac{1.75}{0.5}=\\ln3.5=1.253"
         },
         {
-          "text": "C′ = 2πε₀εᵣ/ln(b/a) = 2π(8.854 pF/m)(2.1)/1.253 = 93.3 pF/m."
+          "step": "Capacitance per metre",
+          "tex": "C'=\\frac{2\\pi\\varepsilon_0\\varepsilon_r}{\\ln(b/a)}=\\frac{2\\pi(8.854\\ \\text{pF/m})(2.1)}{1.253}=93.3\\ \\text{pF/m}"
         },
         {
-          "text": "L′ = (μ₀/2π) ln(b/a) = 2×10⁻⁷ × 1.253 = 250.6 nH/m."
+          "step": "Inductance per metre",
+          "tex": "L'=\\frac{\\mu_0}{2\\pi}\\ln\\frac ba=2\\times10^{-7}\\times1.253=250.6\\ \\text{nH/m}"
         },
         {
-          "text": "Z₀ = √(L′/C′) = 51.8 Ω, matching (60 Ω/√2.1) × 1.253. Velocity c/√2.1 = 2.07×10⁸ m/s."
+          "step": "Characteristic impedance",
+          "tex": "Z_0=\\sqrt{\\frac{L'}{C'}}=\\sqrt{\\frac{250.6\\ \\text{nH}}{93.3\\ \\text{pF}}}=51.8\\ \\Omega"
+        },
+        {
+          "step": "Velocity",
+          "tex": "v=\\frac{c}{\\sqrt{\\varepsilon_r}}=\\frac{3\\times10^8}{\\sqrt{2.1}}=2.07\\times10^8\\ \\text{m/s}"
+        },
+        {
+          "answer": "$C'$ = <strong>93.3 pF/m</strong>, $L'$ = <strong>251 nH/m</strong>, $Z_0$ = <strong>51.8 Ω</strong>, $v$ = <strong>0.69c</strong>."
         }
       ]
     },
@@ -692,13 +1275,24 @@
       "hint": "δ falls as 1/√f from 66 µm at 1 MHz; the current flows in a layer of area 2πaδ.",
       "solution": [
         {
-          "text": "δ = √(2ρ/ωμ₀) = 6.60 µm at 100 MHz."
+          "step": "Skin depth",
+          "tex": "\\delta=\\sqrt{\\frac{2\\rho}{\\omega\\mu_0}}=\\sqrt{\\frac{2(1.72\\times10^{-8})}{2\\pi(10^8)(4\\pi\\times10^{-7})}}=6.60\\ \\mu\\text{m}"
         },
         {
-          "text": "R′_ac ≈ 1/(2πaσδ) = 1/(2π × 0.25 mm × 5.81×10⁷ S/m × 6.60 µm) = 1.66 Ω/m."
+          "step": "AC resistance",
+          "text": "Current flows in a ring of circumference $2\\pi a$ and thickness δ.",
+          "tex": "R'_{ac}\\approx\\frac{1}{2\\pi a\\sigma\\delta}=\\frac{1}{2\\pi(0.25\\ \\text{mm})(5.81\\times10^7)(6.60\\ \\mu\\text{m})}=1.66\\ \\Omega/\\text{m}"
         },
         {
-          "text": "R′_dc = ρ/(πa²) = 87.6 mΩ/m, so the ratio is a/(2δ) ≈ 19."
+          "step": "DC resistance",
+          "tex": "R'_{dc}=\\frac{\\rho}{\\pi a^2}=\\frac{1.72\\times10^{-8}}{\\pi(0.25\\ \\text{mm})^2}=87.6\\ \\text{m}\\Omega/\\text{m}"
+        },
+        {
+          "step": "Ratio",
+          "tex": "\\frac{R'_{ac}}{R'_{dc}}=\\frac{a}{2\\delta}\\approx19"
+        },
+        {
+          "answer": "δ = <strong>6.6 µm</strong>; $R'_{ac}$ ≈ <strong>1.66 Ω/m</strong>, about <strong>19×</strong> the DC value."
         }
       ]
     },
@@ -709,13 +1303,24 @@
       "hint": "Integrate B = μ₀I/(2πr) across the loop.",
       "solution": [
         {
-          "text": "M = (μ₀ℓ/2π) ln(r₂/r₁) = 2×10⁻⁷ × 0.03 × ln 1.4 = 2.02 nH."
+          "step": "Flux through the loop",
+          "text": "Integrate $B=\\mu_0I/(2\\pi r)$ from $r_1$ to $r_2$ over length ℓ.",
+          "tex": "\\Phi=\\frac{\\mu_0I\\ell}{2\\pi}\\ln\\frac{r_2}{r_1}"
         },
         {
-          "text": "dI/dt = 0.5 A / 2 ns = 2.5×10⁸ A/s, so v = M dI/dt ≈ 0.50 V during the edge."
+          "step": "Mutual inductance",
+          "tex": "M=2\\times10^{-7}\\times0.03\\times\\ln1.4=2.02\\ \\text{nH}"
         },
         {
-          "text": "Halving the loop width or moving it twice as far away both reduce the logarithm and the pickup."
+          "step": "Current slope",
+          "tex": "\\frac{dI}{dt}=\\frac{0.5\\ \\text{A}}{2\\ \\text{ns}}=2.5\\times10^8\\ \\text{A/s}"
+        },
+        {
+          "step": "Induced voltage",
+          "tex": "v=M\\frac{dI}{dt}=2.02\\ \\text{nH}\\times2.5\\times10^8\\approx0.50\\ \\text{V}"
+        },
+        {
+          "answer": "$M$ ≈ <strong>2.0 nH</strong>; about <strong>0.5 V</strong> during the edge."
         }
       ]
     }
@@ -728,13 +1333,19 @@
       "hint": "Series resonance occurs at 1/(2π√(LC)).",
       "solution": [
         {
-          "text": "f_sr = 1/(2π√(0.8 nH × 10 nF)) = 56.3 MHz."
+          "step": "Self-resonance",
+          "tex": "f_{sr}=\\frac{1}{2\\pi\\sqrt{0.8\\ \\text{nH}\\times10\\ \\text{nF}}}=56.3\\ \\text{MHz}"
         },
         {
-          "text": "At 200 MHz: ωL − 1/(ωC) = 1.005 − 0.080 = 0.93 Ω, inductive."
+          "step": "Reactances at 200 MHz",
+          "tex": "\\omega L=2\\pi(2\\times10^8)(0.8\\ \\text{nH})=1.005\\ \\Omega,\\qquad \\frac{1}{\\omega C}=0.080\\ \\Omega"
         },
         {
-          "text": "Above 56 MHz the part behaves as 0.8 nH; a smaller package or a second, smaller capacitor raises the useful range."
+          "step": "Net reactance",
+          "tex": "X=1.005-0.080=0.93\\ \\Omega\\ \\text{(inductive)}"
+        },
+        {
+          "answer": "Resonates at <strong>56 MHz</strong>; at 200 MHz it looks like <strong>+j0.93 Ω</strong>, essentially an inductor."
         }
       ]
     },
@@ -745,13 +1356,23 @@
       "hint": "R_p = R_s(1 + Q²); bandwidth is f₀/Q.",
       "solution": [
         {
-          "text": "X = 2π(25 MHz)(470 nH) = 73.8 Ω, so Q = 92.3."
+          "step": "Reactance and Q",
+          "tex": "X=2\\pi(25\\ \\text{MHz})(470\\ \\text{nH})=73.8\\ \\Omega,\\qquad Q=\\frac{73.8}{0.8}=92.3"
         },
         {
-          "text": "R_p = 0.8(1 + 92.3²) ≈ 6.82 kΩ; X_p ≈ 73.8 Ω is essentially unchanged."
+          "step": "Parallel resistance",
+          "tex": "R_p=R_s(1+Q^2)=0.8(1+92.3^2)=6.82\\ \\text{k}\\Omega"
         },
         {
-          "text": "C = 1/(ωX) = 86.2 pF and B = 25 MHz/92.3 ≈ 271 kHz."
+          "step": "Resonating capacitance",
+          "tex": "C=\\frac{1}{\\omega X}=\\frac{1}{2\\pi(25\\ \\text{MHz})(73.8)}=86.2\\ \\text{pF}"
+        },
+        {
+          "step": "Bandwidth",
+          "tex": "B=\\frac{f_0}{Q}=\\frac{25\\ \\text{MHz}}{92.3}=271\\ \\text{kHz}"
+        },
+        {
+          "answer": "Q = <strong>92</strong>, $R_p$ ≈ <strong>6.8 kΩ</strong>, C = <strong>86 pF</strong>, B ≈ <strong>271 kHz</strong>."
         }
       ]
     },
@@ -762,13 +1383,27 @@
       "hint": "Z_T = √(Z₀Z_L). At 1.2 GHz the same line is 108° long; use the general Z_in formula.",
       "solution": [
         {
-          "text": "Z_T = √(50 × 12.5) = 25 Ω; λ/4 = (0.3 m/2)/4 = 37.5 mm."
+          "step": "Transformer impedance",
+          "tex": "Z_T=\\sqrt{50\\times12.5}=25\\ \\Omega"
         },
         {
-          "text": "At 1.2 GHz, βℓ = 108° and tan βℓ = −3.078: Z_in = 25(12.5 − j76.9)/(25 − j38.5) = 38.9 − j17.1 Ω."
+          "step": "Quarter-wave length",
+          "tex": "\\lambda_g=\\frac{c}{f\\sqrt{\\varepsilon_{eff}}}=\\frac{0.3\\ \\text{m}}{2}=150\\ \\text{mm}\\ \\Rightarrow\\ \\frac{\\lambda_g}{4}=37.5\\ \\text{mm}"
         },
         {
-          "text": "Γ = (Z_in − 50)/(Z_in + 50) has magnitude 0.226, a return loss of 12.9 dB, down from a perfect match at 1 GHz."
+          "step": "Electrical length at 1.2 GHz",
+          "tex": "\\beta\\ell=90^\\circ\\times1.2=108^\\circ,\\qquad\\tan108^\\circ=-3.078"
+        },
+        {
+          "step": "Input impedance",
+          "tex": "Z_{in}=Z_T\\frac{Z_L+jZ_T\\tan\\beta\\ell}{Z_T+jZ_L\\tan\\beta\\ell}=25\\frac{12.5-j76.9}{25-j38.5}=38.9-j17.1\\ \\Omega"
+        },
+        {
+          "step": "Return loss",
+          "tex": "|\\Gamma|=\\left|\\frac{Z_{in}-50}{Z_{in}+50}\\right|=0.226\\ \\Rightarrow\\ RL=12.9\\ \\text{dB}"
+        },
+        {
+          "answer": "<strong>25 Ω</strong>, <strong>37.5 mm</strong>; at 1.2 GHz the return loss falls to <strong>12.9 dB</strong>."
         }
       ]
     }
@@ -781,13 +1416,24 @@
       "hint": "C_s = 1/(ω₀²L), then g_m > rω₀²C₁C₂ with r = ω₀L/Q.",
       "solution": [
         {
-          "text": "C_s = 1/((2π × 5 MHz)² × 2.2 µH) = 461 pF, so C₁ = C₂ = 921 pF."
+          "step": "Series capacitance for 5 MHz",
+          "tex": "C_s=\\frac{1}{\\omega_0^2L}=\\frac{1}{(2\\pi\\times5\\ \\text{MHz})^2(2.2\\ \\mu\\text{H})}=461\\ \\text{pF}"
         },
         {
-          "text": "r = ω₀L/Q = 69.1/40 = 1.73 Ω."
+          "step": "Equal capacitors",
+          "text": "Two equal capacitors in series give $C/2$.",
+          "tex": "C_1=C_2=2C_s=921\\ \\text{pF}"
         },
         {
-          "text": "g_m > 1.73 × (3.14×10⁷)² × (921 pF)² = 1.45 mS; with threefold margin, about 4.3 mS."
+          "step": "Coil loss",
+          "tex": "r=\\frac{\\omega_0L}{Q}=\\frac{69.1}{40}=1.73\\ \\Omega"
+        },
+        {
+          "step": "Start-up transconductance",
+          "tex": "g_m>r\\omega_0^2C_1C_2=1.73\\times(3.14\\times10^7)^2\\times(921\\ \\text{pF})^2=1.45\\ \\text{mS}"
+        },
+        {
+          "answer": "$C_1=C_2$ ≈ <strong>920 pF</strong>; $g_m$ > <strong>1.45 mS</strong> (design for about 4.3 mS)."
         }
       ]
     },
@@ -798,13 +1444,19 @@
       "hint": "f_L ≈ f_s[1 + C_m/(2(C₀ + C_L))]; compare the two loads.",
       "solution": [
         {
-          "text": "At 10 pF: offset = 25 MHz × 8 fF/(2 × 13 pF) = 7.69 kHz above f_s."
+          "step": "Offset at the calibrated load",
+          "tex": "\\Delta f_{10}=25\\ \\text{MHz}\\times\\frac{8\\ \\text{fF}}{2(3+10)\\ \\text{pF}}=7.69\\ \\text{kHz}"
         },
         {
-          "text": "At 12 pF: 25 MHz × 8 fF/(2 × 15 pF) = 6.67 kHz."
+          "step": "Offset at the actual load",
+          "tex": "\\Delta f_{12}=25\\ \\text{MHz}\\times\\frac{8\\ \\text{fF}}{2(3+12)\\ \\text{pF}}=6.67\\ \\text{kHz}"
         },
         {
-          "text": "The oscillator runs 1.03 kHz, or 41 ppm, low. Reduce the load capacitors by the stray capacitance to recover the calibration."
+          "step": "Error",
+          "tex": "6.67-7.69=-1.03\\ \\text{kHz}=-41\\ \\text{ppm}"
+        },
+        {
+          "answer": "The oscillator runs about <strong>1.0 kHz (41 ppm) low</strong>; reduce the load capacitors by the stray."
         }
       ]
     },
@@ -815,13 +1467,23 @@
       "hint": "N = f_out/f_ref; C = I_cpK_v/(2πNω_n²) and R = 2ζ/(ω_nC).",
       "solution": [
         {
-          "text": "N = 240. ω_n = 2π × 50 kHz = 3.14×10⁵ rad/s."
+          "step": "Divider ratio and ω_n",
+          "tex": "N=\\frac{2.4\\ \\text{GHz}}{10\\ \\text{MHz}}=240,\\qquad\\omega_n=2\\pi\\times50\\ \\text{kHz}=3.14\\times10^5\\ \\text{rad/s}"
         },
         {
-          "text": "C = (0.5 mA)(6.28×10⁸)/(2π × 240 × (3.14×10⁵)²) = 2.11 nF; R = 1.4/(3.14×10⁵ × 2.11 nF) = 2.11 kΩ."
+          "step": "Capacitor",
+          "tex": "C=\\frac{I_{cp}K_v}{2\\pi N\\omega_n^2}=\\frac{(0.5\\ \\text{mA})(6.28\\times10^8)}{2\\pi(240)(3.14\\times10^5)^2}=2.11\\ \\text{nF}"
         },
         {
-          "text": "In-band reference noise rises by 20 log₁₀ 240 = 47.6 dB. The 50 kHz loop is 200 times slower than the comparison rate, so the continuous model is reasonable."
+          "step": "Resistor",
+          "tex": "R=\\frac{2\\zeta}{\\omega_nC}=\\frac{1.4}{(3.14\\times10^5)(2.11\\ \\text{nF})}=2.11\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "In-band reference noise",
+          "tex": "20\\log_{10}240=47.6\\ \\text{dB}"
+        },
+        {
+          "answer": "<strong>C ≈ 2.1 nF</strong>, <strong>R ≈ 2.1 kΩ</strong>; reference noise rises <strong>47.6 dB</strong> in-band."
         }
       ]
     }
@@ -834,13 +1496,24 @@
       "hint": "Use effective length ℓ/2, then R_rad = 20π²(ℓ/λ)². Mismatch accepts a fraction 1 − |Γ|².",
       "solution": [
         {
-          "text": "λ = 11.11 m and ℓ/λ = 0.0135. With triangular current, R_rad = 20π² × 0.0135² = 0.0360 Ω."
+          "step": "Electrical length",
+          "tex": "\\lambda=\\frac{3\\times10^8}{27\\ \\text{MHz}}=11.1\\ \\text{m},\\qquad\\frac{\\ell}{\\lambda}=\\frac{0.15}{11.1}=0.0135"
         },
         {
-          "text": "Efficiency = 0.0360/(0.0360 + 3) = 1.18%, corresponding to −19.26 dB. The uniform-current element would have four times this radiation resistance."
+          "step": "Radiation resistance",
+          "text": "Triangular current gives effective length ℓ/2.",
+          "tex": "R_{rad}=20\\pi^2\\left(\\frac{\\ell}{\\lambda}\\right)^2=20\\pi^2(0.0135)^2=0.036\\ \\Omega"
         },
         {
-          "text": "|Γ| = 0.5 accepts 75% of incident power. Perfect matching recovers only −10 log₁₀(0.75) = 1.25 dB; reducing series loss addresses the much larger efficiency loss."
+          "step": "Efficiency",
+          "tex": "\\eta=\\frac{0.036}{0.036+3}=1.18\\%=-19.3\\ \\text{dB}"
+        },
+        {
+          "step": "Benefit of perfect matching",
+          "tex": "1-|\\Gamma|^2=0.75\\ \\Rightarrow\\ -10\\log0.75=1.25\\ \\text{dB}"
+        },
+        {
+          "answer": "$R_{rad}$ ≈ <strong>0.036 Ω</strong>, efficiency ≈ <strong>1.2%</strong>. Matching gains only <strong>1.25 dB</strong>; loss is the real problem."
         }
       ]
     },
@@ -851,13 +1524,24 @@
       "hint": "Find the path loss at 1 m, then the extra loss the budget allows.",
       "solution": [
         {
-          "text": "λ = 0.328 m; path loss at 1 m = 20 log₁₀(4π/0.328) = 31.7 dB."
+          "step": "Path loss at 1 m",
+          "tex": "\\lambda=0.328\\ \\text{m},\\qquad L_{1m}=20\\log_{10}\\frac{4\\pi}{0.328}=31.7\\ \\text{dB}"
         },
         {
-          "text": "Allowed path loss = 14 + 0 + 0 + 110 − 15 = 109 dB, which is 77.3 dB beyond 1 m."
+          "step": "Allowed path loss",
+          "tex": "L=14+0+0-(-110)-15=109\\ \\text{dB}"
         },
         {
-          "text": "Range ≈ 10^(77.3/20) ≈ 7.3 km in free space; terrain and obstructions reduce it further."
+          "step": "Extra loss beyond 1 m",
+          "tex": "109-31.7=77.3\\ \\text{dB}"
+        },
+        {
+          "step": "Range",
+          "text": "Free-space loss grows 20 dB per decade of distance.",
+          "tex": "d=10^{77.3/20}\\ \\text{m}\\approx7.3\\ \\text{km}"
+        },
+        {
+          "answer": "About <strong>7 km</strong> in free space."
         }
       ]
     },
@@ -868,13 +1552,1338 @@
       "hint": "Convert 40 dBµV/m to 100 µV/m peak. Use SI units and check electrical length.",
       "solution": [
         {
-          "text": "40 dBµV/m = 100 µV/m peak. The assumed in-phase image reflection is included in the coefficient."
+          "step": "Convert the field",
+          "tex": "40\\ \\text{dB}\\mu\\text{V/m}=10^{40/20}=100\\ \\mu\\text{V/m}"
         },
         {
-          "text": "I = Er/(1.26×10⁻⁶ fℓ) = (10⁻⁴ × 3)/(1.26×10⁻⁶ × 10⁸ × 0.15) = 15.9 µA peak."
+          "step": "Solve for current",
+          "tex": "I=\\frac{Er}{1.26\\times10^{-6}f\\ell}=\\frac{10^{-4}\\times3}{1.26\\times10^{-6}\\times10^8\\times0.15}"
         },
         {
-          "text": "λ = 3 m, so the conductor is λ/20 long and the observation distance is one wavelength. Check approximately uniform current, far-field behavior, reflection geometry and detector convention. This screening target is not a regulatory limit or a compliance result."
+          "step": "Result",
+          "tex": "I=15.9\\ \\mu\\text{A}"
+        },
+        {
+          "step": "Assumptions to check",
+          "text": "The conductor is λ/20 (short, roughly uniform current) and 3 m is one wavelength, near the far-field boundary. Also check the ground-reflection geometry and detector type."
+        },
+        {
+          "answer": "About <strong>16 µA</strong> peak, which is a screening estimate, not a compliance result."
+        }
+      ]
+    }
+  ],
+  "digital-signal-integrity": [
+    {
+      "tag": "EDGES",
+      "title": "Find bandwidth and critical length from a rise time",
+      "prompt": "A logic family has 0.5 ns edges on FR-4 (signal speed 15 cm/ns). Estimate the bandwidth the edge occupies and the trace length above which it should be treated as a transmission line.",
+      "hint": "Use 0.35/t_r, then the t_r/6 delay rule.",
+      "solution": [
+        {
+          "step": "Bandwidth",
+          "tex": "f\\approx\\frac{0.35}{t_r}=\\frac{0.35}{0.5\\ \\text{ns}}=700\\ \\text{MHz}"
+        },
+        {
+          "step": "Critical delay",
+          "tex": "\\frac{t_r}{6}=83\\ \\text{ps}"
+        },
+        {
+          "step": "Critical length",
+          "tex": "83\\ \\text{ps}\\times15\\ \\text{cm/ns}=1.25\\ \\text{cm}"
+        },
+        {
+          "answer": "About <strong>700 MHz</strong>; traces longer than <strong>≈ 1.25 cm</strong> need line treatment."
+        }
+      ]
+    },
+    {
+      "tag": "TERMINATION",
+      "title": "Choose a series resistor and compare parallel termination",
+      "prompt": "A 15 Ω CMOS driver at 1.8 V drives a 60 Ω trace to one receiver. Choose a series termination, then find the static power if a 60 Ω parallel termination to ground were used instead.",
+      "hint": "Series: R_out + R_ser = Z₀. Parallel: V²/R while high.",
+      "solution": [
+        {
+          "step": "Series termination",
+          "tex": "R_{ser}=Z_0-R_{out}=60-15=45\\ \\Omega\\to47\\ \\Omega"
+        },
+        {
+          "step": "Parallel termination current",
+          "tex": "I=\\frac{1.8}{60}=30\\ \\text{mA}"
+        },
+        {
+          "step": "Parallel termination power",
+          "tex": "P=\\frac{1.8^2}{60}=54\\ \\text{mW}\\ \\text{while high}"
+        },
+        {
+          "answer": "Use <strong>47 Ω</strong> in series; parallel termination would cost <strong>54 mW</strong> per line when high."
+        }
+      ]
+    },
+    {
+      "tag": "EYE",
+      "title": "Estimate eye opening from channel bandwidth",
+      "prompt": "A 500 Mbit/s link passes through a channel modelled as a single pole at 200 MHz. Estimate the worst-case eye height sampled at mid-bit and at the end of the bit.",
+      "hint": "τ = 1/(2πf), T = 2 ns, h = 1 − 2e^(−t_s/τ).",
+      "solution": [
+        {
+          "step": "Time constant and bit period",
+          "tex": "\\tau=\\frac{1}{2\\pi(200\\ \\text{MHz})}=0.80\\ \\text{ns},\\qquad T=2\\ \\text{ns}"
+        },
+        {
+          "step": "Worst-case eye",
+          "text": "An isolated bit reaches $1-e^{-t_s/\\tau}$; the opposite worst case leaves $e^{-t_s/\\tau}$ behind. Eye height is the difference.",
+          "tex": "h=1-2e^{-t_s/\\tau}"
+        },
+        {
+          "step": "Mid-bit",
+          "tex": "h=1-2e^{-1.26}=1-0.57=43\\%"
+        },
+        {
+          "step": "End of bit",
+          "tex": "h=1-2e^{-2.51}=1-0.16=84\\%"
+        },
+        {
+          "answer": "About <strong>43%</strong> at mid-bit and <strong>84%</strong> at the end of the bit."
+        }
+      ]
+    }
+  ],
+  "uart-rs232": [
+    {
+      "tag": "DECODE",
+      "title": "Decode a frame",
+      "prompt": "After the start bit, a receiver samples 0, 1, 1, 0, 0, 0, 1, 0, then a high stop bit. What byte was sent?",
+      "hint": "Data arrive least-significant bit first.",
+      "solution": [
+        {
+          "step": "Order",
+          "text": "The first sample is bit 0 (the LSB)."
+        },
+        {
+          "step": "Write MSB first",
+          "tex": "b_7\\ldots b_0=0\\,1\\,0\\,0\\ 0\\,1\\,1\\,0"
+        },
+        {
+          "step": "Convert",
+          "tex": "0100\\,0110_2=\\text{0x46}"
+        },
+        {
+          "answer": "<strong>0x46</strong>, ASCII 'F'."
+        }
+      ]
+    },
+    {
+      "tag": "DIVISOR",
+      "title": "Check a baud divisor",
+      "prompt": "A 48 MHz peripheral clock with 16× oversampling must generate 230 400 baud. Find the integer divisor and the actual rate error.",
+      "hint": "Divisor = f_clk/(16 × baud), rounded.",
+      "solution": [
+        {
+          "step": "Exact divisor",
+          "tex": "\\frac{48\\ \\text{MHz}}{16\\times230\\,400}=13.02"
+        },
+        {
+          "step": "Round",
+          "text": "Use 13."
+        },
+        {
+          "step": "Actual rate and error",
+          "tex": "\\frac{48\\ \\text{MHz}}{16\\times13}=230\\,769\\ \\text{baud},\\qquad\\frac{230\\,769}{230\\,400}-1=+0.16\\%"
+        },
+        {
+          "answer": "Divisor <strong>13</strong>; error <strong>+0.16%</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "TOLERANCE",
+      "title": "Derive the tolerance for a parity frame",
+      "prompt": "For an 8E1 frame (eight data bits, even parity, one stop bit) with 16× oversampling, find the maximum total clock mismatch.",
+      "hint": "The stop bit is now the eleventh bit after the start edge (k = 10).",
+      "solution": [
+        {
+          "step": "Count bits",
+          "text": "Start (k = 0), eight data (1–8), parity (9), stop (10)."
+        },
+        {
+          "step": "Stop-bit condition",
+          "tex": "10.5\\,\\varepsilon+\\frac{1}{16}<\\frac12"
+        },
+        {
+          "step": "Solve",
+          "tex": "\\varepsilon<\\frac{0.4375}{10.5}=4.17\\%"
+        },
+        {
+          "answer": "Total mismatch below <strong>4.17%</strong>."
+        }
+      ]
+    }
+  ],
+  "spi-interfaces": [
+    {
+      "tag": "MODE",
+      "title": "Identify an SPI mode",
+      "prompt": "A peripheral's clock idles high and it samples data on falling edges. Which mode is it?",
+      "hint": "From a high idle, the first edge is falling.",
+      "solution": [
+        {
+          "step": "Idle level",
+          "text": "Clock idles high: CPOL = 1."
+        },
+        {
+          "step": "Which edge samples",
+          "text": "From a high idle the first (leading) edge is falling; sampling there means CPHA = 0."
+        },
+        {
+          "step": "Mode table",
+          "tex": "(\\text{CPOL},\\text{CPHA})=(1,0)\\ \\Rightarrow\\ \\text{mode 2}"
+        },
+        {
+          "answer": "<strong>Mode 2</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "TIMING",
+      "title": "Find the maximum read clock",
+      "prompt": "Flight time is 1.5 ns each way, the peripheral clock-to-output is 12 ns, the controller needs 4 ns setup and you want 2.5 ns margin. Find the maximum SCLK for opposite-edge capture.",
+      "hint": "Half a period must cover the whole round trip.",
+      "solution": [
+        {
+          "step": "Half-period budget",
+          "tex": "\\frac T2\\ge t_{fc}+t_{CO}+t_{fd}+t_{su}+t_m"
+        },
+        {
+          "step": "Substitute",
+          "tex": "\\frac T2\\ge1.5+12+1.5+4+2.5=21.5\\ \\text{ns}"
+        },
+        {
+          "step": "Frequency",
+          "tex": "T\\ge43\\ \\text{ns}\\ \\Rightarrow\\ f\\le23.3\\ \\text{MHz}"
+        },
+        {
+          "answer": "SCLK ≤ <strong>23 MHz</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "DAISY",
+      "title": "Time a daisy chain update",
+      "prompt": "Four 16-bit LED drivers are daisy-chained at 10 MHz. How long does one update take, and what is the maximum update rate ignoring CS overhead?",
+      "hint": "All bits pass through every device.",
+      "solution": [
+        {
+          "step": "Total bits",
+          "tex": "4\\times16=64\\ \\text{clocks}"
+        },
+        {
+          "step": "Update time",
+          "tex": "\\frac{64}{10\\ \\text{MHz}}=6.4\\ \\mu\\text{s}"
+        },
+        {
+          "step": "Rate",
+          "tex": "\\frac{1}{6.4\\ \\mu\\text{s}}=156\\,000\\ \\text{per second}"
+        },
+        {
+          "answer": "<strong>6.4 µs</strong> per update, about <strong>156 k updates/s</strong>."
+        }
+      ]
+    }
+  ],
+  "i2c-bus": [
+    {
+      "tag": "PULL-UP",
+      "title": "Size standard-mode pull-ups",
+      "prompt": "A 5 V standard-mode bus has 300 pF of capacitance and devices sinking 3 mA at 0.4 V. Find the allowed pull-up range.",
+      "hint": "R_max = t_r/(0.847 C_b), R_min = (V_DD − V_OL)/I_OL.",
+      "solution": [
+        {
+          "step": "Maximum R from rise time",
+          "text": "Standard mode allows 1000 ns from 30% to 70%, which is $0.847RC$.",
+          "tex": "R_{max}=\\frac{1000\\ \\text{ns}}{0.847\\times300\\ \\text{pF}}=3.94\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Minimum R from sink current",
+          "tex": "R_{min}=\\frac{5-0.4}{3\\ \\text{mA}}=1.53\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Choose",
+          "text": "Anything between the limits: 2.2–3.3 kΩ."
+        },
+        {
+          "answer": "<strong>1.53 kΩ to 3.94 kΩ</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "CLOCK",
+      "title": "Derive the Fast-mode Plus clock",
+      "prompt": "Fast-mode Plus specifies t_LOW ≥ 0.5 µs, t_HIGH ≥ 0.26 µs and maximum edges of 120 ns. Find the maximum SCL frequency.",
+      "hint": "Add the four parts of one period.",
+      "solution": [
+        {
+          "step": "One period",
+          "text": "Low time, rising edge, high time, falling edge."
+        },
+        {
+          "step": "Sum",
+          "tex": "T=0.5+0.12+0.26+0.12=1.0\\ \\mu\\text{s}"
+        },
+        {
+          "step": "Frequency",
+          "tex": "f_{max}=1\\ \\text{MHz}"
+        },
+        {
+          "answer": "<strong>1 MHz</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "ADDRESS",
+      "title": "Encode an address and count a read",
+      "prompt": "A display controller has 7-bit address 0x3C. Give the transmitted address bytes for write and read, and count the clocks to read two bytes from register 0x10.",
+      "hint": "Shift left one bit and append R/W. Each byte plus ACK is nine clocks.",
+      "solution": [
+        {
+          "step": "Address bytes",
+          "tex": "\\text{0x3C}\\ll1=\\text{0x78 (write)},\\qquad\\text{0x79 (read)}"
+        },
+        {
+          "step": "Transaction",
+          "text": "START, 0x78, register 0x10, repeated START, 0x79, data, data, STOP."
+        },
+        {
+          "step": "Clock count",
+          "tex": "5\\ \\text{bytes}\\times9=45\\ \\text{clocks}\\ \\approx113\\ \\mu\\text{s at 400 kHz}"
+        },
+        {
+          "answer": "<strong>0x78 / 0x79</strong>; <strong>45 clocks</strong>."
+        }
+      ]
+    }
+  ],
+  "rs485-can": [
+    {
+      "tag": "UNIT LOAD",
+      "title": "Count fractional-load nodes",
+      "prompt": "How many quarter-unit-load RS-485 receivers present the same DC load as 32 standard unit loads?",
+      "hint": "A quarter unit load is 48 kΩ.",
+      "solution": [
+        {
+          "step": "32 unit loads",
+          "tex": "\\frac{12\\ \\text{k}\\Omega}{32}=375\\ \\Omega"
+        },
+        {
+          "step": "Quarter unit load",
+          "tex": "4\\times12\\ \\text{k}\\Omega=48\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Number for the same load",
+          "tex": "N=\\frac{48\\ \\text{k}\\Omega}{375\\ \\Omega}=128"
+        },
+        {
+          "answer": "<strong>128</strong> receivers."
+        }
+      ]
+    },
+    {
+      "tag": "BIAS",
+      "title": "Bias an idle bus",
+      "prompt": "A 3.3 V bias network must hold an idle, doubly terminated RS-485 bus at 250 mV differential. Find the bias resistors.",
+      "hint": "V_idle = V_bias × 60/(2R + 60).",
+      "solution": [
+        {
+          "step": "Idle divider",
+          "text": "Two 120 Ω terminations in parallel give 60 Ω between the bias resistors.",
+          "tex": "V_{idle}=V_{bias}\\frac{60}{2R+60}"
+        },
+        {
+          "step": "Solve",
+          "tex": "0.25=3.3\\frac{60}{2R+60}\\ \\Rightarrow\\ 2R+60=792\\ \\Omega"
+        },
+        {
+          "step": "Result",
+          "tex": "R=366\\ \\Omega\\to360\\ \\Omega"
+        },
+        {
+          "answer": "About <strong>360 Ω</strong> each."
+        }
+      ]
+    },
+    {
+      "tag": "CAN LENGTH",
+      "title": "Find a CAN bus length limit",
+      "prompt": "At 250 kbit/s a controller uses sixteen 250 ns quanta with an 8 tq propagation segment. Transceivers add 200 ns each way and the cable delay is 5 ns/m. Find the maximum length.",
+      "hint": "2(5L + 200 ns) ≤ t_PROP_SEG.",
+      "solution": [
+        {
+          "step": "Propagation segment",
+          "tex": "t_{PROP}=8\\times250\\ \\text{ns}=2\\ \\mu\\text{s}"
+        },
+        {
+          "step": "Round-trip condition",
+          "tex": "2(5L+200)\\le2000\\ \\text{ns}"
+        },
+        {
+          "step": "Solve",
+          "tex": "L\\le160\\ \\text{m}"
+        },
+        {
+          "answer": "About <strong>160 m</strong>."
+        }
+      ]
+    }
+  ],
+  "usb-ethernet": [
+    {
+      "tag": "NRZI",
+      "title": "Encode with stuffing",
+      "prompt": "Encode seven consecutive 1 bits in USB NRZI starting from the J state.",
+      "hint": "After six 1s insert a 0; a 0 toggles the line.",
+      "solution": [
+        {
+          "step": "Insert the stuffed bit",
+          "tex": "1111111\\ \\to\\ 111111\\,0\\,1"
+        },
+        {
+          "step": "NRZI",
+          "text": "A 1 holds the line; a 0 toggles."
+        },
+        {
+          "step": "Line states",
+          "tex": "J\\ J\\ J\\ J\\ J\\ J\\ K\\ K"
+        },
+        {
+          "answer": "Bits <strong>11111101</strong>; states <strong>JJJJJJKK</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "LEVELS",
+      "title": "Change the termination",
+      "prompt": "If each USB high-speed line were terminated with 50 Ω to ground at both ends instead of 45 Ω, what differential swing would the 17.78 mA driver produce?",
+      "hint": "The driven line sees both terminations in parallel.",
+      "solution": [
+        {
+          "step": "Driven-line load",
+          "tex": "50\\parallel50=25\\ \\Omega"
+        },
+        {
+          "step": "Swing",
+          "tex": "17.78\\ \\text{mA}\\times25\\ \\Omega=444\\ \\text{mV}"
+        },
+        {
+          "step": "Effect",
+          "text": "11% too large, and 100 Ω differential termination mismatches a 90 Ω cable."
+        },
+        {
+          "answer": "About <strong>444 mV</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "ETHERNET",
+      "title": "Compute payload efficiency",
+      "prompt": "Find the wire efficiency of Ethernet frames with a 512-byte payload, and the UDP payload rate on a 100 Mbit/s link.",
+      "hint": "Overhead is 38 byte-times per frame; IPv4 + UDP headers take 28 bytes of payload.",
+      "solution": [
+        {
+          "step": "Ethernet efficiency",
+          "tex": "\\frac{512}{512+38}=93.1\\%\\ \\Rightarrow\\ 93.1\\ \\text{Mbit/s}"
+        },
+        {
+          "step": "Subtract IP and UDP headers",
+          "tex": "512-28=484\\ \\text{bytes}"
+        },
+        {
+          "step": "UDP efficiency",
+          "tex": "\\frac{484}{550}=88.0\\%\\ \\Rightarrow\\ 88\\ \\text{Mbit/s}"
+        },
+        {
+          "answer": "<strong>93.1%</strong> on the wire, about <strong>88 Mbit/s</strong> of UDP data."
+        }
+      ]
+    }
+  ],
+  "rf-amplifiers": [
+    {
+      "tag": "GAIN",
+      "title": "Find the maximum unilateral gain",
+      "prompt": "A transistor has |S₂₁| = 4, |S₁₁| = 0.5 and |S₂₂| = 0.7, with S₁₂ negligible. Find its gain in a 50 Ω system and its maximum gain with conjugate matching.",
+      "hint": "G_max = |S₂₁|²/[(1 − |S₁₁|²)(1 − |S₂₂|²)].",
+      "solution": [
+        {
+          "step": "Gain in 50 Ω",
+          "text": "With $S_{12}\\approx0$ and 50 Ω terminations, the transducer gain is $|S_{21}|^2$.",
+          "tex": "|S_{21}|^2=16=12.0\\ \\text{dB}"
+        },
+        {
+          "step": "Mismatch factors",
+          "tex": "1-|S_{11}|^2=0.75,\\qquad1-|S_{22}|^2=0.51"
+        },
+        {
+          "step": "Maximum unilateral gain",
+          "tex": "G_{max}=\\frac{16}{0.75\\times0.51}=41.8=16.2\\ \\text{dB}"
+        },
+        {
+          "step": "Where it comes from",
+          "text": "Input matching adds $-10\\log0.75$ = 1.25 dB and output matching adds $-10\\log0.51$ = 2.9 dB."
+        },
+        {
+          "answer": "<strong>12.0 dB</strong> in 50 Ω; <strong>16.2 dB</strong> conjugately matched."
+        }
+      ]
+    },
+    {
+      "tag": "LNA",
+      "title": "Design a degenerated LNA input",
+      "prompt": "A 5.8 GHz LNA transistor has C_gs = 0.3 pF and g_m = 30 mS. Find L_s for a 50 Ω input and L_g for resonance.",
+      "hint": "L_s = 50/ω_T with ω_T = g_m/C_gs; L_g + L_s = 1/(ω₀²C_gs).",
+      "solution": [
+        {
+          "step": "Transit frequency",
+          "tex": "\\omega_T=\\frac{g_m}{C_{gs}}=\\frac{30\\ \\text{mS}}{0.3\\ \\text{pF}}=10^{11}\\ \\text{rad/s}"
+        },
+        {
+          "step": "Source inductance for 50 Ω",
+          "text": "The degenerated input looks like $\\omega_TL_s$ of real resistance.",
+          "tex": "L_s=\\frac{50}{10^{11}}=0.50\\ \\text{nH}"
+        },
+        {
+          "step": "Total inductance for resonance",
+          "tex": "L_g+L_s=\\frac{1}{\\omega_0^2C_{gs}}=\\frac{1}{(3.64\\times10^{10})^2(0.3\\ \\text{pF})}=2.51\\ \\text{nH}"
+        },
+        {
+          "step": "Gate inductance",
+          "tex": "L_g=2.51-0.50=2.01\\ \\text{nH}"
+        },
+        {
+          "answer": "$L_s$ = <strong>0.50 nH</strong>, $L_g$ = <strong>2.0 nH</strong> (include pad and via inductance)."
+        }
+      ]
+    },
+    {
+      "tag": "PA LOAD",
+      "title": "Size a power amplifier load",
+      "prompt": "A class A PA runs from 5 V with a 0.5 V knee and must deliver 2 W. Find the optimum load and the Q of the L network that presents it from 50 Ω.",
+      "hint": "R_opt = (V_DD − V_k)²/(2P_out); Q = √(R_high/R_low − 1).",
+      "solution": [
+        {
+          "step": "Peak voltage swing",
+          "tex": "V_{pk}=V_{DD}-V_k=4.5\\ \\text{V}"
+        },
+        {
+          "step": "Optimum load",
+          "tex": "R_{opt}=\\frac{V_{pk}^2}{2P}=\\frac{4.5^2}{4}=5.06\\ \\Omega"
+        },
+        {
+          "step": "L-network Q",
+          "tex": "Q=\\sqrt{\\frac{50}{5.06}-1}=2.98"
+        },
+        {
+          "step": "Supply power",
+          "text": "Class A peaks at 50% efficiency.",
+          "tex": "P_{DC}\\ge\\frac{2\\ \\text{W}}{0.5}=4\\ \\text{W}"
+        },
+        {
+          "answer": "$R_{opt}$ ≈ <strong>5.1 Ω</strong>, Q ≈ <strong>3.0</strong>; supply at least <strong>4 W</strong>."
+        }
+      ]
+    }
+  ],
+  "rf-filters": [
+    {
+      "tag": "ORDER",
+      "title": "Find the order for a stopband",
+      "prompt": "A low-pass filter must attenuate 60 dB at three times its cutoff. Find the Butterworth order and the order for a 0.5 dB Chebyshev (ε² = 0.122).",
+      "hint": "Use the two order formulas with A = 60 dB.",
+      "solution": [
+        {
+          "step": "Butterworth order",
+          "tex": "N\\ge\\frac{\\log_{10}(10^{6}-1)}{2\\log_{10}3}=\\frac{6}{0.954}=6.29\\ \\Rightarrow\\ N=7"
+        },
+        {
+          "step": "Chebyshev argument",
+          "tex": "\\sqrt{\\frac{10^{6}-1}{0.122}}=2863,\\qquad\\cosh^{-1}2863=8.65,\\qquad\\cosh^{-1}3=1.76"
+        },
+        {
+          "step": "Chebyshev order",
+          "tex": "N\\ge\\frac{8.65}{1.76}=4.91\\ \\Rightarrow\\ N=5"
+        },
+        {
+          "answer": "Butterworth <strong>N = 7</strong>; 0.5 dB Chebyshev <strong>N = 5</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "SCALE",
+      "title": "Scale a prototype",
+      "prompt": "Design a third-order Butterworth low-pass for 30 MHz between 50 Ω terminations.",
+      "hint": "g = 1, 2, 1; C = g/(2πf_cR), L = gR/(2πf_c).",
+      "solution": [
+        {
+          "step": "Prototype values",
+          "text": "Third-order Butterworth: $g_1=1,\\ g_2=2,\\ g_3=1$ (shunt C, series L, shunt C)."
+        },
+        {
+          "step": "Capacitors",
+          "tex": "C_1=C_3=\\frac{1}{2\\pi(30\\ \\text{MHz})(50)}=106\\ \\text{pF}"
+        },
+        {
+          "step": "Inductor",
+          "tex": "L_2=\\frac{2\\times50}{2\\pi(30\\ \\text{MHz})}=531\\ \\text{nH}"
+        },
+        {
+          "answer": "<strong>106 pF – 531 nH – 106 pF</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "LOSS",
+      "title": "Estimate a narrow filter's loss",
+      "prompt": "A fifth-order Butterworth band-pass (g = 0.618, 1.618, 2, 1.618, 0.618) has 2% fractional bandwidth. Find its insertion loss with Q_u = 150 inductors and with Q_u = 2000 acoustic resonators.",
+      "hint": "IL ≈ 4.343 Σg/(FBW·Q_u) dB with Σg = 6.47.",
+      "solution": [
+        {
+          "step": "Sum of prototype values",
+          "tex": "\\sum g=0.618+1.618+2+1.618+0.618=6.47"
+        },
+        {
+          "step": "Q_u = 150",
+          "tex": "IL\\approx\\frac{4.343\\times6.47}{0.02\\times150}=9.4\\ \\text{dB}"
+        },
+        {
+          "step": "Q_u = 2000",
+          "tex": "IL\\approx\\frac{4.343\\times6.47}{0.02\\times2000}=0.70\\ \\text{dB}"
+        },
+        {
+          "answer": "<strong>9.4 dB</strong> with lumped inductors, <strong>0.7 dB</strong> with acoustic resonators."
+        }
+      ]
+    }
+  ],
+  "modulation": [
+    {
+      "tag": "AM",
+      "title": "Find AM sideband power",
+      "prompt": "A 10 W carrier is amplitude modulated with m = 0.5 by a single tone. Find the sideband power and its fraction of the total.",
+      "hint": "Each sideband carries m²/4 of the carrier power.",
+      "solution": [
+        {
+          "step": "Each sideband",
+          "tex": "P_{SB}=\\frac{m^2}{4}P_c=\\frac{0.25}{4}\\times10=0.625\\ \\text{W}"
+        },
+        {
+          "step": "Both sidebands and total",
+          "tex": "2\\times0.625=1.25\\ \\text{W},\\qquad P_{tot}=11.25\\ \\text{W}"
+        },
+        {
+          "step": "Fraction",
+          "tex": "\\frac{1.25}{11.25}=\\frac{m^2}{2+m^2}=11.1\\%"
+        },
+        {
+          "answer": "<strong>1.25 W</strong> in the sidebands, <strong>11%</strong> of the total."
+        }
+      ]
+    },
+    {
+      "tag": "FM",
+      "title": "Apply Carson's rule",
+      "prompt": "A narrowband FM radio uses 5 kHz peak deviation and audio up to 3 kHz. Find the modulation index and occupied bandwidth.",
+      "hint": "β = Δf/f_m; B ≈ 2(Δf + f_m).",
+      "solution": [
+        {
+          "step": "Modulation index",
+          "tex": "\\beta=\\frac{\\Delta f}{f_m}=\\frac{5}{3}=1.67"
+        },
+        {
+          "step": "Carson's rule",
+          "tex": "B\\approx2(\\Delta f+f_m)"
+        },
+        {
+          "step": "Evaluate",
+          "tex": "B=2(5+3)=16\\ \\text{kHz}"
+        },
+        {
+          "answer": "β = <strong>1.67</strong>, about <strong>16 kHz</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "CAPACITY",
+      "title": "Compare a link with the Shannon limit",
+      "prompt": "A 20 MHz channel uses 64-QAM with roll-off 0.35 and has 25 dB SNR. Find the symbol rate, bit rate and Shannon capacity.",
+      "hint": "R_s = B/(1 + α); R_b = 6R_s; C = B log₂(1 + SNR).",
+      "solution": [
+        {
+          "step": "Symbol rate",
+          "tex": "R_s=\\frac{20\\ \\text{MHz}}{1.35}=14.8\\ \\text{Msym/s}"
+        },
+        {
+          "step": "Bit rate",
+          "text": "64-QAM carries 6 bits per symbol.",
+          "tex": "R_b=6\\times14.8=88.9\\ \\text{Mbit/s}"
+        },
+        {
+          "step": "Shannon capacity",
+          "tex": "C=20\\ \\text{MHz}\\times\\log_2(1+316)=20\\times8.31=166\\ \\text{Mbit/s}"
+        },
+        {
+          "answer": "<strong>14.8 Msym/s</strong>, <strong>88.9 Mbit/s</strong>; capacity <strong>166 Mbit/s</strong> (about 54% used)."
+        }
+      ]
+    }
+  ],
+  "line-supplies": [
+    {
+      "tag": "RIPPLE",
+      "title": "Find ripple from the reservoir",
+      "prompt": "A 50 Hz bridge rectifier charges 3300 µF and supplies 2 A. Estimate the peak-to-peak ripple.",
+      "hint": "ΔV ≈ I/(2fC).",
+      "solution": [
+        {
+          "step": "Recharge interval",
+          "text": "A 50 Hz bridge recharges every 10 ms."
+        },
+        {
+          "step": "Ripple",
+          "tex": "\\Delta V\\approx\\frac{I}{2fC}=\\frac{2}{2(50)(3300\\ \\mu\\text{F})}"
+        },
+        {
+          "step": "Result",
+          "tex": "\\Delta V=6.1\\ \\text{V}_{pp}"
+        },
+        {
+          "answer": "About <strong>6 V p-p</strong>, which is too much for most designs."
+        }
+      ]
+    },
+    {
+      "tag": "PULSES",
+      "title": "Estimate conduction time and pulse current",
+      "prompt": "A 60 Hz full-wave supply has a 20 V peak and 2 V ripple at 1 A. Find the conduction time and the average diode current during conduction.",
+      "hint": "cos θ_c = 1 − ΔV/V_p; the half-cycle charge I/(2f) is delivered in t_c.",
+      "solution": [
+        {
+          "step": "Conduction angle",
+          "tex": "\\cos\\theta_c=1-\\frac{\\Delta V}{V_p}=0.9\\ \\Rightarrow\\ \\theta_c=0.451\\ \\text{rad}"
+        },
+        {
+          "step": "Conduction time",
+          "tex": "t_c=\\frac{0.451}{2\\pi(60)}=1.2\\ \\text{ms}"
+        },
+        {
+          "step": "Average pulse current",
+          "text": "Each half-cycle the diodes replace $I/2f$ = 8.33 mC.",
+          "tex": "\\bar I=\\frac{8.33\\ \\text{mC}}{1.2\\ \\text{ms}}=6.9\\ \\text{A}"
+        },
+        {
+          "answer": "About <strong>1.2 ms</strong>, <strong>6.9 A</strong> average (peak about twice that)."
+        }
+      ]
+    },
+    {
+      "tag": "TRANSFORMER",
+      "title": "Rate a transformer",
+      "prompt": "A bridge rectifier from a 12 V rms secondary must supply 1.5 A DC. If the secondary rms current is about 1.8 times the DC current, what VA rating is needed?",
+      "hint": "VA = V_rms × I_rms.",
+      "solution": [
+        {
+          "step": "Secondary RMS current",
+          "tex": "I_{rms}\\approx1.8\\times1.5=2.7\\ \\text{A}"
+        },
+        {
+          "step": "VA",
+          "tex": "12\\ \\text{V}\\times2.7\\ \\text{A}=32\\ \\text{VA}"
+        },
+        {
+          "step": "Margin",
+          "text": "Choose the next size up, 40 VA."
+        },
+        {
+          "answer": "About <strong>32 VA</strong>; specify <strong>40 VA</strong>."
+        }
+      ]
+    }
+  ],
+  "regulator-ics": [
+    {
+      "tag": "DIVIDER",
+      "title": "Set a 317 output",
+      "prompt": "Design a 317 for 12 V with R₁ = 240 Ω, then compute the actual output with a standard 2.05 kΩ for R₂ and I_ADJ = 50 µA.",
+      "hint": "V_out = 1.25(1 + R₂/R₁) + I_ADJ R₂.",
+      "solution": [
+        {
+          "step": "Ideal R₂",
+          "tex": "R_2=R_1\\left(\\frac{V_{out}}{1.25}-1\\right)=240(9.6-1)=2064\\ \\Omega"
+        },
+        {
+          "step": "Divider term with 2.05 kΩ",
+          "tex": "1.25\\left(1+\\frac{2050}{240}\\right)=1.25\\times9.54=11.93\\ \\text{V}"
+        },
+        {
+          "step": "Adjust-current term",
+          "tex": "I_{ADJ}R_2=50\\ \\mu\\text{A}\\times2.05\\ \\text{k}\\Omega=0.10\\ \\text{V}"
+        },
+        {
+          "step": "Total",
+          "tex": "V_{out}=11.93+0.10=12.03\\ \\text{V}"
+        },
+        {
+          "answer": "Ideal <strong>2064 Ω</strong>; with 2.05 kΩ the output is <strong>12.03 V</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "BYPASS",
+      "title": "Size the adjust capacitor",
+      "prompt": "With R₂ = 2 kΩ, what C_ADJ puts the bypass corner at or below 10 Hz?",
+      "hint": "f = 1/(2πR₂C_ADJ).",
+      "solution": [
+        {
+          "step": "Corner formula",
+          "tex": "f=\\frac{1}{2\\pi R_2C_{ADJ}}\\le10\\ \\text{Hz}"
+        },
+        {
+          "step": "Solve",
+          "tex": "C_{ADJ}\\ge\\frac{1}{2\\pi(10)(2000)}=8.0\\ \\mu\\text{F}"
+        },
+        {
+          "step": "Choose",
+          "text": "10 µF, with a diode from ADJ to OUT to discharge it safely."
+        },
+        {
+          "answer": "At least <strong>8 µF</strong> (use 10 µF)."
+        }
+      ]
+    },
+    {
+      "tag": "CURRENT",
+      "title": "Make an LED current source",
+      "prompt": "Use a 317 to drive LEDs at 350 mA from 12 V with 2 V dropout. Find R, its power and the maximum LED string voltage.",
+      "hint": "I = 1.25/R; compliance = V_in − V_drop − 1.25 V.",
+      "solution": [
+        {
+          "step": "Set resistor",
+          "tex": "R=\\frac{1.25}{0.35}=3.6\\ \\Omega"
+        },
+        {
+          "step": "Resistor power",
+          "tex": "P=1.25\\times0.35=0.44\\ \\text{W}"
+        },
+        {
+          "step": "Compliance",
+          "tex": "V_{LED}\\le12-2-1.25=8.75\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>3.6 Ω</strong>, <strong>0.44 W</strong>; LED string up to <strong>8.75 V</strong>."
+        }
+      ]
+    }
+  ],
+  "thermal-soa": [
+    {
+      "tag": "HEAT SINK",
+      "title": "Choose a heat sink",
+      "prompt": "A device dissipates 25 W with θ_JC = 1.5 °C/W and θ_CS = 0.3 °C/W. Ambient is 40 °C and the junction must stay below 125 °C. Find the maximum θ_SA.",
+      "hint": "θ_SA ≤ (T_J − T_A)/P − θ_JC − θ_CS.",
+      "solution": [
+        {
+          "step": "Total allowed thermal resistance",
+          "tex": "\\theta_{JA}\\le\\frac{125-40}{25}=3.4\\ ^\\circ\\text{C/W}"
+        },
+        {
+          "step": "Subtract the fixed parts",
+          "tex": "\\theta_{SA}\\le3.4-1.5-0.3"
+        },
+        {
+          "step": "Result",
+          "tex": "\\theta_{SA}\\le1.6\\ ^\\circ\\text{C/W}"
+        },
+        {
+          "answer": "<strong>1.6 °C/W</strong> or better."
+        }
+      ]
+    },
+    {
+      "tag": "PULSE",
+      "title": "Find a pulse temperature rise",
+      "prompt": "A data sheet gives Z_th = 0.6 °C/W for 5 ms pulses. How hot does the junction get above the case during an 80 W, 5 ms pulse?",
+      "hint": "ΔT = P Z_th(t_p).",
+      "solution": [
+        {
+          "step": "Transient formula",
+          "tex": "\\Delta T=PZ_{th}(t_p)"
+        },
+        {
+          "step": "Substitute",
+          "tex": "\\Delta T=80\\times0.6=48\\ ^\\circ\\text{C}"
+        },
+        {
+          "step": "Compare with steady state",
+          "tex": "80\\times1.5=120\\ ^\\circ\\text{C}"
+        },
+        {
+          "answer": "<strong>48 °C</strong> above the case (versus 120 °C if sustained)."
+        }
+      ]
+    },
+    {
+      "tag": "DERATING",
+      "title": "Derate a power rating",
+      "prompt": "A transistor is rated 150 W at 25 °C case with T_J,max = 175 °C. What can it dissipate with its case at 110 °C?",
+      "hint": "θ_JC = (175 − 25)/150.",
+      "solution": [
+        {
+          "step": "Junction-to-case resistance",
+          "tex": "\\theta_{JC}=\\frac{175-25}{150}=1.0\\ ^\\circ\\text{C/W}"
+        },
+        {
+          "step": "Allowed power at 110 °C case",
+          "tex": "P=\\frac{175-110}{1.0}"
+        },
+        {
+          "step": "Result",
+          "tex": "P=65\\ \\text{W}"
+        },
+        {
+          "answer": "<strong>65 W</strong>."
+        }
+      ]
+    }
+  ],
+  "isolated-offline": [
+    {
+      "tag": "HOLD-UP",
+      "title": "Size a bulk capacitor",
+      "prompt": "A 100 W-input supply must hold up for 16.7 ms while its bulk falls from 150 V to 100 V. Find the minimum capacitance.",
+      "hint": "C ≥ 2P t_h/(V₁² − V₂²).",
+      "solution": [
+        {
+          "step": "Energy balance",
+          "text": "The capacitor's energy drop must supply $P\\,t_h$.",
+          "tex": "\\tfrac12C(V_1^2-V_2^2)=Pt_h"
+        },
+        {
+          "step": "Solve",
+          "tex": "C\\ge\\frac{2Pt_h}{V_1^2-V_2^2}=\\frac{2(100)(0.0167)}{22\\,500-10\\,000}"
+        },
+        {
+          "step": "Result",
+          "tex": "C\\ge267\\ \\mu\\text{F}\\to330\\ \\mu\\text{F}"
+        },
+        {
+          "answer": "At least <strong>267 µF</strong>; use 330 µF."
+        }
+      ]
+    },
+    {
+      "tag": "DRAIN",
+      "title": "Check flyback drain stress",
+      "prompt": "A flyback from a 375 V maximum bulk produces 5 V with a 0.5 V diode and N_p/N_s = 18. Find the reflected voltage and the drain voltage before the leakage spike.",
+      "hint": "V_R = (V_o + V_F)N_p/N_s.",
+      "solution": [
+        {
+          "step": "Reflected voltage",
+          "tex": "V_R=(V_o+V_F)\\frac{N_p}{N_s}=5.5\\times18=99\\ \\text{V}"
+        },
+        {
+          "step": "Drain voltage",
+          "tex": "V_{DS}=375+99=474\\ \\text{V}"
+        },
+        {
+          "step": "Margin",
+          "tex": "650-474=176\\ \\text{V for the leakage spike}"
+        },
+        {
+          "answer": "$V_R$ = <strong>99 V</strong>; drain at <strong>474 V</strong> before the spike."
+        }
+      ]
+    },
+    {
+      "tag": "POWER FACTOR",
+      "title": "Compute power factor",
+      "prompt": "A rectifier draws 0.8 A rms with a 0.5 A rms fundamental in phase with the voltage. Find the power factor.",
+      "hint": "PF = (I₁/I_rms) cos φ₁.",
+      "solution": [
+        {
+          "step": "Displacement factor",
+          "text": "The fundamental is in phase: cos φ₁ = 1."
+        },
+        {
+          "step": "Distortion factor",
+          "tex": "\\frac{I_1}{I_{rms}}=\\frac{0.5}{0.8}=0.625"
+        },
+        {
+          "step": "Power factor",
+          "tex": "PF=0.625\\times1=0.625"
+        },
+        {
+          "answer": "PF = <strong>0.625</strong>."
+        }
+      ]
+    }
+  ],
+  "batteries-protection": [
+    {
+      "tag": "RUN TIME",
+      "title": "Estimate battery run time",
+      "prompt": "A 3000 mAh, 3.6 V cell powers a load averaging 150 mA. Estimate the run time and stored energy.",
+      "hint": "t = Q/I; E ≈ V̄Q.",
+      "solution": [
+        {
+          "step": "Run time",
+          "tex": "t=\\frac{3000\\ \\text{mAh}}{150\\ \\text{mA}}=20\\ \\text{h}"
+        },
+        {
+          "step": "Energy",
+          "tex": "E\\approx3.6\\ \\text{V}\\times3\\ \\text{Ah}=10.8\\ \\text{Wh}"
+        },
+        {
+          "step": "Caveat",
+          "text": "High current bursts and cold reduce usable capacity."
+        },
+        {
+          "answer": "About <strong>20 h</strong>, <strong>10.8 Wh</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "SUPERCAP",
+      "title": "Find usable capacitor energy",
+      "prompt": "A 5 F capacitor charged to 5 V feeds a converter that works down to 2.5 V. Find the usable energy and its fraction of the stored energy.",
+      "hint": "E = ½C(V_max² − V_min²).",
+      "solution": [
+        {
+          "step": "Usable energy",
+          "tex": "E=\\tfrac12C(V_{max}^2-V_{min}^2)=\\tfrac12(5)(25-6.25)"
+        },
+        {
+          "step": "Result",
+          "tex": "E=46.9\\ \\text{J}"
+        },
+        {
+          "step": "Fraction",
+          "tex": "1-\\left(\\frac{2.5}{5}\\right)^2=75\\%"
+        },
+        {
+          "answer": "<strong>46.9 J</strong>, <strong>75%</strong> of the stored energy."
+        }
+      ]
+    },
+    {
+      "tag": "HOT-SWAP",
+      "title": "Set a hot-swap ramp",
+      "prompt": "A hot-swap controller limits inrush into 470 µF on a 48 V bus to 2 A. Find the ramp time and the energy the MOSFET absorbs.",
+      "hint": "dV/dt = I/C; E = ½CV².",
+      "solution": [
+        {
+          "step": "Ramp rate",
+          "tex": "\\frac{dV}{dt}=\\frac{2\\ \\text{A}}{470\\ \\mu\\text{F}}=4.26\\ \\text{kV/s}"
+        },
+        {
+          "step": "Ramp time",
+          "tex": "t=\\frac{48}{4255}=11.3\\ \\text{ms}"
+        },
+        {
+          "step": "MOSFET energy",
+          "text": "With constant current charging, the pass device absorbs as much as the capacitor stores.",
+          "tex": "E=\\tfrac12(470\\ \\mu\\text{F})(48)^2=0.54\\ \\text{J}"
+        },
+        {
+          "answer": "<strong>11.3 ms</strong>; the MOSFET absorbs <strong>0.54 J</strong>."
+        }
+      ]
+    }
+  ],
+  "noise-fundamentals": [
+    {
+      "tag": "ADDING",
+      "title": "Add uncorrelated noise",
+      "prompt": "Three independent sources contribute 3, 4 and 12 nV/√Hz at an amplifier input. Find the total.",
+      "hint": "Add in power, not amplitude.",
+      "solution": [
+        {
+          "step": "Add in power",
+          "tex": "e_n=\\sqrt{3^2+4^2+12^2}"
+        },
+        {
+          "step": "Evaluate",
+          "tex": "e_n=\\sqrt{169}=13\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "step": "Dominance",
+          "text": "Removing the 3 and 4 nV sources would leave 12, only 8% less."
+        },
+        {
+          "answer": "<strong>13 nV/√Hz</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "JOHNSON",
+      "title": "Find resistor noise in a band",
+      "prompt": "Find the rms Johnson noise of a 100 kΩ resistor at room temperature over a 10 kHz bandwidth.",
+      "hint": "e_n = √(4kTR); multiply by √B for white noise.",
+      "solution": [
+        {
+          "step": "Density",
+          "tex": "e_n=\\sqrt{4kTR}=\\sqrt{4(1.38\\times10^{-23})(300)(10^5)}=40.7\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "step": "Bandwidth factor",
+          "tex": "\\sqrt{10^4}=100"
+        },
+        {
+          "step": "RMS",
+          "tex": "40.7\\ \\text{nV}\\times100=4.07\\ \\mu\\text{V}_{rms}"
+        },
+        {
+          "answer": "<strong>4.07 µV rms</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "TEMPERATURE",
+      "title": "Convert noise figure to temperature",
+      "prompt": "An amplifier has a 2 dB noise figure. Find its noise temperature.",
+      "hint": "F = 10^(NF/10); T_e = (F − 1)T₀.",
+      "solution": [
+        {
+          "step": "Noise factor",
+          "tex": "F=10^{2/10}=1.585"
+        },
+        {
+          "step": "Noise temperature",
+          "tex": "T_e=(F-1)T_0=0.585\\times290"
+        },
+        {
+          "step": "Result",
+          "tex": "T_e=170\\ \\text{K}"
+        },
+        {
+          "answer": "About <strong>170 K</strong>."
+        }
+      ]
+    }
+  ],
+  "transistor-noise": [
+    {
+      "tag": "BJT NOISE",
+      "title": "Compute e_n and i_n",
+      "prompt": "Find the voltage and current noise of a BJT at 100 µA with r_bb′ = 50 Ω and β = 200.",
+      "hint": "e_n² = 4kTr_bb′ + 2kTV_T/I_C; i_n = √(2qI_C/β).",
+      "solution": [
+        {
+          "step": "Collector shot noise referred to the input",
+          "tex": "\\sqrt{\\frac{2kTV_T}{I_C}}=\\sqrt{\\frac{2(4.14\\times10^{-21})(0.02585)}{10^{-4}}}=1.46\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "step": "Base spreading resistance",
+          "tex": "\\sqrt{4kT(50)}=0.91\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "step": "Total voltage noise",
+          "tex": "e_n=\\sqrt{1.46^2+0.91^2}=1.72\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "step": "Current noise",
+          "tex": "i_n=\\sqrt{2q\\frac{I_C}{\\beta}}=\\sqrt{2(1.6\\times10^{-19})(0.5\\ \\mu\\text{A})}=0.40\\ \\text{pA}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "answer": "$e_n$ ≈ <strong>1.7 nV/√Hz</strong>, $i_n$ ≈ <strong>0.4 pA/√Hz</strong> (noise resistance ≈ 4.3 kΩ)."
+        }
+      ]
+    },
+    {
+      "tag": "OPTIMUM",
+      "title": "Choose a collector current",
+      "prompt": "A 2 kΩ source drives a BJT with β = 300. Find the optimum collector current and minimum noise figure, neglecting r_bb′.",
+      "hint": "I_opt = V_T√β/R_s; F_min ≈ 1 + 1/√β.",
+      "solution": [
+        {
+          "step": "Optimum current",
+          "text": "Balance $e_n$ and $i_nR_s$.",
+          "tex": "I_{opt}=\\frac{V_T\\sqrt\\beta}{R_s}=\\frac{0.02585\\times17.3}{2000}=224\\ \\mu\\text{A}"
+        },
+        {
+          "step": "Minimum noise factor",
+          "tex": "F_{min}\\approx1+\\frac{1}{\\sqrt\\beta}=1.058"
+        },
+        {
+          "step": "In dB",
+          "tex": "10\\log1.058=0.24\\ \\text{dB}"
+        },
+        {
+          "answer": "About <strong>220 µA</strong>; NF ≈ <strong>0.24 dB</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "TRANSFORMER",
+      "title": "Match a low source",
+      "prompt": "A 50 Ω source drives an amplifier whose noise resistance is 5 kΩ. What transformer turns ratio matches them?",
+      "hint": "n = √(R_n/R_s).",
+      "solution": [
+        {
+          "step": "Impedance ratio",
+          "text": "A transformer multiplies impedance by $n^2$.",
+          "tex": "n^2=\\frac{5000}{50}=100"
+        },
+        {
+          "step": "Turns ratio",
+          "tex": "n=10"
+        },
+        {
+          "step": "Effect",
+          "text": "The source appears as 5 kΩ; its signal and noise voltages both rise tenfold, so the amplifier's own noise matters less."
+        },
+        {
+          "answer": "<strong>1:10</strong>."
+        }
+      ]
+    }
+  ],
+  "opamp-noise": [
+    {
+      "tag": "FEEDBACK",
+      "title": "Find feedback-network noise",
+      "prompt": "A noninverting amplifier has R_f = 99 kΩ and R_g = 1 kΩ. What Johnson noise do the feedback resistors contribute at the input?",
+      "hint": "The network contributes 4kT(R_f ∥ R_g).",
+      "solution": [
+        {
+          "step": "Equivalent resistance",
+          "tex": "R_f\\parallel R_g=99\\ \\text{k}\\parallel1\\ \\text{k}=990\\ \\Omega"
+        },
+        {
+          "step": "Thermal noise",
+          "tex": "\\sqrt{4kT(990)}"
+        },
+        {
+          "step": "Result",
+          "tex": "4.05\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "answer": "About <strong>4.0 nV/√Hz</strong> at the input."
+        }
+      ]
+    },
+    {
+      "tag": "HIGH-Z",
+      "title": "Judge an op amp on a high-impedance source",
+      "prompt": "A JFET op amp with 10 nV/√Hz and 2 fA/√Hz reads a 1 MΩ source. Does the op amp matter?",
+      "hint": "Compare e_n and i_nR_s with √(4kTR_s).",
+      "solution": [
+        {
+          "step": "Source Johnson noise",
+          "tex": "\\sqrt{4kT(1\\ \\text{M}\\Omega)}=129\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "step": "Op-amp terms",
+          "tex": "e_n=10,\\qquad i_nR_s=2\\ \\text{fA}\\times1\\ \\text{M}\\Omega=2\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "step": "Total",
+          "tex": "\\sqrt{129^2+10^2+2^2}=129.4\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "answer": "The op amp adds only <strong>0.3%</strong>; the source dominates."
+        }
+      ]
+    },
+    {
+      "tag": "TIA",
+      "title": "Estimate e_nC noise",
+      "prompt": "A TIA op amp has 4 nV/√Hz, with 30 pF at its input and 1.5 pF of feedback capacitance. What is the output noise density from e_n above the feedback pole?",
+      "hint": "Noise gain levels at 1 + C_in/C_f.",
+      "solution": [
+        {
+          "step": "High-frequency noise gain",
+          "text": "Above the feedback pole the input and feedback capacitors form a capacitive divider.",
+          "tex": "NG=1+\\frac{C_{in}}{C_f}=1+\\frac{30}{1.5}=21"
+        },
+        {
+          "step": "Output density",
+          "tex": "4\\ \\text{nV}\\times21"
+        },
+        {
+          "step": "Result",
+          "tex": "84\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "answer": "About <strong>84 nV/√Hz</strong> until the op amp's bandwidth limits it."
+        }
+      ]
+    }
+  ],
+  "noise-measurement": [
+    {
+      "tag": "DENSITY",
+      "title": "Convert an rms reading",
+      "prompt": "A noise measurement reads 0.5 mV rms after a gain of 1000 and a single-pole 10 kHz filter. Find the input noise density.",
+      "hint": "B_N = πf_c/2; e_n = V_rms/(G√B_N).",
+      "solution": [
+        {
+          "step": "Noise bandwidth",
+          "tex": "B_N=\\frac{\\pi}{2}(10\\ \\text{kHz})=15.7\\ \\text{kHz},\\qquad\\sqrt{B_N}=125"
+        },
+        {
+          "step": "Refer to the input",
+          "tex": "e_n=\\frac{V_{rms}}{G\\sqrt{B_N}}=\\frac{0.5\\ \\text{mV}}{1000\\times125}"
+        },
+        {
+          "step": "Result",
+          "tex": "e_n=4.0\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "answer": "About <strong>4.0 nV/√Hz</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "Y-FACTOR",
+      "title": "Compute noise figure from a Y-factor",
+      "prompt": "A noise source with 5 dB ENR produces a 3 dB increase in output noise when switched on. Find the noise figure.",
+      "hint": "F = ENR/(Y − 1) in linear units.",
+      "solution": [
+        {
+          "step": "Linear units",
+          "tex": "ENR=10^{0.5}=3.16,\\qquad Y=10^{0.3}=2.0"
+        },
+        {
+          "step": "Y-factor formula",
+          "tex": "F=\\frac{ENR}{Y-1}=\\frac{3.16}{1.0}"
+        },
+        {
+          "step": "In dB",
+          "tex": "NF=10\\log3.16=5.0\\ \\text{dB}"
+        },
+        {
+          "answer": "NF ≈ <strong>5 dB</strong>."
+        }
+      ]
+    },
+    {
+      "tag": "LOCK-IN",
+      "title": "Find a lock-in's output noise",
+      "prompt": "A lock-in with a 0.3 s single-pole time constant sees 50 nV/√Hz of white noise around its reference. Find the output rms noise.",
+      "hint": "B_N = 1/(4τ).",
+      "solution": [
+        {
+          "step": "Noise bandwidth of the output filter",
+          "tex": "B_N=\\frac{1}{4\\tau}=\\frac{1}{1.2}=0.83\\ \\text{Hz}"
+        },
+        {
+          "step": "Output noise",
+          "tex": "50\\ \\text{nV}\\times\\sqrt{0.83}=46\\ \\text{nV}_{rms}"
+        },
+        {
+          "step": "Settling",
+          "tex": "5\\tau=1.5\\ \\text{s}"
+        },
+        {
+          "answer": "About <strong>46 nV rms</strong>, settling in about 1.5 s."
         }
       ]
     }

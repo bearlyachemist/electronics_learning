@@ -1,0 +1,108 @@
+import Equation from '../../components/Equation.astro';
+import {BridgeRectifierCircuit,RippleCurrentPlot} from '../../components/PowerFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 97</span><span className="hairline"/>PART IV / LINE &amp; LINEAR SUPPLIES</div>
+
+<h1>From the AC line to an unregulated supply<br/><em>The capacitor is charged in pulses.</em></h1>
+
+<p className="dek">Protect and filter the mains input, size a transformer, choose a rectifier topology, derive ripple, conduction angle and peak diode current, and see why the transformer's current rating is far above the DC load.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Component ratings · Safety</span></div>
+
+</div>
+
+<section id="input">
+
+<div className="section-heading"><span>01</span><h2>Protect and filter the line input</h2></div>
+
+A mains-powered supply begins with components whose job is safety and survival rather than regulation. In order from the plug:
+
+- **Fuse** in the live conductor, sized for the input current with margin for inrush. A slow-blow fuse survives the turn-on surge into the transformer and capacitors; its $I^2t$ rating must exceed the surge's.
+- **Switch,** double-pole where the plug can be reversed, so both line conductors are broken.
+- **EMI filter:** a common-mode choke plus X capacitors (line to line) and Y capacitors (line to chassis). Y capacitors are limited in value because they pass leakage current to the protective earth; safety standards limit it to well under a milliampere for handheld equipment.
+- **Surge suppressor:** a metal-oxide varistor across the line clamps lightning and switching transients.
+- **Inrush limiter:** an NTC thermistor whose cold resistance limits the turn-on current, and which heats to a low resistance in operation.
+- **Protective earth** bonded to any exposed metal, so an insulation failure blows the fuse instead of making the case live.
+
+These parts carry the full line voltage; their ratings (voltage class, safety certification, creepage and clearance distances on the board) are not optional details.
+
+</section>
+
+<section id="transformer">
+
+<div className="section-heading"><span>02</span><h2>Size the transformer</h2></div>
+
+A line-frequency transformer isolates the secondary from the mains and sets the voltage. Its secondary voltage is specified at full rated load; with no load it is typically 5–15% higher for small transformers, because the winding resistance no longer drops any voltage. The rectified peak at no load can therefore exceed the full-load value by more than a volt or two, and the regulator that follows must tolerate it.
+
+The transformer's power rating is in **volt-amperes**, the product of rms voltage and rms current. Section 04 shows that a capacitor-input rectifier draws current in short pulses, whose rms value is 1.6 to 2 times the DC load current. A supply delivering 15 V at 1 A therefore needs a transformer of around 25–30 VA, not 15. The winding resistance that limits those pulses also heats the transformer.
+
+</section>
+
+<section id="rectifiers">
+
+<div className="section-heading"><span>03</span><h2>Choose a rectifier topology</h2></div>
+
+| Topology | Diodes | Output peak | Ripple frequency | Note |
+|---|---|---|---|---|
+| Half-wave | 1 | $V_p - V_F$ | $f$ | Simple; DC current in the winding saturates the core |
+| Full-wave, centre-tapped | 2 | $V_p - V_F$ (each half-winding) | $2f$ | One diode drop; each half-winding works half the time |
+| Bridge | 4 | $V_p - 2V_F$ | $2f$ | Whole winding used every half-cycle |
+| Voltage doubler | 2 | $2V_p - 2V_F$ | $f$ | Two capacitors charged on alternate half-cycles |
+| Split supply (bridge + centre tap) | 4 | $\pm(V_p - V_F)$ | $2f$ | Positive and negative rails from one winding |
+
+<BridgeRectifierCircuit/>
+
+</section>
+
+<section id="ripple">
+
+<div className="section-heading"><span>04</span><h2>Derive ripple, conduction angle and peak current</h2></div>
+
+<RippleCurrentPlot/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / RESERVOIR CAPACITOR DESIGN</span>
+
+1. **Ripple.** Between peaks the diodes are off and the capacitor supplies the load current $I$ alone, so its voltage falls at $I/C$. For full-wave rectification the gap between peaks is nearly the whole half-period $1/(2f)$:
+<Equation tex={String.raw`\Delta V\approx\frac{I}{2fC}`}/>
+   This slightly overestimates the ripple, because recharging begins before the next peak.
+
+2. **When conduction starts.** The diodes turn on when the rectified sine rises back to the capacitor voltage $V_p - \Delta V$. Measuring the angle $\theta_c$ back from the peak, $V_p\cos\theta_c = V_p - \Delta V$:
+<Equation tex={String.raw`\theta_c=\arccos\left(1-\frac{\Delta V}{V_p}\right),\qquad t_c=\frac{\theta_c}{2\pi f}`}/>
+
+3. **Charge balance.** The capacitor must regain in time $t_c$ the charge $I/(2f)$ it lost over the half-cycle. The average diode current during conduction is therefore $I/(2ft_c)$, and the peak is roughly twice that because the pulse is roughly triangular.
+
+4. **Example.** 15.6 V peak, 1 A, 2200 µF, 60 Hz: $\Delta V$ = 3.8 V; $\cos\theta_c = 0.756$, $\theta_c$ = 0.71 rad, $t_c$ = 1.9 ms. The average pulse current is $(1/120)/1.9\text{ ms}$ = 4.4 A and the peak around 9 A, against a 1 A load.
+
+5. **Trade-off.** Doubling $C$ halves the ripple but shortens $t_c$ by about $\sqrt2$ (for small $\theta_c$, $\theta_c \approx \sqrt{2\Delta V/V_p}$), so peak current *rises*. Large reservoir capacitors are paid for in transformer heating, diode stress and line harmonics (Chapter 107's power-factor discussion).
+
+</div>
+
+**Choosing values.** Pick the largest ripple the regulator can tolerate at the lowest line voltage and full load: the trough $V_p - \Delta V$ must still exceed the regulated output plus dropout (Chapter 99). Then check the capacitor's ripple-current rating against the rms value of the pulses, which sets its temperature and lifetime.
+
+</section>
+
+<section id="noise">
+
+<div className="section-heading"><span>05</span><h2>Compare linear and switching supplies for noise</h2></div>
+
+A line-frequency transformer and rectifier produce ripple at 100 or 120 Hz and harmonics of it, plus small high-frequency spikes when the diodes turn off. A following linear regulator rejects the low-frequency ripple by its power-supply rejection ratio. A switching supply (Chapters 105–107) is smaller and more efficient, but its output carries ripple and spikes at tens of kilohertz to megahertz, and it radiates and conducts noise at those frequencies.
+
+For sensitive analog or audio circuits, a common compromise is a switching pre-regulator followed by a low-noise linear post-regulator and local filtering (Chapter 99). For a bench instrument with modest power, a transformer and linear regulator remain the quietest choice.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, compute the ripple and conduction time for a given capacitor, estimate peak diode current, and choose a transformer rating for a given DC load.
+
+[Work through three independent problems](/line-supplies/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§9.5.1–9.5.5 (from ac line to unregulated supply). Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

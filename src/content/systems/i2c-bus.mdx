@@ -1,0 +1,177 @@
+import Equation from '../../components/Equation.astro';
+import {I2cTransactionFigure,I2cRisePlot,I2cArbitrationFigure} from '../../components/DigitalFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 131</span><span className="hairline"/>PART VII / BOARD-LEVEL BUSES</div>
+
+<h1>The I²C bus<br/><em>Two open-drain wires, many owners.</em></h1>
+
+<p className="dek">Read the I²C specification parameter by parameter, follow START, address, acknowledge and STOP on the wires, size pull-ups from rise time and sink current, derive the clock rate from the timing table, and resolve arbitration, stretching and stuck buses.</p>
+
+<div className="chapter-meta"><span>55–75 min + practice</span><span>Specification · Protocol · Electrical design</span></div>
+
+</div>
+
+<section id="electrical">
+
+<div className="section-heading"><span>01</span><h2>Specify the open-drain electrical layer</h2></div>
+
+I²C uses two lines, a clock SCL and a data line SDA. Every device connects to them through an **open-drain** (or open-collector) output: it can pull the line low or let go, never drive it high. A resistor to $V_{DD}$ pulls each line high when nobody pulls it low.
+
+This makes the bus a **wired-AND**: the line is high only if every device releases it, and any single device holding it low wins. No combination of outputs can short the supply, and the wired-AND is what makes multi-controller arbitration and clock stretching possible (sections 04–05).
+
+| Parameter | Standard | Fast | Fast-mode Plus |
+|---|---|---|---|
+| Maximum SCL frequency | 100 kHz | 400 kHz | 1 MHz |
+| Rise time $t_r$ (30–70%) maximum | 1000 ns | 300 ns | 120 ns |
+| Fall time $t_f$ maximum | 300 ns | 300 ns | 120 ns |
+| Bus capacitance $C_b$ maximum | 400 pF | 400 pF | 550 pF |
+| Sink current at $V_{OL}$ = 0.4 V | 3 mA | 3 mA | 20 mA |
+| Input low $V_{IL}$ / high $V_{IH}$ | 0.3 $V_{DD}$ / 0.7 $V_{DD}$ | same | same |
+| Spike suppression | — | 50 ns | 50 ns |
+
+(From the NXP I²C-bus specification, UM10204. A high-speed mode at 3.4 MHz uses an active current-source pull-up during part of each cycle; an ultra-fast 5 MHz mode is unidirectional and push-pull.)
+
+The input thresholds are fractions of the supply, so the logic levels scale with $V_{DD}$; the 0.4 V low level must be met at the specified sink current by every device.
+
+</section>
+
+<section id="protocol">
+
+<div className="section-heading"><span>02</span><h2>Follow a transfer bit by bit</h2></div>
+
+Three rules define the protocol.
+
+1. **Data change only while SCL is low.** SDA must be stable while SCL is high, when receivers sample it.
+2. **START and STOP break that rule on purpose.** SDA falling while SCL is high is a START (S); SDA rising while SCL is high is a STOP (P). Because ordinary data never change while SCL is high, every device can recognize these framing events unambiguously.
+3. **Every byte is followed by an acknowledge bit.** Bytes are sent most significant bit first. In the ninth clock the transmitter releases SDA and the receiver pulls it low (ACK). If SDA stays high the receiver has not acknowledged (NACK).
+
+<I2cTransactionFigure/>
+
+**The address byte.** After START, the controller sends a 7-bit target address followed by a direction bit (0 = write, 1 = read). Only the device with that address acknowledges. The 7-bit address 0x48 is therefore transmitted as the byte 0x90 for a write or 0x91 for a read; software libraries differ in which of these they expect, a frequent source of "no ACK" bugs. Addresses 0000xxx and 1111xxx are reserved (general call, 10-bit addressing prefix, high-speed controller code and others).
+
+**A register read** typically needs a write and then a read joined by a **repeated START** (Sr), which changes direction without releasing the bus:
+
+| S | addr + W | A | register | A | Sr | addr + R | A | data | A | data | NA | P |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| controller | controller | target | controller | target | controller | controller | target | target | controller | target | controller | controller |
+
+During the read, the controller acknowledges each byte it wants more of and NACKs the last one, which tells the target to release SDA so the controller can generate STOP.
+
+</section>
+
+<section id="pullups">
+
+<div className="section-heading"><span>03</span><h2>Size the pull-up resistors</h2></div>
+
+The pull-up resistor sets both how fast the line rises and how much current a device must sink to pull it low. These pull in opposite directions, so the spec defines an allowed interval.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE VALID PULL-UP INTERVAL</span>
+
+1. **Rising edge.** When every device releases the line, it charges through $R_p$ into the bus capacitance $C_b$: $v(t) = V_{DD}(1 - e^{-t/R_pC_b})$.
+
+2. **Spec rise time** is measured from $0.3V_{DD}$ to $0.7V_{DD}$. Solving $v = 0.3V_{DD}$ and $v = 0.7V_{DD}$ for $t$ and subtracting:
+<Equation tex={String.raw`t_r=R_pC_b\ln\frac{1-0.3}{1-0.7}=R_pC_b\ln\frac73=0.847\,R_pC_b`}/>
+
+3. **Maximum resistance.** The rise time must not exceed the mode's limit:
+<Equation tex={String.raw`R_{p,max}=\frac{t_{r,max}}{0.847\,C_b}`}/>
+
+4. **Minimum resistance.** A device sinking $I_{OL}$ must hold the line at or below $V_{OL}$ = 0.4 V. KVL across the pull-up gives
+<Equation tex={String.raw`R_{p,min}=\frac{V_{DD}-V_{OL}}{I_{OL}}`}/>
+
+</div>
+
+<I2cRisePlot/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / FAST MODE AT 3.3 V</span><h3>Bus capacitance 100 pF, then 400 pF</h3>
+
+<p>$R_{p,max} = 300\text{ ns}/(0.847\times100\text{ pF})$ = 3.54 kΩ and $R_{p,min} = (3.3 - 0.4)/3\text{ mA}$ = 967 Ω. A 2.2 kΩ resistor sits comfortably inside, giving a 186 ns rise and 1.3 mA sink current.</p>
+
+<p>At the 400 pF limit, $R_{p,max}$ falls to 885 Ω, below $R_{p,min}$. <strong>No resistor works.</strong> Options: reduce capacitance (shorter traces, fewer devices), drop to standard mode, move to Fast-mode Plus parts that sink 20 mA, split the bus with a buffer, or use an active (current-source) pull-up whose constant current charges the line linearly and faster than a resistor of the same low-level current.</p>
+
+</div>
+
+Watch for **parallel pull-ups**: every breakout module tends to carry its own 4.7 kΩ or 10 kΩ pair. Three modules with 4.7 kΩ each put 1.57 kΩ on the bus, which may violate $R_{p,min}$ for a weak device.
+
+</section>
+
+<section id="clock">
+
+<div className="section-heading"><span>04</span><h2>Derive the clock rate and let targets stretch it</h2></div>
+
+The specification does not set the clock frequency directly; it sets minimum low and high times and maximum edge times. The frequency follows.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / SCL FREQUENCY FROM THE TIMING TABLE</span>
+
+1. **One SCL period** consists of a low time, a rising edge, a high time and a falling edge.
+
+2. **Fast-mode minimums:** $t_{LOW} \ge 1.3$ µs and $t_{HIGH} \ge 0.6$ µs. With the maximum edges $t_r = t_f = 0.3$ µs,
+<Equation tex={String.raw`T_{SCL}\ge t_{LOW}+t_r+t_{HIGH}+t_f=1.3+0.3+0.6+0.3=2.5\ \mu\text{s}`}/>
+   exactly 400 kHz. Standard mode ($t_{LOW}$ = 4.7 µs, $t_{HIGH}$ = 4.0 µs, $t_r$ = 1 µs, $t_f$ = 0.3 µs) gives 10 µs, 100 kHz.
+
+3. **Consequence.** A slow rise time is not merely a waveform blemish: a controller that times its high phase from when it releases SCL loses that time from $t_{HIGH}$, and a bus whose edges exceed the limit must run slower than nominal.
+
+</div>
+
+**Data setup and hold.** SDA must be valid $t_{SU;DAT}$ before SCL rises (250 ns standard, 100 ns fast). The hold time $t_{HD;DAT}$ may be zero, because devices provide an internal hold of at least 300 ns to bridge the undefined region of SCL's falling edge. START and STOP have their own setup and hold minimums ($t_{SU;STA}$, $t_{HD;STA}$, $t_{SU;STO}$), and the bus must be free for $t_{BUF}$ (4.7 µs standard, 1.3 µs fast) between a STOP and the next START.
+
+**Clock stretching and synchronization.** SCL is also wired-AND. A target that needs time can hold SCL low after the controller releases it; the controller watches SCL and waits for it to actually rise before timing its high phase. When two controllers drive SCL, the bus low time is the longest of their low times and the high time the shortest, so they synchronize to a common clock. A controller that does not monitor SCL breaks both mechanisms.
+
+</section>
+
+<section id="arbitration">
+
+<div className="section-heading"><span>05</span><h2>Resolve arbitration between controllers</h2></div>
+
+Two controllers may begin a transfer at the same moment. Each reads SDA back while SCL is high and compares it with what it sent.
+
+<I2cArbitrationFigure/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / WHY ARBITRATION IS LOSSLESS</span>
+
+1. **Wired-AND.** The bus level is the AND of all transmitted levels: 0 if anyone sends 0.
+
+2. **Detection.** A controller that sends 1 (releases) but reads 0 knows another controller is sending 0. One that sends 0 always reads 0 and never sees a conflict.
+
+3. **No damage.** Up to the losing bit, both controllers sent identical bits, so the bus carried a valid message. At the losing bit the bus carries the winner's 0, which is what the winner intended. The loser stops driving and becomes a receiver, possibly discovering that it is the target being addressed.
+
+4. **Priority.** Since 0 wins, the controller sending the numerically lower address (and, after that, lower data) wins. The same mechanism appears in CAN (Chapter 132).
+
+</div>
+
+</section>
+
+<section id="faults">
+
+<div className="section-heading"><span>06</span><h2>Diagnose noise, level shifting and stuck buses</h2></div>
+
+**Glitches.** A slow edge sitting near threshold is sensitive to noise; a small spike on SCL can look like an extra clock. Fast-mode inputs must reject spikes shorter than 50 ns, and Schmitt-trigger inputs add hysteresis. Long, high-capacitance runs make edges slower and more vulnerable; I²C is a board-level bus, and running it down a cable needs a buffer or a differential extender.
+
+**Level shifting.** A common bidirectional translator uses one N-channel MOSFET per line, gate at the low supply, source on the low side and drain on the high side, with pull-ups on both sides. When a low-side device pulls low, the MOSFET's $V_{GS}$ rises and it conducts, pulling the high side low. When a high-side device pulls low, the body diode conducts until $V_{GS}$ is large enough to turn the channel on. When both release, the MOSFET is off and each side's pull-up restores its own high level. The circuit works because I²C is open-drain; it fails with push-pull signals.
+
+**A stuck bus.** If a controller is reset in the middle of a read, a target may be holding SDA low while it waits to send the rest of a byte. The controller cannot generate START or STOP while SDA is low. The specified recovery is to clock SCL up to **nine** times: the target finishes its byte (at most eight more bits) plus the acknowledge slot, releases SDA at some point, and the controller then issues STOP. Nine clocks is the longest sequence a target can be in the middle of. Devices that latch up differently need a hardware reset line, which robust designs provide.
+
+**Throughput.** A one-byte register write takes three nine-clock slots, 27 clocks plus START and STOP. At 400 kHz that is at least 67.5 µs, so a single register write runs at far less than the nominal rate; burst transfers with auto-increment amortize the addressing.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, draw the waveforms of a read with a repeated START, compute the pull-up interval for a given bus, derive the Fast-mode Plus clock rate from its timing minimums, and explain why nine clocks clear a stuck bus.
+
+[Work through three independent problems](/i2c-bus/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §14.7; NXP UM10204, I²C-bus specification and user manual; TI SLVA689, I²C pull-up resistor calculation. Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

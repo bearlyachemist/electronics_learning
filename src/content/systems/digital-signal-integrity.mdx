@@ -1,0 +1,169 @@
+import Equation from '../../components/Equation.astro';
+import {EyeDiagramFigure,ReflectionEdgePlot,ImpedanceMismatchPlot} from '../../components/DigitalFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 128</span><span className="hairline"/>PART VII / LOGIC, TIMING &amp; SIGNAL INTEGRITY</div>
+
+<h1>Digital signal integrity<br/><em>Every logic edge is an analog event.</em></h1>
+
+<p className="dek">Relate rise time to bandwidth, derive reflections and terminations, explain why every interface standard fixes an impedance, read an eye diagram, and budget crosstalk and ground bounce.</p>
+
+<div className="chapter-meta"><span>55–80 min + practice</span><span>Derivations · Waveforms · Layout rules</span></div>
+
+</div>
+
+<section id="edges">
+
+<div className="section-heading"><span>01</span><h2>Treat a logic edge as an analog signal</h2></div>
+
+A "1" and a "0" are decisions a receiver makes at particular instants. Between those instants the wire carries an ordinary analog waveform, and everything in Parts I and V applies to it. The quantity that decides how analog a digital signal behaves is not its clock rate but its **edge time**.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / RISE TIME AND BANDWIDTH</span>
+
+1. **A single-pole channel.** Drive a first-order low-pass (time constant $\tau$) with a step. The output is $1 - e^{-t/\tau}$ (Chapter 6).
+
+2. **10–90% rise time.** It reaches 10% at $t_1 = \tau\ln(1/0.9)$ and 90% at $t_2 = \tau\ln(1/0.1)$, so
+<Equation tex={String.raw`t_r=t_2-t_1=\tau\ln9\approx2.2\,\tau`}/>
+
+3. **Bandwidth.** The same channel's −3 dB frequency is $f_{3dB} = 1/(2\pi\tau)$. Eliminating $\tau$:
+<Equation tex={String.raw`t_r\,f_{3dB}=\frac{2.2}{2\pi}\approx0.35\qquad\Longrightarrow\qquad f_{3dB}\approx\frac{0.35}{t_r}`}/>
+
+4. **Interpretation.** A waveform with rise time $t_r$ has significant spectral content up to about $0.35/t_r$, regardless of how often it repeats. A 1 MHz clock with 1 ns edges needs a 350 MHz channel to keep those edges.
+
+</div>
+
+**When the wire is a transmission line.** Chapter 111 showed that a trace behaves as a lumped node only if its delay is short compared with the edge. A common screening rule treats a trace as a line when its one-way delay exceeds about $t_r/6$. On FR-4, where signals travel about 15 cm/ns, a 1 ns edge makes any trace longer than roughly 2.5 cm a transmission line. That is why modern logic, whose edges are hundreds of picoseconds even at low clock rates, needs line thinking on almost every board.
+
+</section>
+
+<section id="reflections">
+
+<div className="section-heading"><span>02</span><h2>Derive reflections and choose a termination</h2></div>
+
+Chapter 111 derived the launch voltage $V_sZ_0/(R_s + Z_0)$ and the reflection coefficients $\Gamma = (Z - Z_0)/(Z + Z_0)$ at each end. A CMOS receiver is nearly an open circuit, $\Gamma_L \approx +1$. A strong CMOS driver has an output resistance of 10–30 Ω, well below a 50 Ω trace, so $\Gamma_S$ is negative. The signal therefore doubles at the receiver and then rings with alternating sign.
+
+<ReflectionEdgePlot/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / FOUR TERMINATIONS AND THEIR COSTS</span>
+
+1. **Series (source) termination.** Add $R_{ser}$ so that $R_{out} + R_{ser} = Z_0$. Then $\Gamma_S = 0$. The launch is $V_s/2$; the open receiver doubles it to $V_s$; the reflected half-wave returns to the source and is absorbed. No DC current flows. The cost: points along the line see a half-amplitude step until the reflection passes, so it suits point-to-point links, not loads spread along the line.
+
+2. **Parallel termination.** Put $R_T = Z_0$ from the far end to ground. Then $\Gamma_L = 0$ and the first arrival is final. The cost is DC current: a 3.3 V high level across 50 Ω draws 66 mA and dissipates $V^2/R_T$ = 218 mW whenever the line is high.
+
+3. **Thévenin termination.** Two resistors to the rails whose parallel value equals $Z_0$ terminate the line and set an idle bias at their divider voltage, but draw current in both states.
+
+4. **AC termination.** $R_T = Z_0$ in series with a capacitor $C$. At the edge the capacitor is a short and the line sees $Z_0$; at DC it is open and no static current flows. The capacitor must look like a short over the edge, $C \gg t_r/Z_0$, yet charge within a bit: the time constant $Z_0C$ should be small compared with the shortest run of identical bits, or the termination itself creates pattern-dependent offsets.
+
+</div>
+
+For differential pairs the same reasoning uses the differential impedance: a single resistor of $Z_{diff}$ across the pair at the receiver, which is why LVDS, RS-485, CAN and Ethernet all specify a far-end resistor of around 100–120 Ω.
+
+</section>
+
+<section id="impedance">
+
+<div className="section-heading"><span>03</span><h2>Explain why every interface fixes an impedance</h2></div>
+
+An interface standard is a contract between strangers: a transmitter, a cable and a receiver made by different companies must work together. The reflection algebra shows why that contract must name an impedance.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / WHAT THE STANDARD IMPEDANCE GUARANTEES</span>
+
+1. **Geometry fixes the cable.** Chapter 110 derived $Z_0 = (60\ \Omega/\sqrt{\varepsilon_r})\ln(b/a)$ for coax. A twisted pair has an analogous formula in conductor diameter, spacing and insulation. A given cable construction therefore *has* an impedance; manufacturers make cable to a few standard values.
+
+2. **The termination must equal the cable.** The reflected fraction is $|\Gamma| = |R_T - Z_0|/(R_T + Z_0)$. If the receiver vendor and the cable vendor agree on $Z_0$ in advance, the receiver's termination matches any compliant cable.
+
+3. **Driver strength follows.** The driver must develop the specified signal across the termination load. RS-485, terminated at both ends, presents $120\parallel120 = 60$ Ω; the standard requires at least 1.5 V across a 54 Ω test load, which means at least 28 mA of drive current. A driver sized for an unterminated bus would fail there.
+
+4. **Tolerances bound the reflection.** A ±10% mismatch reflects $0.1/2.1$ ≈ 4.8%; two such discontinuities produce a re-reflection of 0.2%. The specified impedance tolerance is chosen so the worst case still fits inside the receiver's noise margin.
+
+</div>
+
+<ImpedanceMismatchPlot/>
+
+| Interface | Medium | Nominal impedance | Termination |
+|---|---|---|---|
+| RF, test equipment | Coax | 50 Ω single-ended | 50 Ω load |
+| Video, CATV | Coax | 75 Ω single-ended | 75 Ω load |
+| RS-485, CAN | Twisted pair | 120 Ω differential | 120 Ω at each end |
+| USB 2.0 | Twisted pair, PCB | 90 Ω differential | inside the PHY (45 Ω each side) |
+| Ethernet, LVDS, PCIe | Twisted pair, PCB | 100 Ω differential (85 Ω for PCIe) | 100 Ω in receiver or magnetics |
+
+A board trace that routes such a signal must be designed to the same impedance (Chapter 120), or the trace itself becomes the discontinuity. The common mistake is to treat the termination resistor as a value to tweak; it is the other half of a cable specification.
+
+</section>
+
+<section id="eye">
+
+<div className="section-heading"><span>04</span><h2>Read an eye diagram</h2></div>
+
+Overlay every bit interval of a long random sequence on one screen and the traces form an "eye". Its vertical opening is the voltage margin available to the receiver's decision; its horizontal opening is the timing margin for the sampling clock. A channel with too little bandwidth closes the eye even with no noise at all, because each bit has not finished settling when the next begins.
+
+<EyeDiagramFigure/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / INTER-SYMBOL INTERFERENCE IN A ONE-POLE CHANNEL</span>
+
+1. **Worst-case one.** A single 1 following a long run of 0s starts from 0 and charges toward 1. Sampled a time $t_s$ after its leading edge, it has reached $1 - e^{-t_s/\tau}$.
+
+2. **Worst-case zero.** A single 0 after a long run of 1s starts from 1 and has fallen to $e^{-t_s/\tau}$.
+
+3. **Eye height** is the gap between the lowest possible 1 and the highest possible 0:
+<Equation tex={String.raw`h_{eye}=1-2e^{-t_s/\tau}`}/>
+
+4. **Numbers.** Sampling at mid-bit, $t_s = T/2$. For $\tau = 0.15T$, $e^{-3.33} = 0.036$ and the eye is 93% open; for $\tau = 0.6T$, $e^{-0.83} = 0.43$ and it is only 13% open. The eye closes completely ($h = 0$) when $t_s = \tau\ln2$: with mid-bit sampling, that happens once $\tau$ exceeds $0.72T$, a channel bandwidth below about $0.22/T$.
+
+</div>
+
+The crossings smear for the same reason: an edge after a long run starts from farther away and crosses the threshold later than an edge after alternating bits. That pattern-dependent timing is **data-dependent jitter**. Receivers fight both effects with equalization, which boosts high frequencies so the channel's overall response looks less like a slow single pole, and with clock recovery that samples where the eye is widest.
+
+</section>
+
+<section id="crosstalk">
+
+<div className="section-heading"><span>05</span><h2>Budget crosstalk and ground bounce</h2></div>
+
+Two parallel traces couple through mutual capacitance $C_m$ and mutual inductance $L_m$ (Chapter 110). A fast edge on the aggressor injects current into the victim through both.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / NEAR-END CROSSTALK OF COUPLED LINES</span>
+
+1. **Capacitive coupling** injects a current $C_m\,dV/dt$ per unit length into the victim, which splits equally and travels in both directions.
+
+2. **Inductive coupling** induces a series voltage $L_m\,dI/dt$ per unit length; with $I = V/Z_0$ on the aggressor, its effect also splits into backward and forward waves, with opposite sign in the forward direction.
+
+3. **Backward (near-end) wave.** Summing the two contributions that travel back toward the source gives a plateau whose height, for a coupled length longer than half the rise time, is
+<Equation tex={String.raw`\frac{V_{NEXT}}{V_{aggressor}}=K_b=\frac14\left(\frac{C_m}{C}+\frac{L_m}{L}\right)`}/>
+   where $C$ and $L$ are the victim's own per-length values.
+
+4. **Forward (far-end) wave.** The capacitive and inductive terms subtract. In a homogeneous stripline they cancel exactly; in microstrip they do not, and far-end crosstalk grows with coupled length.
+
+</div>
+
+With $C_m/C = L_m/L = 0.04$ (traces spaced roughly one dielectric height apart), $K_b = 0.02$: a 3.3 V aggressor puts 66 mV on the victim. Tripling the spacing typically reduces the coupling ratios by about an order of magnitude, which is the origin of the "3W" spacing rule.
+
+**Ground bounce.** When $N$ outputs switch together, each charging a load capacitance $C_L$ through a shared package inductance $L_{gnd}$, the return current changes at about $N C_LV/t_r^2$ (the current $C_LV/t_r$ rises in roughly $t_r$). The ground pin then bounces by
+<Equation tex={String.raw`V_{bounce}\approx L_{gnd}\,\frac{N\,C_LV_{DD}}{t_r^2}`}/>
+Eight outputs driving 15 pF from 3.3 V in 1 ns through 1 nH give about **0.40 V**, enough to make a quiet output glitch or to shift an input's threshold. Remedies are more ground pins and vias, slower edge-rate settings where available, and close decoupling.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, convert a rise time to bandwidth and critical length, choose a termination and compute its power, explain the standard-impedance table from the reflection formula, and compute an eye height for a given channel time constant.
+
+[Work through three independent problems](/digital-signal-integrity/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§12.10–12.11 and Appendix H; standard signal-integrity derivations. Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

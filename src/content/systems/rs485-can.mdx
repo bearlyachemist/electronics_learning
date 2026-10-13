@@ -1,0 +1,184 @@
+import Equation from '../../components/Equation.astro';
+import {DifferentialRejectionPlot,CanBitTimingFigure,CanArbitrationFigure,CanFrameFigure} from '../../components/DigitalFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 132</span><span className="hairline"/>PART VII / CABLE INTERFACES</div>
+
+<h1>RS-485 and CAN<br/><em>Differential pairs that survive the factory floor.</em></h1>
+
+<p className="dek">See what differential signalling actually rejects, read the RS-485 electrical specification and derive its unit-load limit, terminate and bias a bus, then follow CAN's dominant and recessive states through arbitration, framing, bit timing and error confinement.</p>
+
+<div className="chapter-meta"><span>55–80 min + practice</span><span>Specification · Derivations · Bus design</span></div>
+
+</div>
+
+<section id="differential">
+
+<div className="section-heading"><span>01</span><h2>See what a differential pair rejects</h2></div>
+
+A single-ended signal is a voltage between one wire and "ground". Over a cable, the two ends' grounds are not the same node: return currents, induced voltages and supply differences put volts between them. A **differential** link sends the signal as the difference between two wires and lets the receiver ignore what is common to both.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / DIFFERENTIAL AND COMMON-MODE COMPONENTS</span>
+
+1. **Decompose.** Any pair of voltages $v_A$, $v_B$ can be written as a differential part $v_d = v_A - v_B$ and a common-mode part $v_{cm} = (v_A + v_B)/2$, with $v_A = v_{cm} + v_d/2$ and $v_B = v_{cm} - v_d/2$.
+
+2. **Disturbances are mostly common-mode.** A ground offset between the two ends shifts both wires equally. A magnetic field threading a twisted pair induces voltages that alternate in sign from one twist to the next and nearly cancel; what remains appears almost equally on both conductors.
+
+3. **The receiver subtracts.** A differential receiver responds to $v_d$ and rejects $v_{cm}$ within its specified common-mode range. Its output depends only on the transmitted signal.
+
+4. **The balance matters.** Rejection is only as good as the symmetry: unequal wire lengths, unequal capacitance to ground or unequal termination convert common mode into differential signal (Chapter 120).
+
+</div>
+
+<DifferentialRejectionPlot/>
+
+A differential pair also radiates less: the two currents are equal and opposite, so their fields cancel at a distance, provided no common-mode current flows on the cable.
+
+</section>
+
+<section id="rs485">
+
+<div className="section-heading"><span>02</span><h2>Read the RS-485 electrical specification</h2></div>
+
+TIA/EIA-485 defines only the electrical layer of a balanced multipoint bus. It says nothing about bytes; UART frames (Chapter 129) and protocols such as Modbus RTU commonly ride on it.
+
+| Parameter | Specification |
+|---|---|
+| Driver differential output | ≥ 1.5 V into a 54 Ω test load; ≤ 6 V unloaded |
+| Receiver thresholds | output defined for $v_d$ > +200 mV (one state) and < −200 mV (the other) |
+| Receiver common-mode range | −7 V to +12 V |
+| Receiver input resistance | ≥ 12 kΩ, defined as one unit load |
+| Maximum loading | 32 unit loads |
+| Cable | twisted pair, about 120 Ω differential |
+| Typical reach | about 1200 m at 100 kbit/s; about 10 m at 10 Mbit/s |
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / WHERE 32 UNIT LOADS AND 54 Ω COME FROM</span>
+
+1. **Termination load.** A bus terminated with 120 Ω at each end presents $120\parallel120 = 60$ Ω to a driver.
+
+2. **Receiver loading.** Thirty-two receivers of 12 kΩ in parallel are $12\text{ k}/32 = 375$ Ω.
+
+3. **Total load:** $60\parallel375 = 51.7$ Ω. The standard's 54 Ω test load is this worst case, rounded. A driver that delivers 1.5 V into 54 Ω therefore works with a full, properly terminated bus.
+
+4. **Fractional unit loads.** Modern receivers with 48 kΩ or 96 kΩ inputs count as ¼ or ⅛ unit load, so 128 or 256 of them present the same 375 Ω. Capacitance and stub length, not DC loading, then usually limit node count.
+
+5. **Margin.** 1.5 V at the driver against a 200 mV receiver threshold allows for about 17 dB of cable attenuation and noise before the threshold is reached.
+
+</div>
+
+**Rate and length.** A long cable's resistance and skin-effect loss round the edges; the rule of thumb is that rate × length should stay below about $10^8$ bit·m/s for ordinary twisted pair. Below about 100 kbit/s, DC resistance of the cable and ground offset (within −7 to +12 V) become the limits instead.
+
+</section>
+
+<section id="bus">
+
+<div className="section-heading"><span>03</span><h2>Terminate, bias and turn the bus around</h2></div>
+
+Use a single trunk with short stubs and terminate **only at the two physical ends**, with resistors matching the cable's 120 Ω (Chapter 128). A termination at every node would load the bus to a few ohms; none would let edges reflect along the whole cable.
+
+**Idle bias.** When no driver is enabled, the terminated pair floats near 0 V differential, inside the receivers' undefined band, and noise produces random bytes. Either use "fail-safe" receivers whose threshold is shifted so 0 V reads as idle, or bias the bus: a resistor from A to the supply and one from B to ground. With the two 120 Ω terminations equivalent to 60 Ω between A and B, the idle voltage is a divider:
+<Equation tex={String.raw`V_{idle}=V_{bias}\,\frac{60\ \Omega}{2R_b+60\ \Omega}`}/>
+With $V_{bias}$ = 5 V and $R_b$ = 680 Ω, $V_{idle}$ = 0.21 V: barely above the 200 mV threshold, so tolerances need checking. Apply bias once, near one end, not at every node.
+
+**Half-duplex turnaround.** On a two-wire bus only one driver may be enabled. Enable it before the start bit, and disable it only after the *last stop bit has left the shift register*, not when software writes the last byte into a FIFO. At 115.2 kbit/s one 8N1 byte lasts 86.8 µs; disabling early truncates it, disabling late collides with the reply. Many UARTs provide a transmitter-empty flag or an automatic direction output for exactly this.
+
+**Ground and isolation.** The −7 to +12 V common-mode range covers modest ground differences, not lightning or separate building earths. A reference conductor between nodes, or galvanic isolation in each transceiver, keeps the common mode inside the range.
+
+</section>
+
+<section id="can-phy">
+
+<div className="section-heading"><span>04</span><h2>Specify CAN's dominant and recessive states</h2></div>
+
+CAN (Controller Area Network) defines both a protocol and a physical layer. On the common high-speed physical layer (ISO 11898-2), a transceiver drives the pair to one of two states:
+
+| State | Logic | CAN_H | CAN_L | Differential |
+|---|---|---|---|---|
+| Recessive | 1 | ≈ 2.5 V | ≈ 2.5 V | ≈ 0 V (driver off; terminations pull the pair together) |
+| Dominant | 0 | ≈ 3.5 V | ≈ 1.5 V | ≈ 2 V (driver on) |
+
+Receivers read recessive below 0.5 V differential and dominant above 0.9 V. The essential property is that **recessive is "nobody driving"**: if any node drives dominant, the bus is dominant. CAN therefore has the same wired-AND behaviour as I²C (Chapter 131), but on a differential pair that tolerates cable lengths of tens to hundreds of metres. The bus is terminated with 120 Ω at each end; a "split" termination uses two 60 Ω resistors with a capacitor from their midpoint to ground to filter common-mode noise.
+
+</section>
+
+<section id="can-frame">
+
+<div className="section-heading"><span>05</span><h2>Follow a frame through arbitration</h2></div>
+
+<CanFrameFigure/>
+
+<CanArbitrationFigure/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / ARBITRATION, STUFFING AND FRAME LENGTH</span>
+
+1. **Arbitration.** Every node waits for an idle bus, then starts with a dominant start-of-frame bit. During the identifier each transmitter monitors the bus; one that sends recessive and reads dominant has lost and becomes a receiver. As in I²C, the bits sent before the conflict are identical for all contenders and the winner's frame is undamaged. The lowest identifier has the highest priority, so identifiers are assigned by urgency, not by destination.
+
+2. **Bit stuffing.** Receivers resynchronize on recessive-to-dominant edges. To guarantee edges, after five consecutive equal bits the transmitter inserts one bit of the opposite value, which receivers discard. Between the start of frame and the end of the CRC this adds at most one bit per four data bits after the first.
+
+3. **Frame length.** A standard data frame with 8 data bytes has 44 fixed bits (SOF through end of frame, excluding data) plus 64 data bits, 108 bits. The stuffable region (SOF to CRC, 34 + 64 = 98 bits) can gain up to $\lfloor(98-1)/4\rfloor$ = 24 stuff bits. Add a 3-bit interframe space:
+<Equation tex={String.raw`N_{max}=108+24+3=135\ \text{bits}\quad\Longrightarrow\quad t_{frame}=\frac{135}{500\ \text{kbit/s}}=270\ \mu\text{s}`}/>
+   A 500 kbit/s bus carries at most about 3700 such frames per second; 64 of the 135 bits are payload.
+
+4. **Acknowledgment and CRC.** The 15-bit CRC detects all burst errors up to 15 bits. In the ACK slot the transmitter sends recessive and every node that received the frame correctly overwrites it with dominant, so the transmitter learns that *at least one* node received it, not that the intended application processed it.
+
+</div>
+
+</section>
+
+<section id="timing">
+
+<div className="section-heading"><span>06</span><h2>Derive bit timing and maximum bus length</h2></div>
+
+Arbitration only works if every node sees every other node's bit before it samples. The bit is divided into time quanta (tq) and its segments are programmed in the controller.
+
+<CanBitTimingFigure/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / THE PROPAGATION SEGMENT AND CABLE LENGTH</span>
+
+1. **Round trip.** Node A sends a bit. It reaches the far node B after the cable delay plus transceiver delays; B's dominant response (if B wins that bit) travels back the same way. A must see B's contribution before its own sample point.
+
+2. **Requirement.** The propagation segment must cover twice the one-way delay:
+<Equation tex={String.raw`t_{PROP\_SEG}\ge2\left(t_{cable}+t_{tx}+t_{rx}\right)`}/>
+
+3. **Example at 500 kbit/s.** Sixteen 125 ns quanta with a 7 tq propagation segment allow 875 ns. With a cable delay of 5 ns/m and 150 ns of combined transceiver delay each way, $2(5L + 150) \le 875$ gives $L \le 57$ m.
+
+4. **At 1 Mbit/s** the bit is half as long. Keeping 87.5% sampling with 8 MHz quanta leaves about 437 ns for propagation, which the same transceivers cannot meet beyond about 14 m; faster transceivers and a 40 m limit are typical in practice. Bit rate and bus length trade directly.
+
+5. **Resynchronization.** Each node's oscillator differs slightly. On every recessive-to-dominant edge a node shifts its bit boundary by up to the synchronization jump width, lengthening phase segment 1 or shortening phase segment 2. Bit stuffing guarantees an edge at least every ten bits (five equal bits plus a stuff bit, around the stuffed position), which bounds the oscillator tolerance CAN needs, typically about ±0.5% or better.
+
+</div>
+
+**CAN FD** keeps arbitration at the slower nominal rate (so propagation still fits) and then switches to a faster data phase, up to 64 bytes per frame, where only the transmitter-to-receiver path matters and transmitter delay compensation removes the round trip.
+
+</section>
+
+<section id="errors">
+
+<div className="section-heading"><span>07</span><h2>Confine faults with error counters</h2></div>
+
+Every node checks each frame for bit errors (sent value differs from read value outside arbitration), stuff errors (six equal bits), CRC errors, form errors and missing acknowledgments. A node that detects an error sends an **error frame** (six dominant bits, which deliberately violate stuffing), so every node discards the frame and the transmitter retries.
+
+Each node keeps transmit and receive error counters that rise sharply on errors and fall slowly on successes. Above 127 a node becomes **error passive**: it may still communicate but signals errors only with recessive bits, so it cannot destroy others' frames. Above 255 on the transmit counter it goes **bus off** and stops transmitting. A node with a broken transceiver or wrong bit rate therefore isolates itself instead of jamming the bus. Applications still need timeouts and heartbeat messages, since a bus-off node is silent rather than loudly faulty.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>08</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, derive the unit-load limit from the termination and receiver resistances, compute an idle bias voltage, find the worst-case length of a CAN frame, and compute the maximum bus length for a given bit timing.
+
+[Work through three independent problems](/rs485-can/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§12.10 and 14.7; TI SLLA272 (RS-485 design guide) and SLLA270 (CAN physical layer); ISO 11898. Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

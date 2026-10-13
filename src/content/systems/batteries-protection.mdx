@@ -1,0 +1,131 @@
+import Equation from '../../components/Equation.astro';
+import {DischargeCurvePlot,FoldbackPlot} from '../../components/PowerFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 109</span><span className="hairline"/>PART IV / STORAGE &amp; PROTECTION</div>
+
+<h1>Batteries, energy storage and supply protection<br/><em>Store energy, then keep it from doing damage.</em></h1>
+
+<p className="dek">Model a battery with capacity and internal resistance, compare chemistries, charge lithium-ion safely, compute how much of a supercapacitor's energy is usable, and protect supplies and loads with reverse-polarity, inrush, foldback and crowbar circuits.</p>
+
+<div className="chapter-meta"><span>45–70 min + practice</span><span>Derivations · Chemistry comparison · Protection circuits</span></div>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Model a battery</h2></div>
+
+A battery is, to first order, a voltage source in series with an internal resistance, whose voltage depends on its state of charge. Its **capacity** is quoted in ampere-hours at a stated discharge rate, and the rate is quoted as a fraction of capacity: a 2 Ah cell discharged at 1C supplies 2 A for about an hour; at C/10, 200 mA for ten hours.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / ENERGY, RUN TIME AND LOAD-DEPENDENT LOSS</span>
+
+1. **Energy.** Integrating power over the discharge, $E = \int VI\,dt \approx \bar V\cdot Q$. A 2 Ah lithium-ion cell averaging 3.6 V stores about 7.2 Wh, or 26 kJ.
+
+2. **Internal resistance.** Under load the terminal voltage is $V_{oc} - IR_{int}$, and the cell wastes $I^2R_{int}$ inside itself. The fraction lost is $IR_{int}/V_{oc}$, which grows with current.
+
+3. **Rate dependence.** Delivered capacity also falls at high rates, because ion transport cannot keep up (Peukert's empirical law for lead-acid, $t = H(C/(IH))^k$ with $k$ ≈ 1.1–1.3). A load that draws short high-current bursts sees both effects; an average-current calculation overestimates run time.
+
+4. **Example.** A 3.7 V cell with 80 mΩ internal resistance supplying a 2 A burst drops 0.16 V internally and dissipates 0.32 W in itself. If the equipment cuts off at 3.3 V, the burst triggers the cutoff when the open-circuit voltage falls to 3.46 V, well before the cell is empty.
+
+</div>
+
+<DischargeCurvePlot/>
+
+</section>
+
+<section id="chemistry">
+
+<div className="section-heading"><span>02</span><h2>Compare chemistries</h2></div>
+
+| Chemistry | Nominal cell voltage | Energy density | Self-discharge | Notes |
+|---|---|---|---|---|
+| Alkaline (primary) | 1.5 V | moderate | very low | High internal resistance; voltage slopes |
+| Lithium primary (Li-MnO₂) | 3.0 V | high | very low | Ten-year shelf life; coin cells for backup |
+| NiMH | 1.2 V | moderate | 15–30%/month (low-self-discharge types less) | Flat curve; tolerant; drop-in for alkaline |
+| Lead-acid | 2.0 V | low | ~3%/month | Cheap, heavy; float charged in standby systems |
+| Lithium-ion (NMC/LCO) | 3.6–3.7 V | high | 2–3%/month | Needs protection circuit; sloping curve |
+| LiFePO₄ | 3.2 V | moderate | low | Long cycle life, thermally safer, flat curve |
+
+The choice is a system decision: required energy and peak current, temperature range, shelf life, rechargeability, safety and shipping regulations, and whether the curve's shape lets the equipment estimate remaining charge.
+
+</section>
+
+<section id="charging">
+
+<div className="section-heading"><span>03</span><h2>Charge lithium-ion with CC–CV</h2></div>
+
+Lithium-ion cells are charged in two phases. A **constant-current** phase, typically 0.5–1C, brings the cell up to its maximum voltage, 4.20 V (±50 mV) for most chemistries. A **constant-voltage** phase then holds 4.20 V while the current tapers; charging ends when it falls to about C/10–C/20. Below about 3 V, a gentle pre-charge at C/10 recovers a deeply discharged cell.
+
+Overcharging by even 100 mV accelerates degradation and, further, risks lithium plating and thermal runaway. Every lithium pack therefore carries a **protection circuit**: back-to-back MOSFETs in the negative lead that open on over-voltage (about 4.3 V), under-voltage (about 2.5 V), over-current and short circuit, independent of the charger. Multi-cell packs need balancing so no single cell exceeds its limit, and charging should be inhibited below 0 °C and above about 45 °C.
+
+</section>
+
+<section id="supercap">
+
+<div className="section-heading"><span>04</span><h2>Store energy in capacitors</h2></div>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / USABLE ENERGY FROM A CAPACITOR</span>
+
+1. **Stored energy** is $\tfrac12CV^2$ (Chapter 5).
+
+2. **Usable fraction.** A load that operates down to $V_{min}$ can extract only the energy between $V_{max}$ and $V_{min}$:
+<Equation tex={String.raw`E_{usable}=\tfrac12C\left(V_{max}^2-V_{min}^2\right),\qquad\frac{E_{usable}}{E_{total}}=1-\left(\frac{V_{min}}{V_{max}}\right)^2`}/>
+   Falling to half voltage releases 75% of the energy.
+
+3. **Run time at constant power.** A regulator drawing constant power $P$ from the capacitor runs for $t = E_{usable}/(P/\eta)$, with $\eta$ the converter efficiency.
+
+4. **Example.** A 10 F, 2.7 V supercapacitor feeding a boost converter that works down to 0.9 V stores 36.5 J and delivers $0.5(10)(2.7^2 - 0.9^2)$ = 32.4 J. At 1 W with 85% efficiency it lasts about 28 s, enough to save state after a power failure.
+
+</div>
+
+Supercapacitors have far higher power density than batteries and survive hundreds of thousands of cycles, but store perhaps a twentieth of the energy per gram, leak more and have low voltage ratings, so they are stacked with balancing resistors. They fill the gap between electrolytic capacitors (hold-up for milliseconds) and batteries (hours).
+
+</section>
+
+<section id="protection">
+
+<div className="section-heading"><span>05</span><h2>Protect supplies and loads</h2></div>
+
+**Reverse polarity.** A series diode blocks reversed input but drops 0.3–0.7 V and dissipates $IV_F$. A P-channel MOSFET in the positive lead, gate to ground, conducts through its channel when the polarity is correct (its body diode first lifts the source, then $V_{GS}$ turns it on) and is off when reversed, with only $I^2R_{DS(on)}$ loss. A zener from gate to source protects the gate on high-voltage inputs.
+
+**Inrush and hot-swap.** Plugging a board into a live supply charges its input capacitors at $I = C\,dV/dt$, which can be hundreds of amperes. A hot-swap controller ramps the gate of a series MOSFET so the input voltage rises at a controlled rate: charging 1000 µF to 12 V in 10 ms limits the current to $1000\ \mu\times12/0.01$ = 1.2 A. The MOSFET dissipates the energy $\tfrac12CV^2$ during the ramp (72 mJ here), which must lie inside its pulsed SOA (Chapter 101).
+
+<FoldbackPlot/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / WHY FOLDBACK LIMITING REDUCES DISSIPATION</span>
+
+1. **Constant-current limit.** In a short circuit a linear regulator's pass transistor carries the limit current $I_{lim}$ with the whole input voltage across it: $P = V_{in}I_{lim}$.
+
+2. **Foldback.** The limit current is made to fall with output voltage, typically linearly to a short-circuit value $I_{sc}$. In a short the pass transistor dissipates only $V_{in}I_{sc}$.
+
+3. **Example.** 15 V input, 1.5 A limit: a constant-current short dissipates 22.5 W. Folding back to 0.4 A reduces it to 6 W, which a modest heat sink handles.
+
+4. **The catch.** The load line must cross the foldback curve only at the intended operating point. A load that draws substantial current at low voltage (motors, constant-current loads, other regulators starting up) can latch the supply at a low-voltage intersection, as in the figure.
+
+</div>
+
+**Overvoltage crowbar.** If a regulator's pass transistor fails short, the full unregulated input appears at the output and destroys everything downstream. A crowbar senses overvoltage (a zener, or a comparator with a reference) and fires an SCR across the output, short-circuiting it so the fuse or current limit operates. The SCR must handle the fault current until the fuse clears; the sensing threshold sits a safe margin above normal output so noise does not trigger it. A crowbar trades a blown fuse for a destroyed board.
+
+**Fuses and polyfuses.** A fuse's $I^2t$ rating sets how much energy it passes before opening; slow types tolerate inrush. Resettable polymer PTC fuses trip to high resistance when hot and recover when the fault is removed, convenient for USB ports and user-accessible outputs, though they leave a few milliamperes flowing in the tripped state.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, estimate a battery's run time including internal resistance, compute a supercapacitor's usable energy, set a hot-swap ramp rate and MOSFET energy, and compare constant-current and foldback dissipation.
+
+[Work through three independent problems](/batteries-protection/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§9.12 (energy storage: batteries and capacitors) and 9.13 (crowbars, foldback limiting and other regulation topics). Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

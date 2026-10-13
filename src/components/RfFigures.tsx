@@ -14,7 +14,7 @@ function Box({x,y,w,h,label,sub}:{x:number;y:number;w:number;h:number;label:stri
 function Arrow({d}:{d:string}){return <path d={d} fill="none" stroke={ink} strokeWidth="1.8" markerEnd="url(#rf-arrow)"/>;}
 const ArrowDef=()=><defs><marker id="rf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill={ink}/></marker></defs>;
 
-/* ---------- Chapter 101: fields ---------- */
+/* ---------- Chapter 110: fields ---------- */
 export function CoaxFieldFigure(){
   const cx=170,cy=130,a=28,b=92;
   const radials=Array.from({length:12},(_,i)=>i*Math.PI/6);
@@ -39,7 +39,7 @@ export function SkinDepthPlot(){
   return <Figure plot caption="Skin depth in copper, δ = √(2ρ/ωμ). It falls as 1/√f: about 8.5 mm at 60 Hz, 66 µm at 1 MHz and 2.1 µm at 1 GHz. Above the frequency where δ is comparable to the conductor's thickness, resistance rises as √f."><Plot curves={[{name:'Copper skin depth',color:green,points:logpts(d,10,1e10)}]} xScale="log" yScale="log" xRange={[10,1e10]} yRange={[0.5,3e4]} xLabel="Frequency / Hz" yLabel="Skin depth / µm" marks={[{at:[60,d(60)],label:'60 Hz',pos:'ne'},{at:[1e6,d(1e6)],label:'1 MHz',pos:'ne'},{at:[1e9,d(1e9)],label:'1 GHz',pos:'sw'}]} description="Skin depth of copper versus frequency on log-log axes, a straight line of slope minus one half."/></Figure>;
 }
 
-/* ---------- Chapter 103: RF passives and the Smith chart ---------- */
+/* ---------- Chapter 112: RF passives and the Smith chart ---------- */
 export function RealComponentPlot(){
   const w=(f:number)=>2*Math.PI*f;
   const zc=(f:number)=>{const C=100e-9,L=1e-9,R=0.02;const x=w(f)*L-1/(w(f)*C);return Math.hypot(R,x);};
@@ -81,7 +81,7 @@ export function LineImpedancePlot(){
   return <Figure plot caption="Input impedance of a lossless 50 Ω line terminated in 100 Ω, versus line length in wavelengths. The resistance swings between Z_L = 100 Ω and Z₀²/Z_L = 25 Ω every quarter wavelength; the reactance is zero only at those two points."><Plot curves={[{name:'R_in',color:green,points:linpts(l=>zin(l)[0],0,1,400)},{name:'X_in',color:orange,points:linpts(l=>zin(l)[1],0,1,400)}]} xRange={[0,1]} yRange={[-45,105]} xLabel="Line length / wavelengths" yLabel="Input impedance / Ω" marks={[{at:[0.25,25],label:'λ/4: 25 Ω',pos:'se'},{at:[0.5,100],label:'λ/2: 100 Ω',pos:'ne'}]} description="Real and imaginary input impedance oscillating with period one half wavelength."/></Figure>;
 }
 
-/* ---------- Chapter 105: oscillators and PLLs ---------- */
+/* ---------- Chapter 116: oscillators and PLLs ---------- */
 export function NegativeResistanceTank(){
   const cap='A parallel LC tank with loss conductance G = 1/R_p, and an active circuit modelled as a negative conductance −G_m. If G_m exceeds G the net conductance is negative and any disturbance at the tank frequency grows; amplitude limiting in the active circuit then reduces the average G_m until it equals G.';
   return <Figure caption={cap}><S.Schematic width={640} height={240} description={cap}>
@@ -135,7 +135,7 @@ export function PllStepPlot(){
   return <Figure plot caption="Output phase after a reference phase step for a type-II PLL, H(s) = (2ζω_n s + ω_n²)/(s² + 2ζω_n s + ω_n²). The stabilizing zero makes every response overshoot; ζ ≈ 0.7 is a common compromise between settling time and peaking."><Plot curves={[{name:'ζ = 0.5',color:orange,points:linpts(t=>step(t,0.5),0,12)},{name:'ζ = 0.707',color:green,points:linpts(t=>step(t,0.707),0,12)},{name:'ζ = 1.5',color:muted,points:linpts(t=>step(t,1.5),0,12)}]} xRange={[0,12]} yRange={[0,1.5]} xLabel="Normalized time ω_n t" yLabel="Output phase / input step" description="Three step responses with different damping settling to one."/></Figure>;
 }
 
-/* ---------- Chapter 107: antennas ---------- */
+/* ---------- Chapter 119: antennas ---------- */
 export function DipolePatternFigure(){
   const cx=150,cy=150,R=110;
   const poly=(g:(t:number)=>number)=>Array.from({length:361},(_,i)=>{const t=i*Math.PI/180;const r=g(t);return `${i?'L':'M'}${cx+R*r*Math.sin(t)} ${cy-R*r*Math.cos(t)}`;}).join(' ')+'Z';
@@ -165,4 +165,103 @@ export function BoardEmissionPlot(){
   const loop=(f:number)=>20*Math.log10(1.316e-14*(f*1e6)**2*1e-4*0.02/10*1e6);
   const cm=(f:number)=>20*Math.log10(1.257e-6*(f*1e6)*.15*20e-6/10*1e6);
   return <Figure plot caption="Peak far-field estimates at 10 m: a 1 cm² loop carrying 20 mA peak and a 15 cm uniform-current conductor carrying 20 µA peak. The conductor estimate assumes an in-phase image reflection. Over 30–100 MHz the conductor remains electrically short; the observer is at least one wavelength away. The loop rises 40 dB per decade, the conductor 20 dB per decade, crossing near 72 MHz. These geometry-dependent estimates do not predict compliance."><Plot curves={[{name:'Differential loop, 20 mA',color:green,points:logpts(loop,30,100)},{name:'Short conductor, 20 µA',color:orange,points:logpts(cm,30,100)}]} xScale="log" xRange={[30,100]} yRange={[0,35]} xLabel="Frequency / MHz" yLabel="Peak E at 10 m / dBµV/m" description="Two short-antenna estimates crossing near seventy-two megahertz within their stated model range."/></Figure>;
+}
+
+/* ---------- Chapter 114: RF amplifiers ---------- */
+export function LnaCircuit(){
+  const P=S.fetPins({at:[360,160]});const cap='Inductively degenerated common-source LNA. The source inductor L_s, through the transistor’s transconductance, creates a real input resistance g_mL_s/C_gs without a noisy resistor; the gate inductor L_g resonates the remaining input capacitance at the operating frequency. A tuned drain load L_d supplies gain at the same frequency.';
+  return <Figure caption={cap}><S.Schematic width={620} height={300} description={cap}>
+    <S.Terminal at={[90,160]} label="50 Ω in" side="left"/><S.Ind a={[90,160]} b={P.g} label="L_g"/>
+    <S.Fet at={[360,160]}/>
+    <S.Ind a={P.s} b={[P.s[0],270]} label="L_s"/><S.Ground at={[P.s[0],270]}/>
+    <S.Ind a={P.d} b={[P.d[0],40]} label="L_d"/><S.Rail at={[P.d[0],40]} label="V_DD"/>
+    <S.Wire pts={[P.d,[520,P.d[1]]]}/><S.Terminal at={[520,P.d[1]]} label="out" side="right"/><S.Dot at={P.d}/>
+    <S.Text x={240} y={215} kind="value">C_gs (internal)</S.Text>
+  </S.Schematic></Figure>;
+}
+
+export function CompressionPlot(){
+  const G=15,Psat=18,IIP3=12,psat=10**(Psat/10);
+  const out=(pin:number)=>{const pl=10**((pin+G)/10);return 10*Math.log10(psat*Math.tanh(pl/psat));};
+  let p1=-40;for(let p=-40;p<20;p+=0.01){if(p+G-out(p)>=1){p1=p;break;}}
+  return <Figure plot caption={`An amplifier with 15 dB gain and an 18 dBm saturated output. The fundamental (green) follows a slope of 1 until it compresses: the 1 dB compression point is at an input of about ${p1.toFixed(1)} dBm. Third-order intermodulation products (orange) rise with slope 3; extrapolated, they meet the extrapolated fundamental at the third-order intercept, IIP3 = +12 dBm, OIP3 = +27 dBm, roughly 9.6 dB above the compression point as the cubic model predicts. Neither intercept is an operating point.`}><Plot curves={[{name:'Fundamental output',color:green,points:linpts(out,-40,20,400)},{name:'Linear extrapolation',color:muted,dashed:true,points:[[-40,-40+G],[IIP3+2,IIP3+2+G]]},{name:'IM3 output (two-tone)',color:orange,points:linpts(p=>3*p+G-2*IIP3,-30,p1,200)},{name:'IM3 extrapolation',color:orange,dashed:true,points:[[p1,3*p1+G-2*IIP3],[IIP3+1,3*(IIP3+1)+G-2*IIP3]]}]} xRange={[-40,15]} yRange={[-60,32]} xLabel="Input power per tone / dBm" yLabel="Output power / dBm" marks={[{at:[p1,out(p1)],label:'P1dB',pos:'nw'},{at:[IIP3,IIP3+G],label:'IP3',pos:'nw'}]} description="Fundamental and third-order intermodulation output power versus input power with compression and intercept points."/></Figure>;
+}
+
+export function NoiseMatchPlot(){
+  const k=1.38e-23,T=290,en=1e-9,inn=2e-12;const nf=(R:number)=>10*Math.log10(1+(en*en+inn*inn*R*R)/(4*k*T*R));
+  return <Figure plot caption="Noise figure of an amplifier with e_n = 1 nV/√Hz and i_n = 2 pA/√Hz as a function of source resistance. Voltage noise dominates for low source resistance and current noise for high; the minimum, about 1 dB, occurs at R_opt = e_n/i_n = 500 Ω. A matching network that presents 500 Ω to the transistor from a 50 Ω antenna achieves that minimum, which is a different impedance from the one that maximizes gain."><Plot curves={[{name:'Noise figure',color:green,points:logpts(nf,5,50000)}]} xScale="log" xRange={[5,50000]} yRange={[0,10]} xLabel="Source resistance / Ω" yLabel="Noise figure / dB" marks={[{at:[500,nf(500)],label:'R_opt = 500 Ω',pos:'ne'},{at:[50,nf(50)],label:'50 Ω direct',pos:'ne'}]} description="U-shaped noise figure curve versus source resistance with a minimum at five hundred ohms."/></Figure>;
+}
+
+/* ---------- Chapter 115: RF filters ---------- */
+export function LcLadderCircuit(){
+  const cap='Third-order Butterworth low-pass ladder for 100 MHz between 50 Ω terminations, scaled from the prototype values g₁ = 1, g₂ = 2, g₃ = 1: C₁ = C₃ = g/(2πf_cR) = 31.8 pF and L₂ = gR/(2πf_c) = 159 nH.';
+  return <Figure caption={cap}><S.Schematic width={640} height={240} description={cap}>
+    <S.Source a={[60,190]} b={[60,70]} kind="ac" label="V_s"/><S.Res a={[60,70]} b={[200,70]} label="R_s" value="50 Ω"/>
+    <S.Cap a={[200,70]} b={[200,190]} label="C₁" value="31.8 pF"/>
+    <S.Ind a={[200,70]} b={[420,70]} label="L₂" value="159 nH"/>
+    <S.Cap a={[420,70]} b={[420,190]} label="C₃" value="31.8 pF"/>
+    <S.Wire pts={[[420,70],[560,70]]}/><S.Res a={[560,70]} b={[560,190]} label="R_L" value="50 Ω"/>
+    <S.Wire pts={[[60,190],[200,190],[420,190],[560,190]]}/><S.Ground at={[310,190]}/>
+    {([[200,70],[420,70],[200,190],[420,190],[310,190]] as S.Pt[]).map((p,i)=><S.Dot key={i} at={p}/>)}
+  </S.Schematic></Figure>;
+}
+
+export function FilterResponsePlot(){
+  const bw=(x:number)=>-10*Math.log10(1+x**6);
+  const eps2=10**(0.05)-1;const T3=(x:number)=>x<=1?4*x**3-3*x:Math.cosh(3*Math.acosh(x));
+  const ch=(x:number)=>-10*Math.log10(1+eps2*T3(x)**2);
+  return <Figure plot caption="Magnitude responses of third-order low-pass filters normalized to the cutoff frequency. Butterworth (green) is maximally flat and −3 dB at the cutoff. Chebyshev with 0.5 dB ripple (orange, cutoff defined at the ripple edge) ripples in the passband but falls faster beyond it: at twice the cutoff it gives 19.2 dB against 18.1 dB. The advantage grows with order: for fifth-order filters it is 42 dB against 30 dB."><Plot curves={[{name:'Butterworth',color:green,points:linpts(bw,0.01,4,500)},{name:'Chebyshev 0.5 dB',color:orange,points:linpts(ch,0.01,4,500)}]} xRange={[0,4]} yRange={[-50,2]} xLabel="Frequency / cutoff" yLabel="Response / dB" marks={[{at:[2,bw(2)],label:'−18.1 dB',pos:'ne'},{at:[2,ch(2)],label:'−19.2 dB',pos:'sw'}]} description="Two third-order low-pass responses, one maximally flat and one rippled with a steeper rolloff."/></Figure>;
+}
+
+export function InsertionLossPlot(){
+  const il=(fbw:number,Qu:number)=>4.343*4/(fbw*Qu); // three-section Butterworth: sum g = 4
+  return <Figure plot caption="Midband insertion loss of a three-resonator Butterworth band-pass filter, IL ≈ 4.34 Σg_k/(FBW·Q_u) dB with Σg = 4, against fractional bandwidth. Narrow filters need high-Q resonators: a 1% bandwidth costs 35 dB with Q_u = 50 inductors, 8.7 dB with Q_u = 200, and only 0.17 dB with Q_u = 10 000 (ceramic or cavity resonators)."><Plot curves={[{name:'Q_u = 50',color:orange,points:logpts(f=>il(f,50),0.005,0.5)},{name:'Q_u = 200',color:green,points:logpts(f=>il(f,200),0.005,0.5)},{name:'Q_u = 10 000',color:muted,points:logpts(f=>il(f,10000),0.005,0.5)}]} xScale="log" yScale="log" xRange={[0.005,0.5]} yRange={[0.01,100]} xLabel="Fractional bandwidth" yLabel="Insertion loss / dB" description="Insertion loss falling inversely with fractional bandwidth for three resonator Q values."/></Figure>;
+}
+
+/* ---------- Chapter 117: modulation ---------- */
+export function ModulationWaveformsPlot(){
+  const fc=10,m=(t:number)=>Math.sin(2*Math.PI*t),bits=[1,0,0,1];
+  const am=(t:number)=>4+(1+0.6*m(t))*Math.cos(2*Math.PI*fc*t);
+  const fm=(t:number)=>Math.cos(2*Math.PI*fc*t+5*Math.sin(2*Math.PI*t)); // β = 5: deviation half the carrier frequency, for visibility
+  const psk=(t:number)=>-4+(bits[Math.min(3,Math.floor(t*4))]?1:-1)*Math.cos(2*Math.PI*fc*t);
+  return <Figure plot caption="The same carrier modulated three ways (offset vertically). AM (top) varies the envelope with the message; FM (middle) keeps the amplitude constant and varies the instantaneous frequency, crowding cycles where the message is positive; BPSK (bottom) flips the carrier's phase by 180° to send bits 1, 0, 0, 1."><Plot curves={[{name:'AM, m = 0.6',color:green,points:linpts(am,0,1,2000)},{name:'FM',color:orange,points:linpts(fm,0,1,2000)},{name:'BPSK',color:muted,points:linpts(psk,0,1,2000)}]} xRange={[0,1]} yRange={[-5.5,6]} xLabel="Time / message period" yLabel="Signal (offset)" description="Amplitude, frequency and phase modulated waveforms."/></Figure>;
+}
+
+export function IqModulatorFigure(){
+  return <Figure caption="I/Q (quadrature) modulator. Two baseband signals multiply a cosine and a negative sine of the same carrier, and their sum is s(t) = I(t)cos ωt − Q(t)sin ωt = A(t)cos(ωt + φ(t)) with A = √(I² + Q²) and φ = atan2(Q, I). Any amplitude and phase modulation can therefore be built from two real baseband signals; the demodulator reverses the process."><svg viewBox="0 0 680 240" role="img" aria-label="I/Q modulator with two mixers, a 90 degree phase shift and a summing node.">
+    <ArrowDef/>
+    <text x={20} y={64} className="symbol-value">I(t)</text><Arrow d="M50 60 H180"/>
+    <text x={20} y={184} className="symbol-value">Q(t)</text><Arrow d="M50 180 H180"/>
+    <circle cx={200} cy={60} r="18" fill="var(--paper)" stroke={ink} strokeWidth="1.8"/><text x={200} y={65} textAnchor="middle" className="symbol-value">×</text>
+    <circle cx={200} cy={180} r="18" fill="var(--paper)" stroke={ink} strokeWidth="1.8"/><text x={200} y={185} textAnchor="middle" className="symbol-value">×</text>
+    <Box x={150} y={100} w={100} h={40} label="0° / −90°"/>
+    <Arrow d="M200 100 V80"/><Arrow d="M200 140 V160"/>
+    <path d="M330 120 H250" fill="none" stroke={ink} strokeWidth="1.8"/><text x={300} y={112} className="tick">cos ωt (LO)</text>
+    <Arrow d="M218 60 H380 V102"/><Arrow d="M218 180 H380 V138"/>
+    <circle cx={380} cy={120} r="18" fill="var(--paper)" stroke={ink} strokeWidth="1.8"/><text x={380} y={125} textAnchor="middle" className="symbol-value">Σ</text>
+    <Arrow d="M398 120 H520"/><text x={530} y={116} className="symbol-value">s(t)</text>
+    <text x={240} y={50} className="tick">I cos ωt</text><text x={240} y={202} className="tick">−Q sin ωt</text>
+  </svg></Figure>;
+}
+
+export function ConstellationFigure(){
+  const panel=(cx:number,title:string,pts:[number,number][],sc:number)=><g>
+    <path d={`M${cx-110} 130 H${cx+110} M${cx} 20 V240`} stroke="var(--line)"/>
+    {pts.map((p,i)=><circle key={i} cx={cx+p[0]*sc} cy={130-p[1]*sc} r="5" fill={green}/>)}
+    <text x={cx} y={14} textAnchor="middle" className="symbol-value">{title}</text>
+    <text x={cx+104} y={124} className="tick">I</text><text x={cx+6} y={30} className="tick">Q</text></g>;
+  const qpsk:[number,number][]=[[1,1],[-1,1],[-1,-1],[1,-1]];const qam:[number,number][]=[];for(const a of [-3,-1,1,3])for(const b of [-3,-1,1,3])qam.push([a,b]);
+  return <Figure caption="Constellations: each symbol is a point (I, Q). QPSK carries 2 bits per symbol on four points of equal amplitude; 16-QAM carries 4 bits on a 4 × 4 grid. With the same average power, 16-QAM's points are closer together, so less noise moves a received point across a decision boundary (the axes and midlines): more bits per hertz costs signal-to-noise ratio."><svg viewBox="0 0 680 260" role="img" aria-label="QPSK and 16-QAM constellation diagrams.">
+    {panel(170,'QPSK (2 bits/symbol)',qpsk,60)}
+    {panel(510,'16-QAM (4 bits/symbol)',qam,26)}
+    {[-2,0,2].map(v=><g key={v}><path d={`M${510+v*26} 30 V230 M${400} ${130-v*26} H${620}`} stroke={orange} strokeDasharray="3 4" strokeWidth="1"/></g>)}
+  </svg></Figure>;
+}
+
+export function BerPlot(){
+  const erfc=(x:number)=>{const t=1/(1+0.5*Math.abs(x));const y=t*Math.exp(-x*x-1.26551223+t*(1.00002368+t*(0.37409196+t*(0.09678418+t*(-0.18628806+t*(0.27886807+t*(-1.13520398+t*(1.48851587+t*(-0.82215223+t*0.17087277)))))))));return x>=0?y:2-y;};
+  const db=(x:number)=>10**(x/10);
+  const bpsk=(e:number)=>0.5*erfc(Math.sqrt(db(e)));
+  const qam16=(e:number)=>(3/8)*erfc(Math.sqrt(0.4*db(e)));
+  return <Figure plot caption="Bit error rate against energy per bit over noise density for Gray-coded modulation in white Gaussian noise. BPSK and QPSK share one curve (QPSK sends two independent BPSK streams in quadrature); 16-QAM needs about 4 dB more E_b/N₀ for the same error rate, the price of doubling the bits per symbol."><Plot curves={[{name:'BPSK / QPSK',color:green,points:linpts(bpsk,0,14,300)},{name:'16-QAM',color:orange,points:linpts(qam16,0,16,300)}]} yScale="log" xRange={[0,16]} yRange={[1e-8,0.5]} xLabel="E_b/N₀ / dB" yLabel="Bit error rate" marks={[{at:[9.6,bpsk(9.6)],label:'10⁻⁵ at 9.6 dB',pos:'sw'}]} description="Waterfall curves of bit error rate versus signal to noise ratio for two modulation schemes."/></Figure>;
 }

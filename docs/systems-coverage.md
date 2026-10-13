@@ -35,8 +35,8 @@ practice problems and 117 synthesis studies with 351 cases.
 | 112 | adc-integrating-delta-sigma | Charge balance, dual slope, line rejection, noise shaping, oversampling, decimation and settling |
 | 113 | dac-architectures-output | String, R–2R, current steering, segmentation, glitches, settling, reconstruction, hold droop and PWM |
 | 115 | digital-logic-timing | Guaranteed levels, charge/edge power, setup/hold, metastability, clock crossings and reset/level shifting |
-| 116 | digital-board-protocols | UART framing, SPI phase, I²C ownership/pull-ups, I²S clocks and useful throughput |
-| 117 | digital-cable-interfaces | RS-485 bias/turnaround, CAN arbitration, USB endpoints/roles, Ethernet MAC/PHY, protection and buffering |
+| 129–131 | uart-rs232, spi-interfaces, i2c-bus | UART/RS-232 specification and tolerance, SPI modes and timing budgets, I²C specification, pull-ups, arbitration and recovery |
+| 132–133 | rs485-can, usb-ethernet | RS-485 specification and bias, CAN frames, arbitration and bit timing, USB signalling and NRZI, Ethernet line codes, magnetics and frames |
 
 ## Reference roles
 

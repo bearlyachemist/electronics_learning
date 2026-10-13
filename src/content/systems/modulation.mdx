@@ -1,0 +1,152 @@
+import Equation from '../../components/Equation.astro';
+import {ModulationWaveformsPlot,IqModulatorFigure,ConstellationFigure,BerPlot} from '../../components/RfFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 117</span><span className="hairline"/>PART V / OSCILLATORS, MODULATION &amp; RECEIVERS</div>
+
+<h1>Modulation, I/Q and demodulation<br/><em>Put information on a carrier, then take it off.</em></h1>
+
+<p className="dek">Derive the spectra of AM and FM, detect them, build any modulation from in-phase and quadrature signals, compute the image rejection that I/Q imbalance allows, and relate digital constellations to bandwidth, signal-to-noise ratio and error rate.</p>
+
+<div className="chapter-meta"><span>55–80 min + practice</span><span>Derivations · Spectra · Link budgets</span></div>
+
+</div>
+
+<section id="why">
+
+<div className="section-heading"><span>01</span><h2>Move the message to a carrier</h2></div>
+
+A baseband message (audio, sensor data, bits) occupies frequencies from near DC to some maximum $f_m$. Radiating it directly is impractical: Chapter 119 showed that an antenna needs to be a sizable fraction of a wavelength, and a 3 kHz audio wavelength is 100 km. Every transmitter would also occupy the same frequencies. **Modulation** varies the amplitude, frequency or phase of a high-frequency carrier $\cos\omega_ct$ so the message occupies a band around $f_c$, where antennas are small and different transmitters can use different carriers. The receiver's mixer (Chapter 118) and demodulator reverse the process.
+
+</section>
+
+<section id="am">
+
+<div className="section-heading"><span>02</span><h2>Derive the AM spectrum and detect its envelope</h2></div>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / AMPLITUDE MODULATION</span>
+
+1. **Signal.** Let the envelope follow the message with modulation index $m$: $s(t) = A_c[1 + m\cos\omega_mt]\cos\omega_ct$.
+
+2. **Expand** with $\cos a\cos b = \tfrac12[\cos(a-b) + \cos(a+b)]$:
+<Equation tex={String.raw`s(t)=A_c\cos\omega_ct+\frac{mA_c}{2}\cos(\omega_c-\omega_m)t+\frac{mA_c}{2}\cos(\omega_c+\omega_m)t`}/>
+   The spectrum is the carrier plus two sidebands at $f_c \pm f_m$. A message with bandwidth $f_m$ occupies $2f_m$.
+
+3. **Power.** The carrier carries $A_c^2/2$ and the two sidebands $m^2A_c^2/4$ together. The fraction of power in the information-bearing sidebands is $m^2/(2 + m^2)$: at most one third, at $m = 1$. AM's carrier is wasted power, which single-sideband and suppressed-carrier variants remove.
+
+</div>
+
+**Envelope detection.** A diode charging a capacitor $C$ with a discharge resistor $R$ follows the peaks of $s(t)$ (the peak detector of Chapter 23). The time constant must be long compared with the carrier period, so ripple at $f_c$ is small, but short enough to follow the falling envelope. The envelope's fastest fall, $mA_c\omega_m$ at its steepest point, must not outpace the capacitor's discharge; working through that condition gives $RC \le \sqrt{1 - m^2}/(m\,\omega_m)$, beyond which the output "diagonally clips". For $m$ = 0.8 and $f_m$ = 5 kHz, $RC \le 24$ µs, while a 1 MHz carrier needs $RC \gg 1$ µs: 10 µs satisfies both.
+
+</section>
+
+<section id="fm">
+
+<div className="section-heading"><span>03</span><h2>Estimate FM bandwidth with Carson's rule</h2></div>
+
+Frequency modulation keeps the amplitude constant and varies the instantaneous frequency: $f(t) = f_c + \Delta f\cos\omega_mt$, where $\Delta f$ is the peak deviation. Phase is the integral of frequency, so
+<Equation tex={String.raw`s(t)=A_c\cos\left(\omega_ct+\beta\sin\omega_mt\right),\qquad\beta=\frac{\Delta f}{f_m}`}/>
+
+<ModulationWaveformsPlot/>
+
+The spectrum of $\cos(\beta\sin\omega_mt)$ contains sidebands at every multiple of $f_m$, with amplitudes given by Bessel functions $J_n(\beta)$. Nearly all the power (about 98%) lies within $n \le \beta + 1$ sidebands on each side, which gives **Carson's rule**:
+<Equation tex={String.raw`B_{FM}\approx2(\Delta f+f_m)`}/>
+Broadcast FM uses $\Delta f$ = 75 kHz with audio up to 15 kHz, so $B \approx 180$ kHz, far wider than the 30 kHz an AM signal of the same audio would need. In exchange, the receiver can clip the amplitude away (removing amplitude noise and interference), and above a threshold SNR, FM's output signal-to-noise improves in proportion to $3\beta^2$: bandwidth traded for noise immunity.
+
+</section>
+
+<section id="iq">
+
+<div className="section-heading"><span>04</span><h2>Build any modulation from I and Q</h2></div>
+
+Every bandpass signal can be written as an amplitude and phase, $A(t)\cos(\omega_ct + \phi(t))$. Expanding the cosine of a sum gives two baseband signals multiplying a cosine and a sine:
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / QUADRATURE MODULATION AND DEMODULATION</span>
+
+1. **Modulate.** With $I = A\cos\phi$ and $Q = A\sin\phi$,
+<Equation tex={String.raw`A\cos(\omega_ct+\phi)=I\cos\omega_ct-Q\sin\omega_ct`}/>
+   Two real signals, mixed with carriers 90° apart and added, produce any amplitude and phase.
+
+2. **Demodulate I.** Multiply the received signal by $2\cos\omega_ct$:
+<Equation tex={String.raw`2\cos\omega_ct\,(I\cos\omega_ct-Q\sin\omega_ct)=I(1+\cos2\omega_ct)-Q\sin2\omega_ct`}/>
+   A low-pass filter removes the $2\omega_c$ terms and leaves $I$.
+
+3. **Demodulate Q.** Multiplying by $-2\sin\omega_ct$ leaves $Q$ after the same filter. The two paths are independent because $\cos$ and $\sin$ are orthogonal over a carrier cycle.
+
+4. **Image rejection.** A single real mixer cannot tell $f_c + \Delta$ from $f_c - \Delta$ (the image problem of Chapter 118). In I/Q the two appear as rotations in opposite directions in the complex plane $I + jQ$, so the receiver can separate them. If the Q path has gain error $\varepsilon$ and phase error $\theta$ relative to I, the unwanted image leaks through with relative power $(\varepsilon^2 + \theta^2)/4$ for small errors:
+<Equation tex={String.raw`\mathrm{IRR}\approx\frac{4}{\varepsilon^2+\theta^2}`}/>
+   With 1% gain error and 1° (0.0175 rad) phase error, IRR ≈ 9900, or **40 dB**. Digital calibration of the two paths pushes this higher.
+
+</div>
+
+<IqModulatorFigure/>
+
+</section>
+
+<section id="digital">
+
+<div className="section-heading"><span>05</span><h2>Relate constellations, symbol rate and bandwidth</h2></div>
+
+Digital modulation sends **symbols**: during each symbol period, I and Q take one of a set of values, a point in the constellation. With $M$ points, each symbol carries $\log_2M$ bits.
+
+<ConstellationFigure/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / OCCUPIED BANDWIDTH AND SPECTRAL EFFICIENCY</span>
+
+1. **Pulse shaping.** Changing I and Q abruptly at each symbol would spread the spectrum indefinitely. Real systems shape each symbol with a raised-cosine filter of roll-off $\alpha$ (0 to 1), whose spectrum occupies $R_s(1 + \alpha)/2$ on each side of the carrier and introduces no inter-symbol interference at the sampling instants.
+
+2. **Bandwidth.** The occupied RF bandwidth is therefore
+<Equation tex={String.raw`B=R_s(1+\alpha),\qquad R_b=R_s\log_2M`}/>
+
+3. **Spectral efficiency** is $R_b/B = \log_2M/(1 + \alpha)$ bit/s per hertz.
+
+</div>
+
+**Example.** 16-QAM at 10 Msymbol/s with $\alpha$ = 0.25 occupies 12.5 MHz and carries 40 Mbit/s: 3.2 bit/s/Hz. QPSK at the same symbol rate carries 20 Mbit/s in the same 12.5 MHz.
+
+</section>
+
+<section id="noise">
+
+<div className="section-heading"><span>06</span><h2>Connect error rate to signal-to-noise ratio</h2></div>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / FROM SNR TO E<sub>b</sub>/N₀ AND THE SHANNON LIMIT</span>
+
+1. **Energy per bit.** Received power $P$ delivered at bit rate $R_b$ is $E_b = P/R_b$ per bit. Noise power in bandwidth $B$ is $N_0B$. Their ratio:
+<Equation tex={String.raw`\mathrm{SNR}=\frac{P}{N_0B}=\frac{E_b}{N_0}\cdot\frac{R_b}{B}`}/>
+   $E_b/N_0$ compares modulations fairly, independent of bandwidth.
+
+2. **BPSK error rate.** The receiver decides by the sign of the sampled value $\pm\sqrt{E_b}$ plus Gaussian noise of variance $N_0/2$. An error occurs when the noise exceeds $\sqrt{E_b}$ in the wrong direction:
+<Equation tex={String.raw`P_b=Q\!\left(\sqrt{\frac{2E_b}{N_0}}\right)=\frac12\,\mathrm{erfc}\sqrt{\frac{E_b}{N_0}}`}/>
+   QPSK is two independent BPSK streams in quadrature and has the same bit error rate.
+
+3. **Shannon capacity.** No scheme can carry more than $C = B\log_2(1 + \mathrm{SNR})$ bits per second error-free. At 12.5 MHz and 20 dB SNR, $C$ = 83 Mbit/s; the 40 Mbit/s 16-QAM link above uses about half of it.
+
+</div>
+
+<BerPlot/>
+
+A receiver's sensitivity follows from these curves and Chapter 118's noise floor. For 1 Mbit/s QPSK needing $P_b = 10^{-5}$, $E_b/N_0$ = 9.6 dB. In 1 MHz the thermal floor is −114 dBm; with a 6 dB noise figure and $R_b/B$ = 1, the required power is −114 + 6 + 9.6 ≈ **−98 dBm** before implementation margin. Forward error-correction codes move the curves several dB to the left, and are why modern links operate within a few dB of the Shannon limit.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, derive the AM sideband power fraction, apply Carson's rule, show that I/Q demodulation recovers I and Q separately, compute the bandwidth and bit rate of a constellation, and find a receiver's sensitivity from its noise figure and required $E_b/N_0$.
+
+[Work through three independent problems](/modulation/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §13.13 (modulation and detection); standard communication-theory results (Carson, Shannon). Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

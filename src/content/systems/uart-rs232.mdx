@@ -1,0 +1,167 @@
+import Equation from '../../components/Equation.astro';
+import {UartFrameFigure,UartDriftPlot,Rs232LevelsPlot,UartDistortionPlot} from '../../components/DigitalFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 129</span><span className="hairline"/>PART VII / BOARD-LEVEL BUSES</div>
+
+<h1>UART and RS-232<br/><em>Two clocks that never meet.</em></h1>
+
+<p className="dek">Specify the asynchronous frame bit by bit, derive how much clock mismatch a receiver tolerates, size a baud-rate divisor, and follow the bytes onto an RS-232 cable with its levels, slew limits and distortion.</p>
+
+<div className="chapter-meta"><span>50–70 min + practice</span><span>Specification · Timing budgets · Electrical layer</span></div>
+
+</div>
+
+<section id="frame">
+
+<div className="section-heading"><span>01</span><h2>Specify the asynchronous frame</h2></div>
+
+A UART (universal asynchronous receiver-transmitter) sends bytes over a single wire per direction **without a clock**. Transmitter and receiver each have their own oscillator, set to the same nominal baud rate. The frame format exists so the receiver can recover timing from the data itself.
+
+| Field | Level | Length | Purpose |
+|---|---|---|---|
+| Idle | 1 (mark) | any | Line rests high between frames |
+| Start bit | 0 (space) | 1 bit | Falling edge restarts the receiver's bit timer |
+| Data | LSB first | 5–9 bits (8 almost always) | Payload |
+| Parity (optional) | even, odd, mark or space | 0 or 1 bit | Detects any odd number of bit errors |
+| Stop | 1 (mark) | 1, 1.5 or 2 bits | Guarantees an idle level before the next start edge |
+
+The usual configuration is written **8N1**: eight data bits, no parity, one stop bit. Standard rates descend from 300 baud by factors of two (1200, 2400, 4800, 9600, 19 200, 38 400) and continue with 57 600, 115 200, 230 400 and faster multiples. For a two-level line, baud and bit rate are the same.
+
+<UartFrameFigure/>
+
+**Receiver procedure.** The receiver samples the line with a clock at 16 (sometimes 8) times the baud rate. On seeing a falling edge it waits half a bit and re-checks; if the line is still low, the start bit is genuine and not a noise spike. It then samples once per bit period, at the centre of each data bit, typically taking a majority vote of three samples around the centre. If the stop-bit sample is not 1 it reports a **framing error**; if a new byte completes before software has read the last one, an **overrun**. A line held low for longer than a whole frame is a **break**, often used as a reset or attention signal.
+
+**Parity.** Even parity sets the parity bit so the total number of 1s, including the parity bit, is even. Any single flipped bit, or any odd number of flips, makes the count odd and is detected. Two flips cancel, so parity is a weak check; packet protocols add a CRC over the whole message.
+
+**Throughput.** 8N1 sends 10 line bits per 8 data bits. At 115 200 baud, continuous payload is at most 11 520 bytes/s.
+
+</section>
+
+<section id="tolerance">
+
+<div className="section-heading"><span>02</span><h2>Derive the clock-tolerance budget</h2></div>
+
+Because only the start edge synchronizes the receiver, any difference between the two clocks accumulates across the frame.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / HOW FAR A RECEIVER CAN DRIFT</span>
+
+1. **Ideal sample times.** The receiver samples bit $k$ (start bit $k = 0$, data $k = 1\ldots8$, stop $k = 9$) at $(k + \tfrac12)T_r$ after the start edge, where $T_r$ is its idea of a bit period.
+
+2. **Actual bit centres** are at $(k + \tfrac12)T_t$ on the transmitter's clock. With relative mismatch $\varepsilon = (T_r - T_t)/T_t$, the sampling error grows linearly:
+<Equation tex={String.raw`\Delta t_k=\left(k+\tfrac12\right)\varepsilon\,T_t`}/>
+
+3. **Start-edge uncertainty.** With 16× oversampling the receiver cannot locate the falling edge better than one sample, $T/16$.
+
+4. **The limit.** The last sample, the stop bit at $k = 9$, must still land inside its bit: $|9.5\,\varepsilon| + 1/16 < 1/2$. Solving gives $|\varepsilon| < 4.6\%$ for the total mismatch between the two ends.
+
+5. **Real margin.** Edge transition time, noise and the majority-vote window each consume part of the remaining half bit. A practical design rule allows about ±2% at each end, ±4% in total, and preferably much less.
+
+</div>
+
+<UartDriftPlot/>
+
+<div className="worked-example">
+
+<span className="tiny-label">WORKED EXAMPLE / A BAUD DIVISOR THAT FAILS</span><h3>115 200 baud from a 16 MHz clock</h3>
+
+<p>With 16× oversampling the divisor is $16\text{ MHz}/(16\times115\,200) = 8.68$. Rounding to 9 gives 111 111 baud, an error of <strong>−3.5%</strong>: one end alone uses most of the budget, and a partner that is 1.5% fast in the other direction fails.</p>
+
+<p>Using 8× oversampling the divisor is 17.36; rounding to 17 gives 117 647 baud, +2.1%. A fractional-divisor UART, or a crystal at 14.7456 MHz (= 128 × 115 200), gives exact rates. Always compute the actual baud rate from the integer divisor, not the requested one.</p>
+
+</div>
+
+An internal RC oscillator specified at ±1% over temperature uses half the per-end allowance before divisor error is counted. When neither end has a crystal, autobaud (timing a known character) or a protocol that tolerates retransmission is safer.
+
+</section>
+
+<section id="rs232">
+
+<div className="section-heading"><span>03</span><h2>Put the frame on an RS-232 cable</h2></div>
+
+A UART pin produces logic levels referenced to its own ground. **RS-232** (TIA-232) is the classic electrical standard for carrying those frames between equipment. It is single-ended, inverted and bipolar.
+
+| Parameter | Specification |
+|---|---|
+| Logic 1 (mark, idle) | −3 V to −15 V at the receiver |
+| Logic 0 (space) | +3 V to +15 V at the receiver |
+| Undefined | −3 V to +3 V |
+| Driver output | ±5 V minimum into 3–7 kΩ, ±15 V maximum |
+| Receiver input resistance | 3–7 kΩ |
+| Slew rate | 30 V/µs maximum |
+| Load capacitance | 2500 pF maximum (cable plus receiver) |
+
+<Rs232LevelsPlot/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / RATE AND LENGTH FROM THE CAPACITANCE LIMIT</span>
+
+1. **Noise margin.** A ±5 V driver arriving at a receiver that needs only ±3 V has 2 V of margin against ground offsets and pickup between two pieces of equipment. That margin, not speed, is why RS-232 uses large bipolar levels.
+
+2. **Cable capacitance.** Typical RS-232 cable has about 50 pF/m, so the 2500 pF limit corresponds to roughly 50 m; low-capacitance cable extends it.
+
+3. **Edge time.** The driver must swing at least 10 V (from −5 to +5 V) without exceeding 30 V/µs, so the transition takes at least 0.33 µs. The swing must also complete well within a bit; driving 2500 pF from a source resistance of a few hundred ohms gives a time constant near 1 µs, comparable to a 115.2 kbit/s bit of 8.7 µs. That is why long RS-232 runs are limited to low baud rates.
+
+4. **Handshake lines.** RTS/CTS (request/clear to send) provide hardware flow control: a receiver whose buffer is filling deasserts CTS, and the transmitter stops after its current byte. DTR/DSR and DCD carry equipment-ready and carrier-detect status. A "null-modem" cable crosses TX/RX and the handshake pairs when two terminals connect directly.
+
+</div>
+
+On a 9-pin DE-9 connector the essential pins are 2 (RX on a terminal), 3 (TX) and 5 (ground). The ground conductor is part of the signal path: RS-232 is single-ended, so a ground difference between two pieces of equipment adds directly to the signal. For long runs or noisy sites, the same UART frames are carried differentially on RS-422 or RS-485 (Chapter 132).
+
+</section>
+
+<section id="distortion">
+
+<div className="section-heading"><span>04</span><h2>See how slow edges distort bit widths</h2></div>
+
+Cable capacitance rounds the edges, and RS-232 receivers usually switch at a positive threshold with hysteresis rather than exactly at 0 V. Together these shift the decoded edge times unequally.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / BIAS DISTORTION FROM AN OFFSET THRESHOLD</span>
+
+1. **RC edges.** A line swinging between $-V$ and $+V$ with time constant $\tau$ follows $v(t) = \pm V \mp 2Ve^{-t/\tau}$ after each transition.
+
+2. **Rising crossing.** Starting from $-V$, it reaches the threshold $V_{th}$ when $2Ve^{-t/\tau} = V - V_{th}$, at $t_\uparrow = \tau\ln[2V/(V - V_{th})]$.
+
+3. **Falling crossing.** Starting from $+V$, it reaches $V_{th}$ when $2Ve^{-t/\tau} = V + V_{th}$, at $t_\downarrow = \tau\ln[2V/(V + V_{th})]$.
+
+4. **Width error.** A positive (space) interval begins late by $t_\uparrow$ and ends early by $t_\downarrow$, so it is shortened by
+<Equation tex={String.raw`\Delta t=t_\uparrow-t_\downarrow=\tau\ln\frac{V+V_{th}}{V-V_{th}}`}/>
+   and every mark interval is lengthened by the same amount. With $V$ = 6 V, $V_{th}$ = 1.5 V and $\tau$ = 1 µs, $\Delta t$ = 0.51 µs, 6% of a 115.2 kbit/s bit.
+
+</div>
+
+<UartDistortionPlot/>
+
+Centre sampling tolerates this because it never looks near an edge. But bias distortion subtracts directly from the clock-tolerance budget of section 02 (the effective sample error grows by $\Delta t/2$), and decoders that time from edges, such as autobaud detection, are misled by it. Noise spikes shorter than the receiver's majority-vote window are rejected; longer ones corrupt a bit or create a false start bit, which the stop-bit check usually catches as a framing error.
+
+</section>
+
+<section id="practice">
+
+<div className="section-heading"><span>05</span><h2>Build a robust UART link</h2></div>
+
+- **Compute the real baud rate** at both ends from the integer divisors and oscillator tolerance, and confirm the total is under about 3–4%.
+- **Use a transceiver** for anything leaving the board: RS-232 for short point-to-point links to legacy equipment, RS-485 for long or multidrop links. Never connect a 3.3 V UART pin to an RS-232 port directly; ±12 V will destroy it.
+- **Frame the messages.** UART delivers bytes, not messages. Add a start delimiter or length field, a CRC, and a timeout so the parser can resynchronize after a corrupted or lost byte.
+- **Handle flow control.** Either use RTS/CTS, or make the receiver's buffer large enough for the longest burst plus its interrupt or DMA latency.
+- **Plan half-duplex turnaround** on shared buses: disable the driver only after the final stop bit has left the shift register (Chapter 132).
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, decode a frame drawn on paper, derive the tolerance limit for a 9-bit frame with parity, compute the actual baud rate from a given clock and divisor, and estimate the bias distortion for a slower cable.
+
+[Work through three independent problems](/uart-rs232/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §14.7 (serial interfaces) and §12.10; TIA-232-F electrical characteristics. Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

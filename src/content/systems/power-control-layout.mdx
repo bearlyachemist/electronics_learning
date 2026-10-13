@@ -4,7 +4,7 @@ import {SnubberCircuit} from '../../components/SnubberCircuit';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 100</span><span className="hairline"/>PART IV / SWITCHING CONVERTERS</div>
+<div className="eyebrow"><span>CHAPTER 108</span><span className="hairline"/>PART IV / SWITCHING CONVERTERS</div>
 
 <h1>Power control, protection and layout<br/><em>The switching loop is part of the schematic.</em></h1>
 
@@ -87,7 +87,7 @@ Switch-node ringing often involves loop inductance and device capacitance. A fir
 
 <Equation tex={String.raw`f_r=\frac{1}{2\pi\sqrt{L_pC_p}},\qquad Z_r=\sqrt{L_p/C_p},\qquad P_{snub}\sim C_{snub}V_{step}^2f_s`}/>
 
-The resonance is where the reactances are equal, $\omega L_p = 1/(\omega C_p)$, and $Z_r$ is that common reactance, $\omega_rL_p = \sqrt{L_p/C_p}$. A resistance on the scale of $Z_r$ is a useful starting point for damping, but the required value depends on where it is connected and on the snubber capacitance. The snubber power follows from charging a capacitor through a resistor: each charge dissipates $\tfrac12CV^2$ in the resistor regardless of its value ([Chapter 115, charging energy](/digital-logic-timing/#power)), and so does each discharge, giving $CV^2$ per cycle.
+The resonance is where the reactances are equal, $\omega L_p = 1/(\omega C_p)$, and $Z_r$ is that common reactance, $\omega_rL_p = \sqrt{L_p/C_p}$. A resistance on the scale of $Z_r$ is a useful starting point for damping, but the required value depends on where it is connected and on the snubber capacitance. The snubber power follows from charging a capacitor through a resistor: each charge dissipates $\tfrac12CV^2$ in the resistor regardless of its value ([Chapter 127, charging energy](/digital-logic-timing/#power)), and so does each discharge, giving $CV^2$ per cycle.
 The characteristic impedance here is about 7.07 Ω. It is a starting scale for damping resistance, not a universal optimal snubber. An RC snubber trades ringing reduction for charging loss. A 1 nF snubber across a 12 V switching excursion at 500 kHz has a 72 mW energy-per-cycle scale under full charge/discharge assumptions. Verify resistor pulse power, actual voltage excursion and temperature.
 
 <SnubberCircuit/>

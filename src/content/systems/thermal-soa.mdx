@@ -1,0 +1,119 @@
+import Equation from '../../components/Equation.astro';
+import {ThermalNetworkCircuit,TransientThermalPlot,SoaPlot} from '../../components/PowerFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 101</span><span className="hairline"/>PART IV / HEAT &amp; POWER SWITCHES</div>
+
+<h1>Heat sinking and safe operating area<br/><em>Temperature is the real current limit.</em></h1>
+
+<p className="dek">Model heat flow as a circuit, choose a heat sink, account for short pulses with transient thermal impedance, and read a safe-operating-area chart, including the second-breakdown limit that power ratings hide.</p>
+
+<div className="chapter-meta"><span>45–65 min + practice</span><span>Thermal circuits · Derivations · Design checks</span></div>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Model heat flow as a circuit</h2></div>
+
+Heat conduction obeys the same law as current in a resistor: the heat flow through a material is proportional to the temperature difference across it. Defining **thermal resistance** θ in °C/W, the analogy is exact:
+
+| Electrical | Thermal |
+|---|---|
+| Current (A) | Power (W) |
+| Voltage (V) | Temperature (°C) |
+| Resistance (Ω) | Thermal resistance (°C/W) |
+| Capacitance (F) | Heat capacity (J/°C) |
+
+<ThermalNetworkCircuit/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / JUNCTION TEMPERATURE AND HEAT-SINK REQUIREMENT</span>
+
+1. **Series path.** All the power dissipated at the junction flows through the package (junction to case, θ_JC), the interface (case to sink, θ_CS) and the heat sink (sink to ambient, θ_SA). Like current through series resistors:
+<Equation tex={String.raw`T_J=T_A+P\left(\theta_{JC}+\theta_{CS}+\theta_{SA}\right)`}/>
+
+2. **Solve for the sink.** Given a maximum junction temperature:
+<Equation tex={String.raw`\theta_{SA}\le\frac{T_{J,max}-T_{A,max}}{P}-\theta_{JC}-\theta_{CS}`}/>
+
+3. **Example.** A TO-220 regulator dissipating 15 W, with θ_JC = 2 °C/W and a greased insulating pad of θ_CS = 0.5 °C/W, in 50 °C ambient, designed for a 125 °C junction (below the 150 °C rating for lifetime): $\theta_{SA} \le 75/15 - 2.5 = 2.5$ °C/W. That is a substantial finned heat sink. Without one, the package's own θ_JA of about 60 °C/W allows only $(125 - 50)/60$ = 1.25 W.
+
+</div>
+
+**Interfaces matter.** Two flat metal surfaces touch at only a few points; air in the gaps is a poor conductor. Thermal grease or a pad fills the gaps, and an insulating washer (needed when the tab is electrically live) adds resistance. Mounting torque, flatness and the area of the contact all change θ_CS. Heat sinks are rated with a specific airflow and orientation; natural convection with fins vertical is the usual reference, and a fan can reduce θ_SA by a factor of three or more.
+
+</section>
+
+<section id="transient">
+
+<div className="section-heading"><span>02</span><h2>Account for short pulses</h2></div>
+
+Every layer of the thermal path has heat capacity as well as resistance. A short power pulse heats the die before the heat has spread into the package and sink, so the junction temperature rise depends on pulse length.
+
+<TransientThermalPlot/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / TRANSIENT THERMAL IMPEDANCE</span>
+
+1. **One RC stage.** A thermal resistance θ with heat capacity $C_{th}$ driven by a power step $P$ rises as $\Delta T = P\theta(1 - e^{-t/\theta C_{th}})$, exactly like an RC circuit driven by a current step.
+
+2. **A ladder of stages** (die, solder, tab, case) gives a sum of such terms with different time constants. Data sheets plot the resulting $Z_{th}(t) = \Delta T(t)/P$, which approaches θ_JC at long times.
+
+3. **Single pulse.** The peak rise for a rectangular pulse of duration $t_p$ is $P\,Z_{th}(t_p)$.
+
+4. **Repeated pulses.** For pulses of duration $t_p$ at duty cycle $D$, a common estimate is $\Delta T \approx P[D\,\theta + (1 - D)Z_{th}(t_p)]$: the average power heats everything to the steady value $DP\theta$, and each pulse adds its own short-term rise. Data sheets provide families of $Z_{th}$ curves for duty cycles.
+
+</div>
+
+</section>
+
+<section id="soa">
+
+<div className="section-heading"><span>03</span><h2>Read the safe operating area</h2></div>
+
+A transistor's power rating is not the whole story. The **safe operating area** (SOA) chart shows the combinations of voltage and current it can survive.
+
+<SoaPlot/>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / WHY SECOND BREAKDOWN BENDS THE CURVE</span>
+
+1. **Constant power.** If only average junction temperature mattered, the limit would be $V I = P_{max}$, a straight line of slope −1 on log-log axes.
+
+2. **Hot spots.** A bipolar transistor is many small transistors in parallel across the die. At a fixed base voltage, a slightly hotter region carries more current (its $V_{BE}$ falls about 2 mV/°C, Chapter 26), which heats it further. At low voltage the extra power from that current is small; at high voltage it is large, and the region can run away even though the average power is within rating (Chapter 40's electrothermal loop, inside one die).
+
+3. **Steeper limit.** The allowed current therefore falls faster than $1/V$ above some voltage, typically as $1/V^{1.5}$ to $1/V^2$. This is **second breakdown**, and it is why a transistor rated for 100 W may survive only 30 W at 80 V.
+
+4. **MOSFETs.** In switching service a MOSFET's resistance rises with temperature and current shares evenly, but in linear service at low gate drive its temperature coefficient reverses (Chapter 104) and modern MOSFETs show the same steep SOA boundary. A "linear-mode rated" MOSFET is specified for this.
+
+</div>
+
+**Design check.** Plot the transistor's worst operating trajectory on its SOA chart: a linear regulator's pass transistor at maximum input and full current, its short-circuit condition (full input voltage at the current limit), and the turn-on surge into the output capacitors. A switching transistor's trajectory during an inductive turn-off swings through high voltage and high current simultaneously and must lie within the pulsed SOA.
+
+</section>
+
+<section id="derating">
+
+<div className="section-heading"><span>04</span><h2>Derate for temperature and lifetime</h2></div>
+
+Power ratings are usually quoted with the case held at 25 °C, which no real heat sink achieves. The allowed power falls linearly to zero at $T_{J,max}$: a 100 W, 150 °C device with θ_JC = 1.25 °C/W can dissipate only $(150 - 100)/1.25$ = 40 W with its case at 100 °C.
+
+Failure rates of semiconductors and electrolytic capacitors roughly double for every 10 °C rise (an Arrhenius dependence of the underlying chemistry). An electrolytic capacitor rated 2000 hours at 105 °C lasts about 16 000 hours at 75 °C. Keeping components cool, not merely below their maximum, is how supplies last decades.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>05</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, choose a heat sink for a given dissipation, compute the junction rise for a short pulse, and test an operating point against an SOA chart including second breakdown.
+
+[Work through three independent problems](/thermal-soa/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§9.4.1–9.4.2 (power transistors, heat sinking and safe operating area). Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

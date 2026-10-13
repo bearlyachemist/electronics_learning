@@ -1,0 +1,159 @@
+import Equation from '../../components/Equation.astro';
+import {LcLadderCircuit,FilterResponsePlot,InsertionLossPlot} from '../../components/RfFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 115</span><span className="hairline"/>PART V / RF COMPONENTS &amp; STAGES</div>
+
+<h1>RF and IF filters<br/><em>Selectivity is bought with order and Q.</em></h1>
+
+<p className="dek">Specify a filter, derive the Butterworth and Chebyshev responses and the order they need, synthesize an LC ladder from prototype values, transform it to band-pass, and predict the insertion loss that finite component Q imposes.</p>
+
+<div className="chapter-meta"><span>50–75 min + practice</span><span>Derivations · Synthesis · Technology choice</span></div>
+
+</div>
+
+<section id="spec">
+
+<div className="section-heading"><span>01</span><h2>Write the filter specification</h2></div>
+
+Chapter 85 built active filters with op amps; above a few tens of megahertz op amps run out of bandwidth, and RF filters are built from inductors, capacitors, transmission lines and acoustic or electromechanical resonators, between matched terminations (usually 50 Ω). A specification names:
+
+- **Passband:** the frequencies to pass, and the maximum **ripple** allowed within it (for example 0.5 dB).
+- **Stopband:** the frequencies to reject, and the minimum **attenuation** there (for example 40 dB at twice the cutoff).
+- **Insertion loss:** the loss at the passband centre, which in a receiver adds directly to the noise figure (Chapter 118).
+- **Return loss:** how well the filter presents its nominal impedance across the passband.
+- **Group delay variation,** which distorts modulated signals even when the magnitude response is flat.
+
+</section>
+
+<section id="responses">
+
+<div className="section-heading"><span>02</span><h2>Derive the order a response needs</h2></div>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / BUTTERWORTH AND CHEBYSHEV ORDER</span>
+
+1. **Butterworth** is defined by a maximally flat magnitude: $|H|^2 = 1/[1 + (\omega/\omega_c)^{2N}]$. Every derivative of $|H|^2$ at $\omega = 0$ up to order $2N - 1$ is zero, and the response is −3 dB at $\omega_c$.
+
+2. **Attenuation at a stopband frequency** $\omega_s$ is $A = 10\log_{10}[1 + (\omega_s/\omega_c)^{2N}]$. Solving for $N$:
+<Equation tex={String.raw`N_{BW}\ge\frac{\log_{10}\left(10^{A/10}-1\right)}{2\log_{10}(\omega_s/\omega_c)}`}/>
+
+3. **Chebyshev** allows passband ripple $\varepsilon$ in exchange for steepness: $|H|^2 = 1/[1 + \varepsilon^2T_N^2(\omega/\omega_c)]$, where the Chebyshev polynomial $T_N(x) = \cos(N\arccos x)$ oscillates between ±1 for $|x| \le 1$ and grows as $\cosh(N\,\mathrm{arccosh}\,x)$ beyond. The ripple in dB is $10\log_{10}(1 + \varepsilon^2)$. The same algebra gives
+<Equation tex={String.raw`N_{Ch}\ge\frac{\mathrm{arccosh}\sqrt{\left(10^{A/10}-1\right)/\varepsilon^2}}{\mathrm{arccosh}(\omega_s/\omega_c)}`}/>
+
+</div>
+
+<FilterResponsePlot/>
+
+**Example.** Require 40 dB at 2.5 times the cutoff. Butterworth: $N \ge \log_{10}(9999)/(2\log_{10}2.5) = 4.00/0.796 = 5.03$, so **6** sections. Chebyshev with 0.5 dB ripple ($\varepsilon^2$ = 0.122): $N \ge \mathrm{arccosh}(286)/\mathrm{arccosh}(2.5) = 6.35/1.57 = 4.05$, so **5** sections. Each section is a component with loss and tolerance, so the ripple a system can accept translates directly into parts count and insertion loss.
+
+</section>
+
+<section id="ladder">
+
+<div className="section-heading"><span>03</span><h2>Synthesize a ladder from prototype values</h2></div>
+
+Filter tables give a normalized **low-pass prototype**: alternating shunt capacitors and series inductors for 1 Ω terminations and a 1 rad/s cutoff, with element values $g_k$. For Butterworth they have a closed form:
+<Equation tex={String.raw`g_k=2\sin\frac{(2k-1)\pi}{2N},\qquad k=1\ldots N`}/>
+For $N = 3$ this gives 1, 2, 1.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / SCALING TO A REAL CUTOFF AND IMPEDANCE</span>
+
+1. **Impedance scaling.** Multiplying every impedance by $R$ leaves voltage ratios unchanged. An inductor's impedance $sL$ scales as $L \to RL$; a capacitor's $1/(sC)$ scales as $C \to C/R$.
+
+2. **Frequency scaling.** Moving the cutoff from 1 rad/s to $\omega_c$ requires every reactance at $\omega_c$ to equal its prototype value at 1 rad/s, so $L \to L/\omega_c$ and $C \to C/\omega_c$.
+
+3. **Combined:**
+<Equation tex={String.raw`C_k=\frac{g_k}{2\pi f_cR},\qquad L_k=\frac{g_kR}{2\pi f_c}`}/>
+
+4. **Check at the cutoff.** The 100 MHz, 50 Ω filter below has $C$ = 31.8 pF (reactance −j50 Ω at 100 MHz) and $L$ = 159 nH (+j100 Ω). Nodal analysis at 100 MHz gives an output of $1/\sqrt2$ of its low-frequency value relative to the matched source, the −3 dB point.
+
+</div>
+
+<LcLadderCircuit/>
+
+</section>
+
+<section id="bandpass">
+
+<div className="section-heading"><span>04</span><h2>Transform to high-pass and band-pass</h2></div>
+
+The same prototype yields other responses by substituting for the normalized frequency variable.
+
+- **High-pass:** replace $s$ by $\omega_c/s$. Every inductor becomes a capacitor and every capacitor an inductor, with $C = 1/(g_k\omega_cR)$ and $L = R/(g_k\omega_c)$.
+- **Band-pass:** replace $s$ by $(\omega_0/B)(s/\omega_0 + \omega_0/s)$, where $\omega_0$ is the centre and $B$ the bandwidth (both in rad/s). A series inductor becomes a series LC resonant at $\omega_0$; a shunt capacitor becomes a parallel LC resonant at $\omega_0$.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / BAND-PASS ELEMENT VALUES</span>
+
+1. **Series branch.** The prototype impedance $g_kRs$ becomes $g_kR(\omega_0/B)(s/\omega_0 + \omega_0/s) = s\,(g_kR/B) + 1/[s\,B/(g_kR\omega_0^2)]$: an inductor $L = g_kR/B$ in series with a capacitor $C = B/(g_kR\omega_0^2)$.
+
+2. **Shunt branch.** The prototype admittance $g_ks/R$ becomes a capacitor $C = g_k/(RB)$ in parallel with an inductor $L = RB/(g_k\omega_0^2)$.
+
+3. **Each pair resonates at** $\omega_0$, since $LC = 1/\omega_0^2$ in both cases.
+
+</div>
+
+**Example.** A 100 MHz band-pass with 10 MHz bandwidth from the third-order prototype has shunt resonators of 318 pF with 7.96 nH, and a series resonator of 1.59 µH with 1.59 pF. The spread is extreme: 1.59 pF is comparable to stray capacitance and 7.96 nH to a few millimetres of trace. Narrow fractional bandwidths make the direct transformation impractical, which is why narrow RF filters use **coupled resonators**: identical resonators connected by small coupling capacitors or by magnetic coupling, whose values are derived from the same prototype through coupling coefficients $k_{i,i+1} = \text{FBW}/\sqrt{g_ig_{i+1}}$.
+
+</section>
+
+<section id="loss">
+
+<div className="section-heading"><span>05</span><h2>Predict insertion loss from finite Q</h2></div>
+
+Real inductors have Q of 50–200 at RF (Chapter 112). Their loss resistance does not matter much in a wide filter but dominates a narrow one.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / LOSS OF ONE RESONATOR</span>
+
+1. **Series resonator between terminations.** At resonance its reactance vanishes, leaving its loss resistance $r = \omega_0L/Q_u$ in series between two matched $R$ terminations. The output voltage falls by $R\cdot2/(2R + r)$ relative to the lossless case, an insertion loss of $20\log_{10}(1 + r/2R)$.
+
+2. **The resonator's inductance** from section 04 is $L = g_kR/B = g_kR/(\omega_0\,\text{FBW})$, where FBW = $B/\omega_0$. So $r/2R = g_k/(2\,\text{FBW}\,Q_u)$.
+
+3. **Small-loss approximation.** $20\log_{10}(1 + x) \approx 8.686x$, so each resonator contributes $4.343\,g_k/(\text{FBW}\,Q_u)$ dB. Summing over the filter:
+<Equation tex={String.raw`IL\approx\frac{4.343}{\text{FBW}\,Q_u}\sum_kg_k\ \ \text{dB}`}/>
+
+</div>
+
+<InsertionLossPlot/>
+
+The loss is inversely proportional to both fractional bandwidth and Q. A third-order 1% filter with $Q_u$ = 200 inductors loses 8.7 dB, which as a receiver's first filter adds 8.7 dB to the noise figure. That is the case for resonators with Q in the thousands.
+
+</section>
+
+<section id="technology">
+
+<div className="section-heading"><span>06</span><h2>Choose a filter technology</h2></div>
+
+| Technology | Typical Q | Frequency range | Typical use |
+|---|---|---|---|
+| Lumped LC (chip parts) | 30–200 | up to a few GHz | wide filters, harmonic suppression after PAs |
+| Printed / transmission-line | 100–300 | 1–30 GHz | microwave band-pass, stubs |
+| Ceramic resonator | 300–1000 | 0.5–6 GHz | front-end filters |
+| SAW (surface acoustic wave) | 1000–5000 | 50 MHz–3 GHz | cellular, IF and front-end filters |
+| BAW / FBAR | 1000–3000 | 1.5–10 GHz | cellular bands near each other |
+| Quartz crystal | 10⁴–10⁶ | 1–200 MHz | narrow IF filters, oscillators (Chapter 116) |
+| Cavity | 10³–10⁴ | 0.5–40 GHz | base-station duplexers |
+
+Acoustic filters exploit the fact that sound travels about 10⁵ times slower than light: a resonator a few micrometres long resonates at gigahertz, with the low loss of a crystal lattice. They are fixed in frequency, have limited power handling and specified source and load impedances, and must be used with the matching their datasheets prescribe. LC filters remain the choice for wide bandwidths, tunable designs and suppressing PA harmonics, where a few tenths of a dB of loss are acceptable.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>07</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, compute the order for a given stopband requirement, scale a prototype to a real cutoff and impedance, transform a low-pass to a band-pass, and estimate a narrow filter's insertion loss from its component Q.
+
+[Work through three independent problems](/rf-filters/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§1.7 and 6.2; Van Valkenburg, Analog Filter Design (approximations); Matthaei, Young and Jones (coupled-resonator design). Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>

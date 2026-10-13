@@ -3,7 +3,7 @@ import {RealComponentPlot,SmithChartFigure,LineImpedancePlot} from '../../compon
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 103</span><span className="hairline"/>PART V / RF CIRCUITS</div>
+<div className="eyebrow"><span>CHAPTER 112</span><span className="hairline"/>PART V / RF COMPONENTS &amp; STAGES</div>
 
 <h1>RF components and the Smith chart<br/><em>Parasitics become the circuit.</em></h1>
 
@@ -17,7 +17,7 @@ import {RealComponentPlot,SmithChartFigure,LineImpedancePlot} from '../../compon
 
 <div className="section-heading"><span>01</span><h2>Model real components across frequency</h2></div>
 
-Every capacitor has lead and mounting inductance in series with it; every inductor has capacitance between its turns. Chapter 101 explained where those come from. At RF they are not corrections: they decide what the part is.
+Every capacitor has lead and mounting inductance in series with it; every inductor has capacitance between its turns. Chapter 110 explained where those come from. At RF they are not corrections: they decide what the part is.
 
 <div className="derivation">
 
@@ -66,11 +66,11 @@ Quality factor measures how much energy a reactive element stores compared with 
 
 <span className="tiny-label">WORKED EXAMPLE / AN INDUCTOR'S Q AND ITS PARALLEL LOSS</span><h3>1 µH with 0.5 Ω effective series resistance at 10 MHz</h3>
 
-<p>$X_s = 2\pi(10\text{ M})(1\ \mu) = 62.8$ Ω, so $Q = 126$. In parallel form, $R_p = 0.5(1 + 126^2)$ ≈ <strong>7.9 kΩ</strong> across an essentially unchanged 62.8 Ω reactance. Resonated with 253 pF, the tank has a 79 kHz bandwidth. The 0.5 Ω must include the skin-effect resistance of Chapter 101, which is often ten times the DC value at this frequency.</p>
+<p>$X_s = 2\pi(10\text{ M})(1\ \mu) = 62.8$ Ω, so $Q = 126$. In parallel form, $R_p = 0.5(1 + 126^2)$ ≈ <strong>7.9 kΩ</strong> across an essentially unchanged 62.8 Ω reactance. Resonated with 253 pF, the tank has a 79 kHz bandwidth. The 0.5 Ω must include the skin-effect resistance of Chapter 110, which is often ten times the DC value at this frequency.</p>
 
 </div>
 
-The parallel form is what an active circuit sees across a tank. It is the $R_p$ that an oscillator's negative resistance must overcome (Chapter 105), and the impedance a tuned amplifier's gain is proportional to.
+The parallel form is what an active circuit sees across a tank. It is the $R_p$ that an oscillator's negative resistance must overcome (Chapter 116), and the impedance a tuned amplifier's gain is proportional to.
 
 </section>
 
@@ -78,7 +78,7 @@ The parallel form is what an active circuit sees across a tank. It is the $R_p$ 
 
 <div className="section-heading"><span>03</span><h2>Derive the input impedance of a terminated line</h2></div>
 
-Chapter 102 described waves on a line as steps bouncing between ends. In sinusoidal steady state the same physics gives a compact formula for what a line does to the impedance at its far end.
+Chapter 111 described waves on a line as steps bouncing between ends. In sinusoidal steady state the same physics gives a compact formula for what a line does to the impedance at its far end.
 
 <div className="derivation">
 
@@ -141,7 +141,7 @@ Section 03 showed that moving along a line simply rotates $\Gamma$. Plotting imp
 
 <div className="section-heading"><span>05</span><h2>Match with transformers and stubs</h2></div>
 
-A matching network must move the load's point to the centre. Chapter 104 develops lumped L networks for this; at higher frequencies the line itself is often the most accurate component available.
+A matching network must move the load's point to the centre. Chapter 113 develops lumped L networks for this; at higher frequencies the line itself is often the most accurate component available.
 
 **Quarter-wave transformer.** From section 03, a quarter-wave line of impedance $Z_T$ presents $Z_T^2/Z_L$. Setting that equal to $Z_0$ gives $Z_T = \sqrt{Z_0Z_L}$. A 100 Ω load is matched to 50 Ω by a quarter wave of 70.7 Ω line. At 1 GHz on a board with effective permittivity 4, a quarter wave is $0.15\text{ m}/4 = 37.5$ mm. The match is exact only at one frequency; it degrades as the electrical length departs from 90°.
 

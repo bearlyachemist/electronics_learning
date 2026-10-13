@@ -11,7 +11,7 @@ for(const c of advancedChapters){
  for(const [id] of c.sections)assert.ok(html.includes(`id="${id}"`),`${c.id}: missing section ${id}`);
  assert.ok(!html.includes('katex-error'),`${c.id}: malformed rendered math`);
  assert.equal(practice[c.id].length,3,`${c.id}: missing practice`);
- for(const p of practice[c.id])for(const s of [p.prompt,p.hint,...p.solution.map(s=>s.text||'')]){
+ for(const p of practice[c.id])for(const s of [p.prompt,p.hint,...p.solution.flatMap(s=>[s.text||'',s.note||'',s.answer||''])]){
   assert.ok(!/[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(s),`${c.id}: invalid text control character`);
   for(const m of s.matchAll(/\$([^$]+)\$/g))katex.renderToString(m[1],{throwOnError:true});
  }

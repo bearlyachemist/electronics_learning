@@ -224,7 +224,7 @@ The diode slows the relay's release, because the stored energy decays slowly thr
 
 <InverterFigure/>
 
-With a 10 kΩ collector resistor to 5 V and a 22 kΩ base resistor, a low input leaves the transistor off and the output high through 10 kΩ; a high input saturates it and pulls the output to about 0.1 V. Early logic families (Chapter 114) were built this way. The output is weak when high. If it drives the 22 kΩ input of an identical stage, the two resistors form a divider with the next base: $(5 - V)/10\text{ k}\Omega = (V - 0.65)/22\text{ k}\Omega$ gives $V = 3.64$ V, not 5 V. Each additional load pulls it lower, which limits fan-out. The output is also slow to rise, because stored charge must leave the base and the 10 kΩ resistor must charge any wiring capacitance.
+With a 10 kΩ collector resistor to 5 V and a 22 kΩ base resistor, a low input leaves the transistor off and the output high through 10 kΩ; a high input saturates it and pulls the output to about 0.1 V. Early logic families (Chapter 126) were built this way. The output is weak when high. If it drives the 22 kΩ input of an identical stage, the two resistors form a divider with the next base: $(5 - V)/10\text{ k}\Omega = (V - 0.65)/22\text{ k}\Omega$ gives $V = 3.64$ V, not 5 V. Each additional load pulls it lower, which limits fan-out. The output is also slow to rise, because stored charge must leave the base and the 10 kΩ resistor must charge any wiring capacitance.
 
 ### Switching the high side with a PNP
 
@@ -298,7 +298,7 @@ No. The collector circuit can deliver at most $(5 - 0.2)\text{ V}/1\text{ k}\Ome
 <summary>2. A "switch" driving a 200 mA motor measures $V_{CE}$ = 4 V when on. What does that tell you, and what will happen?</summary>
 <div>
 
-The transistor is in the active region, not saturated: the base drive is too small for this transistor's $\beta$ at 200 mA, or the motor draws more than expected. It dissipates $4\text{ V}\times0.2\text{ A} = 0.8$ W and will overheat. Increase the base current (smaller $R_B$, or a Darlington or MOSFET, Chapters 38 and 95) until $V_{CE}$ falls to a few tenths of a volt.
+The transistor is in the active region, not saturated: the base drive is too small for this transistor's $\beta$ at 200 mA, or the motor draws more than expected. It dissipates $4\text{ V}\times0.2\text{ A} = 0.8$ W and will overheat. Increase the base current (smaller $R_B$, or a Darlington or MOSFET, Chapters 38 and 102) until $V_{CE}$ falls to a few tenths of a volt.
 
 </div>
 </details>

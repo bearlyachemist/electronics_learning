@@ -4,7 +4,7 @@ import {CoaxFieldFigure,SkinDepthPlot} from '../../components/RfFigures';
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 101</span><span className="hairline"/>PART V / FIELDS &amp; WAVES</div>
+<div className="eyebrow"><span>CHAPTER 110</span><span className="hairline"/>PART V / FIELDS &amp; WAVES</div>
 
 <h1>Electromagnetic fields behind circuit models<br/><em>Every wire is a field problem in disguise.</em></h1>
 
@@ -38,7 +38,7 @@ Kirchhoff's laws are not separate axioms. They are Maxwell's equations with two 
 
 </div>
 
-At 100 MHz on an FR-4 board with an effective permittivity near 4, $v \approx 1.5\times10^8$ m/s and $\lambda \approx 1.5$ m. A 10 cm trace is λ/15: lumped, with its inductance and capacitance drawn in. At 1 GHz the same trace is $2\lambda/3$ long and must be treated as a transmission line (Chapter 102).
+At 100 MHz on an FR-4 board with an effective permittivity near 4, $v \approx 1.5\times10^8$ m/s and $\lambda \approx 1.5$ m. A 10 cm trace is λ/15: lumped, with its inductance and capacitance drawn in. At 1 GHz the same trace is $2\lambda/3$ long and must be treated as a transmission line (Chapter 111).
 
 <SystemsFlow labels={["Charge|on conductors", "Electric field|Gauss", "Capacitance|C = Q/V"]} caption="Capacitance summarizes the electric field stored between conductors."/>
 
@@ -101,7 +101,7 @@ Inductance is flux linkage per ampere. The recipe mirrors capacitance: assume a 
 <Equation tex={String.raw`\Phi=\int_a^b\frac{\mu I}{2\pi r}\,\ell\,dr=\frac{\mu I\ell}{2\pi}\ln\frac ba\qquad\Longrightarrow\qquad L'=\frac{\mu}{2\pi}\ln\frac ba`}/>
    (This is the external inductance; current inside a solid inner conductor adds a small internal term that vanishes at high frequency, section 05.)
 
-4. **The product.** Multiply by $C'$ from section 02: the logarithms cancel and $L'C' = \mu\varepsilon$, independent of geometry. Chapter 102 shows waves travel at $1/\sqrt{L'C'}$, so
+4. **The product.** Multiply by $C'$ from section 02: the logarithms cancel and $L'C' = \mu\varepsilon$, independent of geometry. Chapter 111 shows waves travel at $1/\sqrt{L'C'}$, so
 <Equation tex={String.raw`v=\frac{1}{\sqrt{\mu\varepsilon}}=\frac{c}{\sqrt{\varepsilon_r}},\qquad Z_0=\sqrt{\frac{L'}{C'}}=\frac{1}{2\pi}\sqrt{\frac{\mu}{\varepsilon}}\ln\frac ba=\frac{60\ \Omega}{\sqrt{\varepsilon_r}}\ln\frac ba`}/>
    using $\sqrt{\mu_0/\varepsilon_0}$ ≈ 377 Ω, the impedance of free space.
 
@@ -187,7 +187,7 @@ Inside a good conductor, a changing current induces fields that oppose it in the
 
 <p>$\delta = 66\ \mu\text{m}/\sqrt{10} = 20.9$ µm. DC resistance is $\rho/(\pi a^2) = 1.72\times10^{-8}/(\pi\times0.25\times10^{-6})$ = 21.9 mΩ/m. AC resistance is $1/(2\pi a\sigma\delta) = 1/(2\pi\times0.5\text{ mm}\times5.81\times10^7\times20.9\ \mu\text{m})$ = <strong>262 mΩ/m</strong>, twelve times larger.</p>
 
-<p>For an inductor, that raises the series loss and lowers Q (Chapter 103). Litz wire, made of many insulated strands each thinner than δ and woven so each strand visits the surface, recovers much of the cross-section up to a few megahertz. Above that, silver plating or wider flat conductors are used, since only the surface carries current anyway.</p>
+<p>For an inductor, that raises the series loss and lowers Q (Chapter 112). Litz wire, made of many insulated strands each thinner than δ and woven so each strand visits the surface, recovers much of the cross-section up to a few megahertz. Above that, silver plating or wider flat conductors are used, since only the surface carries current anyway.</p>
 
 </div>
 
@@ -199,13 +199,13 @@ Inside a good conductor, a changing current induces fields that oppose it in the
 
 Maxwell added one term to Ampère's law: a changing electric field acts like a current, $\nabla\times\mathbf H = \mathbf J + \partial\mathbf D/\partial t$. With it, a changing $\mathbf E$ creates $\mathbf B$ and a changing $\mathbf B$ creates $\mathbf E$, and the pair can sustain each other away from any conductor. In free space the resulting wave travels at $c = 1/\sqrt{\mu_0\varepsilon_0}$ with $E/H = \sqrt{\mu_0/\varepsilon_0} \approx 377$ Ω.
 
-Close to a small source, within about $\lambda/2\pi$, the fields are dominated by stored energy that returns to the circuit each cycle: this is the **near field**, where the lumped mutual-capacitance and mutual-inductance models of this chapter apply. Beyond it, a fraction of the energy leaves for good: the **far field**, analyzed in Chapter 107. A circuit radiates efficiently only when some current path is a significant fraction of a wavelength, so the practical rules follow directly:
+Close to a small source, within about $\lambda/2\pi$, the fields are dominated by stored energy that returns to the circuit each cycle: this is the **near field**, where the lumped mutual-capacitance and mutual-inductance models of this chapter apply. Beyond it, a fraction of the energy leaves for good: the **far field**, analyzed in Chapter 119. A circuit radiates efficiently only when some current path is a significant fraction of a wavelength, so the practical rules follow directly:
 
 - Keep high-$di/dt$ loops small (section 03): radiated field grows with loop area and with $f^2$.
 - Give every fast signal an adjacent, unbroken return (section 04).
 - Keep common-mode current off cables, which are often the longest conductors in the system and radiate in proportion to length and frequency.
 
-The ideas in this chapter recur through Part V: transmission lines (Chapter 102) put the $L'$ and $C'$ of sections 02–03 into a wave equation; RF components (Chapter 103) are built from the parasitics and skin effect of sections 03 and 05; antennas (Chapter 107) are structures designed to do what section 06 tells ordinary circuits not to do.
+The ideas in this chapter recur through Part V: transmission lines (Chapter 111) put the $L'$ and $C'$ of sections 02–03 into a wave equation; RF components (Chapter 112) are built from the parasitics and skin effect of sections 03 and 05; antennas (Chapter 119) are structures designed to do what section 06 tells ordinary circuits not to do.
 
 </section>
 

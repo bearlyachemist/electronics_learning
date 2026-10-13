@@ -7,7 +7,23 @@
       "hint": "Try saturation and then test $V_{DS}$ \u2265 u.",
       "solution": [
         {
-          "text": "u = 1 V, $I_D$ = 1 mA and $V_D$ = 4 V; the saturation assumption holds with 3 V margin."
+          "step": "Assume saturation and find overdrive",
+          "tex": "u=V_G-V_T=2-1=1\\ \\text{V}"
+        },
+        {
+          "step": "Drain current",
+          "tex": "I_D=\\tfrac12ku^2=\\tfrac12(2)(1)^2=1\\ \\text{mA}"
+        },
+        {
+          "step": "Drain voltage",
+          "tex": "V_D=5-1\\ \\text{mA}\\times1\\ \\text{k}\\Omega=4\\ \\text{V}"
+        },
+        {
+          "step": "Check the assumption",
+          "text": "Saturation needs $V_{DS}\\ge u$: 4 V \u2265 1 V, with 3 V of margin."
+        },
+        {
+          "answer": "$I_D$ = <strong>1 mA</strong>, $V_D$ = <strong>4 V</strong>, saturated."
         }
       ]
     },
@@ -18,7 +34,25 @@
       "hint": "Set the drain voltage equal to overdrive.",
       "solution": [
         {
-          "text": "Solve 5 \u2212 2u\u00b2 = u. The positive root is (\u221a41 \u2212 1)/4 = 1.3508 V, giving $V_G$ = 2.3508 V."
+          "step": "Express V_D in terms of u",
+          "text": "With k = 2 mA/V\u00b2, $I_D=u^2$ (mA with u in volts), and $R_D$ = 2 k\u03a9.",
+          "tex": "V_D=5-2u^2"
+        },
+        {
+          "step": "Saturation boundary",
+          "text": "The source is grounded, so the boundary is $V_D=u$.",
+          "tex": "5-2u^2=u\\ \\Rightarrow\\ 2u^2+u-5=0"
+        },
+        {
+          "step": "Solve",
+          "tex": "u=\\frac{-1+\\sqrt{41}}{4}=1.351\\ \\text{V}"
+        },
+        {
+          "step": "Gate voltage",
+          "tex": "V_G=V_T+u=2.351\\ \\text{V}"
+        },
+        {
+          "answer": "$V_G$ \u2264 <strong>2.35 V</strong>."
         }
       ]
     },
@@ -29,7 +63,19 @@
       "hint": "Use the incremental source feedback factor.",
       "solution": [
         {
-          "text": "The gains are \u22124 and \u22122 V/V. The DC gate setting must change to keep the same current when $R_S$ is added."
+          "step": "Gain without degeneration",
+          "tex": "A_v=-g_mR_D=-2\\ \\text{mS}\\times2\\ \\text{k}\\Omega=-4"
+        },
+        {
+          "step": "Source-feedback factor",
+          "tex": "1+g_mR_S=1+2\\ \\text{mS}\\times500\\ \\Omega=2"
+        },
+        {
+          "step": "Degenerated gain",
+          "tex": "A_v=-\\frac{g_mR_D}{1+g_mR_S}=-2"
+        },
+        {
+          "answer": "<strong>\u22124</strong> and <strong>\u22122 V/V</strong>; the gate bias must rise by 0.5 V to keep 1 mA with $R_S$."
         }
       ]
     }
@@ -42,7 +88,19 @@
       "hint": "The two conductances add.",
       "solution": [
         {
-          "text": "The resistance is 1/1.01 mS = 990.1 \u03a9, not the 100 k\u03a9 drain output resistance."
+          "step": "Apply a test voltage",
+          "text": "With gate tied to drain, a test voltage $v$ drives current through both $g_m$ (since $v_{gs}=v$) and $g_{ds}$."
+        },
+        {
+          "step": "Total conductance",
+          "tex": "g=g_m+g_{ds}=1+0.01=1.01\\ \\text{mS}"
+        },
+        {
+          "step": "Resistance",
+          "tex": "r=\\frac{1}{1.01\\ \\text{mS}}=990\\ \\Omega"
+        },
+        {
+          "answer": "About <strong>990 \u03a9</strong>, close to $1/g_m$, not the 100 k\u03a9 $r_o$."
         }
       ]
     },
@@ -53,7 +111,24 @@
       "hint": "Find each overdrive independently.",
       "solution": [
         {
-          "text": "Input overdrive is 1 V and load overdrive is 2 V, giving $V_{in}$ = 2 V and $V_o$ = 2 V. Both devices are in saturation."
+          "step": "Input device overdrive",
+          "tex": "1=\\tfrac12(2)u_n^2\\ \\Rightarrow\\ u_n=1\\ \\text{V},\\qquad V_{in}=1+1=2\\ \\text{V}"
+        },
+        {
+          "step": "Load device overdrive",
+          "tex": "1=\\tfrac12(0.5)u_L^2\\ \\Rightarrow\\ u_L=2\\ \\text{V},\\qquad V_{GS,L}=3\\ \\text{V}"
+        },
+        {
+          "step": "Output voltage",
+          "text": "The diode-connected load sits between $V_{DD}$ and the output.",
+          "tex": "V_o=5-3=2\\ \\text{V}"
+        },
+        {
+          "step": "Check saturation",
+          "text": "Input device: $V_{DS}$ = 2 V \u2265 1 V. The load is diode-connected, so always saturated."
+        },
+        {
+          "answer": "$V_{in}$ = <strong>2 V</strong>, $V_o$ = <strong>2 V</strong>."
         }
       ]
     },
@@ -64,7 +139,19 @@
       "hint": "Keep the load conductance in the output KCL equation.",
       "solution": [
         {
-          "text": "$A_v$ = \u22122 mS/(1 mS + 40 \u03bcS + 100 \u03bcS) = \u22121.754 V/V."
+          "step": "Output-node KCL",
+          "text": "The input device drives $-g_{mn}v_{in}$ into the node; the load conductances are the diode load's $g_{mL}$, both $g_{ds}$ and the 10 k\u03a9 load."
+        },
+        {
+          "step": "Total node conductance",
+          "tex": "G=1+0.02+0.02+0.1=1.14\\ \\text{mS}"
+        },
+        {
+          "step": "Gain",
+          "tex": "A_v=-\\frac{2\\ \\text{mS}}{1.14\\ \\text{mS}}=-1.754"
+        },
+        {
+          "answer": "$A_v$ \u2248 <strong>\u22121.75 V/V</strong>."
         }
       ]
     }
@@ -77,7 +164,19 @@
       "hint": "Find the square-law overdrive first.",
       "solution": [
         {
-          "text": "u = 0.5 V, $V_{GS}$ = 1.5 V and output compliance is 0.5 V."
+          "step": "Overdrive",
+          "tex": "0.25=\\tfrac12(2)u^2\\ \\Rightarrow\\ u=0.5\\ \\text{V}"
+        },
+        {
+          "step": "Gate voltage",
+          "tex": "V_{GS}=V_T+u=1.5\\ \\text{V}"
+        },
+        {
+          "step": "Compliance",
+          "text": "The output device stays saturated while $V_{DS}\\ge u$."
+        },
+        {
+          "answer": "$V_{GS}$ = <strong>1.5 V</strong>; compliance <strong>0.5 V</strong>."
         }
       ]
     },
@@ -88,7 +187,19 @@
       "hint": "Linearize the squared overdrive.",
       "solution": [
         {
-          "text": "The first-order error is \u22122\u00d70.005/0.5 = \u22122%; the exact square-law ratio gives \u22121.99%."
+          "step": "Linearize",
+          "tex": "I\\propto u^2\\ \\Rightarrow\\ \\frac{\\Delta I}{I}\\approx\\frac{2\\Delta u}{u}=-\\frac{2\\Delta V_T}{u}"
+        },
+        {
+          "step": "First-order error",
+          "tex": "-\\frac{2(0.005)}{0.5}=-2\\%"
+        },
+        {
+          "step": "Exact",
+          "tex": "\\left(\\frac{0.495}{0.5}\\right)^2-1=-1.99\\%"
+        },
+        {
+          "answer": "About <strong>\u22122%</strong>."
         }
       ]
     },
@@ -99,7 +210,19 @@
       "hint": "Differentiate the modulation factor at fixed gate voltage.",
       "solution": [
         {
-          "text": "$g_{ds}$ = 20 \u03bcS, so \u0394ID = 40 \u03bcA. This is an exact increment within the stated linear modulation model while saturation holds."
+          "step": "Output conductance",
+          "tex": "g_{ds}=\\lambda I_0=0.02\\times1\\ \\text{mA}=20\\ \\mu\\text{S}"
+        },
+        {
+          "step": "Current increment",
+          "tex": "\\Delta I=g_{ds}\\Delta V_{DS}=20\\ \\mu\\text{S}\\times2\\ \\text{V}"
+        },
+        {
+          "step": "Result",
+          "tex": "\\Delta I=40\\ \\mu\\text{A}\\ (4\\%)"
+        },
+        {
+          "answer": "<strong>40 \u00b5A</strong>."
         }
       ]
     }
@@ -112,7 +235,19 @@
       "hint": "Subtract overdrive from the source rail.",
       "solution": [
         {
-          "text": "The upper output limit is 4.6 V."
+          "step": "PMOS saturation condition",
+          "text": "A PMOS stays saturated while $V_{SD}\\ge u$."
+        },
+        {
+          "step": "Apply",
+          "tex": "V_{SD}=5-V_O\\ge0.4"
+        },
+        {
+          "step": "Solve",
+          "tex": "V_O\\le4.6\\ \\text{V}"
+        },
+        {
+          "answer": "Output up to <strong>4.6 V</strong>."
         }
       ]
     },
@@ -123,7 +258,19 @@
       "hint": "Include all four branches.",
       "solution": [
         {
-          "text": "The three outputs total 800 \u03bcA; with the 100 \u03bcA reference, the total is 900 \u03bcA."
+          "step": "Output currents",
+          "tex": "1\\times100+2\\times100+5\\times100=800\\ \\mu\\text{A}"
+        },
+        {
+          "step": "Reference branch",
+          "text": "The reference itself also draws 100 \u00b5A from the supply."
+        },
+        {
+          "step": "Total",
+          "tex": "800+100=900\\ \\mu\\text{A}"
+        },
+        {
+          "answer": "<strong>900 \u00b5A</strong>."
         }
       ]
     },
@@ -134,7 +281,20 @@
       "hint": "Match source voltage drops.",
       "solution": [
         {
-          "text": "The reference drop is 0.25 V, so the output resistor is 250 \u03a9. This preserves nominal $V_{GS}$ matching, not perfect finite-voltage accuracy."
+          "step": "Reference source drop",
+          "tex": "0.25\\ \\text{mA}\\times1\\ \\text{k}\\Omega=0.25\\ \\text{V}"
+        },
+        {
+          "step": "Match the drop at 1 mA",
+          "text": "Equal gate voltages and equal $V_{GS}$ (the 4\u00d7 device carries 4\u00d7 current at the same overdrive) need equal source drops.",
+          "tex": "R=\\frac{0.25\\ \\text{V}}{1\\ \\text{mA}}=250\\ \\Omega"
+        },
+        {
+          "step": "Scaling rule",
+          "text": "Resistors scale inversely with the current ratio: 1 k\u03a9/4."
+        },
+        {
+          "answer": "<strong>250 \u03a9</strong>."
         }
       ]
     }
@@ -147,7 +307,23 @@
       "hint": "Use the two-node denominator, including $g_{ds}$.",
       "solution": [
         {
-          "text": "$g_{ds}$ = 20 \u03bcS. The denominator is 1 + 0.1 + 1.01 = 2.11, so $A_v$ = \u221210/2.11 = \u22124.739 V/V."
+          "step": "Output conductance",
+          "tex": "g_{ds}=\\frac{1}{50\\ \\text{k}\\Omega}=20\\ \\mu\\text{S}"
+        },
+        {
+          "step": "Two-node gain expression",
+          "tex": "A_v=-\\frac{g_mR_D}{1+g_{ds}R_D+(g_m+g_{ds})R_S}"
+        },
+        {
+          "step": "Denominator",
+          "tex": "1+0.02\\times5+2.02\\times0.5=1+0.1+1.01=2.11"
+        },
+        {
+          "step": "Gain",
+          "tex": "A_v=-\\frac{10}{2.11}=-4.74"
+        },
+        {
+          "answer": "$A_v$ \u2248 <strong>\u22124.74 V/V</strong>."
         }
       ]
     },
@@ -158,7 +334,19 @@
       "hint": "Use a drain test current with the gate AC grounded.",
       "solution": [
         {
-          "text": "$R_{out}$ = 50 k\u03a9 + 0.5 k\u03a9 + (2 mS)(50 k\u03a9)(0.5 k\u03a9) = 100.5 k\u03a9."
+          "step": "Formula",
+          "tex": "R_{out}=r_o+R_S+g_mr_oR_S"
+        },
+        {
+          "step": "Substitute",
+          "tex": "R_{out}=50+0.5+(2\\ \\text{mS})(50\\ \\text{k}\\Omega)(0.5\\ \\text{k}\\Omega)\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Result",
+          "tex": "R_{out}=50+0.5+50=100.5\\ \\text{k}\\Omega"
+        },
+        {
+          "answer": "<strong>100.5 k\u03a9</strong>."
         }
       ]
     },
@@ -169,7 +357,19 @@
       "hint": "Add source drop to channel compliance.",
       "solution": [
         {
-          "text": "The source is at 0.5 V and the channel needs another 0.5 V, giving a 1 V minimum output."
+          "step": "Source voltage",
+          "tex": "V_S=1\\ \\text{mA}\\times500\\ \\Omega=0.5\\ \\text{V}"
+        },
+        {
+          "step": "Channel compliance",
+          "text": "Saturation needs $V_{DS}\\ge u$ = 0.5 V."
+        },
+        {
+          "step": "Minimum output",
+          "tex": "V_{out,min}=0.5+0.5=1.0\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>1.0 V</strong>."
         }
       ]
     }
@@ -182,7 +382,19 @@
       "hint": "Keep the two additive resistances.",
       "solution": [
         {
-          "text": "$R_{out}=100k+100k+0.001(100k)^2=10.2$ M\u03a9. A 0.5 V incremental output change produces about 49 nA."
+          "step": "Cascode formula",
+          "tex": "R_{out}=r_{o1}+r_{o2}+g_mr_{o1}r_{o2}"
+        },
+        {
+          "step": "Substitute",
+          "tex": "R_{out}=100\\ \\text{k}+100\\ \\text{k}+0.001(100\\ \\text{k})^2=10.2\\ \\text{M}\\Omega"
+        },
+        {
+          "step": "Current change for 0.5 V",
+          "tex": "\\frac{0.5\\ \\text{V}}{10.2\\ \\text{M}\\Omega}=49\\ \\text{nA}"
+        },
+        {
+          "answer": "<strong>10.2 M\u03a9</strong>; 0.5 V moves the current by about <strong>49 nA</strong>."
         }
       ]
     },
@@ -193,7 +405,20 @@
       "hint": "Write the lower drain first.",
       "solution": [
         {
-          "text": "$V_X=1.0$ V, $V_{out,min}=1.3$ V and $V_B=2.0$ V. Allow margin for spread before choosing the supply."
+          "step": "Lower drain voltage",
+          "text": "In the standard cascode mirror the lower drain sits at $V_{GS}$.",
+          "tex": "V_X=V_T+u=1.0\\ \\text{V}"
+        },
+        {
+          "step": "Output compliance",
+          "tex": "V_{out,min}=V_X+u=1.3\\ \\text{V}"
+        },
+        {
+          "step": "Upper gate bias",
+          "tex": "V_B=V_X+V_T+u=2.0\\ \\text{V}"
+        },
+        {
+          "answer": "$V_X$ = <strong>1.0 V</strong>, $V_{out,min}$ = <strong>1.3 V</strong>, $V_B$ = <strong>2.0 V</strong>."
         }
       ]
     },
@@ -204,7 +429,19 @@
       "hint": "Differentiate the square law.",
       "solution": [
         {
-          "text": "$\\Delta I/I\\approx-2\\Delta V_T/u=-2\\%$. Large cascode output resistance does not suppress this mismatch."
+          "step": "Linearize the square law",
+          "tex": "\\frac{\\Delta I}{I}\\approx-\\frac{2\\Delta V_T}{u}"
+        },
+        {
+          "step": "Evaluate",
+          "tex": "-\\frac{2(5\\ \\text{mV})}{0.5\\ \\text{V}}=-2\\%"
+        },
+        {
+          "step": "Role of the cascode",
+          "text": "The cascode raises output resistance but copies whatever current the lower device sets, so it does not correct mismatch."
+        },
+        {
+          "answer": "About <strong>\u22122%</strong>."
         }
       ]
     }
@@ -217,7 +454,20 @@
       "hint": "Start at the lower drain.",
       "solution": [
         {
-          "text": "$V_X=0.3$ V, $V_B=1.4$ V and $V_{out,min}=0.6$ V."
+          "step": "Lower drain",
+          "text": "Set it just enough above $u_1$, with margin.",
+          "tex": "V_X=u_1+0.1=0.3\\ \\text{V}"
+        },
+        {
+          "step": "Upper gate bias",
+          "tex": "V_B=V_X+V_{T2}+u_2=0.3+0.8+0.3=1.4\\ \\text{V}"
+        },
+        {
+          "step": "Output compliance",
+          "tex": "V_{out,min}=V_X+u_2=0.6\\ \\text{V}"
+        },
+        {
+          "answer": "$V_X$ = <strong>0.3 V</strong>, $V_B$ = <strong>1.4 V</strong>, $V_{out,min}$ = <strong>0.6 V</strong>."
         }
       ]
     },
@@ -228,7 +478,19 @@
       "hint": "Use $u\\propto1/\\sqrt{k}$.",
       "solution": [
         {
-          "text": "$k_{replica}=2$ mA/V\u00b2. Output overdrive is 0.354 V; replica overdrive is 0.707 V."
+          "step": "Output overdrive",
+          "tex": "u=\\sqrt{\\frac{2I}{k}}=\\sqrt{\\frac{1}{8}}=0.354\\ \\text{V}"
+        },
+        {
+          "step": "Scaling",
+          "text": "$u\\propto1/\\sqrt{k}$, so doubling u needs k divided by 4."
+        },
+        {
+          "step": "Replica",
+          "tex": "k_{rep}=\\frac{8}{4}=2\\ \\text{mA/V}^2,\\qquad u_{rep}=0.707\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>2 mA/V\u00b2</strong> (overdrive 0.707 V vs 0.354 V)."
         }
       ]
     },
@@ -239,7 +501,20 @@
       "hint": "Add the independent voltage demands.",
       "solution": [
         {
-          "text": "No. The generator needs at least 1.9 V. Output-stack compliance alone does not establish feasibility."
+          "step": "Add the demands",
+          "text": "The bias node and the generator's compliance stack in series.",
+          "tex": "1.5+0.4=1.9\\ \\text{V}"
+        },
+        {
+          "step": "Compare",
+          "tex": "1.9\\ \\text{V}>1.8\\ \\text{V}"
+        },
+        {
+          "step": "Conclusion",
+          "text": "The output stack alone fitting is not enough; every branch must fit."
+        },
+        {
+          "answer": "<strong>No</strong>: 1.9 V is needed."
         }
       ]
     }
@@ -252,7 +527,19 @@
       "hint": "Use the parallel load.",
       "solution": [
         {
-          "text": "$R=3.636$ k\u03a9 and $A_v=-10.91$ V/V."
+          "step": "Parallel load",
+          "tex": "R=R_D\\parallel r_o=4\\parallel40=3.636\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Gain",
+          "tex": "A_v=-g_mR=-3\\ \\text{mS}\\times3.636\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Result",
+          "tex": "A_v=-10.9"
+        },
+        {
+          "answer": "$A_v$ \u2248 <strong>\u221210.9 V/V</strong>."
         }
       ]
     },
@@ -263,7 +550,19 @@
       "hint": "Use the local expansion.",
       "solution": [
         {
-          "text": "$H_2/H_1\\approx0.020/(4\\times0.4)=1.25\\%$. Verify saturation over the cycle."
+          "step": "Square-law expansion",
+          "text": "For $v_{gs}=a\\cos\\omega t$, $H_2/H_1=a/(4u)$."
+        },
+        {
+          "step": "Substitute",
+          "tex": "\\frac{0.020}{4\\times0.4}"
+        },
+        {
+          "step": "Result",
+          "tex": "\\frac{H_2}{H_1}=1.25\\%"
+        },
+        {
+          "answer": "About <strong>1.25%</strong>."
         }
       ]
     },
@@ -274,7 +573,20 @@
       "hint": "Include the inverted output movement.",
       "solution": [
         {
-          "text": "$C_{in}=19$ pF and $f_p\\approx1/(2\\pi\\times50k\\times19p)=167.5$ kHz."
+          "step": "Miller capacitance",
+          "text": "The drain moves \u221210 times the gate, so $C_{gd}$ sees 11 times the gate swing.",
+          "tex": "C_{in}=C_{gs}+C_{gd}(1+10)=8+11=19\\ \\text{pF}"
+        },
+        {
+          "step": "Input pole",
+          "tex": "f_p=\\frac{1}{2\\pi(50\\ \\text{k}\\Omega)(19\\ \\text{pF})}"
+        },
+        {
+          "step": "Result",
+          "tex": "f_p=167.5\\ \\text{kHz}"
+        },
+        {
+          "answer": "$C_{in}$ = <strong>19 pF</strong>, pole \u2248 <strong>168 kHz</strong>."
         }
       ]
     }
@@ -287,7 +599,19 @@
       "hint": "Parallel both device resistances first.",
       "solution": [
         {
-          "text": "Unloaded $R=50$ k\u03a9 and gain \u221250; loaded $R=25$ k\u03a9 and gain \u221225."
+          "step": "Output resistance",
+          "tex": "R=100\\parallel100=50\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Unloaded gain",
+          "tex": "A_v=-g_mR=-1\\ \\text{mS}\\times50\\ \\text{k}\\Omega=-50"
+        },
+        {
+          "step": "With the 50 k\u03a9 load",
+          "tex": "R=50\\parallel50=25\\ \\text{k}\\Omega,\\qquad A_v=-25"
+        },
+        {
+          "answer": "<strong>\u221250</strong> unloaded, <strong>\u221225</strong> with 50 k\u03a9."
         }
       ]
     },
@@ -298,7 +622,19 @@
       "hint": "Use local output resistance.",
       "solution": [
         {
-          "text": "Magnitude is 0.45 V. The sign depends on which branch has excess current; check compliance before accepting the estimate."
+          "step": "Imbalance flows into the node resistance",
+          "text": "Any difference between the source and sink currents must flow through the node's small-signal resistance."
+        },
+        {
+          "step": "Shift",
+          "tex": "\\Delta V=15\\ \\mu\\text{A}\\times30\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Result",
+          "tex": "|\\Delta V|=0.45\\ \\text{V}"
+        },
+        {
+          "answer": "About <strong>0.45 V</strong>; check that both devices stay saturated."
         }
       ]
     },
@@ -309,7 +645,19 @@
       "hint": "Use the RC time constant.",
       "solution": [
         {
-          "text": "$f_p=1/(2\\pi\\times40k\\times20p)=198.9$ kHz. Additional internal poles may limit the complete amplifier sooner."
+          "step": "RC node",
+          "tex": "f_p=\\frac{1}{2\\pi RC}"
+        },
+        {
+          "step": "Substitute",
+          "tex": "f_p=\\frac{1}{2\\pi(40\\ \\text{k}\\Omega)(20\\ \\text{pF})}"
+        },
+        {
+          "step": "Result",
+          "tex": "f_p=198.9\\ \\text{kHz}"
+        },
+        {
+          "answer": "About <strong>199 kHz</strong>."
         }
       ]
     }
@@ -322,7 +670,20 @@
       "hint": "Convert load resistance into conductance.",
       "solution": [
         {
-          "text": "$A_v=2/(2+0.4+0.02+0.1)=0.794$. Stage output resistance is 413 \u03a9; loaded resistance is about 397 \u03a9."
+          "step": "Load conductance",
+          "tex": "G_L=\\frac{1}{10\\ \\text{k}\\Omega}=0.1\\ \\text{mS}"
+        },
+        {
+          "step": "Gain",
+          "text": "The gate drives $g_m$; body effect, $g_{ds}$ and the load all load the source.",
+          "tex": "A_v=\\frac{g_m}{g_m+g_{mb}+g_{ds}+G_L}=\\frac{2}{2.52}=0.794"
+        },
+        {
+          "step": "Output resistance",
+          "tex": "R_o=\\frac{1}{2.42\\ \\text{mS}}=413\\ \\Omega,\\qquad R_o\\parallel R_L=397\\ \\Omega"
+        },
+        {
+          "answer": "Gain <strong>0.794</strong>; output resistance <strong>413 \u03a9</strong> (397 \u03a9 with the load)."
         }
       ]
     },
@@ -333,7 +694,21 @@
       "hint": "Use $V_S=2(2-V_S)^2$.",
       "solution": [
         {
-          "text": "The physical root is $(9-\\sqrt{17})/4=1.219$ V, giving 0.610 mA. Reject the other root because its overdrive is negative."
+          "step": "Write the equation",
+          "text": "$V_S=I_DR_L$ and $I_D=\\tfrac12k(V_G-V_T-V_S)^2$.",
+          "tex": "V_S=\\tfrac12(2\\ \\text{mA/V}^2)(2\\ \\text{k}\\Omega)(2-V_S)^2=2(2-V_S)^2"
+        },
+        {
+          "step": "Solve the quadratic",
+          "tex": "2V_S^2-9V_S+8=0\\ \\Rightarrow\\ V_S=\\frac{9\\pm\\sqrt{17}}{4}"
+        },
+        {
+          "step": "Choose the physical root",
+          "text": "The '+' root (3.28 V) gives negative overdrive. Keep the other.",
+          "tex": "V_S=1.219\\ \\text{V},\\qquad I_D=0.610\\ \\text{mA}"
+        },
+        {
+          "answer": "$V_S$ = <strong>1.22 V</strong>, $I_D$ = <strong>0.61 mA</strong>."
         }
       ]
     },
@@ -344,7 +719,19 @@
       "hint": "Use resistor current and capacitor charge.",
       "solution": [
         {
-          "text": "Initial current is 1 mA and slope is \u22121 V/\u03bcs. The decay time constant is 2 \u03bcs; the slope decreases as voltage falls."
+          "step": "Initial current",
+          "tex": "I=\\frac{2\\ \\text{V}}{2\\ \\text{k}\\Omega}=1\\ \\text{mA}"
+        },
+        {
+          "step": "Initial slope",
+          "tex": "\\frac{dV}{dt}=-\\frac{1\\ \\text{mA}}{1\\ \\text{nF}}=-1\\ \\text{V}/\\mu\\text{s}"
+        },
+        {
+          "step": "Time constant",
+          "tex": "\\tau=2\\ \\text{k}\\Omega\\times1\\ \\text{nF}=2\\ \\mu\\text{s}"
+        },
+        {
+          "answer": "<strong>\u22121 V/\u00b5s</strong> initially; \u03c4 = <strong>2 \u00b5s</strong>."
         }
       ]
     }
@@ -357,7 +744,21 @@
       "hint": "Check each drain-source voltage.",
       "solution": [
         {
-          "text": "$0.2\\le V_O\\le2.6$ V. Gate-drive limits and body effect can narrow this interval."
+          "step": "Lower limit",
+          "text": "The sink needs $V_{DS}\\ge u$ = 0.2 V.",
+          "tex": "V_O\\ge0.2\\ \\text{V}"
+        },
+        {
+          "step": "Upper limit",
+          "text": "The follower's drain is at 3 V; it needs $V_{DS}\\ge$ 0.4 V.",
+          "tex": "V_O\\le3-0.4=2.6\\ \\text{V}"
+        },
+        {
+          "step": "Interval",
+          "tex": "0.2\\le V_O\\le2.6\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>0.2 V to 2.6 V</strong> (ideal)."
         }
       ]
     },
@@ -368,7 +769,19 @@
       "hint": "Use capacitor charge.",
       "solution": [
         {
-          "text": "$\\dot V=-I/C=-0.1$ V/\u03bcs until sink compliance fails."
+          "step": "Charge balance",
+          "tex": "\\frac{dV}{dt}=-\\frac{I}{C}"
+        },
+        {
+          "step": "Substitute",
+          "tex": "-\\frac{200\\ \\mu\\text{A}}{2\\ \\text{nF}}"
+        },
+        {
+          "step": "Result",
+          "tex": "-0.1\\ \\text{V}/\\mu\\text{s}"
+        },
+        {
+          "answer": "<strong>\u22120.1 V/\u00b5s</strong>."
         }
       ]
     },
@@ -379,7 +792,19 @@
       "hint": "Include both series devices.",
       "solution": [
         {
-          "text": "Total idle power is 4 mW. Multiplying only the follower voltage drop by current omits sink dissipation."
+          "step": "Total voltage across the stack",
+          "text": "The current flows from 5 V to ground through both devices."
+        },
+        {
+          "step": "Power",
+          "tex": "P=5\\ \\text{V}\\times0.8\\ \\text{mA}"
+        },
+        {
+          "step": "Result",
+          "tex": "P=4\\ \\text{mW}"
+        },
+        {
+          "answer": "<strong>4 mW</strong>, shared between follower and sink."
         }
       ]
     }
@@ -392,7 +817,20 @@
       "hint": "Use both exact incremental equations.",
       "solution": [
         {
-          "text": "$A_v=2.02/0.12=16.833$. $R_{in}=1.2/0.00202=594.1$ \u03a9."
+          "step": "Gain",
+          "text": "Drive the source with $v_s$, gate grounded. Both $g_m$ and $g_{ds}$ push current into $R_D$; $g_{ds}R_D$ appears in the denominator.",
+          "tex": "A_v=\\frac{(g_m+g_{ds})R_D}{1+g_{ds}R_D}=\\frac{2.02\\times10}{1.2}=16.83"
+        },
+        {
+          "step": "Input resistance",
+          "tex": "R_{in}=\\frac{1+g_{ds}R_D}{g_m+g_{ds}}=\\frac{1.2}{2.02\\ \\text{mS}}=594\\ \\Omega"
+        },
+        {
+          "step": "Compare",
+          "text": "Without $r_o$: gain 20, input 500 \u03a9."
+        },
+        {
+          "answer": "Gain <strong>16.8</strong>, input resistance <strong>594 \u03a9</strong>."
         }
       ]
     },
@@ -403,7 +841,19 @@
       "hint": "Apply the input divider.",
       "solution": [
         {
-          "text": "$A_{total}=16.833\\times594.1/(2000+594.1)=3.855$ V/V."
+          "step": "Input divider",
+          "tex": "\\frac{R_{in}}{R_g+R_{in}}=\\frac{594.1}{2594.1}=0.229"
+        },
+        {
+          "step": "Multiply by stage gain",
+          "tex": "A_{total}=16.83\\times0.229"
+        },
+        {
+          "step": "Result",
+          "tex": "A_{total}=3.86"
+        },
+        {
+          "answer": "Overall <strong>3.86 V/V</strong>."
         }
       ]
     },
@@ -414,7 +864,19 @@
       "hint": "Body feedback adds source transconductance.",
       "solution": [
         {
-          "text": "$R_{in}=1/1.2$ mS $=833$ \u03a9, rather than 1 k\u03a9."
+          "step": "Source transconductance",
+          "text": "Both the gate and body are at AC ground, so the source sees $g_m+g_{mb}$."
+        },
+        {
+          "step": "Input conductance",
+          "tex": "g_{in}=1+0.2=1.2\\ \\text{mS}"
+        },
+        {
+          "step": "Resistance",
+          "tex": "R_{in}=\\frac{1}{1.2\\ \\text{mS}}=833\\ \\Omega"
+        },
+        {
+          "answer": "<strong>833 \u03a9</strong> (not 1 k\u03a9)."
         }
       ]
     }
@@ -427,7 +889,19 @@
       "hint": "Parallel the resistances.",
       "solution": [
         {
-          "text": "$R=95.24$ k\u03a9 and $A_v=-95.24$."
+          "step": "Output resistance",
+          "tex": "R=2\\ \\text{M}\\Omega\\parallel100\\ \\text{k}\\Omega=95.24\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Gain",
+          "tex": "A_v=-G_mR=-1\\ \\text{mS}\\times95.24\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Result",
+          "tex": "A_v=-95.2"
+        },
+        {
+          "answer": "$A_v$ \u2248 <strong>\u221295</strong>: the active load dominates."
         }
       ]
     },
@@ -438,7 +912,19 @@
       "hint": "Find the middle node first.",
       "solution": [
         {
-          "text": "$V_X=0.4$ V, $V_B=1.6$ V and $V_{out,min}=0.8$ V."
+          "step": "Middle node",
+          "tex": "V_X=0.3+0.1=0.4\\ \\text{V}"
+        },
+        {
+          "step": "Upper gate bias",
+          "tex": "V_B=V_X+V_T+u=0.4+0.8+0.4=1.6\\ \\text{V}"
+        },
+        {
+          "step": "Minimum output",
+          "tex": "V_{out,min}=V_X+u=0.8\\ \\text{V}"
+        },
+        {
+          "answer": "$V_B$ = <strong>1.6 V</strong>; output \u2265 <strong>0.8 V</strong>."
         }
       ]
     },
@@ -449,7 +935,19 @@
       "hint": "Use the RC node model.",
       "solution": [
         {
-          "text": "$f_p\\approx397.9$ kHz. This does not include the cascode internal-node pole."
+          "step": "RC node",
+          "tex": "f_p=\\frac{1}{2\\pi RC}"
+        },
+        {
+          "step": "Substitute",
+          "tex": "f_p=\\frac{1}{2\\pi(80\\ \\text{k}\\Omega)(5\\ \\text{pF})}"
+        },
+        {
+          "step": "Result",
+          "tex": "f_p=397.9\\ \\text{kHz}"
+        },
+        {
+          "answer": "About <strong>398 kHz</strong>."
         }
       ]
     }
@@ -462,7 +960,19 @@
       "hint": "Each branch carries half the tail.",
       "solution": [
         {
-          "text": "$u_0=\\sqrt{0.8/5}=0.4$ V and $g_{m0}=2$ mS."
+          "step": "Branch current",
+          "tex": "I=\\frac{I_T}{2}=0.4\\ \\text{mA}"
+        },
+        {
+          "step": "Overdrive",
+          "tex": "0.4=\\tfrac12(5)u_0^2\\ \\Rightarrow\\ u_0=0.4\\ \\text{V}"
+        },
+        {
+          "step": "Transconductance",
+          "tex": "g_{m0}=\\frac{2I}{u_0}=\\frac{0.8}{0.4}=2\\ \\text{mS}"
+        },
+        {
+          "answer": "$u_0$ = <strong>0.4 V</strong>, $g_{m0}$ = <strong>2 mS</strong>."
         }
       ]
     },
@@ -473,7 +983,20 @@
       "hint": "Fix $v_d=V_1-V_2$.",
       "solution": [
         {
-          "text": "Right-drain gain is +4; drain2-minus-drain1 gain is +8. Left-drain gain is \u22124."
+          "step": "Split the input",
+          "text": "With $v_d=V_1-V_2$, the right gate moves by $-v_d/2$."
+        },
+        {
+          "step": "Right drain",
+          "text": "Its current falls by $g_mv_d/2$, so its drain rises.",
+          "tex": "A_{right}=+\\frac{g_mR_D}{2}=+4"
+        },
+        {
+          "step": "Drain difference",
+          "tex": "A_{d2-d1}=g_mR_D=+8,\\qquad A_{left}=-4"
+        },
+        {
+          "answer": "Right drain <strong>+4</strong>, left <strong>\u22124</strong>, drain2 \u2212 drain1 <strong>+8</strong>."
         }
       ]
     },
@@ -484,7 +1007,19 @@
       "hint": "Use the nonnegative-overdrive bound.",
       "solution": [
         {
-          "text": "$|v_d|=\\sqrt{2I_T/k}=0.5$ V. This is a saturation-law current-steering limit, not an input rating."
+          "step": "Full-steering condition",
+          "text": "All the tail flows in one device when the other's overdrive reaches zero."
+        },
+        {
+          "step": "Formula",
+          "tex": "|v_d|=\\sqrt{\\frac{2I_T}{k}}"
+        },
+        {
+          "step": "Substitute",
+          "tex": "\\sqrt{\\frac{2(1)}{8}}=0.5\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>\u00b10.5 V</strong>."
         }
       ]
     }
@@ -497,7 +1032,21 @@
       "hint": "Compute drain voltage first.",
       "solution": [
         {
-          "text": "$V_D=2.3$ V; $V_{C,min}=1.2$ V and $V_{C,max}=3.0$ V before protection and body-effect limits."
+          "step": "Drain voltage",
+          "tex": "V_D=3.3-0.5\\ \\text{mA}\\times2\\ \\text{k}\\Omega=2.3\\ \\text{V}"
+        },
+        {
+          "step": "Lower bound",
+          "text": "The tail needs $u_T$, and each input device needs $V_T+u_0$ above the tail node.",
+          "tex": "V_{C,min}=u_T+V_T+u_0=0.2+0.7+0.3=1.2\\ \\text{V}"
+        },
+        {
+          "step": "Upper bound",
+          "text": "Saturation holds while the gate is no more than $V_T$ above the drain.",
+          "tex": "V_{C,max}=V_D+V_T=3.0\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>1.2 V to 3.0 V</strong>."
         }
       ]
     },
@@ -508,7 +1057,19 @@
       "hint": "Use the factor of two in differential gain.",
       "solution": [
         {
-          "text": "CMRR is 100.5, about 40.0 dB, under the simplified matched-device model."
+          "step": "Differential gain (single-ended)",
+          "tex": "A_d=\\frac{g_mR_D}{2}"
+        },
+        {
+          "step": "Common-mode gain",
+          "tex": "A_{cm}=-\\frac{R_D}{2r_T+1/g_m}"
+        },
+        {
+          "step": "Ratio",
+          "tex": "\\text{CMRR}=\\frac{g_m}{2}\\left(2r_T+\\frac{1}{g_m}\\right)=g_mr_T+\\tfrac12=100.5=40.0\\ \\text{dB}"
+        },
+        {
+          "answer": "CMRR \u2248 <strong>100</strong> (40 dB)."
         }
       ]
     },
@@ -519,7 +1080,19 @@
       "hint": "Scale the normalized steering expression.",
       "solution": [
         {
-          "text": "Approximately \u00b156.4 mV; full steering occurs near \u00b1283 mV, a much larger amplitude."
+          "step": "Steering law",
+          "text": "For the square-law pair, the effective gain falls as $\\sqrt{1-v_d^2/(4u_0^2)}$."
+        },
+        {
+          "step": "1% compression",
+          "tex": "\\sqrt{1-\\frac{v_d^2}{4u_0^2}}=0.99\\ \\Rightarrow\\ v_d=2u_0\\sqrt{0.0199}=0.282u_0"
+        },
+        {
+          "step": "Evaluate",
+          "tex": "v_d=\\pm56.4\\ \\text{mV},\\qquad v_{full}=\\sqrt2u_0=283\\ \\text{mV}"
+        },
+        {
+          "answer": "About <strong>\u00b156 mV</strong> (full steering at \u00b1283 mV)."
         }
       ]
     }
@@ -532,7 +1105,20 @@
       "hint": "Combine the two current changes first.",
       "solution": [
         {
-          "text": "$R=40$ k\u03a9 and gain is +60 for left-minus-right differential input."
+          "step": "Current into the output node",
+          "text": "The mirror copies the left device's current change to the output, adding it to the right device's opposite change.",
+          "tex": "i_{out}=g_mv_d"
+        },
+        {
+          "step": "Output resistance",
+          "tex": "R=80\\parallel80=40\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Gain",
+          "tex": "A=g_mR=1.5\\ \\text{mS}\\times40\\ \\text{k}\\Omega=60"
+        },
+        {
+          "answer": "<strong>+60</strong>."
         }
       ]
     },
@@ -543,7 +1129,21 @@
       "hint": "Check both output devices.",
       "solution": [
         {
-          "text": "$0.7\\le V_O\\le2.9$ V before extra margin. A centered 1.8 V point permits roughly \u00b11.1 V."
+          "step": "Lower limit",
+          "text": "The NMOS input device needs $V_{DS}\\ge u_N$ above its source.",
+          "tex": "V_O\\ge0.4+0.3=0.7\\ \\text{V}"
+        },
+        {
+          "step": "Upper limit",
+          "text": "The PMOS mirror output needs $V_{SD}\\ge u_P$.",
+          "tex": "V_O\\le3.3-0.4=2.9\\ \\text{V}"
+        },
+        {
+          "step": "Centred swing",
+          "text": "A 1.8 V operating point permits about \u00b11.1 V."
+        },
+        {
+          "answer": "<strong>0.7 V to 2.9 V</strong>."
         }
       ]
     },
@@ -554,7 +1154,19 @@
       "hint": "Use the output resistance.",
       "solution": [
         {
-          "text": "Output shift magnitude is 0.4 V; a sufficiently large imbalance drives a device out of saturation."
+          "step": "Imbalance into the node",
+          "tex": "\\Delta V=10\\ \\mu\\text{A}\\times40\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Result",
+          "tex": "|\\Delta V|=0.4\\ \\text{V}"
+        },
+        {
+          "step": "Caveat",
+          "text": "A larger imbalance pushes a device out of saturation, so feedback must set the DC point."
+        },
+        {
+          "answer": "About <strong>0.4 V</strong>."
         }
       ]
     }
@@ -567,7 +1179,19 @@
       "hint": "Use the local feedback factor.",
       "solution": [
         {
-          "text": "$G_{md}=2$ mS and differential gain is +4."
+          "step": "Feedback factor",
+          "tex": "1+g_mR_S=1+4\\ \\text{mS}\\times250\\ \\Omega=2"
+        },
+        {
+          "step": "Differential transconductance",
+          "tex": "G_{md}=\\frac{g_m}{1+g_mR_S}=2\\ \\text{mS}"
+        },
+        {
+          "step": "Drain-difference gain",
+          "tex": "A=G_{md}R_D=2\\ \\text{mS}\\times2\\ \\text{k}\\Omega=4"
+        },
+        {
+          "answer": "$G_{md}$ = <strong>2 mS</strong>, gain <strong>+4</strong>."
         }
       ]
     },
@@ -578,7 +1202,19 @@
       "hint": "Each resistor carries half the tail.",
       "solution": [
         {
-          "text": "$V_{C,min}=0.7+0.2+0.5+0.15=1.55$ V."
+          "step": "Each resistor drop",
+          "tex": "0.5\\ \\text{mA}\\times1\\ \\text{k}\\Omega=0.5\\ \\text{V}"
+        },
+        {
+          "step": "Stack the voltages",
+          "tex": "V_{C,min}=V_T+u_0+I_{R}R_S+u_T"
+        },
+        {
+          "step": "Evaluate",
+          "tex": "0.7+0.2+0.5+0.15=1.55\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>1.55 V</strong>."
         }
       ]
     },
@@ -589,7 +1225,20 @@
       "hint": "Add resistor voltage at full imbalance.",
       "solution": [
         {
-          "text": "Magnitude is $0.5+0.001\\times500=1.0$ V."
+          "step": "Undegenerated steering voltage",
+          "tex": "\\sqrt{2I_T/k}=\\sqrt{2/8}=0.5\\ \\text{V}"
+        },
+        {
+          "step": "Resistor voltage at full imbalance",
+          "text": "All 1 mA flows through one 500 \u03a9 resistor.",
+          "tex": "1\\ \\text{mA}\\times500\\ \\Omega=0.5\\ \\text{V}"
+        },
+        {
+          "step": "Total",
+          "tex": "0.5+0.5=1.0\\ \\text{V}"
+        },
+        {
+          "answer": "About <strong>\u00b11.0 V</strong>."
         }
       ]
     }
@@ -602,7 +1251,19 @@
       "hint": "Find each overdrive.",
       "solution": [
         {
-          "text": "$u=0.2$ V and $V_B=2.0$ V."
+          "step": "Overdrive",
+          "tex": "0.2=\\tfrac12(10)u^2\\ \\Rightarrow\\ u=0.2\\ \\text{V}"
+        },
+        {
+          "step": "Each gate\u2013source voltage",
+          "tex": "V_{GS}=0.8+0.2=1.0\\ \\text{V}"
+        },
+        {
+          "step": "Gate spread",
+          "tex": "V_B=2V_{GS}=2.0\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>2.0 V</strong>."
         }
       ]
     },
@@ -613,7 +1274,19 @@
       "hint": "Compute required overdrive.",
       "solution": [
         {
-          "text": "$u=0.5$ V, so gate needs 4.5 V. Also require drain at least 3.5 V."
+          "step": "Overdrive",
+          "tex": "5=\\tfrac12(40)u^2\\ \\Rightarrow\\ u=0.5\\ \\text{V}"
+        },
+        {
+          "step": "Gate voltage",
+          "tex": "V_G=V_O+V_T+u=3+1+0.5=4.5\\ \\text{V}"
+        },
+        {
+          "step": "Drain requirement",
+          "tex": "V_D\\ge V_O+u=3.5\\ \\text{V}"
+        },
+        {
+          "answer": "Gate at <strong>4.5 V</strong>; drain \u2265 3.5 V."
         }
       ]
     },
@@ -624,7 +1297,19 @@
       "hint": "Use the entire rail separation.",
       "solution": [
         {
-          "text": "Idle power is $24\\times0.003=72$ mW, shared between devices and any series resistors."
+          "step": "Rail separation",
+          "tex": "12-(-12)=24\\ \\text{V}"
+        },
+        {
+          "step": "Power",
+          "tex": "P=24\\times3\\ \\text{mA}"
+        },
+        {
+          "step": "Result",
+          "tex": "P=72\\ \\text{mW}"
+        },
+        {
+          "answer": "<strong>72 mW</strong>."
         }
       ]
     }
@@ -637,7 +1322,19 @@
       "hint": "Multiply both local gains.",
       "solution": [
         {
-          "text": "Stage gains are 64 and 120; total is 7680, or about 77.7 dB."
+          "step": "First stage",
+          "tex": "A_1=0.8\\ \\text{mS}\\times80\\ \\text{k}\\Omega=64"
+        },
+        {
+          "step": "Second stage",
+          "tex": "A_2=3\\ \\text{mS}\\times40\\ \\text{k}\\Omega=120"
+        },
+        {
+          "step": "Total",
+          "tex": "A=64\\times120=7680=77.7\\ \\text{dB}"
+        },
+        {
+          "answer": "<strong>7680</strong> (77.7 dB)."
         }
       ]
     },
@@ -648,7 +1345,19 @@
       "hint": "Rearrange the unity-frequency estimate.",
       "solution": [
         {
-          "text": "$C_C\\approx39.8$ pF. Confirm the remaining pole and zero positions before accepting stability."
+          "step": "Unity-gain frequency",
+          "text": "With Miller compensation, $f_u=g_{m1}/(2\\pi C_C)$."
+        },
+        {
+          "step": "Rearrange",
+          "tex": "C_C=\\frac{g_{m1}}{2\\pi f_u}"
+        },
+        {
+          "step": "Substitute",
+          "tex": "C_C=\\frac{0.5\\ \\text{mS}}{2\\pi(2\\ \\text{MHz})}=39.8\\ \\text{pF}"
+        },
+        {
+          "answer": "About <strong>40 pF</strong>."
         }
       ]
     },
@@ -659,7 +1368,19 @@
       "hint": "Sine maximum slope is $2\\pi fV_p$.",
       "solution": [
         {
-          "text": "Slew is 2 V/\u03bcs, so $f\\le318$ kHz for 1 V peak. Closed-loop bandwidth may impose a tighter limit."
+          "step": "Slew rate",
+          "tex": "SR=\\frac{80\\ \\mu\\text{A}}{40\\ \\text{pF}}=2\\ \\text{V}/\\mu\\text{s}"
+        },
+        {
+          "step": "Sine slope",
+          "tex": "\\left.\\frac{dv}{dt}\\right|_{max}=2\\pi fV_p"
+        },
+        {
+          "step": "Maximum frequency",
+          "tex": "f\\le\\frac{2\\times10^6}{2\\pi(1)}=318\\ \\text{kHz}"
+        },
+        {
+          "answer": "<strong>2 V/\u00b5s</strong>; 1 V peak up to <strong>318 kHz</strong>."
         }
       ]
     }
@@ -672,7 +1393,19 @@
       "hint": "Use $2/u$.",
       "solution": [
         {
-          "text": "Efficiency is 8 V\u207b\u00b9; current is 0.25 mA in the square-law approximation."
+          "step": "Square-law efficiency",
+          "tex": "\\frac{g_m}{I_D}=\\frac{2}{u}"
+        },
+        {
+          "step": "Evaluate",
+          "tex": "\\frac{2}{0.25}=8\\ \\text{V}^{-1}"
+        },
+        {
+          "step": "Current",
+          "tex": "I_D=\\frac{2\\ \\text{mS}}{8\\ \\text{V}^{-1}}=0.25\\ \\text{mA}"
+        },
+        {
+          "answer": "<strong>8 V\u207b\u00b9</strong>; <strong>0.25 mA</strong>."
         }
       ]
     },
@@ -683,7 +1416,19 @@
       "hint": "Sum squares.",
       "solution": [
         {
-          "text": "Combined density is $\\sqrt{4^2+12^2}=12.65$ nV/\u221aHz, or 1.265 \u03bcV rms over a rectangular 10 kHz band."
+          "step": "Uncorrelated sources add in power",
+          "tex": "e_n=\\sqrt{4^2+12^2}"
+        },
+        {
+          "step": "Result",
+          "tex": "e_n=12.65\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "step": "Over 10 kHz",
+          "tex": "12.65\\ \\text{nV}/\\sqrt{\\text{Hz}}\\times\\sqrt{10^4}=1.265\\ \\mu\\text{V}_{rms}"
+        },
+        {
+          "answer": "<strong>12.65 nV/\u221aHz</strong> (1.27 \u00b5V rms in 10 kHz)."
         }
       ]
     },
@@ -694,7 +1439,19 @@
       "hint": "Its equivalent noise bandwidth is $\\pi f_c/2$.",
       "solution": [
         {
-          "text": "ENBW is 1571 Hz, giving about 396 nV rms. Using 1 kHz as a rectangular band would underestimate it."
+          "step": "Equivalent noise bandwidth",
+          "tex": "B_n=\\frac{\\pi}{2}f_c=1571\\ \\text{Hz}"
+        },
+        {
+          "step": "Integrated noise",
+          "tex": "v_n=10\\ \\text{nV}/\\sqrt{\\text{Hz}}\\times\\sqrt{1571}"
+        },
+        {
+          "step": "Result",
+          "tex": "v_n=396\\ \\text{nV}_{rms}"
+        },
+        {
+          "answer": "About <strong>396 nV rms</strong>."
         }
       ]
     }
@@ -707,7 +1464,19 @@
       "hint": "Use gain divided by $1+NG/A_0$.",
       "solution": [
         {
-          "text": "$G=20/(1+20/20000)=19.9800$, about 0.0999% low."
+          "step": "Noise gain",
+          "text": "For a noninverting stage the noise gain equals the ideal gain: 20."
+        },
+        {
+          "step": "Finite-gain formula",
+          "tex": "G=\\frac{G_{ideal}}{1+NG/A_0}=\\frac{20}{1+20/20\\,000}"
+        },
+        {
+          "step": "Evaluate",
+          "tex": "G=\\frac{20}{1.001}=19.980"
+        },
+        {
+          "answer": "<strong>19.98</strong>, about 0.1% low."
         }
       ]
     },
@@ -718,7 +1487,19 @@
       "hint": "Use the signed open-loop law.",
       "solution": [
         {
-          "text": "$v_-= -v_o/A_0=-10$ \u03bcV. It is near ground, not exactly ground."
+          "step": "Open-loop law",
+          "tex": "v_o=A_0(v_+-v_-)"
+        },
+        {
+          "step": "Solve for the minus input",
+          "tex": "v_-=v_+-\\frac{v_o}{A_0}=0-\\frac{0.8}{80\\,000}"
+        },
+        {
+          "step": "Result",
+          "tex": "v_-=-10\\ \\mu\\text{V}"
+        },
+        {
+          "answer": "<strong>\u221210 \u00b5V</strong>: near ground, not exactly ground."
         }
       ]
     },
@@ -729,7 +1510,19 @@
       "hint": "Start with the requested output.",
       "solution": [
         {
-          "text": "Input is 0.6 V in the ideal-gain estimate. Leave margin for finite output swing and any required load current."
+          "step": "Start from the output",
+          "tex": "v_o=Gv_{in}"
+        },
+        {
+          "step": "Solve",
+          "tex": "v_{in}=\\frac{3\\ \\text{V}}{5}"
+        },
+        {
+          "step": "Result",
+          "tex": "v_{in}=0.6\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>0.6 V</strong>; leave margin below the swing limit."
         }
       ]
     }
@@ -742,7 +1535,19 @@
       "hint": "Offset is amplified by noise gain.",
       "solution": [
         {
-          "text": "Output offset is approximately 2 mV."
+          "step": "Offset is referred to the input",
+          "text": "It appears in series with the noninverting input, so it is amplified by the noise gain."
+        },
+        {
+          "step": "Multiply",
+          "tex": "V_{os,out}=25\\times80\\ \\mu\\text{V}"
+        },
+        {
+          "step": "Result",
+          "tex": "V_{os,out}=2\\ \\text{mV}"
+        },
+        {
+          "answer": "About <strong>2 mV</strong>."
         }
       ]
     },
@@ -753,7 +1558,20 @@
       "hint": "Use parallel resistance and noise gain.",
       "solution": [
         {
-          "text": "$R_{match}=9$ k\u03a9; output error is $10\\times4n\\times9k=360$ \u03bcV."
+          "step": "Resistance at the inverting input",
+          "tex": "R_F\\parallel R_G=90\\parallel10=9\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Matching source resistance",
+          "text": "Put 9 k\u03a9 in the noninverting path so equal bias currents create equal drops that cancel."
+        },
+        {
+          "step": "Residual error",
+          "text": "What remains is the offset current times 9 k\u03a9, times the noise gain of 10.",
+          "tex": "V_{out}=10\\times4\\ \\text{nA}\\times9\\ \\text{k}\\Omega=360\\ \\mu\\text{V}"
+        },
+        {
+          "answer": "<strong>9 k\u03a9</strong>; residual \u2248 <strong>360 \u00b5V</strong> at the output."
         }
       ]
     },
@@ -764,7 +1582,19 @@
       "hint": "Convert to equivalent input drift first.",
       "solution": [
         {
-          "text": "Input change is 40 \u03bcV; output contribution is 2 mV. Initial offset and other drifts remain."
+          "step": "Input-referred drift",
+          "tex": "0.5\\ \\mu\\text{V/}^\\circ\\text{C}\\times80\\ ^\\circ\\text{C}=40\\ \\mu\\text{V}"
+        },
+        {
+          "step": "Multiply by noise gain",
+          "tex": "40\\ \\mu\\text{V}\\times50"
+        },
+        {
+          "step": "Result",
+          "tex": "2\\ \\text{mV}"
+        },
+        {
+          "answer": "<strong>2 mV</strong> of output drift."
         }
       ]
     }
@@ -777,7 +1607,20 @@
       "hint": "Find noise gain first.",
       "solution": [
         {
-          "text": "Noise gain is 10, so approximate bandwidth is 300 kHz."
+          "step": "Noise gain",
+          "tex": "NG=1+\\frac{R_F}{R_G}=1+9=10"
+        },
+        {
+          "step": "Bandwidth",
+          "text": "For a single-pole op amp, closed-loop bandwidth \u2248 $f_t/NG$.",
+          "tex": "f_{3dB}\\approx\\frac{3\\ \\text{MHz}}{10}"
+        },
+        {
+          "step": "Result",
+          "tex": "f_{3dB}\\approx300\\ \\text{kHz}"
+        },
+        {
+          "answer": "About <strong>300 kHz</strong>."
         }
       ]
     },
@@ -788,7 +1631,19 @@
       "hint": "Differentiate the sine.",
       "solution": [
         {
-          "text": "$SR\\ge2\\pi\\times20k\\times3=0.377$ V/\u03bcs, with extra margin for low distortion."
+          "step": "Maximum slope of a sine",
+          "tex": "\\left.\\frac{dv}{dt}\\right|_{max}=2\\pi fV_p"
+        },
+        {
+          "step": "Substitute",
+          "tex": "2\\pi(20\\ \\text{kHz})(3\\ \\text{V})=3.77\\times10^5\\ \\text{V/s}"
+        },
+        {
+          "step": "Convert",
+          "tex": "SR\\ge0.377\\ \\text{V}/\\mu\\text{s}"
+        },
+        {
+          "answer": "At least <strong>0.38 V/\u00b5s</strong>, plus margin."
         }
       ]
     },
@@ -799,7 +1654,19 @@
       "hint": "Use $6.91/(2\\pi f)$.",
       "solution": [
         {
-          "text": "Approximately 22 \u03bcs for a sufficiently small step. Slew and additional poles can increase it."
+          "step": "Residual after a step",
+          "tex": "e^{-t/\\tau}=0.001\\ \\Rightarrow\\ t=\\tau\\ln1000=6.91\\tau"
+        },
+        {
+          "step": "Time constant",
+          "tex": "\\tau=\\frac{1}{2\\pi(50\\ \\text{kHz})}=3.18\\ \\mu\\text{s}"
+        },
+        {
+          "step": "Settling time",
+          "tex": "t=6.91\\times3.18\\ \\mu\\text{s}=22\\ \\mu\\text{s}"
+        },
+        {
+          "answer": "About <strong>22 \u00b5s</strong> (small step, no slewing)."
         }
       ]
     }
@@ -812,7 +1679,19 @@
       "hint": "Use thermal voltage.",
       "solution": [
         {
-          "text": "$g_m=0.967$ mS and $I_B=100$ nA."
+          "step": "Thermal voltage",
+          "text": "At 300 K, $U_T$ = 25.85 mV."
+        },
+        {
+          "step": "Transconductance",
+          "tex": "g_m=\\frac{25\\ \\mu\\text{A}}{25.85\\ \\text{mV}}=0.967\\ \\text{mS}"
+        },
+        {
+          "step": "Base current",
+          "tex": "I_B=\\frac{25\\ \\mu\\text{A}}{250}=100\\ \\text{nA}"
+        },
+        {
+          "answer": "$g_m$ = <strong>0.967 mS</strong>, $I_B$ = <strong>100 nA</strong>."
         }
       ]
     },
@@ -823,7 +1702,19 @@
       "hint": "Ohm\u2019s law followed by noise gain.",
       "solution": [
         {
-          "text": "Input drop is 20 mV; output error magnitude is about 100 mV before cancellation and other errors."
+          "step": "Voltage across the source resistance",
+          "tex": "V=100\\ \\text{nA}\\times200\\ \\text{k}\\Omega=20\\ \\text{mV}"
+        },
+        {
+          "step": "Amplify by noise gain",
+          "tex": "20\\ \\text{mV}\\times5=100\\ \\text{mV}"
+        },
+        {
+          "step": "Remedy",
+          "text": "Balance the resistance at the other input, or use a lower-bias-current amplifier."
+        },
+        {
+          "answer": "<strong>20 mV</strong> at the input, about <strong>100 mV</strong> at the output."
         }
       ]
     },
@@ -834,7 +1725,23 @@
       "hint": "Use $I_T\\tanh(v_d/(2U_T))$.",
       "solution": [
         {
-          "text": "Difference is about 19.1 \u03bcA, versus 19.34 \u03bcA from the tangent; branch currents are about 59.6 and 40.4 \u03bcA."
+          "step": "Large-signal steering",
+          "tex": "\\Delta I=I_T\\tanh\\frac{v_d}{2U_T}=100\\ \\mu\\text{A}\\times\\tanh\\frac{10}{51.7}"
+        },
+        {
+          "step": "Evaluate",
+          "tex": "\\Delta I=100\\times0.1910=19.1\\ \\mu\\text{A}"
+        },
+        {
+          "step": "Branch currents",
+          "tex": "I_{1,2}=\\frac{100\\pm19.1}{2}=59.6,\\ 40.4\\ \\mu\\text{A}"
+        },
+        {
+          "step": "Compare with the tangent",
+          "tex": "\\frac{I_T}{2U_T}v_d=19.34\\ \\mu\\text{A}"
+        },
+        {
+          "answer": "<strong>19.1 \u00b5A</strong> (tangent 19.34 \u00b5A); branches <strong>59.6 / 40.4 \u00b5A</strong>."
         }
       ]
     }
@@ -847,7 +1754,19 @@
       "hint": "Use $2I/u$.",
       "solution": [
         {
-          "text": "$g_m=0.25$ mS in strong-inversion square-law saturation."
+          "step": "Square-law transconductance",
+          "tex": "g_m=\\frac{2I_D}{u}"
+        },
+        {
+          "step": "Substitute",
+          "tex": "g_m=\\frac{2\\times20\\ \\mu\\text{A}}{0.16\\ \\text{V}}"
+        },
+        {
+          "step": "Result",
+          "tex": "g_m=0.25\\ \\text{mS}"
+        },
+        {
+          "answer": "<strong>0.25 mS</strong>."
         }
       ]
     },
@@ -858,7 +1777,19 @@
       "hint": "Add the stacked voltage requirements.",
       "solution": [
         {
-          "text": "Approximately 0.85 V above the lower rail, before body effect and margin."
+          "step": "Tail device",
+          "text": "It needs at least its overdrive, 0.1 V, across it."
+        },
+        {
+          "step": "Input device",
+          "text": "Its gate must sit $V_T+u$ above the tail node."
+        },
+        {
+          "step": "Stack",
+          "tex": "V_{CM,min}=0.1+0.6+0.15=0.85\\ \\text{V}"
+        },
+        {
+          "answer": "About <strong>0.85 V</strong> above the lower rail."
         }
       ]
     },
@@ -869,7 +1800,19 @@
       "hint": "Include all leakage paths.",
       "solution": [
         {
-          "text": "Error magnitude is 100 \u03bcV. At noise gain 20 it contributes 2 mV output."
+          "step": "Voltage error",
+          "tex": "V=20\\ \\text{pA}\\times5\\ \\text{M}\\Omega=100\\ \\mu\\text{V}"
+        },
+        {
+          "step": "At the output",
+          "tex": "100\\ \\mu\\text{V}\\times20=2\\ \\text{mV}"
+        },
+        {
+          "step": "Note",
+          "text": "Include board and protection-diode leakage, not just the op amp."
+        },
+        {
+          "answer": "<strong>100 \u00b5V</strong> at the input, <strong>2 mV</strong> at noise gain 20."
         }
       ]
     }
@@ -882,7 +1825,19 @@
       "hint": "Set $e_n=i_nR$.",
       "solution": [
         {
-          "text": "At 6 k\u03a9. Resistor thermal noise remains an additional contribution."
+          "step": "Current-noise voltage",
+          "text": "Current noise flowing in source resistance R gives $i_nR$."
+        },
+        {
+          "step": "Set equal to voltage noise",
+          "tex": "e_n=i_nR\\ \\Rightarrow\\ R=\\frac{3\\ \\text{nV}/\\sqrt{\\text{Hz}}}{0.5\\ \\text{pA}/\\sqrt{\\text{Hz}}}"
+        },
+        {
+          "step": "Result",
+          "tex": "R=6\\ \\text{k}\\Omega"
+        },
+        {
+          "answer": "At <strong>6 k\u03a9</strong>."
         }
       ]
     },
@@ -893,7 +1848,19 @@
       "hint": "Include resistor noise.",
       "solution": [
         {
-          "text": "Resistor noise is about 40.7 nV/\u221aHz and current contribution 20 nV/\u221aHz; total is about 45.6 nV/\u221aHz."
+          "step": "Resistor noise",
+          "tex": "\\sqrt{4k_BTR}=\\sqrt{4(1.38\\times10^{-23})(300)(10^5)}=40.7\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "step": "Current-noise term",
+          "tex": "0.2\\ \\text{pA}/\\sqrt{\\text{Hz}}\\times100\\ \\text{k}\\Omega=20\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "step": "Root-sum-square",
+          "tex": "\\sqrt{5^2+20^2+40.7^2}=45.6\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "answer": "About <strong>45.6 nV/\u221aHz</strong>, dominated by the resistor."
         }
       ]
     },
@@ -904,7 +1871,20 @@
       "hint": "Add magnitudes for an uncorrelated guarantee.",
       "solution": [
         {
-          "text": "Bias term is 100 \u03bcV; worst-case sum is 130 \u03bcV before drift and other errors. Signed nominal terms might partly cancel."
+          "step": "Bias term",
+          "tex": "50\\ \\text{pA}\\times2\\ \\text{M}\\Omega=100\\ \\mu\\text{V}"
+        },
+        {
+          "step": "Worst case",
+          "text": "For a guarantee, add magnitudes.",
+          "tex": "100+30=130\\ \\mu\\text{V}"
+        },
+        {
+          "step": "Note",
+          "text": "Nominal signed terms might partly cancel, but that cannot be relied on."
+        },
+        {
+          "answer": "<strong>130 \u00b5V</strong> worst case."
         }
       ]
     }
@@ -917,7 +1897,19 @@
       "hint": "Solve the ratio.",
       "solution": [
         {
-          "text": "$R_F=20$ k\u03a9. At 3 V output the divider draws 125 \u03bcA."
+          "step": "Gain equation",
+          "tex": "G=1+\\frac{R_F}{R_G}=6\\ \\Rightarrow\\ \\frac{R_F}{R_G}=5"
+        },
+        {
+          "step": "Feedback resistor",
+          "tex": "R_F=5\\times4\\ \\text{k}\\Omega=20\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Divider current at 3 V",
+          "tex": "\\frac{3\\ \\text{V}}{24\\ \\text{k}\\Omega}=125\\ \\mu\\text{A}"
+        },
+        {
+          "answer": "$R_F$ = <strong>20 k\u03a9</strong>."
         }
       ]
     },
@@ -928,7 +1920,19 @@
       "hint": "Add load and divider currents.",
       "solution": [
         {
-          "text": "Approximately 4.018 mA. Check guaranteed output swing at that current."
+          "step": "Load current",
+          "tex": "\\frac{2\\ \\text{V}}{500\\ \\Omega}=4\\ \\text{mA}"
+        },
+        {
+          "step": "Divider current",
+          "tex": "\\frac{2\\ \\text{V}}{110\\ \\text{k}\\Omega}=18\\ \\mu\\text{A}"
+        },
+        {
+          "step": "Total",
+          "tex": "4.018\\ \\text{mA}"
+        },
+        {
+          "answer": "About <strong>4.02 mA</strong>."
         }
       ]
     },
@@ -939,7 +1943,20 @@
       "hint": "Use their parallel value.",
       "solution": [
         {
-          "text": "$R_{eq}=7.5$ k\u03a9 and noise density is about 11.15 nV/\u221aHz."
+          "step": "Equivalent resistance",
+          "text": "Both resistors' noise reaches the inverting input through their parallel combination.",
+          "tex": "R_{eq}=30\\parallel10=7.5\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Thermal noise",
+          "tex": "\\sqrt{4k_BTR_{eq}}=\\sqrt{4(1.38\\times10^{-23})(300)(7500)}"
+        },
+        {
+          "step": "Result",
+          "tex": "11.15\\ \\text{nV}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "answer": "About <strong>11.2 nV/\u221aHz</strong>."
         }
       ]
     }
@@ -952,7 +1969,20 @@
       "hint": "Apply KCL and then zero sources.",
       "solution": [
         {
-          "text": "Weights are \u22123 and \u22122; noise gain is 6."
+          "step": "KCL at the virtual ground",
+          "tex": "\\frac{V_1}{R_1}+\\frac{V_2}{R_2}+\\frac{V_O}{R_F}=0"
+        },
+        {
+          "step": "Weights",
+          "tex": "V_O=-\\frac{30}{10}V_1-\\frac{30}{15}V_2=-3V_1-2V_2"
+        },
+        {
+          "step": "Noise gain",
+          "text": "Zero the sources: $R_1\\parallel R_2$ = 6 k\u03a9.",
+          "tex": "NG=1+\\frac{30}{6}=6"
+        },
+        {
+          "answer": "Weights <strong>\u22123</strong> and <strong>\u22122</strong>; noise gain <strong>6</strong>."
         }
       ]
     },
@@ -963,7 +1993,19 @@
       "hint": "Include $NGV_R$.",
       "solution": [
         {
-          "text": "$V_O=6(0.5)-3(0.2)-2(0.3)=1.8$ V."
+          "step": "Reference on the plus input",
+          "text": "A voltage on the noninverting input is amplified by the noise gain."
+        },
+        {
+          "step": "Superpose",
+          "tex": "V_O=6(0.5)-3(0.2)-2(0.3)"
+        },
+        {
+          "step": "Evaluate",
+          "tex": "V_O=3-0.6-0.6=1.8\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>1.8 V</strong>."
         }
       ]
     },
@@ -974,7 +2016,19 @@
       "hint": "Signal gain is not noise gain.",
       "solution": [
         {
-          "text": "Noise gain is 1.1, so bandwidth is roughly 1.82 MHz; verify unity-gain stability and parasitics."
+          "step": "Noise gain",
+          "tex": "NG=1+0.1=1.1"
+        },
+        {
+          "step": "Bandwidth",
+          "tex": "f\\approx\\frac{2\\ \\text{MHz}}{1.1}"
+        },
+        {
+          "step": "Result",
+          "tex": "f\\approx1.82\\ \\text{MHz}"
+        },
+        {
+          "answer": "About <strong>1.8 MHz</strong>, set by noise gain, not signal gain."
         }
       ]
     }
@@ -987,7 +2041,20 @@
       "hint": "Use the unmatched expression.",
       "solution": [
         {
-          "text": "$c=3(2.02)/3.02=2.00662$, so $A_{cm}=0.00662$."
+          "step": "Unmatched difference amplifier",
+          "text": "With inverting ratio a and noninverting divider ratio b:",
+          "tex": "V_O=\\frac{(1+a)b}{1+b}V_+-aV_-"
+        },
+        {
+          "step": "Noninverting coefficient",
+          "tex": "c=\\frac{3\\times2.02}{3.02}=2.00662"
+        },
+        {
+          "step": "Common-mode gain",
+          "tex": "A_{cm}=c-a=0.00662"
+        },
+        {
+          "answer": "$c$ = <strong>2.0066</strong>, $A_{cm}$ = <strong>0.0066</strong>."
         }
       ]
     },
@@ -998,7 +2065,19 @@
       "hint": "Multiply common-mode gain.",
       "solution": [
         {
-          "text": "Output is about 19.9 mV despite zero differential signal."
+          "step": "Zero differential input",
+          "text": "Both inputs at 3 V."
+        },
+        {
+          "step": "Output",
+          "tex": "V_O=A_{cm}V_{CM}=0.00662\\times3"
+        },
+        {
+          "step": "Result",
+          "tex": "V_O=19.9\\ \\text{mV}"
+        },
+        {
+          "answer": "About <strong>19.9 mV</strong> of error."
         }
       ]
     },
@@ -1009,7 +2088,19 @@
       "hint": "Convert dB to a voltage ratio.",
       "solution": [
         {
-          "text": "CMRR is 10000, so $|\\epsilon|\\approx2/10000=0.0002$, or 0.02% ratio mismatch."
+          "step": "Target CMRR",
+          "tex": "80\\ \\text{dB}=10^4"
+        },
+        {
+          "step": "Resistor-limited CMRR at unity gain",
+          "tex": "\\text{CMRR}\\approx\\frac{1+G}{|\\epsilon|}=\\frac{2}{|\\epsilon|}"
+        },
+        {
+          "step": "Solve",
+          "tex": "|\\epsilon|=\\frac{2}{10^4}=0.02\\%"
+        },
+        {
+          "answer": "About <strong>0.02%</strong> ratio mismatch."
         }
       ]
     }
@@ -1022,7 +2113,19 @@
       "hint": "First-stage gain includes twice R.",
       "solution": [
         {
-          "text": "$G_1=25$ and total gain is 50."
+          "step": "First-stage gain",
+          "tex": "G_1=1+\\frac{2R}{R_G}=1+\\frac{24}{1}=25"
+        },
+        {
+          "step": "Total",
+          "tex": "G=G_1\\times2"
+        },
+        {
+          "step": "Result",
+          "tex": "G=50"
+        },
+        {
+          "answer": "<strong>50</strong>."
         }
       ]
     },
@@ -1033,7 +2136,19 @@
       "hint": "Split the amplified difference equally.",
       "solution": [
         {
-          "text": "Outputs are 1 and 3 V; check each stage\u2019s swing and common-mode limits."
+          "step": "Amplified difference",
+          "tex": "G_1v_d=20\\times0.1=2\\ \\text{V}"
+        },
+        {
+          "step": "Split around the common mode",
+          "tex": "V_{O1,2}=V_C\\pm1\\ \\text{V}"
+        },
+        {
+          "step": "Result",
+          "tex": "1\\ \\text{V and }3\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>1 V</strong> and <strong>3 V</strong>; check each amplifier's swing."
         }
       ]
     },
@@ -1044,7 +2159,19 @@
       "hint": "Subtract the resistor drops.",
       "solution": [
         {
-          "text": "Drops are 5 and 5.5 mV, giving 0.5 mV differential error, or 50 mV at total gain 100."
+          "step": "Each drop",
+          "tex": "5\\ \\text{nA}\\times1\\ \\text{M}\\Omega=5\\ \\text{mV},\\qquad 5\\ \\text{nA}\\times1.1\\ \\text{M}\\Omega=5.5\\ \\text{mV}"
+        },
+        {
+          "step": "Differential error",
+          "tex": "5.5-5=0.5\\ \\text{mV}"
+        },
+        {
+          "step": "At the output",
+          "tex": "0.5\\ \\text{mV}\\times100=50\\ \\text{mV}"
+        },
+        {
+          "answer": "<strong>0.5 mV</strong> differential, <strong>50 mV</strong> at gain 100."
         }
       ]
     }
@@ -1057,7 +2184,19 @@
       "hint": "Use DC transimpedance.",
       "solution": [
         {
-          "text": "Approximately \u00b120 \u03bcA before offset and swing margin."
+          "step": "Transimpedance law",
+          "tex": "V_O=-I R_F"
+        },
+        {
+          "step": "Solve for current",
+          "tex": "|I|\\le\\frac{4\\ \\text{V}}{200\\ \\text{k}\\Omega}"
+        },
+        {
+          "step": "Result",
+          "tex": "\\pm20\\ \\mu\\text{A}"
+        },
+        {
+          "answer": "About <strong>\u00b120 \u00b5A</strong>."
         }
       ]
     },
@@ -1068,7 +2207,20 @@
       "hint": "Use the square-root scale.",
       "solution": [
         {
-          "text": "Approximately 0.89 pF; stray capacitance may be comparable, so verify the complete network."
+          "step": "Starting formula",
+          "text": "Place the feedback zero near the geometric mean of $1/(2\\pi R_FC_{IN})$ and $f_t$.",
+          "tex": "C_F\\approx\\sqrt{\\frac{C_{IN}}{2\\pi R_Ff_t}}"
+        },
+        {
+          "step": "Substitute",
+          "tex": "C_F=\\sqrt{\\frac{20\\ \\text{pF}}{2\\pi(2\\ \\text{M}\\Omega)(2\\ \\text{MHz})}}"
+        },
+        {
+          "step": "Result",
+          "tex": "C_F\\approx0.89\\ \\text{pF}"
+        },
+        {
+          "answer": "About <strong>0.9 pF</strong>, comparable to stray capacitance."
         }
       ]
     },
@@ -1079,7 +2231,19 @@
       "hint": "Use $\\sqrt{4k_BT/R}$.",
       "solution": [
         {
-          "text": "Approximately 0.129 pA/\u221aHz, before detector and amplifier noise."
+          "step": "Thermal current noise",
+          "tex": "i_n=\\sqrt{\\frac{4k_BT}{R}}"
+        },
+        {
+          "step": "Substitute",
+          "tex": "i_n=\\sqrt{\\frac{4(1.38\\times10^{-23})(300)}{10^6}}"
+        },
+        {
+          "step": "Result",
+          "tex": "i_n=0.129\\ \\text{pA}/\\sqrt{\\text{Hz}}"
+        },
+        {
+          "answer": "About <strong>0.13 pA/\u221aHz</strong>."
         }
       ]
     }
@@ -1092,7 +2256,19 @@
       "hint": "Use $-V/(RC)$.",
       "solution": [
         {
-          "text": "Slope is \u2212500 V/s, or \u22120.5 V/ms."
+          "step": "Integrator slope",
+          "tex": "\\frac{dv_o}{dt}=-\\frac{v_{in}}{RC}"
+        },
+        {
+          "step": "Time constant",
+          "tex": "RC=20\\ \\text{k}\\Omega\\times5\\ \\text{nF}=100\\ \\mu\\text{s}"
+        },
+        {
+          "step": "Slope",
+          "tex": "-\\frac{50\\ \\text{mV}}{100\\ \\mu\\text{s}}=-500\\ \\text{V/s}=-0.5\\ \\text{V/ms}"
+        },
+        {
+          "answer": "<strong>\u22120.5 V/ms</strong>."
         }
       ]
     },
@@ -1103,7 +2279,19 @@
       "hint": "Use charge conservation.",
       "solution": [
         {
-          "text": "Output changes by \u22122 V if feedback remains active and leakage during the pulse is negligible."
+          "step": "Charge flows into C_F",
+          "text": "The virtual ground forces all input charge onto the feedback capacitor."
+        },
+        {
+          "step": "Output change",
+          "tex": "\\Delta v_o=-\\frac{Q}{C_F}=-\\frac{2\\ \\text{nC}}{1\\ \\text{nF}}"
+        },
+        {
+          "step": "Result",
+          "tex": "\\Delta v_o=-2\\ \\text{V}"
+        },
+        {
+          "answer": "<strong>\u22122 V</strong>."
         }
       ]
     },
@@ -1114,7 +2302,19 @@
       "hint": "Use exponential decay.",
       "solution": [
         {
-          "text": "Time constant is 40 ms, corner 3.98 Hz and retained fraction $e^{-0.25}=0.779$."
+          "step": "Time constant",
+          "tex": "\\tau=2\\ \\text{M}\\Omega\\times20\\ \\text{nF}=40\\ \\text{ms}"
+        },
+        {
+          "step": "Corner",
+          "tex": "f=\\frac{1}{2\\pi\\tau}=3.98\\ \\text{Hz}"
+        },
+        {
+          "step": "Retained after 10 ms",
+          "tex": "e^{-10/40}=e^{-0.25}=0.779"
+        },
+        {
+          "answer": "Corner <strong>3.98 Hz</strong>; <strong>77.9%</strong> retained after 10 ms."
         }
       ]
     }
@@ -1127,7 +2327,19 @@
       "hint": "Use the derivative scale.",
       "solution": [
         {
-          "text": "Scale is 100 \u03bcs and output is approximately \u22120.2 V within the derivative band."
+          "step": "Derivative scale",
+          "tex": "R_FC_{IN}=50\\ \\text{k}\\Omega\\times2\\ \\text{nF}=100\\ \\mu\\text{s}"
+        },
+        {
+          "step": "Output",
+          "tex": "v_o=-R_FC_{IN}\\frac{dv}{dt}=-100\\ \\mu\\text{s}\\times2000\\ \\text{V/s}"
+        },
+        {
+          "step": "Result",
+          "tex": "v_o=-0.2\\ \\text{V}"
+        },
+        {
+          "answer": "About <strong>\u22120.2 V</strong>."
         }
       ]
     },
@@ -1138,7 +2350,19 @@
       "hint": "Use the RC product.",
       "solution": [
         {
-          "text": "Corner is about 7.96 kHz."
+          "step": "Corner formula",
+          "tex": "f=\\frac{1}{2\\pi R_{IN}C_{IN}}"
+        },
+        {
+          "step": "Substitute",
+          "tex": "f=\\frac{1}{2\\pi(20\\ \\text{k}\\Omega)(1\\ \\text{nF})}"
+        },
+        {
+          "step": "Result",
+          "tex": "f=7.96\\ \\text{kHz}"
+        },
+        {
+          "answer": "About <strong>7.96 kHz</strong>."
         }
       ]
     },
@@ -1149,7 +2373,20 @@
       "hint": "Each denominator has magnitude $\\sqrt2$.",
       "solution": [
         {
-          "text": "The exact magnitude is half the derivative-only estimate, with an additional \u221290\u00b0 phase from the two poles."
+          "step": "Exact response",
+          "tex": "H=\\frac{-j\\omega\\tau_d}{(1+jf/f_1)(1+jf/f_2)}"
+        },
+        {
+          "step": "At f = f\u2081 = f\u2082",
+          "text": "Each denominator factor is $1+j$, with magnitude $\\sqrt2$ and angle 45\u00b0.",
+          "tex": "|1+j|^2=2"
+        },
+        {
+          "step": "Comparison",
+          "text": "The magnitude is half the derivative-only value, and the two poles add \u221290\u00b0 of phase."
+        },
+        {
+          "answer": "<strong>Half</strong> the derivative estimate, with an extra <strong>\u221290\u00b0</strong>."
         }
       ]
     }
@@ -1162,7 +2399,20 @@
       "hint": "Use the natural-frequency and Q formulas.",
       "solution": [
         {
-          "text": "$R=15.915$ k\u03a9 and $K=1.5858$. Select practical values and recalculate the response."
+          "step": "Resistor for f\u2080",
+          "tex": "R=\\frac{1}{2\\pi f_0C}=\\frac{1}{2\\pi(1\\ \\text{kHz})(10\\ \\text{nF})}=15.92\\ \\text{k}\\Omega"
+        },
+        {
+          "step": "Butterworth Q",
+          "text": "Equal-RC Sallen\u2013Key has $Q=1/(3-K)$. Set Q = 0.7071.",
+          "tex": "K=3-\\frac{1}{0.7071}=1.586"
+        },
+        {
+          "step": "Practical values",
+          "text": "For example 16 k\u03a9, and a gain of 1.586 from $R_F/R_G$ = 0.586; recompute the response."
+        },
+        {
+          "answer": "$R$ \u2248 <strong>15.9 k\u03a9</strong>, $K$ \u2248 <strong>1.586</strong>."
         }
       ]
     },
@@ -1173,7 +2423,19 @@
       "hint": "Use $Q=1/(3-K)$ and $|H(f_0)|/K=Q$.",
       "solution": [
         {
-          "text": "Q is 1.25 and relative gain is about +1.94 dB."
+          "step": "Q",
+          "tex": "Q=\\frac{1}{3-2.2}=1.25"
+        },
+        {
+          "step": "Gain at f\u2080 relative to DC",
+          "text": "At $f_0$, $|H|/K=Q$."
+        },
+        {
+          "step": "In dB",
+          "tex": "20\\log1.25=+1.94\\ \\text{dB}"
+        },
+        {
+          "answer": "Q = <strong>1.25</strong>; peak <strong>+1.94 dB</strong>."
         }
       ]
     },
@@ -1184,7 +2446,19 @@
       "hint": "Differentiate Q.",
       "solution": [
         {
-          "text": "Q is 5; derivative is 25. Q rises about 0.25, or 5% to first order; exact new Q is about 5.263."
+          "step": "Q at K = 2.8",
+          "tex": "Q=\\frac{1}{0.2}=5"
+        },
+        {
+          "step": "Sensitivity",
+          "tex": "\\frac{dQ}{dK}=\\frac{1}{(3-K)^2}=25\\ \\Rightarrow\\ \\Delta Q\\approx25\\times0.01=0.25\\ (5\\%)"
+        },
+        {
+          "step": "Exact",
+          "tex": "Q=\\frac{1}{3-2.81}=5.263"
+        },
+        {
+          "answer": "Q rises by about <strong>0.25 (5%)</strong>; exact 5.26."
         }
       ]
     }
@@ -1197,7 +2471,19 @@
       "hint": "Check the node before the diode.",
       "solution": [
         {
-          "text": "Approximately 3.3 V, with load-dependent diode drop and output margin."
+          "step": "Node before the diode",
+          "text": "The op-amp output can reach 3.8 V."
+        },
+        {
+          "step": "Subtract the diode",
+          "tex": "3.8-0.5=3.3\\ \\text{V}"
+        },
+        {
+          "step": "Caveat",
+          "text": "The diode drop rises with load current, so leave margin."
+        },
+        {
+          "answer": "About <strong>3.3 V</strong>."
         }
       ]
     },
@@ -1208,7 +2494,19 @@
       "hint": "Integrate leakage charge.",
       "solution": [
         {
-          "text": "Droop is 0.25 V/s, giving 12.5 mV over 50 ms."
+          "step": "Droop rate",
+          "tex": "\\frac{dV}{dt}=\\frac{5\\ \\text{nA}}{20\\ \\text{nF}}=0.25\\ \\text{V/s}"
+        },
+        {
+          "step": "Over 50 ms",
+          "tex": "0.25\\times0.05"
+        },
+        {
+          "step": "Result",
+          "tex": "12.5\\ \\text{mV}"
+        },
+        {
+          "answer": "<strong>12.5 mV</strong>."
         }
       ]
     },
@@ -1219,7 +2517,19 @@
       "hint": "Use $I=C\\Delta V/\\Delta t$.",
       "solution": [
         {
-          "text": "Average current is 1 mA. Peak current, slew and stability may demand more margin."
+          "step": "Charge needed",
+          "tex": "Q=10\\ \\text{nF}\\times2\\ \\text{V}=20\\ \\text{nC}"
+        },
+        {
+          "step": "Average current",
+          "tex": "I=\\frac{20\\ \\text{nC}}{20\\ \\mu\\text{s}}"
+        },
+        {
+          "step": "Result",
+          "tex": "I=1\\ \\text{mA}"
+        },
+        {
+          "answer": "<strong>1 mA</strong> average."
         }
       ]
     }
@@ -1232,7 +2542,19 @@
       "hint": "Use the regulated voltage.",
       "solution": [
         {
-          "text": "$R=20$ \u03a9 and power is 8 mW."
+          "step": "Sense resistance",
+          "tex": "R=\\frac{0.4\\ \\text{V}}{20\\ \\text{mA}}=20\\ \\Omega"
+        },
+        {
+          "step": "Power",
+          "tex": "P=I^2R=(0.02)^2(20)"
+        },
+        {
+          "step": "Result",
+          "tex": "P=8\\ \\text{mW}"
+        },
+        {
+          "answer": "<strong>20 \u03a9</strong>, <strong>8 mW</strong>."
         }
       ]
     },
@@ -1243,7 +2565,19 @@
       "hint": "Divide offset by sense voltage.",
       "solution": [
         {
-          "text": "Approximately 0.1%, before resistor and other errors."
+          "step": "Offset adds to the command",
+          "text": "The loop forces the sense voltage to the command plus the offset."
+        },
+        {
+          "step": "Fractional error",
+          "tex": "\\frac{200\\ \\mu\\text{V}}{0.2\\ \\text{V}}"
+        },
+        {
+          "step": "Result",
+          "tex": "0.1\\%"
+        },
+        {
+          "answer": "About <strong>0.1%</strong>."
         }
       ]
     },
@@ -1254,7 +2588,19 @@
       "hint": "Subtract both external drops.",
       "solution": [
         {
-          "text": "$V_{DS}=15$ V and MOS power is 0.75 W. Check linear safe operating area and thermal design."
+          "step": "Voltage across the MOSFET",
+          "tex": "V_{DS}=24-8-1=15\\ \\text{V}"
+        },
+        {
+          "step": "Power",
+          "tex": "P=15\\times0.05"
+        },
+        {
+          "step": "Result",
+          "tex": "P=0.75\\ \\text{W}"
+        },
+        {
+          "answer": "<strong>0.75 W</strong>; check linear SOA."
         }
       ]
     }
@@ -1267,7 +2613,19 @@
       "hint": "Use the RC product.",
       "solution": [
         {
-          "text": "Approximately 796 kHz."
+          "step": "RC pole",
+          "tex": "f_p=\\frac{1}{2\\pi R_oC_L}"
+        },
+        {
+          "step": "Substitute",
+          "tex": "f_p=\\frac{1}{2\\pi(40\\ \\Omega)(5\\ \\text{nF})}"
+        },
+        {
+          "step": "Result",
+          "tex": "f_p\\approx796\\ \\text{kHz}"
+        },
+        {
+          "answer": "About <strong>796 kHz</strong>."
         }
       ]
     },
@@ -1278,7 +2636,19 @@
       "hint": "Ohm\u2019s law.",
       "solution": [
         {
-          "text": "Loss is 188 mV, outside the locally sensed feedback correction."
+          "step": "Ohm's law",
+          "tex": "\\Delta V=4\\ \\text{mA}\\times47\\ \\Omega"
+        },
+        {
+          "step": "Result",
+          "tex": "\\Delta V=188\\ \\text{mV}"
+        },
+        {
+          "step": "Why it is not corrected",
+          "text": "Feedback is taken before the isolation resistor, so the loop cannot see this drop."
+        },
+        {
+          "answer": "<strong>188 mV</strong>."
         }
       ]
     },
@@ -1289,7 +2659,19 @@
       "hint": "Use capacitor charge.",
       "solution": [
         {
-          "text": "Average current is 3 mA. Include any resistive current and amplifier rate limits."
+          "step": "Charge needed",
+          "tex": "Q=2\\ \\text{nF}\\times3\\ \\text{V}=6\\ \\text{nC}"
+        },
+        {
+          "step": "Average current",
+          "tex": "I=\\frac{6\\ \\text{nC}}{2\\ \\mu\\text{s}}"
+        },
+        {
+          "step": "Result",
+          "tex": "I=3\\ \\text{mA}"
+        },
+        {
+          "answer": "<strong>3 mA</strong> average."
         }
       ]
     }
@@ -1302,7 +2684,19 @@
       "hint": "Use the log-ratio law.",
       "solution": [
         {
-          "text": "Change is about \u2212178.6 mV; absolute output also depends on junction parameters."
+          "step": "Log-ratio law",
+          "tex": "\\Delta V=-nU_T\\ln\\frac{I_2}{I_1}"
+        },
+        {
+          "step": "Substitute",
+          "tex": "\\Delta V=-25.85\\ \\text{mV}\\times\\ln1000=-25.85\\times6.908"
+        },
+        {
+          "step": "Result",
+          "tex": "\\Delta V=-178.6\\ \\text{mV}"
+        },
+        {
+          "answer": "About <strong>\u2212179 mV</strong>."
         }
       ]
     },
@@ -1313,7 +2707,19 @@
       "hint": "Use $1/(2\\pi RC)$.",
       "solution": [
         {
-          "text": "Each resistor is about 15.9 k\u03a9. Startup requires gain above 3 and amplitude control for a stable sine."
+          "step": "Wien frequency",
+          "tex": "f_0=\\frac{1}{2\\pi RC}"
+        },
+        {
+          "step": "Solve for R",
+          "tex": "R=\\frac{1}{2\\pi(2\\ \\text{kHz})(5\\ \\text{nF})}"
+        },
+        {
+          "step": "Result",
+          "tex": "R=15.9\\ \\text{k}\\Omega"
+        },
+        {
+          "answer": "About <strong>15.9 k\u03a9</strong>; needs gain slightly above 3 plus amplitude control."
         }
       ]
     },
@@ -1324,7 +2730,19 @@
       "hint": "Scale signal and offset with the same total gain.",
       "solution": [
         {
-          "text": "Required gain is 400. Offset contribution is 8 mV; input common mode, internal swing and reference error still require checking."
+          "step": "Required gain",
+          "tex": "G=\\frac{0.8\\ \\text{V}}{2\\ \\text{mV}}=400"
+        },
+        {
+          "step": "Offset at the output",
+          "tex": "20\\ \\mu\\text{V}\\times400"
+        },
+        {
+          "step": "Result",
+          "tex": "8\\ \\text{mV}"
+        },
+        {
+          "answer": "Gain <strong>400</strong>; offset contributes <strong>8 mV</strong> (1% of full scale)."
         }
       ]
     }

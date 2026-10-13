@@ -3,7 +3,7 @@ import {NegativeResistanceTank,OscillatorStartupPlot,PhaseNoisePlot,PllBlockFigu
 
 <div className="chapter-hero" id="overview">
 
-<div className="eyebrow"><span>CHAPTER 105</span><span className="hairline"/>PART V / RF CIRCUITS</div>
+<div className="eyebrow"><span>CHAPTER 116</span><span className="hairline"/>PART V / OSCILLATORS, MODULATION &amp; RECEIVERS</div>
 
 <h1>Oscillators, PLLs and phase noise<br/><em>Make a frequency, then make it behave.</em></h1>
 
@@ -128,7 +128,7 @@ A real oscillator's phase wanders. In the frequency domain this spreads the carr
 
 <span className="tiny-label">DERIVATION / WHY THE TANK MULTIPLIES NOISE AS 1/Δf²</span>
 
-1. **Tank phase slope.** Near resonance a tank's impedance phase changes by $d\phi/d\omega = 2Q/\omega_0$ (from $X \approx 2L\Delta\omega$ and $\phi \approx X/R$ in Chapter 103's notation).
+1. **Tank phase slope.** Near resonance a tank's impedance phase changes by $d\phi/d\omega = 2Q/\omega_0$ (from $X \approx 2L\Delta\omega$ and $\phi \approx X/R$ in Chapter 112's notation).
 
 2. **The loop corrects phase by moving frequency.** If noise adds a phase perturbation $\delta\phi$ somewhere in the loop, the Barkhausen phase condition can only be restored by shifting frequency until the tank supplies $-\delta\phi$: $\delta\omega = (\omega_0/2Q)\,\delta\phi$.
 
@@ -145,7 +145,7 @@ A real oscillator's phase wanders. In the frequency domain this spreads the carr
 
 <PhaseNoisePlot/>
 
-As a quick budget, a 1 GHz clock whose phase noise averages −120 dBc/Hz from 10 kHz to 10 MHz has $\sigma_\phi^2 \approx 2\times10^{-12}\times10^7 = 2\times10^{-5}$ rad², $\sigma_\phi$ = 4.5 mrad and $\sigma_t$ ≈ **0.71 ps** rms. Chapter 109 showed that 1 ps of sampling jitter limits a 100 MHz input to about 64 dB SNR; that is where a clock's phase noise becomes a converter specification.
+As a quick budget, a 1 GHz clock whose phase noise averages −120 dBc/Hz from 10 kHz to 10 MHz has $\sigma_\phi^2 \approx 2\times10^{-12}\times10^7 = 2\times10^{-5}$ rad², $\sigma_\phi$ = 4.5 mrad and $\sigma_t$ ≈ **0.71 ps** rms. Chapter 121 showed that 1 ps of sampling jitter limits a 100 MHz input to about 64 dB SNR; that is where a clock's phase noise becomes a converter specification.
 
 </section>
 

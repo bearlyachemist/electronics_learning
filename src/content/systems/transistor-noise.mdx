@@ -1,0 +1,126 @@
+import Equation from '../../components/Equation.astro';
+import {BjtNoiseVsCurrentPlot,NoiseVsSourcePlot} from '../../components/NoiseFigures';
+
+<div className="chapter-hero" id="overview">
+
+<div className="eyebrow"><span>CHAPTER 91</span><span className="hairline"/>PART III / LOW-NOISE DESIGN</div>
+
+<h1>Low-noise design with BJTs and JFETs<br/><em>Match the amplifier to the source, not the other way round.</em></h1>
+
+<p className="dek">Derive a bipolar transistor's voltage and current noise from shot noise, find the collector current and noise resistance that suit a given source, compare JFETs, and use parallel devices or a transformer when the source resistance is far from optimum.</p>
+
+<div className="chapter-meta"><span>55–75 min + practice</span><span>Derivations · Design charts · Worked designs</span></div>
+
+</div>
+
+<section id="model">
+
+<div className="section-heading"><span>01</span><h2>Model an amplifier's noise with e<sub>n</sub> and i<sub>n</sub></h2></div>
+
+Any amplifier's internal noise can be replaced, at its input, by two sources: a voltage source $e_n$ in series and a current source $i_n$ in parallel. The voltage source matters when the source resistance is low; the current source, flowing through the source resistance, matters when it is high. With a source of resistance $R_s$, the total input-referred noise is
+<Equation tex={String.raw`e_{tot}^2=e_n^2+(i_nR_s)^2+4kTR_s`}/>
+assuming $e_n$ and $i_n$ are uncorrelated. The design goal is to make the first two terms small compared with the third, the source's own Johnson noise, which nothing can remove.
+
+</section>
+
+<section id="bjt">
+
+<div className="section-heading"><span>02</span><h2>Derive a BJT's noise from its currents</h2></div>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / BIPOLAR e<sub>n</sub> AND i<sub>n</sub></span>
+
+1. **Collector shot noise.** The collector current has shot noise $\sqrt{2qI_C}$. Referred to the input, it is the base-emitter voltage that would produce the same current change: divide by $g_m = I_C/V_T$ (Chapter 30):
+<Equation tex={String.raw`e_{n,shot}=\frac{\sqrt{2qI_C}}{g_m}=V_T\sqrt{\frac{2q}{I_C}}=\sqrt{\frac{2kT\,V_T}{I_C}}`}/>
+   It falls as $1/\sqrt{I_C}$: at 1 mA, 0.46 nV/√Hz; at 10 µA, 4.6 nV/√Hz.
+
+2. **Base spreading resistance.** The resistance $r_{bb'}$ between the base terminal and the active base adds Johnson noise $\sqrt{4kTr_{bb'}}$ in series. With 50 Ω, 0.91 nV/√Hz: a floor $e_n$ cannot fall below however much current flows.
+
+3. **Base shot noise.** The base current $I_C/\beta$ has shot noise:
+<Equation tex={String.raw`i_n=\sqrt{\frac{2qI_C}{\beta}}`}/>
+   It rises as $\sqrt{I_C}$: 1.3 pA/√Hz at 1 mA with β = 200.
+
+4. **Total voltage noise:** $e_n^2 = 4kTr_{bb'} + 2kTV_T/I_C$.
+
+</div>
+
+<BjtNoiseVsCurrentPlot/>
+
+</section>
+
+<section id="optimum">
+
+<div className="section-heading"><span>03</span><h2>Choose the current for a given source</h2></div>
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / OPTIMUM COLLECTOR CURRENT AND NOISE RESISTANCE</span>
+
+1. **Noise resistance.** Define $R_n = e_n/i_n$. When $R_s = R_n$ the two amplifier terms are equal; this is the source resistance at which the amplifier's noise figure is lowest (Chapter 114 derived $R_{opt} = e_n/i_n$).
+
+2. **Optimum current.** Neglecting $r_{bb'}$, minimize $e_n^2 + i_n^2R_s^2 = 2kTV_T/I_C + 2qI_CR_s^2/\beta$ over $I_C$. Setting the derivative to zero, $2kTV_T/I_C^2 = 2qR_s^2/\beta$, and using $kT/q = V_T$:
+<Equation tex={String.raw`I_{C,opt}=\frac{V_T\sqrt\beta}{R_s}`}/>
+
+3. **Minimum noise factor** at that current:
+<Equation tex={String.raw`F_{min}\approx1+\frac{1}{\sqrt\beta}`}/>
+   With β = 200, $F_{min}$ = 1.07, a noise figure of 0.3 dB, independent of $R_s$, provided the current can be chosen freely and $r_{bb'}$ is small compared with $R_s$.
+
+</div>
+
+| Source resistance | $I_{C,opt}$ (β = 200) | Note |
+|---|---|---|
+| 100 Ω | 3.7 mA | $r_{bb'}$ noise now significant; use low-$r_{bb'}$ transistors or parallel devices |
+| 10 kΩ | 37 µA | Typical sensor; easy |
+| 1 MΩ | 0.37 µA | Low β at this current and 1/f noise argue for a JFET instead |
+
+<NoiseVsSourcePlot/>
+
+</section>
+
+<section id="jfet">
+
+<div className="section-heading"><span>04</span><h2>Compare JFETs</h2></div>
+
+A JFET's voltage noise comes from Johnson noise of its channel, referred to the gate through its transconductance: $e_n^2 \approx 4kT(\tfrac23)/g_m$. Its current noise is the shot noise of the tiny gate leakage, $i_n = \sqrt{2qI_G}$: picoamperes of leakage give femtoamperes per root hertz, a thousand times less than a BJT's.
+
+At comparable current, a JFET's $g_m$ is several times lower than a BJT's, so its $e_n$ is higher, typically 1–5 nV/√Hz for large-area parts. But its noise resistance $e_n/i_n$ is megohms to gigohms. **Above roughly 100 kΩ of source resistance, a JFET wins decisively**: piezoelectric sensors, capacitive microphones, photodiodes in transimpedance amplifiers (Chapter 92), electrometers. Below about 1 kΩ, a BJT at high current wins. In between, both can be good. MOSFETs offer still lower gate current but higher 1/f noise, making them best at high frequency or in chopper-stabilized amplifiers.
+
+Gate leakage doubles roughly every 10 °C, so a JFET's current noise rises with temperature; specify it at the operating temperature.
+
+</section>
+
+<section id="low">
+
+<div className="section-heading"><span>05</span><h2>Handle a very low source resistance</h2></div>
+
+A source of a few ohms (a moving-coil microphone, a loudspeaker used as a sensor, a thermocouple or strain gauge) generates only nanovolt-level noise: 8 Ω gives 0.36 nV/√Hz. Even a single BJT at high current has $e_n$ near 1 nV/√Hz.
+
+<div className="derivation">
+
+<span className="tiny-label">DERIVATION / PARALLEL DEVICES AND STEP-UP TRANSFORMERS</span>
+
+1. **N transistors in parallel**, each at the same current, sum their signals coherently but their noises in power. Their combined $e_n$ falls by $\sqrt N$ and their combined $i_n$ rises by $\sqrt N$, so the noise resistance falls by $N$. Ten devices at 1 mA each bring $e_n$ from 1 nV/√Hz to about 0.32 nV/√Hz.
+
+2. **A transformer** with turns ratio $1:n$ multiplies the source voltage, and its Johnson noise, by $n$, and its resistance by $n^2$. The amplifier then sees $n^2R_s$. Choosing $n^2R_s = R_n$ matches the source to the amplifier's optimum:
+<Equation tex={String.raw`n=\sqrt{\frac{R_n}{R_s}}`}/>
+
+3. **Example.** A loudspeaker of 8 Ω used as a microphone, with a BJT at 1 mA ($e_n$ ≈ 1.0 nV/√Hz, $i_n$ = 1.3 pA/√Hz, $R_n$ ≈ 800 Ω): $n = \sqrt{800/8}$ = 10. The source now looks like 800 Ω with 3.6 nV/√Hz of Johnson noise, against an amplifier contributing $\sqrt{1.0^2 + (1.3\times0.8)^2}$ ≈ 1.4 nV/√Hz: noise figure about 0.6 dB, against about 9 dB connected directly.
+
+</div>
+
+Transformers cost bandwidth, pick up hum, and add their own winding resistance, so parallel transistors are often preferred on circuit boards; for the lowest noise from a few ohms, both are combined.
+
+</section>
+
+<section id="check">
+
+<div className="section-heading"><span>06</span><h2>Check your understanding</h2></div>
+
+Before opening the practice notebook, compute a BJT's $e_n$ and $i_n$ at a given current, choose the optimum current for a given source, decide between BJT and JFET from a source resistance, and size a matching transformer.
+
+[Work through three independent problems](/transistor-noise/practice/).
+
+<p className="reference">Source connections: The Art of Electronics, third edition, §§8.3–8.7 (bipolar and JFET amplifier noise, charting, and the bipolar–FET comparison). Explanations, examples and figures are original; component values are teaching choices.</p>
+
+</section>
